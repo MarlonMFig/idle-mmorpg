@@ -1,0 +1,151 @@
+{
+  "walk": {
+    "frameWidth": 98,
+    "frameHeight": 98,
+    "frameCount": 6,
+    "image": "walk.png",
+    "outputSize": {
+      "width": 588,
+      "height": 98
+    },
+    "chroma": {
+      "r": 0,
+      "g": 120,
+      "b": 0,
+      "tolerance": 38
+    },
+    "source": "walking.png"
+  },
+  "combo1": {
+    "frameWidth": 98,
+    "frameHeight": 98,
+    "frameCount": 4,
+    "image": "combo1.png",
+    "outputSize": {
+      "width": 392,
+      "height": 98
+    },
+    "chroma": {
+      "r": 0,
+      "g": 120,
+      "b": 0,
+      "tolerance": 38
+    },
+    "source": "combos.png"
+  },
+  "combo2": {
+    "frameWidth": 60,
+    "frameHeight": 57,
+    "frameCount": 4,
+    "image": "combo2.png",
+    "outputSize": {
+      "width": 240,
+      "height": 57
+    },
+    "chroma": {
+      "r": 0,
+      "g": 120,
+      "b": 0,
+      "tolerance": 38
+    },
+    "source": "combos.png"
+  },
+  "hosenka-start": {
+    "frameWidth": 107,
+    "frameHeight": 98,
+    "frameCount": 11,
+    "image": "hosenka-start.png",
+    "outputSize": {
+      "width": 1177,
+      "height": 98
+    },
+    "chroma": {
+      "r": 136,
+      "g": 248,
+      "b": 0,
+      "tolerance": 38
+    },
+    "source": "phoenix-flower.png",
+    "note": "hand seals + lunge"
+  },
+  "hosenka-loop": {
+    "frameWidth": 102,
+    "frameHeight": 80,
+    "frameCount": 8,
+    "image": "hosenka-loop.png",
+    "outputSize": {
+      "width": 816,
+      "height": 80
+    },
+    "chroma": {
+      "r": 136,
+      "g": 248,
+      "b": 0,
+      "tolerance": 38
+    },
+    "source": "phoenix-flower.png"
+  },
+  "hosenka-fx": {
+    "frameWidth": 130,
+    "frameHeight": 77,
+    "frameCount": 7,
+    "image": "hosenka-fx.png",
+    "outputSize": {
+      "width": 910,
+      "height": 77
+    },
+    "chroma": {
+      "r": 136,
+      "g": 248,
+      "b": 0,
+      "tolerance": 38
+    },
+    "source": "phoenix-flower.png",
+    "note": "Fire Effect 1"
+  },
+  "chidori": {
+    "frameWidth": 238,
+    "frameHeight": 98,
+    "frameCount": 25,
+    "image": "chidori.png",
+    "outputSize": {
+      "width": 5950,
+      "height": 98
+    },
+    "chroma": {
+      "r": 144,
+      "g": 176,
+      "b": 216,
+      "tolerance": 40
+    },
+    "source": "chidori-full.png",
+    "sourceSize": {
+      "width": 857,
+      "height": 210
+    },
+    "rowLayout": [
+      14,
+      8,
+      3
+    ],
+    "note": "Chidori full sheet flattened L->R top->bottom (25 frames), bottom-aligned"
+  },
+  "chidori-hit": {
+    "frameWidth": 92,
+    "frameHeight": 47,
+    "frameCount": 18,
+    "image": "chidori-hit.png",
+    "outputSize": {
+      "width": 1656,
+      "height": 47
+    },
+    "chroma": {
+      "r": 136,
+      "g": 248,
+      "b": 0,
+      "tolerance": 38
+    },
+    "source": "chidori-hit.png",
+    "note": "same strip as chidori.png"
+  }
+}

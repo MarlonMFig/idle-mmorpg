@@ -1,0 +1,25 @@
+{
+  "frameWidth": 32,
+  "frameHeight": 48,
+  "directions": [
+    "down",
+    "down-right",
+    "right",
+    "up-right",
+    "up",
+    "up-left",
+    "left",
+    "down-left"
+  ],
+  "framesPerDirection": 6,
+  "idle": [
+    0,
+    1
+  ],
+  "walk": [
+    2,
+    3,
+    4,
+    5
+  ]
+}

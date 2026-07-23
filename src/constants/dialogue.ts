@@ -1,0 +1,1 @@
+export const DIALOGUE_INTERACT_DISTANCE = 56;

@@ -1,0 +1,23 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run lint -w @idle-mmorpg/domain
+      - run: npm run lint -w @idle-mmorpg/shared
+      - run: npm run lint -w @idle-mmorpg/game-engine
+      - run: npm run lint -w @idle-mmorpg/server
+      - run: npm run lint -w @idle-mmorpg/web
+      - run: npm run validate:maps
+      - run: npm run build
+      - run: npm test

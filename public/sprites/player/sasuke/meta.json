@@ -1,0 +1,781 @@
+{
+  "source": "assets/naruto-source/sasuke-sheet.png",
+  "sourceSize": {
+    "width": 1024,
+    "height": 559
+  },
+  "sasuke-idle-walk": {
+    "frameWidth": 58,
+    "frameHeight": 50,
+    "frameCount": 4,
+    "image": "sasuke-idle-walk.png",
+    "chroma": {
+      "samples": [
+        {
+          "r": 33,
+          "g": 36,
+          "b": 57
+        },
+        {
+          "r": 30,
+          "g": 35,
+          "b": 54
+        },
+        {
+          "r": 56,
+          "g": 61,
+          "b": 81
+        },
+        {
+          "r": 55,
+          "g": 60,
+          "b": 80
+        },
+        {
+          "r": 40,
+          "g": 45,
+          "b": 65
+        },
+        {
+          "r": 29,
+          "g": 34,
+          "b": 53
+        },
+        {
+          "r": 63,
+          "g": 65,
+          "b": 80
+        }
+      ],
+      "tolerance": 26,
+      "preserveDarkNonBlue": true
+    },
+    "outputSize": {
+      "width": 232,
+      "height": 50
+    },
+    "sourceRects": [
+      {
+        "left": 48,
+        "top": 108,
+        "width": 58,
+        "height": 42
+      },
+      {
+        "left": 48,
+        "top": 210,
+        "width": 58,
+        "height": 44
+      },
+      {
+        "left": 48,
+        "top": 312,
+        "width": 58,
+        "height": 44
+      },
+      {
+        "left": 48,
+        "top": 430,
+        "width": 58,
+        "height": 50
+      }
+    ],
+    "note": "Standing Punch column (4 frames)"
+  },
+  "sasuke-punch": {
+    "frameWidth": 58,
+    "frameHeight": 50,
+    "frameCount": 4,
+    "image": "sasuke-punch.png",
+    "chroma": {
+      "samples": [
+        {
+          "r": 33,
+          "g": 36,
+          "b": 57
+        },
+        {
+          "r": 30,
+          "g": 35,
+          "b": 54
+        },
+        {
+          "r": 56,
+          "g": 61,
+          "b": 81
+        },
+        {
+          "r": 55,
+          "g": 60,
+          "b": 80
+        },
+        {
+          "r": 40,
+          "g": 45,
+          "b": 65
+        },
+        {
+          "r": 29,
+          "g": 34,
+          "b": 53
+        },
+        {
+          "r": 63,
+          "g": 65,
+          "b": 80
+        }
+      ],
+      "tolerance": 26,
+      "preserveDarkNonBlue": true
+    },
+    "outputSize": {
+      "width": 232,
+      "height": 50
+    },
+    "sourceRects": [
+      {
+        "left": 48,
+        "top": 108,
+        "width": 58,
+        "height": 42
+      },
+      {
+        "left": 48,
+        "top": 210,
+        "width": 58,
+        "height": 44
+      },
+      {
+        "left": 48,
+        "top": 312,
+        "width": 58,
+        "height": 44
+      },
+      {
+        "left": 48,
+        "top": 430,
+        "width": 58,
+        "height": 50
+      }
+    ],
+    "note": "Same as idle-walk / Standing Punch"
+  },
+  "sasuke-idle-frame0": {
+    "frameWidth": 58,
+    "frameHeight": 50,
+    "frameCount": 1,
+    "image": "sasuke-idle-frame0.png"
+  },
+  "sasuke-kick": {
+    "frameWidth": 65,
+    "frameHeight": 48,
+    "frameCount": 4,
+    "image": "sasuke-kick.png",
+    "chroma": {
+      "samples": [
+        {
+          "r": 33,
+          "g": 36,
+          "b": 57
+        },
+        {
+          "r": 30,
+          "g": 35,
+          "b": 54
+        },
+        {
+          "r": 56,
+          "g": 61,
+          "b": 81
+        },
+        {
+          "r": 55,
+          "g": 60,
+          "b": 80
+        },
+        {
+          "r": 40,
+          "g": 45,
+          "b": 65
+        },
+        {
+          "r": 29,
+          "g": 34,
+          "b": 53
+        },
+        {
+          "r": 63,
+          "g": 65,
+          "b": 80
+        }
+      ],
+      "tolerance": 26,
+      "preserveDarkNonBlue": true
+    },
+    "outputSize": {
+      "width": 260,
+      "height": 48
+    },
+    "sourceRects": [
+      {
+        "left": 152,
+        "top": 108,
+        "width": 70,
+        "height": 42
+      },
+      {
+        "left": 152,
+        "top": 210,
+        "width": 70,
+        "height": 42
+      },
+      {
+        "left": 152,
+        "top": 312,
+        "width": 70,
+        "height": 42
+      },
+      {
+        "left": 152,
+        "top": 430,
+        "width": 70,
+        "height": 48
+      }
+    ]
+  },
+  "sasuke-chidori": {
+    "frameWidth": 143,
+    "frameHeight": 123,
+    "frameCount": 5,
+    "image": "sasuke-chidori.png",
+    "chroma": {
+      "samples": [
+        {
+          "r": 33,
+          "g": 36,
+          "b": 57
+        },
+        {
+          "r": 30,
+          "g": 35,
+          "b": 54
+        },
+        {
+          "r": 56,
+          "g": 61,
+          "b": 81
+        },
+        {
+          "r": 55,
+          "g": 60,
+          "b": 80
+        },
+        {
+          "r": 40,
+          "g": 45,
+          "b": 65
+        },
+        {
+          "r": 29,
+          "g": 34,
+          "b": 53
+        },
+        {
+          "r": 63,
+          "g": 65,
+          "b": 80
+        }
+      ],
+      "tolerance": 26,
+      "preserveDarkNonBlue": true
+    },
+    "outputSize": {
+      "width": 715,
+      "height": 123
+    },
+    "sourceRects": [
+      {
+        "left": 265,
+        "top": 110,
+        "width": 70,
+        "height": 55
+      },
+      {
+        "left": 338,
+        "top": 110,
+        "width": 65,
+        "height": 55
+      },
+      {
+        "left": 268,
+        "top": 198,
+        "width": 145,
+        "height": 125
+      },
+      {
+        "left": 268,
+        "top": 338,
+        "width": 145,
+        "height": 90
+      },
+      {
+        "left": 268,
+        "top": 420,
+        "width": 145,
+        "height": 105
+      }
+    ],
+    "sequence": [
+      "charge",
+      "charge",
+      "large",
+      "impact",
+      "impact"
+    ]
+  },
+  "sasuke-fireball-cast": {
+    "frameWidth": 60,
+    "frameHeight": 58,
+    "frameCount": 5,
+    "image": "sasuke-fireball-cast.png",
+    "chroma": {
+      "samples": [
+        {
+          "r": 33,
+          "g": 36,
+          "b": 57
+        },
+        {
+          "r": 30,
+          "g": 35,
+          "b": 54
+        },
+        {
+          "r": 56,
+          "g": 61,
+          "b": 81
+        },
+        {
+          "r": 55,
+          "g": 60,
+          "b": 80
+        },
+        {
+          "r": 40,
+          "g": 45,
+          "b": 65
+        },
+        {
+          "r": 29,
+          "g": 34,
+          "b": 53
+        },
+        {
+          "r": 63,
+          "g": 65,
+          "b": 80
+        }
+      ],
+      "tolerance": 26,
+      "preserveDarkNonBlue": true
+    },
+    "outputSize": {
+      "width": 300,
+      "height": 58
+    },
+    "sourceRects": [
+      {
+        "left": 435,
+        "top": 112,
+        "width": 48,
+        "height": 58
+      },
+      {
+        "left": 493,
+        "top": 112,
+        "width": 55,
+        "height": 58
+      },
+      {
+        "left": 560,
+        "top": 112,
+        "width": 58,
+        "height": 58
+      },
+      {
+        "left": 448,
+        "top": 268,
+        "width": 58,
+        "height": 55
+      },
+      {
+        "left": 442,
+        "top": 375,
+        "width": 60,
+        "height": 55
+      }
+    ],
+    "sequence": [
+      "seal",
+      "seal",
+      "seal",
+      "blow",
+      "blow"
+    ]
+  },
+  "sasuke-fireball-fx": {
+    "frameWidth": 132,
+    "frameHeight": 124,
+    "frameCount": 2,
+    "image": "sasuke-fireball-fx.png",
+    "chroma": {
+      "samples": [
+        {
+          "r": 33,
+          "g": 36,
+          "b": 57
+        },
+        {
+          "r": 30,
+          "g": 35,
+          "b": 54
+        },
+        {
+          "r": 56,
+          "g": 61,
+          "b": 81
+        },
+        {
+          "r": 55,
+          "g": 60,
+          "b": 80
+        },
+        {
+          "r": 40,
+          "g": 45,
+          "b": 65
+        },
+        {
+          "r": 29,
+          "g": 34,
+          "b": 53
+        },
+        {
+          "r": 63,
+          "g": 65,
+          "b": 80
+        }
+      ],
+      "tolerance": 26,
+      "preserveDarkNonBlue": true
+    },
+    "outputSize": {
+      "width": 264,
+      "height": 124
+    },
+    "sourceRects": [
+      {
+        "left": 492,
+        "top": 218,
+        "width": 135,
+        "height": 128
+      },
+      {
+        "left": 495,
+        "top": 348,
+        "width": 132,
+        "height": 105
+      }
+    ]
+  },
+  "fireball-fx-1": {
+    "width": 132,
+    "height": 124,
+    "image": "fireball-fx-1.png",
+    "sourceRect": {
+      "left": 492,
+      "top": 218,
+      "width": 135,
+      "height": 128
+    }
+  },
+  "fireball-fx-2": {
+    "width": 128,
+    "height": 102,
+    "image": "fireball-fx-2.png",
+    "sourceRect": {
+      "left": 495,
+      "top": 348,
+      "width": 132,
+      "height": 105
+    }
+  },
+  "sasuke-kirin-cast": {
+    "frameWidth": 67,
+    "frameHeight": 75,
+    "frameCount": 3,
+    "image": "sasuke-kirin-cast.png",
+    "chroma": {
+      "samples": [
+        {
+          "r": 33,
+          "g": 36,
+          "b": 57
+        },
+        {
+          "r": 30,
+          "g": 35,
+          "b": 54
+        },
+        {
+          "r": 56,
+          "g": 61,
+          "b": 81
+        },
+        {
+          "r": 55,
+          "g": 60,
+          "b": 80
+        },
+        {
+          "r": 40,
+          "g": 45,
+          "b": 65
+        },
+        {
+          "r": 29,
+          "g": 34,
+          "b": 53
+        },
+        {
+          "r": 63,
+          "g": 65,
+          "b": 80
+        }
+      ],
+      "tolerance": 26,
+      "preserveDarkNonBlue": true
+    },
+    "outputSize": {
+      "width": 201,
+      "height": 75
+    },
+    "sourceRects": [
+      {
+        "left": 650,
+        "top": 100,
+        "width": 70,
+        "height": 75
+      },
+      {
+        "left": 728,
+        "top": 108,
+        "width": 58,
+        "height": 68
+      },
+      {
+        "left": 808,
+        "top": 100,
+        "width": 70,
+        "height": 75
+      }
+    ]
+  },
+  "sasuke-kirin-dragon": {
+    "width": 254,
+    "height": 170,
+    "image": "sasuke-kirin-dragon.png",
+    "sourceRect": {
+      "left": 630,
+      "top": 190,
+      "width": 270,
+      "height": 170
+    }
+  },
+  "sasuke-kirin-impact": {
+    "width": 160,
+    "height": 90,
+    "image": "sasuke-kirin-impact.png",
+    "sourceRect": {
+      "left": 710,
+      "top": 348,
+      "width": 160,
+      "height": 90
+    }
+  },
+  "sasuke-amaterasu-cast": {
+    "frameWidth": 71,
+    "frameHeight": 80,
+    "frameCount": 3,
+    "image": "sasuke-amaterasu-cast.png",
+    "chroma": {
+      "samples": [
+        {
+          "r": 33,
+          "g": 36,
+          "b": 57
+        },
+        {
+          "r": 30,
+          "g": 35,
+          "b": 54
+        },
+        {
+          "r": 56,
+          "g": 61,
+          "b": 81
+        },
+        {
+          "r": 55,
+          "g": 60,
+          "b": 80
+        },
+        {
+          "r": 40,
+          "g": 45,
+          "b": 65
+        },
+        {
+          "r": 29,
+          "g": 34,
+          "b": 53
+        },
+        {
+          "r": 63,
+          "g": 65,
+          "b": 80
+        }
+      ],
+      "tolerance": 26,
+      "preserveDarkNonBlue": true
+    },
+    "outputSize": {
+      "width": 213,
+      "height": 80
+    },
+    "sourceRects": [
+      {
+        "left": 920,
+        "top": 98,
+        "width": 75,
+        "height": 80
+      },
+      {
+        "left": 468,
+        "top": 478,
+        "width": 42,
+        "height": 55
+      },
+      {
+        "left": 532,
+        "top": 478,
+        "width": 48,
+        "height": 55
+      }
+    ]
+  },
+  "sasuke-amaterasu-fx": {
+    "frameWidth": 60,
+    "frameHeight": 58,
+    "frameCount": 3,
+    "image": "sasuke-amaterasu-fx.png",
+    "chroma": {
+      "samples": [
+        {
+          "r": 33,
+          "g": 36,
+          "b": 57
+        },
+        {
+          "r": 30,
+          "g": 35,
+          "b": 54
+        },
+        {
+          "r": 56,
+          "g": 61,
+          "b": 81
+        },
+        {
+          "r": 55,
+          "g": 60,
+          "b": 80
+        },
+        {
+          "r": 40,
+          "g": 45,
+          "b": 65
+        },
+        {
+          "r": 29,
+          "g": 34,
+          "b": 53
+        },
+        {
+          "r": 63,
+          "g": 65,
+          "b": 80
+        }
+      ],
+      "tolerance": 26,
+      "preserveDarkNonBlue": true
+    },
+    "outputSize": {
+      "width": 180,
+      "height": 58
+    },
+    "sourceRects": [
+      {
+        "left": 650,
+        "top": 478,
+        "width": 48,
+        "height": 58
+      },
+      {
+        "left": 700,
+        "top": 478,
+        "width": 58,
+        "height": 60
+      },
+      {
+        "left": 755,
+        "top": 478,
+        "width": 60,
+        "height": 60
+      }
+    ]
+  },
+  "skill-chidori": {
+    "width": 63,
+    "height": 61,
+    "image": "sasuke-chidori.png",
+    "sourceRect": {
+      "left": 820,
+      "top": 472,
+      "width": 65,
+      "height": 65
+    }
+  },
+  "skill-fireball": {
+    "width": 65,
+    "height": 64,
+    "image": "sasuke-fireball.png",
+    "sourceRect": {
+      "left": 875,
+      "top": 472,
+      "width": 65,
+      "height": 65
+    }
+  },
+  "skill-amaterasu": {
+    "width": 58,
+    "height": 55,
+    "image": "sasuke-amaterasu.png",
+    "sourceRect": {
+      "left": 760,
+      "top": 475,
+      "width": 58,
+      "height": 60
+    }
+  }
+}

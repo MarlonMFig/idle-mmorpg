@@ -1,0 +1,127 @@
+{
+  "naruto-walk": {
+    "frameWidth": 64,
+    "frameHeight": 98,
+    "frameCount": 6,
+    "image": "naruto-walk.png",
+    "chroma": {
+      "r": 50,
+      "g": 200,
+      "b": 150,
+      "tolerance": 40
+    },
+    "sourceSize": {
+      "width": 399,
+      "height": 134
+    },
+    "contentCrop": {
+      "top": 24,
+      "bottom": 122
+    },
+    "outputSize": {
+      "width": 384,
+      "height": 98
+    }
+  },
+  "naruto-combo1": {
+    "frameWidth": 86,
+    "frameHeight": 75,
+    "frameCount": 4,
+    "image": "naruto-combo1.png",
+    "chroma": {
+      "r": 50,
+      "g": 200,
+      "b": 150,
+      "tolerance": 40
+    },
+    "sourceSize": {
+      "width": 355,
+      "height": 103
+    },
+    "contentCrop": {
+      "top": 19,
+      "bottom": 94
+    },
+    "outputSize": {
+      "width": 344,
+      "height": 75
+    }
+  },
+  "naruto-rasengan": {
+    "frameWidth": 139,
+    "frameHeight": 74,
+    "frameCount": 8,
+    "image": "naruto-rasengan.png",
+    "chroma": {
+      "r": 80,
+      "g": 150,
+      "b": 80,
+      "tolerance": 40
+    },
+    "sourceSize": {
+      "width": 848,
+      "height": 195
+    },
+    "contentCrop": {
+      "top": 22,
+      "bottom": 188
+    },
+    "outputSize": {
+      "width": 1112,
+      "height": 74
+    }
+  },
+  "naruto-rasengan2": {
+    "frameWidth": 139,
+    "frameHeight": 143,
+    "frameCount": 18,
+    "image": "naruto-rasengan2.png",
+    "chroma": {
+      "r": 80,
+      "g": 150,
+      "b": 80,
+      "tolerance": 40
+    },
+    "sourceSize": {
+      "width": 851,
+      "height": 486
+    },
+    "contentCrop": {
+      "top": 21,
+      "bottom": 486
+    },
+    "outputSize": {
+      "width": 2502,
+      "height": 143
+    }
+  },
+  "naruto-sexy-jutsu": {
+    "frameWidth": 62,
+    "frameHeight": 63,
+    "frameCount": 23,
+    "image": "naruto-sexy-jutsu.png",
+    "chroma": {
+      "r": 144,
+      "g": 176,
+      "b": 216,
+      "tolerance": 45
+    },
+    "sourceSize": {
+      "width": 543,
+      "height": 217
+    },
+    "contentCrop": {
+      "top": 0,
+      "bottom": 217
+    },
+    "outputSize": {
+      "width": 1426,
+      "height": 63
+    },
+    "rowLayout": [
+      10,
+      10,
+      3
+    ]
+  }
+}
