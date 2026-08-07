@@ -13,7 +13,14 @@ export type SkillElement =
  * Tipo de animação visual no Phaser.
  * Novos jutsus reutilizam estas chaves ou adicionam handlers em SkillVfx.
  */
-export type SkillAnimationKind = 'burst' | 'projectile' | 'slash' | 'aura' | 'beam' | 'character';
+export type SkillAnimationKind =
+  | 'burst'
+  | 'projectile'
+  | 'slash'
+  | 'aura'
+  | 'beam'
+  | 'character'
+  | 'sprite';
 
 export interface SkillAnimationDef {
   kind: SkillAnimationKind;
@@ -21,6 +28,10 @@ export interface SkillAnimationDef {
   tint?: number;
   durationMs?: number;
   scale?: number;
+  /** Textura Phaser usada quando `kind` for `sprite`. */
+  textureKey?: string;
+  /** Quantidade de frames da textura usada quando `kind` for `sprite`. */
+  frames?: number;
 }
 
 /**
@@ -31,6 +42,8 @@ export interface SkillDefinition {
   id: string;
   name: string;
   element: SkillElement;
+  /** Nível do jogador necessário para usar a habilidade. */
+  requiredLevel?: number;
   /** Cooldown em milissegundos. */
   cooldownMs: number;
   /** Dano base da habilidade. */
@@ -40,6 +53,8 @@ export interface SkillDefinition {
   animation: SkillAnimationDef;
   /** Alcance em pixels (default no constants). */
   range?: number;
+  /** Raio do dano em área; ausente significa alvo único. */
+  areaRadius?: number;
   description?: string;
 }
 

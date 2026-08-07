@@ -1,10 +1,15 @@
 import * as Phaser from 'phaser';
+import {
+  PLAYER_ATTACK_COOLDOWN_MS,
+  PLAYER_ATTACK_RANGE,
+} from '@/constants/combat';
 import { SKILL_DEFAULT_RANGE } from '@/constants/skill';
 import { getSkill } from '@/data/skills';
 import type { Player } from '@/entities/player';
 import { attributesStore } from '@/stores/attributes-store';
 import { dialogueStore } from '@/stores/dialogue-store';
 import { skillsStore } from '@/stores/skills-store';
+import { vitalsStore } from '@/stores/vitals-store';
 import { handleEnemyKill } from '@/systems/combat-rewards';
 import type { EnemyManager } from '@/systems/enemy-manager';
 import { findNearestAliveEnemy } from '@/systems/find-nearest-enemy';
@@ -14,12 +19,13 @@ import { SkillVfx } from '@/systems/skill-vfx';
 import type { SkillDefinition } from '@/types/skill';
 
 /**
- * Combate idle: só jutsus em ordem — jutsu 1 → jutsu 2 → (repete).
- * Sem ataque normal.
+ * Combate idle: ataque básico; jutsus da hotbar quando existirem.
+ * VFX de effects/missiles WONSR ficam desligados — só animação do personagem
+ * e o SkillVfx genérico quando não há sheet de jutsu.
  */
 export class CombatSystem {
   private readonly vfx: SkillVfx;
-  /** Índice na hotbar (0 ou 1). */
+  /** Próximo índice da rotação na hotbar. */
   private step = 0;
   private lastActionAt = 0;
 
@@ -40,14 +46,59 @@ export class CombatSystem {
     if (this.player.isBusy()) return;
     if (time - this.lastActionAt < 140) return;
 
-    this.tryJutsu(time, this.step);
+    const level = vitalsStore.getLevel();
+    const hotbar = skillsStore.getSnapshot().hotbar;
+    const filled = hotbar.filter((id): id is string => {
+      if (!id) return false;
+      const skill = getSkill(id);
+      return Boolean(skill && level >= (skill.requiredLevel ?? 1));
+    });
+
+    if (filled.length === 0) {
+      this.tryBasicAttack(time);
+      return;
+    }
+
+    const readyOffset = Array.from({ length: filled.length }, (_, offset) => offset).find(
+      (offset) => skillsStore.isReady(filled[(this.step + offset) % filled.length]),
+    );
+    if (readyOffset == null) {
+      this.tryBasicAttack(time);
+      return;
+    }
+
+    this.tryJutsu(time, this.step + readyOffset, filled);
   }
 
-  private tryJutsu(time: number, hotbarIndex: number): void {
-    const hotbar = skillsStore.getSnapshot().hotbar;
-    const filled = hotbar.filter((id): id is string => id != null);
-    if (filled.length === 0) return;
+  private tryBasicAttack(time: number): void {
+    if (time - this.lastActionAt < PLAYER_ATTACK_COOLDOWN_MS) return;
 
+    const target = findNearestAliveEnemy(
+      this.enemyManager,
+      this.player.x,
+      this.player.y,
+      PLAYER_ATTACK_RANGE,
+    );
+    if (!target) return;
+
+    this.lastActionAt = time;
+    this.player.faceToward(target.sprite.x, target.sprite.y);
+    const hitDelay = this.player.playAttack();
+    if (hitDelay <= 0) return;
+
+    this.scene.time.delayedCall(hitDelay, () => {
+      if (!target.isAlive) return;
+      const damage = 8 + Math.floor(attributesStore.getStrength() * 0.85);
+      const dropX = target.sprite.x;
+      const dropY = target.sprite.y;
+      const killed = target.takeDamage(damage);
+      if (killed) {
+        handleEnemyKill(target, this.lootManager, dropX, dropY);
+      }
+    });
+  }
+
+  private tryJutsu(time: number, hotbarIndex: number, filled: string[]): void {
     const index = hotbarIndex % filled.length;
     const skillId = filled[index];
     if (!skillsStore.isReady(skillId)) return;
@@ -70,15 +121,32 @@ export class CombatSystem {
     this.lastActionAt = time;
     this.cast(skill, target.sprite.x, target.sprite.y, () => {
       const damage = skill.damage + Math.floor(attributesStore.getStrength() * 0.35);
-      const dropX = target.sprite.x;
-      const dropY = target.sprite.y;
-      const killed = target.takeDamage(damage);
-      if (killed) {
-        handleEnemyKill(target, this.lootManager, dropX, dropY);
+      if (skill.areaRadius != null) {
+        for (const enemy of this.enemyManager.values()) {
+          if (!enemy.isAlive) continue;
+          const distance = Phaser.Math.Distance.Between(
+            target.sprite.x,
+            target.sprite.y,
+            enemy.sprite.x,
+            enemy.sprite.y,
+          );
+          if (distance > skill.areaRadius) continue;
+          const dropX = enemy.sprite.x;
+          const dropY = enemy.sprite.y;
+          if (enemy.takeDamage(damage)) {
+            handleEnemyKill(enemy, this.lootManager, dropX, dropY);
+          }
+        }
+      } else if (target.isAlive) {
+        const dropX = target.sprite.x;
+        const dropY = target.sprite.y;
+        if (target.takeDamage(damage)) {
+          handleEnemyKill(target, this.lootManager, dropX, dropY);
+        }
       }
     });
 
-    this.advanceStep(filled.length);
+    this.step = (index + 1) % filled.length;
   }
 
   private advanceStep(count: number): void {
@@ -93,6 +161,7 @@ export class CombatSystem {
     const fromX = this.player.x;
     const fromY = this.player.y;
     const skillAnim = this.player.getSkillAnim(skill.id);
+    const duration = skill.animation.durationMs ?? 280;
 
     if (skill.animation.kind === 'character' || skillAnim) {
       const hitDelay = this.player.playSkillAnim(skill.id);
@@ -105,11 +174,14 @@ export class CombatSystem {
         this.scene.time.delayedCall(hitDelay, onHit);
         return;
       }
+      // Pack/character: só a sheet do personagem — sem orb/impacto genérico no alvo.
+      this.scene.time.delayedCall(skillAnim?.durationMs ?? duration, onHit);
+      return;
     }
 
     this.vfx.play(skill, { fromX, fromY, toX, toY });
     playPlayerPulse(this.scene, this.player.sprite, 1.06, 0.96, 60);
-    onHit();
+    this.scene.time.delayedCall(duration, onHit);
   }
 
   private playPackFx(textureKey: string, x: number, y: number): void {

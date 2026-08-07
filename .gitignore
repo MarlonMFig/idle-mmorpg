@@ -42,3 +42,11 @@ next-env.d.ts
 
 # leftover monorepo (remover quando destravar)
 /apps/
+
+# WONSR source extraction (large/reproducible local artifacts)
+/assets-src/wonsr-sprites-png/
+/assets-src/wonsr-sprites/
+/assets-src/wonsr-dat.json
+/assets-src/opentibia-tools/
+/tmp/
+/tools/opentibia-tools/

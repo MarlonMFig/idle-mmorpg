@@ -34,6 +34,15 @@ export class SkillVfx {
       case 'aura':
         this.playAura(points, tint, duration, scale);
         break;
+      case 'sprite':
+        this.playSprite(
+          points,
+          skill.animation.textureKey,
+          skill.animation.frames,
+          duration,
+          scale,
+        );
+        break;
       case 'character':
         // Animação no sprite do jogador (ex.: Rasengan) — SkillSystem cuida.
         break;
@@ -42,6 +51,39 @@ export class SkillVfx {
         this.playBurst(points, tint, duration, scale);
         break;
     }
+  }
+
+  private playSprite(
+    points: SkillVfxPoints,
+    textureKey: string | undefined,
+    frameCount: number | undefined,
+    duration: number,
+    scale: number,
+  ): void {
+    if (!textureKey || !frameCount || !this.scene.textures.exists(textureKey)) {
+      this.playBurst(points, 0xffffff, duration, scale);
+      return;
+    }
+
+    const animationKey = `${textureKey}-cast`;
+    if (!this.scene.anims.exists(animationKey)) {
+      this.scene.anims.create({
+        key: animationKey,
+        frames: this.scene.anims.generateFrameNumbers(textureKey, {
+          start: 0,
+          end: frameCount - 1,
+        }),
+        frameRate: Math.max(1, Math.round((frameCount * 1000) / duration)),
+        repeat: 0,
+      });
+    }
+
+    const effect = this.scene.add
+      .sprite(points.toX, points.toY - 18, textureKey, 0)
+      .setDepth(22)
+      .setScale(scale);
+    effect.play(animationKey);
+    effect.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => effect.destroy());
   }
 
   private playProjectile(

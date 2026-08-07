@@ -1,6 +1,12 @@
 import type { SkillElement } from '@/types/skill';
 
-export const SKILL_HOTBAR_SIZE = 2;
+export const SKILL_HOTBAR_SIZE = 4;
+
+/** Progressão padrão das quatro técnicas de cada personagem. */
+export const CHARACTER_SKILL_LEVELS = [1, 5, 15, 30] as const;
+export const CHARACTER_SKILL_COOLDOWNS_MS = [2000, 2800, 4800, 8000] as const;
+export const CHARACTER_SKILL_DAMAGE = [24, 36, 58, 88] as const;
+export const CHARACTER_SKILL_AREA_RADIUS = 96;
 
 /** Alcance padrão se a skill não definir `range`. */
 export const SKILL_DEFAULT_RANGE = 96;
@@ -39,5 +45,5 @@ export const SKILL_ELEMENT_CSS: Record<SkillElement, string> = {
   neutral: '#b0b0b0',
 };
 
-/** Teclas 1–2 da hotbar (display). */
-export const SKILL_HOTBAR_KEY_CODES = ['Digit1', 'Digit2'] as const;
+/** Teclas 1–4 da hotbar (display). */
+export const SKILL_HOTBAR_KEY_CODES = ['Digit1', 'Digit2', 'Digit3', 'Digit4'] as const;

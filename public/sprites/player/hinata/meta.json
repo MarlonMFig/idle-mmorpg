@@ -1,0 +1,92 @@
+{
+  "hinata-idle": {
+    "image": "/sprites/player/hinata/idle.png",
+    "frameWidth": 33,
+    "frameHeight": 52,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.7384615384615385,
+    "source": "hinata-idle-sheet.png",
+    "frameRate": 8,
+    "residualGreen": 0,
+    "pureBlackHair": 830,
+    "headInteriorHoles": 1,
+    "note": "5-frame Gentle Fist idle stance; green exterior key; no black key"
+  },
+  "hinata-walk": {
+    "image": "/sprites/player/hinata/walk.png",
+    "frameWidth": 25,
+    "frameHeight": 51,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.7058823529411765,
+    "source": "hinata-walk-sheet.png",
+    "frameRate": 10,
+    "residualGreen": 0,
+    "pureBlackHair": 907,
+    "headInteriorHoles": 0,
+    "plateRimWhite": 0,
+    "maxWhiteEdgeRun": 0,
+    "note": "6-frame side walk RIGHT; plate+rim strip (not black hair); green exterior key"
+  },
+  "hinata-combo1": {
+    "image": "/sprites/player/hinata/combo1.png",
+    "frameWidth": 55,
+    "frameHeight": 55,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.8135593220338984,
+    "source": "hinata-combo-sheet.png",
+    "frameRate": 12,
+    "note": "prep + first palm strike (5f)"
+  },
+  "hinata-combo2": {
+    "image": "/sprites/player/hinata/combo2.png",
+    "frameWidth": 55,
+    "frameHeight": 55,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.8135593220338984,
+    "source": "hinata-combo-sheet.png",
+    "frameRate": 12,
+    "note": "second palm strike (5f)"
+  },
+  "hinata-combo3": {
+    "image": "/sprites/player/hinata/combo3.png",
+    "frameWidth": 55,
+    "frameHeight": 55,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.8135593220338984,
+    "source": "hinata-combo-sheet.png",
+    "frameRate": 12,
+    "note": "low finisher / recovery (5f)"
+  },
+  "hinata-attack": {
+    "image": "/sprites/player/hinata/attack.png",
+    "frameWidth": 55,
+    "frameHeight": 55,
+    "frameCount": 15,
+    "contentHeight": 48,
+    "scale": 0.8135593220338984,
+    "source": "hinata-combo-sheet.png",
+    "frameRate": 12,
+    "note": "full combo strip (15f); top=10 bottom=5; content-island cells"
+  },
+  "hinata-hakke-shou": {
+    "image": "/sprites/player/hinata/hakke-shou.png",
+    "frameWidth": 148,
+    "frameHeight": 175,
+    "frameCount": 31,
+    "contentHeight": 48,
+    "scale": 0.39344262295081966,
+    "frameRate": 12,
+    "durationMs": 2583,
+    "hitDelayMs": 1421,
+    "source": "assets/naruto-source/nu/hinata/jutsu-new (frame_001.png, frame_002.png, frame_003.png, frame_004.png, frame_005.png, frame_006.png, frame_007.png, frame_008.png, frame_009.png, frame_010.png, frame_011.png, frame_012.png, frame_013.png, frame_014.png, frame_015.png, frame_016.png, frame_017.png, frame_018.png, frame_019.png, frame_020.png, frame_021.png, frame_022.png, frame_023.png, frame_024.png, frame_025.png, frame_026.png, frame_027.png, frame_028.png, frame_029.png, frame_030.png, frame_031.png)",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlackHair": 13157,
+    "note": "31f Hakke Shōhō (stance→dash flurry→cream impact); alpha-only pack, no chromakey"
+  }
+}

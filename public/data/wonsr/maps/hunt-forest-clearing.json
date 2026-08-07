@@ -1,0 +1,29 @@
+{
+  "id": "hunt-forest-clearing",
+  "mapKey": "huntForestClearing",
+  "description": "Arena de clareira com pagoda — mapa visual full-image para todas as caças (por enquanto).",
+  "files": {
+    "tmx": "/maps/hunt-forest-clearing.tmx",
+    "image": "/maps/hunt-forest-clearing.png"
+  },
+  "bounds": {
+    "width": 32,
+    "height": 18,
+    "tileSize": 32,
+    "pixelWidth": 1024,
+    "pixelHeight": 576
+  },
+  "spawn": { "x": 528, "y": 376 },
+  "enemySpawns": [
+    { "x": 528, "y": 220 },
+    { "x": 370, "y": 316 },
+    { "x": 686, "y": 316 },
+    { "x": 428, "y": 255 },
+    { "x": 628, "y": 255 },
+    { "x": 413, "y": 359 },
+    { "x": 643, "y": 359 },
+    { "x": 528, "y": 324 }
+  ],
+  "collision": "walkable dirt oval (wider mid); canopy/tree-ring/root edges solid (TMX collision layer)",
+  "usedBy": "all hunts.json entries (temp — for now)"
+}

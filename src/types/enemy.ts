@@ -1,3 +1,4 @@
+import type { WonsrDirection, WonsrSpriteFit } from '@/data/wonsr-sprites';
 import type { MapKey } from '@/maps/map-registry';
 import type { LootDropEntry } from '@/types/loot';
 
@@ -6,8 +7,41 @@ export interface EnemySpawn {
   y: number;
 }
 
+/** Animação de caminhada direcional (sheets WONSR) ou lateral curada. */
+export interface EnemyWalkAnimation {
+  directions: WonsrDirection[];
+  /** direção → chave da animação de walk. */
+  anims: Partial<Record<WonsrDirection, string>>;
+  /** direção → frame parado (fase 0). */
+  idleFrames: Partial<Record<WonsrDirection, number>>;
+  /**
+   * Sheet só de perfil (direita canônica): espelha no west.
+   * Suporta idle/walk em texturas separadas.
+   */
+  lateral?: boolean;
+  idleTextureKey?: string;
+  walkTextureKey?: string;
+  idleAnimKey?: string;
+  walkAnimKey?: string;
+  /** Hit reaction (play once). */
+  hurtTextureKey?: string;
+  hurtAnimKey?: string;
+  /** Death (play once, hold last frame). */
+  deathTextureKey?: string;
+  deathAnimKey?: string;
+}
+
 /** @deprecated use LootDropEntry — mantido como alias. */
 export type EnemyLootEntry = LootDropEntry;
+
+/** Identidade selável propagada a partir do HuntTarget. */
+export interface EnemySealableIdentity {
+  /** Chave estável na coleção (sourceId da caça). */
+  characterId: string;
+  sourceId: string;
+  name: string;
+  lookType: number;
+}
 
 /** Definição autoritativa de um monstro. */
 export interface EnemyDefinition {
@@ -21,7 +55,15 @@ export interface EnemyDefinition {
   speed: number;
   chaseRadius: number;
   sprite: string;
+  /** Frame opcional quando `sprite` aponta para um atlas Phaser. */
+  spriteFrame?: string | number;
+  /** Animação direcional quando o sprite é uma sheet de outfit WONSR. */
+  walk?: EnemyWalkAnimation;
+  /** Escala e âncora que padronizam a altura do desenho no mundo. */
+  spriteFit?: WonsrSpriteFit;
   mapKey: MapKey;
+  /** Presente quando o alvo da caça pode ser selado. */
+  sealable?: EnemySealableIdentity;
 }
 
 export interface EnemyRuntimeStats {
