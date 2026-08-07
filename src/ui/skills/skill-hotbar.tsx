@@ -5,16 +5,19 @@ import { SKILL_ELEMENT_CSS, SKILL_ELEMENT_LABELS } from '@/constants/skill';
 import { getSkill } from '@/data/skills';
 import { useStore } from '@/hooks/use-store';
 import { skillsStore } from '@/stores/skills-store';
+import { useVitalsStore } from '@/hooks/use-vitals-store';
 import { HudPanel } from '@/ui/hud/hud-panel';
 
 /**
- * Hotbar de 3 jutsus (display) — cast é automático no idle.
+ * Hotbar de jutsus — oculta enquanto o personagem não tiver nenhum.
  */
 export function SkillHotbar() {
   const hotbar = useStore(skillsStore, (s) => s.hotbar);
   const cooldownReadyAt = useStore(skillsStore, (s) => s.cooldownReadyAt);
+  const { level } = useVitalsStore();
   const [now, setNow] = useState(() => Date.now());
 
+  const filled = hotbar.filter((id): id is string => id != null);
   const hasActiveCooldown = Object.values(cooldownReadyAt).some((readyAt) => readyAt > now);
 
   useEffect(() => {
@@ -29,12 +32,16 @@ export function SkillHotbar() {
     return () => window.cancelAnimationFrame(frame);
   }, [hasActiveCooldown]);
 
+  if (filled.length === 0) return null;
+
   return (
     <HudPanel title="Jutsus" badge="auto" ariaLabel="Habilidades automáticas" className="hud-skills">
       <div className="hud-skills__bar" role="list" aria-label="Jutsus automáticos">
         {hotbar.map((skillId, index) => {
           const skill = skillId ? getSkill(skillId) : undefined;
-          const remaining = skillId ? skillsStore.getCooldownRemainingMs(skillId, now) : 0;
+          const locked = Boolean(skill && level < (skill.requiredLevel ?? 1));
+          const remaining =
+            skillId && !locked ? skillsStore.getCooldownRemainingMs(skillId, now) : 0;
           const onCooldown = remaining > 0;
           const cdRatio = skill && onCooldown ? remaining / skill.cooldownMs : 0;
 
@@ -42,13 +49,21 @@ export function SkillHotbar() {
             <div
               key={index}
               role="listitem"
-              className={`hud-skills__slot has-skill${onCooldown ? ' is-cooldown' : ''}`}
+              className={`hud-skills__slot has-skill${onCooldown ? ' is-cooldown' : ''}${
+                locked ? ' is-locked' : ''
+              }`}
               title={
                 skill
-                  ? `${skill.name} · ${SKILL_ELEMENT_LABELS[skill.element]} · ${skill.damage} DMG (automático)`
+                  ? `${skill.name} · Nv. ${skill.requiredLevel ?? 1} · ${
+                      SKILL_ELEMENT_LABELS[skill.element]
+                    } · ${skill.damage} DMG${skill.areaRadius ? ' · Área' : ''} (automático)`
                   : `Slot ${index + 1} vazio`
               }
-              aria-label={skill ? `${skill.name} (automático)` : `Jutsu ${index + 1} vazio`}
+              aria-label={
+                skill
+                  ? `${skill.name}${locked ? ` (libera no nível ${skill.requiredLevel})` : ' (automático)'}`
+                  : `Jutsu ${index + 1} vazio`
+              }
             >
               <span className="hud-skills__key">{index + 1}</span>
               {skill ? (
@@ -61,7 +76,9 @@ export function SkillHotbar() {
                     }}
                     aria-hidden
                   />
-                  {onCooldown ? (
+                  {locked ? (
+                    <span className="hud-skills__lock">Nv {skill.requiredLevel}</span>
+                  ) : onCooldown ? (
                     <span className="hud-skills__cd">{(remaining / 1000).toFixed(1)}</span>
                   ) : (
                     <span className="hud-skills__cost">{skill.damage}</span>

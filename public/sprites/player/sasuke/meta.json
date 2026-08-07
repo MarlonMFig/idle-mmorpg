@@ -244,94 +244,18 @@
     ]
   },
   "sasuke-chidori": {
-    "frameWidth": 143,
-    "frameHeight": 123,
-    "frameCount": 5,
     "image": "sasuke-chidori.png",
-    "chroma": {
-      "samples": [
-        {
-          "r": 33,
-          "g": 36,
-          "b": 57
-        },
-        {
-          "r": 30,
-          "g": 35,
-          "b": 54
-        },
-        {
-          "r": 56,
-          "g": 61,
-          "b": 81
-        },
-        {
-          "r": 55,
-          "g": 60,
-          "b": 80
-        },
-        {
-          "r": 40,
-          "g": 45,
-          "b": 65
-        },
-        {
-          "r": 29,
-          "g": 34,
-          "b": 53
-        },
-        {
-          "r": 63,
-          "g": 65,
-          "b": 80
-        }
-      ],
-      "tolerance": 26,
-      "preserveDarkNonBlue": true
-    },
-    "outputSize": {
-      "width": 715,
-      "height": 123
-    },
-    "sourceRects": [
-      {
-        "left": 265,
-        "top": 110,
-        "width": 70,
-        "height": 55
-      },
-      {
-        "left": 338,
-        "top": 110,
-        "width": 65,
-        "height": 55
-      },
-      {
-        "left": 268,
-        "top": 198,
-        "width": 145,
-        "height": 125
-      },
-      {
-        "left": 268,
-        "top": 338,
-        "width": 145,
-        "height": 90
-      },
-      {
-        "left": 268,
-        "top": 420,
-        "width": 145,
-        "height": 105
-      }
-    ],
-    "sequence": [
-      "charge",
-      "charge",
-      "large",
-      "impact",
-      "impact"
-    ]
+    "frameWidth": 109,
+    "frameHeight": 75,
+    "frameCount": 33,
+    "contentHeight": 48,
+    "scale": 0.9795918367346939,
+    "frameRate": 14,
+    "durationMs": 2357,
+    "hitDelayMs": 1296,
+    "sheetCols": 33,
+    "sheetRows": 1,
+    "source": "assets-src/sasuke-chidori (frame_001…033)"
   },
   "sasuke-fireball-cast": {
     "frameWidth": 60,
@@ -746,15 +670,19 @@
     ]
   },
   "skill-chidori": {
-    "width": 63,
-    "height": 61,
     "image": "sasuke-chidori.png",
-    "sourceRect": {
-      "left": 820,
-      "top": 472,
-      "width": 65,
-      "height": 65
-    }
+    "frameWidth": 109,
+    "frameHeight": 75,
+    "frameCount": 33,
+    "contentHeight": 48,
+    "scale": 0.9795918367346939,
+    "frameRate": 14,
+    "durationMs": 2357,
+    "hitDelayMs": 1296,
+    "sheetCols": 33,
+    "sheetRows": 1,
+    "source": "assets-src/sasuke-chidori (frame_001…033)",
+    "note": "alias → sasuke-chidori"
   },
   "skill-fireball": {
     "width": 65,
@@ -777,5 +705,118 @@
       "width": 58,
       "height": 60
     }
+  },
+  "sasuke-walk": {
+    "image": "/sprites/player/sasuke/walk.png",
+    "frameWidth": 42,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "source": "sasuke-walk-sheet.png",
+    "frameRate": 8
+  },
+  "sasuke-idle": {
+    "image": "/sprites/player/sasuke/idle.png",
+    "frameWidth": 33,
+    "frameHeight": 50,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "source": "sasuke-idle-sheet.png",
+    "frameRate": 7
+  },
+  "sasuke-attack": {
+    "image": "attack.png",
+    "frameWidth": 67,
+    "frameHeight": 55,
+    "frameCount": 17,
+    "contentHeight": 48,
+    "scale": 0.8571428571428571,
+    "frameRate": 14,
+    "sheetCols": 17,
+    "sheetRows": 1,
+    "source": "assets-src/sasuke-combo (frame_001…017)",
+    "note": "full combo strip"
+  },
+  "sasuke-combo1": {
+    "image": "combo1.png",
+    "frameWidth": 67,
+    "frameHeight": 55,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.8571428571428571,
+    "frameRate": 14,
+    "sheetCols": 5,
+    "sheetRows": 1,
+    "source": "assets-src/sasuke-combo (frame_001…017)",
+    "range": [
+      0,
+      5
+    ]
+  },
+  "sasuke-combo2": {
+    "image": "combo2.png",
+    "frameWidth": 67,
+    "frameHeight": 55,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.8571428571428571,
+    "frameRate": 14,
+    "sheetCols": 6,
+    "sheetRows": 1,
+    "source": "assets-src/sasuke-combo (frame_001…017)",
+    "range": [
+      5,
+      11
+    ]
+  },
+  "sasuke-combo3": {
+    "image": "combo3.png",
+    "frameWidth": 67,
+    "frameHeight": 55,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.8571428571428571,
+    "frameRate": 14,
+    "sheetCols": 6,
+    "sheetRows": 1,
+    "source": "assets-src/sasuke-combo (frame_001…017)",
+    "range": [
+      11,
+      17
+    ]
+  },
+  "sasuke-gokakyu": {
+    "image": "/sprites/player/sasuke/sasuke-gokakyu.png",
+    "frameWidth": 53,
+    "frameHeight": 51,
+    "frameCount": 11,
+    "contentHeight": 48,
+    "frameRate": 10,
+    "note": "body/cast only — fire is separate FX"
+  },
+  "skill-katon-gokakyu": {
+    "image": "sasuke-gokakyu.png",
+    "frameWidth": 67,
+    "frameHeight": 49,
+    "frameCount": 29,
+    "contentHeight": 48,
+    "scale": 0.1016949152542373,
+    "frameRate": 12,
+    "durationMs": 2417,
+    "hitDelayMs": 1209,
+    "sheetCols": 29,
+    "sheetRows": 1,
+    "source": "assets-src/sasuke-skill2",
+    "slot": 2,
+    "note": "2ª skill Sasuke"
+  },
+  "sasuke-gokakyu-fx": {
+    "image": "/sprites/player/sasuke/sasuke-gokakyu-fx.png",
+    "frameWidth": 96,
+    "frameHeight": 60,
+    "frameCount": 6,
+    "contentHeight": 60,
+    "frameRate": 12,
+    "note": "fire VFX only"
   }
 }

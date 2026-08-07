@@ -5,8 +5,8 @@ import type { EnemyDefinition } from '@/types/enemy';
 /** Monstros por mapa (fonte do EnemyManager). */
 export const ENEMY_DEFINITIONS: readonly EnemyDefinition[] = [
   {
-    id: 'enemy-leaf-slime-1',
-    name: 'Slime da Folha',
+    id: 'enemy-leaf-ninja-1',
+    name: 'Ninja Renegado',
     hp: 30,
     level: 1,
     xp: 8,
@@ -40,8 +40,8 @@ export const ENEMY_DEFINITIONS: readonly EnemyDefinition[] = [
     mapKey: MAP_KEYS.leafVillage,
   },
   {
-    id: 'enemy-leaf-slime-2',
-    name: 'Slime da Folha',
+    id: 'enemy-leaf-ninja-2',
+    name: 'Ninja Renegado',
     hp: 30,
     level: 1,
     xp: 8,

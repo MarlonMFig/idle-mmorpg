@@ -1,0 +1,368 @@
+{
+  "id": "wonsr-forest",
+  "source": {
+    "otbm": "C:\\Users\\marlo\\Downloads\\wonsr completo\\wonsr completo\\serv\\data\\world\\nowo.otbm",
+    "spawnXml": "C:\\Users\\marlo\\Downloads\\wonsr completo\\wonsr completo\\serv\\data\\world\\nowo-spawn.xml",
+    "dat": "C:\\Users\\marlo\\Downloads\\wonsr completo\\wonsr completo\\OtClient 1.7\\data\\things\\860\\Tibia.dat",
+    "sprites": "C:\\Users\\marlo\\Projects\\idle-mmorpg\\assets-src\\wonsr-sprites-png"
+  },
+  "bounds": {
+    "x": 1808,
+    "y": 1904,
+    "z": 7,
+    "width": 56,
+    "height": 56,
+    "tileSize": 32
+  },
+  "files": {
+    "tmx": "/maps/wonsr-forest.tmx",
+    "image": "/maps/wonsr-forest.png"
+  },
+  "stats": {
+    "tileCandidates": 3600,
+    "uniqueTiles": 3600,
+    "duplicateTilesResolved": 0,
+    "drawCalls": 8602,
+    "blockedTiles": 834,
+    "itemIds": 98,
+    "missingItemIds": [],
+    "unmappedItemIds": [],
+    "uniqueSprites": 229,
+    "missingSpriteIds": [],
+    "spawnCount": 11,
+    "monsters": 11,
+    "npcs": 0
+  },
+  "spawns": [
+    {
+      "id": "wonsr-forest-monster-1",
+      "kind": "monster",
+      "name": "Unknow",
+      "world": {
+        "x": 1848,
+        "y": 1905,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1847,
+        "y": 1905,
+        "z": 7
+      },
+      "offset": {
+        "x": 1,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 40,
+        "y": 1
+      },
+      "pixel": {
+        "x": 1296,
+        "y": 48
+      }
+    },
+    {
+      "id": "wonsr-forest-monster-2",
+      "kind": "monster",
+      "name": "Unknow",
+      "world": {
+        "x": 1816,
+        "y": 1911,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1817,
+        "y": 1912,
+        "z": 7
+      },
+      "offset": {
+        "x": -1,
+        "y": -1
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 8,
+        "y": 7
+      },
+      "pixel": {
+        "x": 272,
+        "y": 240
+      }
+    },
+    {
+      "id": "wonsr-forest-monster-3",
+      "kind": "monster",
+      "name": "Unknow",
+      "world": {
+        "x": 1830,
+        "y": 1915,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1831,
+        "y": 1914,
+        "z": 7
+      },
+      "offset": {
+        "x": -1,
+        "y": 1
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 22,
+        "y": 11
+      },
+      "pixel": {
+        "x": 720,
+        "y": 368
+      }
+    },
+    {
+      "id": "wonsr-forest-monster-4",
+      "kind": "monster",
+      "name": "Unknow",
+      "world": {
+        "x": 1850,
+        "y": 1920,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1850,
+        "y": 1919,
+        "z": 7
+      },
+      "offset": {
+        "x": 0,
+        "y": 1
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 42,
+        "y": 16
+      },
+      "pixel": {
+        "x": 1360,
+        "y": 528
+      }
+    },
+    {
+      "id": "wonsr-forest-monster-5",
+      "kind": "monster",
+      "name": "Unknow",
+      "world": {
+        "x": 1842,
+        "y": 1931,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1843,
+        "y": 1932,
+        "z": 7
+      },
+      "offset": {
+        "x": -1,
+        "y": -1
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 34,
+        "y": 27
+      },
+      "pixel": {
+        "x": 1104,
+        "y": 880
+      }
+    },
+    {
+      "id": "wonsr-forest-monster-6",
+      "kind": "monster",
+      "name": "Unknow",
+      "world": {
+        "x": 1822,
+        "y": 1934,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1821,
+        "y": 1935,
+        "z": 7
+      },
+      "offset": {
+        "x": 1,
+        "y": -1
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 14,
+        "y": 30
+      },
+      "pixel": {
+        "x": 464,
+        "y": 976
+      }
+    },
+    {
+      "id": "wonsr-forest-monster-7",
+      "kind": "monster",
+      "name": "Unknow",
+      "world": {
+        "x": 1854,
+        "y": 1945,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1853,
+        "y": 1945,
+        "z": 7
+      },
+      "offset": {
+        "x": 1,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 46,
+        "y": 41
+      },
+      "pixel": {
+        "x": 1488,
+        "y": 1328
+      }
+    },
+    {
+      "id": "wonsr-forest-monster-8",
+      "kind": "monster",
+      "name": "Unknow",
+      "world": {
+        "x": 1842,
+        "y": 1949,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1841,
+        "y": 1949,
+        "z": 7
+      },
+      "offset": {
+        "x": 1,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 34,
+        "y": 45
+      },
+      "pixel": {
+        "x": 1104,
+        "y": 1456
+      }
+    },
+    {
+      "id": "wonsr-forest-monster-9",
+      "kind": "monster",
+      "name": "Unknow",
+      "world": {
+        "x": 1813,
+        "y": 1950,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1814,
+        "y": 1950,
+        "z": 7
+      },
+      "offset": {
+        "x": -1,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 5,
+        "y": 46
+      },
+      "pixel": {
+        "x": 176,
+        "y": 1488
+      }
+    },
+    {
+      "id": "wonsr-forest-monster-10",
+      "kind": "monster",
+      "name": "Unknow",
+      "world": {
+        "x": 1829,
+        "y": 1954,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1828,
+        "y": 1953,
+        "z": 7
+      },
+      "offset": {
+        "x": 1,
+        "y": 1
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 21,
+        "y": 50
+      },
+      "pixel": {
+        "x": 688,
+        "y": 1616
+      }
+    },
+    {
+      "id": "wonsr-forest-monster-11",
+      "kind": "monster",
+      "name": "Unknow",
+      "world": {
+        "x": 1862,
+        "y": 1955,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1863,
+        "y": 1954,
+        "z": 7
+      },
+      "offset": {
+        "x": -1,
+        "y": 1
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 54,
+        "y": 51
+      },
+      "pixel": {
+        "x": 1744,
+        "y": 1648
+      }
+    }
+  ]
+}

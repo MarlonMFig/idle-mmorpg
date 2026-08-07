@@ -1,0 +1,27 @@
+{
+  "source": "WONSR / OTX 8.60",
+  "generatedAt": "2026-07-29T17:48:52.741Z",
+  "counts": {
+    "skills": 627,
+    "monsters": 460,
+    "items": 9924,
+    "npcs": 132,
+    "vocations": 51,
+    "outfits": 610,
+    "quests": 1
+  },
+  "stages": {
+    "enabled": true,
+    "bands": 14
+  },
+  "files": [
+    "skills.json",
+    "monsters.json",
+    "items.json",
+    "npcs.json",
+    "vocations.json",
+    "outfits.json",
+    "quests.json",
+    "stages.json"
+  ]
+}

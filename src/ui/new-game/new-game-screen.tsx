@@ -2,13 +2,13 @@
 
 import { useMemo, useState, type FormEvent } from 'react';
 import { STARTERS } from '@/data/starters';
-import { getVillage, VILLAGES } from '@/data/villages';
 import type {
   PlayerCreation,
   StarterCharacterId,
   VillageId,
 } from '@/types/player-creation';
-import { VillageIcon } from '@/ui/new-game/village-icon';
+
+const DEFAULT_VILLAGE: VillageId = 'konoha';
 
 interface NewGameScreenProps {
   onCreatePlayer: (player: PlayerCreation) => void;
@@ -16,13 +16,11 @@ interface NewGameScreenProps {
 
 export function NewGameScreen({ onCreatePlayer }: NewGameScreenProps) {
   const [nickname, setNickname] = useState('');
-  const [villageId, setVillageId] = useState<VillageId>('konoha');
   const [starterCharacterId, setStarterCharacterId] =
-    useState<StarterCharacterId | null>(null);
+    useState<StarterCharacterId>('naruto-classic');
 
-  const village = useMemo(() => getVillage(villageId), [villageId]);
   const starter = useMemo(
-    () => STARTERS.find((entry) => entry.id === starterCharacterId) ?? null,
+    () => STARTERS.find((entry) => entry.id === starterCharacterId) ?? STARTERS[0],
     [starterCharacterId],
   );
 
@@ -31,11 +29,11 @@ export function NewGameScreen({ onCreatePlayer }: NewGameScreenProps) {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!canStart || starterCharacterId == null) return;
+    if (!canStart) return;
 
     onCreatePlayer({
       nickname: trimmed,
-      villageId,
+      villageId: DEFAULT_VILLAGE,
       starterCharacterId,
     });
   }
@@ -65,47 +63,6 @@ export function NewGameScreen({ onCreatePlayer }: NewGameScreenProps) {
       </label>
 
       <fieldset className="new-game__fieldset">
-        <legend className="new-game__label">Escolha sua vila ninja de origem:</legend>
-        <div
-          className="new-game__options new-game__options--villages"
-          role="radiogroup"
-          aria-label="Vila de origem"
-        >
-          {VILLAGES.map((entry) => {
-            const selected = villageId === entry.id;
-            return (
-              <button
-                key={entry.id}
-                type="button"
-                role="radio"
-                className={`new-game__option new-game__option--village${selected ? ' is-selected' : ''}`}
-                style={{ ['--option-accent' as string]: entry.accent }}
-                aria-checked={selected}
-                onClick={() => setVillageId(entry.id)}
-              >
-                {selected ? <span className="new-game__check" aria-hidden /> : null}
-                <VillageIcon kind={entry.icon} className="new-game__option-icon" />
-                <span className="new-game__option-name">{entry.fullName}</span>
-              </button>
-            );
-          })}
-        </div>
-      </fieldset>
-
-      <aside className="new-game__detail" aria-live="polite">
-        <div className="new-game__detail-head">
-          <p className="new-game__detail-title">{village.passiveTitle}</p>
-          <span className="new-game__detail-tag">{village.elementsLabel}</span>
-        </div>
-        <p className="new-game__detail-bonus">{village.passiveBonus}</p>
-        <p className="new-game__detail-lore">{village.lore}</p>
-        <p className="new-game__detail-loot">
-          <span className="new-game__detail-star" aria-hidden />
-          Você receberá: {village.startingItems}
-        </p>
-      </aside>
-
-      <fieldset className="new-game__fieldset">
         <legend className="new-game__label">Escolha seu personagem inicial:</legend>
         <div
           className="new-game__options new-game__options--starters"
@@ -125,13 +82,15 @@ export function NewGameScreen({ onCreatePlayer }: NewGameScreenProps) {
                 onClick={() => setStarterCharacterId(entry.id)}
               >
                 {selected ? <span className="new-game__check" aria-hidden /> : null}
-                <span
-                  className="new-game__starter-badge"
-                  style={{ background: entry.accent }}
-                  aria-hidden
-                >
-                  {entry.name.slice(0, 1)}
-                </span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  className="new-game__starter-preview"
+                  src={entry.previewUrl}
+                  alt=""
+                  width={48}
+                  height={58}
+                  draggable={false}
+                />
                 <span className="new-game__option-copy">
                   <span className="new-game__option-name">{entry.name}</span>
                   <span className="new-game__option-meta">{entry.epithet}</span>

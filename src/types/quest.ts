@@ -9,7 +9,7 @@ export interface QuestObjectiveDef {
   description: string;
   /**
    * Alvo:
-   * - kill: trecho do id/nome do inimigo (ex: `leaf-slime`)
+   * - kill: trecho do id/nome do inimigo (ex: `leaf-ninja`)
    * - talk: id do NPC
    * - collect: id do item
    */

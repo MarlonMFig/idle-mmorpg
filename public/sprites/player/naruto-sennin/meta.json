@@ -1,0 +1,14 @@
+{
+  "naruto-sennin-walk": {
+    "image": "/sprites/player/naruto-sennin/walk.png",
+    "frameWidth": 45,
+    "frameHeight": 50,
+    "frameCount": 7,
+    "contentHeight": 48,
+    "scale": 0.3,
+    "source": "naruto-sennin-walk-sheet.png",
+    "frameRate": 10,
+    "direction": "right",
+    "note": "Bottom row left discarded; game uses flipX"
+  }
+}

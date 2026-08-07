@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser';
+import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
 import { dialogueStore } from '@/stores/dialogue-store';
 import type { NpcDefinition } from '@/types/npc';
 
@@ -14,18 +15,31 @@ export class Npc {
   constructor(scene: Phaser.Scene, definition: NpcDefinition) {
     this.definition = definition;
 
-    this.sprite = scene.add.sprite(definition.position.x, definition.position.y, definition.sprite, 0);
-    this.sprite.setOrigin(0.5, 1);
+    this.sprite = scene.add.sprite(
+      definition.position.x,
+      definition.position.y,
+      definition.sprite,
+      definition.spriteFrame ?? 0,
+    );
     this.sprite.setDepth(5);
+    const fit =
+      definition.spriteFit ??
+      {
+        scale: this.sprite.height > 0 ? CHARACTER_DISPLAY_HEIGHT / this.sprite.height : 1,
+        originX: 0.5,
+        originY: 1,
+      };
+    this.sprite.setOrigin(fit.originX, fit.originY);
+    this.sprite.setScale(fit.scale);
     this.sprite.setData('npcId', definition.id);
 
     this.nameLabel = scene.add
-      .text(definition.position.x, definition.position.y - this.sprite.displayHeight - 28, definition.name, {
-        fontFamily: 'sans-serif',
+      .text(definition.position.x, definition.position.y - CHARACTER_DISPLAY_HEIGHT - 28, definition.name, {
+        fontFamily: 'Tahoma, "Segoe UI", sans-serif',
         fontSize: '11px',
         color: '#f2efe6',
-        stroke: '#000000',
-        strokeThickness: 3,
+        stroke: '#0a0a0a',
+        strokeThickness: 2,
       })
       .setOrigin(0.5, 1)
       .setDepth(7)
@@ -37,7 +51,7 @@ export class Npc {
 
     this.interactionIcon = scene.add.image(
       definition.position.x,
-      definition.position.y - this.sprite.displayHeight - 8,
+      definition.position.y - CHARACTER_DISPLAY_HEIGHT - 8,
       definition.interactionIcon,
     );
     this.interactionIcon.setOrigin(0.5, 1);

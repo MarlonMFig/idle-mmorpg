@@ -1,0 +1,668 @@
+{
+  "id": "wonsr-konoha",
+  "source": {
+    "otbm": "C:\\Users\\marlo\\Downloads\\wonsr completo\\wonsr completo\\serv\\data\\world\\nowo.otbm",
+    "spawnXml": "C:\\Users\\marlo\\Downloads\\wonsr completo\\wonsr completo\\serv\\data\\world\\nowo-spawn.xml",
+    "dat": "C:\\Users\\marlo\\Downloads\\wonsr completo\\wonsr completo\\OtClient 1.7\\data\\things\\860\\Tibia.dat",
+    "sprites": "C:\\Users\\marlo\\Projects\\idle-mmorpg\\assets-src\\wonsr-sprites-png"
+  },
+  "bounds": {
+    "x": 1968,
+    "y": 1944,
+    "z": 7,
+    "width": 96,
+    "height": 96,
+    "tileSize": 32
+  },
+  "files": {
+    "tmx": "/maps/wonsr-konoha.tmx",
+    "image": "/maps/wonsr-konoha.png"
+  },
+  "stats": {
+    "tileCandidates": 10000,
+    "uniqueTiles": 10000,
+    "duplicateTilesResolved": 0,
+    "drawCalls": 27446,
+    "blockedTiles": 5135,
+    "itemIds": 719,
+    "missingItemIds": [],
+    "unmappedItemIds": [],
+    "uniqueSprites": 1478,
+    "missingSpriteIds": [],
+    "spawnCount": 21,
+    "monsters": 1,
+    "npcs": 20
+  },
+  "spawns": [
+    {
+      "id": "wonsr-konoha-npc-1",
+      "kind": "npc",
+      "name": "Iruka Sensei",
+      "world": {
+        "x": 1985,
+        "y": 1946,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1984,
+        "y": 1946,
+        "z": 7
+      },
+      "offset": {
+        "x": 1,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 17,
+        "y": 2
+      },
+      "pixel": {
+        "x": 560,
+        "y": 80
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-2",
+      "kind": "npc",
+      "name": "anbu scout",
+      "world": {
+        "x": 2042,
+        "y": 1958,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 2042,
+        "y": 1958,
+        "z": 7
+      },
+      "offset": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 74,
+        "y": 14
+      },
+      "pixel": {
+        "x": 2384,
+        "y": 464
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-3",
+      "kind": "npc",
+      "name": "anbu scout",
+      "world": {
+        "x": 2058,
+        "y": 1958,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 2058,
+        "y": 1958,
+        "z": 7
+      },
+      "offset": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 90,
+        "y": 14
+      },
+      "pixel": {
+        "x": 2896,
+        "y": 464
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-4",
+      "kind": "npc",
+      "name": "Captain anbu",
+      "world": {
+        "x": 2007,
+        "y": 1967,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 2007,
+        "y": 1966,
+        "z": 7
+      },
+      "offset": {
+        "x": 0,
+        "y": 1
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 39,
+        "y": 23
+      },
+      "pixel": {
+        "x": 1264,
+        "y": 752
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-5",
+      "kind": "npc",
+      "name": "Mizukki",
+      "world": {
+        "x": 1972,
+        "y": 1966,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1973,
+        "y": 1967,
+        "z": 7
+      },
+      "offset": {
+        "x": -1,
+        "y": -1
+      },
+      "radius": 7,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 4,
+        "y": 22
+      },
+      "pixel": {
+        "x": 144,
+        "y": 720
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-6",
+      "kind": "npc",
+      "name": "anbu scout",
+      "world": {
+        "x": 2047,
+        "y": 1973,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 2048,
+        "y": 1973,
+        "z": 7
+      },
+      "offset": {
+        "x": -1,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": 2,
+      "localTile": {
+        "x": 79,
+        "y": 29
+      },
+      "pixel": {
+        "x": 2544,
+        "y": 944
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-7",
+      "kind": "npc",
+      "name": "anbu scout",
+      "world": {
+        "x": 2053,
+        "y": 1973,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 2052,
+        "y": 1973,
+        "z": 7
+      },
+      "offset": {
+        "x": 1,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": 2,
+      "localTile": {
+        "x": 85,
+        "y": 29
+      },
+      "pixel": {
+        "x": 2736,
+        "y": 944
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-8",
+      "kind": "npc",
+      "name": "Mizuki",
+      "world": {
+        "x": 2055,
+        "y": 1987,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 2056,
+        "y": 1987,
+        "z": 7
+      },
+      "offset": {
+        "x": -1,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 87,
+        "y": 43
+      },
+      "pixel": {
+        "x": 2800,
+        "y": 1392
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-9",
+      "kind": "npc",
+      "name": "anbu scout",
+      "world": {
+        "x": 2004,
+        "y": 1990,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 2003,
+        "y": 1990,
+        "z": 7
+      },
+      "offset": {
+        "x": 1,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": 2,
+      "localTile": {
+        "x": 36,
+        "y": 46
+      },
+      "pixel": {
+        "x": 1168,
+        "y": 1488
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-10",
+      "kind": "npc",
+      "name": "anbu scout",
+      "world": {
+        "x": 2011,
+        "y": 1990,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 2011,
+        "y": 1991,
+        "z": 7
+      },
+      "offset": {
+        "x": 0,
+        "y": -1
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": 2,
+      "localTile": {
+        "x": 43,
+        "y": 46
+      },
+      "pixel": {
+        "x": 1392,
+        "y": 1488
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-11",
+      "kind": "npc",
+      "name": "yamato",
+      "world": {
+        "x": 2013,
+        "y": 1990,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 2013,
+        "y": 1991,
+        "z": 7
+      },
+      "offset": {
+        "x": 0,
+        "y": -1
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": 2,
+      "localTile": {
+        "x": 45,
+        "y": 46
+      },
+      "pixel": {
+        "x": 1456,
+        "y": 1488
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-12",
+      "kind": "npc",
+      "name": "shikamaru nara",
+      "world": {
+        "x": 1998,
+        "y": 2006,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1997,
+        "y": 2005,
+        "z": 7
+      },
+      "offset": {
+        "x": 1,
+        "y": 1
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 80,
+      "direction": 1,
+      "localTile": {
+        "x": 30,
+        "y": 62
+      },
+      "pixel": {
+        "x": 976,
+        "y": 2000
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-13",
+      "kind": "npc",
+      "name": "Minoru",
+      "world": {
+        "x": 2028,
+        "y": 2007,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 2028,
+        "y": 2006,
+        "z": 7
+      },
+      "offset": {
+        "x": 0,
+        "y": 1
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 60,
+        "y": 63
+      },
+      "pixel": {
+        "x": 1936,
+        "y": 2032
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-14",
+      "kind": "npc",
+      "name": "Cidadao Abiel",
+      "world": {
+        "x": 2057,
+        "y": 2011,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 2057,
+        "y": 2011,
+        "z": 7
+      },
+      "offset": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 89,
+        "y": 67
+      },
+      "pixel": {
+        "x": 2864,
+        "y": 2160
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-15",
+      "kind": "npc",
+      "name": "Iruka",
+      "world": {
+        "x": 1994,
+        "y": 2018,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1995,
+        "y": 2018,
+        "z": 7
+      },
+      "offset": {
+        "x": -1,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 26,
+        "y": 74
+      },
+      "pixel": {
+        "x": 848,
+        "y": 2384
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-16",
+      "kind": "npc",
+      "name": "Cidadao Arnold",
+      "world": {
+        "x": 2031,
+        "y": 2020,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 2031,
+        "y": 2020,
+        "z": 7
+      },
+      "offset": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 63,
+        "y": 76
+      },
+      "pixel": {
+        "x": 2032,
+        "y": 2448
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-17",
+      "kind": "npc",
+      "name": "seiji",
+      "world": {
+        "x": 2038,
+        "y": 2022,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 2039,
+        "y": 2022,
+        "z": 7
+      },
+      "offset": {
+        "x": -1,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": 2,
+      "localTile": {
+        "x": 70,
+        "y": 78
+      },
+      "pixel": {
+        "x": 2256,
+        "y": 2512
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-18",
+      "kind": "npc",
+      "name": "anbu scout",
+      "world": {
+        "x": 2004,
+        "y": 2026,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 2004,
+        "y": 2026,
+        "z": 7
+      },
+      "offset": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 36,
+        "y": 82
+      },
+      "pixel": {
+        "x": 1168,
+        "y": 2640
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-19",
+      "kind": "npc",
+      "name": "Anko",
+      "world": {
+        "x": 1973,
+        "y": 2029,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1972,
+        "y": 2029,
+        "z": 7
+      },
+      "offset": {
+        "x": 1,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": 2,
+      "localTile": {
+        "x": 5,
+        "y": 85
+      },
+      "pixel": {
+        "x": 176,
+        "y": 2736
+      }
+    },
+    {
+      "id": "wonsr-konoha-npc-20",
+      "kind": "npc",
+      "name": "ino",
+      "world": {
+        "x": 1993,
+        "y": 2033,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1994,
+        "y": 2032,
+        "z": 7
+      },
+      "offset": {
+        "x": -1,
+        "y": 1
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": 2,
+      "localTile": {
+        "x": 25,
+        "y": 89
+      },
+      "pixel": {
+        "x": 816,
+        "y": 2864
+      }
+    },
+    {
+      "id": "wonsr-konoha-monster-21",
+      "kind": "monster",
+      "name": "Wolf",
+      "world": {
+        "x": 1977,
+        "y": 2034,
+        "z": 7
+      },
+      "spawnCenter": {
+        "x": 1977,
+        "y": 2034,
+        "z": 7
+      },
+      "offset": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 1,
+      "spawnTimeSeconds": 60,
+      "direction": null,
+      "localTile": {
+        "x": 9,
+        "y": 90
+      },
+      "pixel": {
+        "x": 304,
+        "y": 2896
+      }
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import type { VillageId } from '@/types/village';
+import type { StarterCharacterId } from '@/types/player-creation';
 
 /** Estado de vitais exibido na HUD (independente da engine). */
 export interface VitalsState {
@@ -12,4 +13,5 @@ export interface VitalsState {
 export interface HudPlayerInfo {
   nickname: string;
   villageId: VillageId;
+  starterCharacterId: StarterCharacterId;
 }

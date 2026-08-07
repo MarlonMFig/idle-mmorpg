@@ -1,0 +1,14 @@
+{
+  "itachi-walk": {
+    "image": "/sprites/player/itachi/walk.png",
+    "frameWidth": 26,
+    "frameHeight": 51,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.8275862068965517,
+    "source": "itachi-walk-sheet.png",
+    "frameRate": 10,
+    "direction": "right",
+    "note": "6-frame horizontal strip; exterior black (+ green) key; RIGHT only"
+  }
+}

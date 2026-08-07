@@ -1,0 +1,139 @@
+{
+  "rock-lee-idle": {
+    "image": "/sprites/player/rock-lee/idle.png",
+    "frameWidth": 35,
+    "frameHeight": 50,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "frameRate": 7,
+    "source": "rock-lee-idle-sheet.png"
+  },
+  "rock-lee-walk": {
+    "image": "/sprites/player/rock-lee/walk.png",
+    "frameWidth": 39,
+    "frameHeight": 50,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "frameRate": 10,
+    "source": "rock-lee-walk-sheet.png"
+  },
+  "rock-lee-attack": {
+    "image": "attack.png",
+    "frameWidth": 59,
+    "frameHeight": 58,
+    "frameCount": 20,
+    "contentHeight": 48,
+    "scale": 0.8727272727272727,
+    "frameRate": 14,
+    "sheetCols": 20,
+    "sheetRows": 1,
+    "source": "assets-src/rock-lee-combo (frame_001…020)",
+    "note": "full combo strip"
+  },
+  "rock-lee-combo1": {
+    "image": "combo1.png",
+    "frameWidth": 59,
+    "frameHeight": 58,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.8727272727272727,
+    "frameRate": 14,
+    "sheetCols": 6,
+    "sheetRows": 1,
+    "source": "assets-src/rock-lee-combo (frame_001…020)",
+    "range": [
+      0,
+      6
+    ]
+  },
+  "rock-lee-combo2": {
+    "image": "combo2.png",
+    "frameWidth": 59,
+    "frameHeight": 58,
+    "frameCount": 7,
+    "contentHeight": 48,
+    "scale": 0.8727272727272727,
+    "frameRate": 14,
+    "sheetCols": 7,
+    "sheetRows": 1,
+    "source": "assets-src/rock-lee-combo (frame_001…020)",
+    "range": [
+      6,
+      13
+    ]
+  },
+  "rock-lee-combo3": {
+    "image": "combo3.png",
+    "frameWidth": 59,
+    "frameHeight": 58,
+    "frameCount": 7,
+    "contentHeight": 48,
+    "scale": 0.8727272727272727,
+    "frameRate": 14,
+    "sheetCols": 7,
+    "sheetRows": 1,
+    "source": "assets-src/rock-lee-combo (frame_001…020)",
+    "range": [
+      13,
+      20
+    ]
+  },
+  "rock-lee-konoha-senpu": {
+    "image": "/sprites/player/rock-lee/konoha-senpu.png",
+    "frameWidth": 45,
+    "frameHeight": 63,
+    "frameCount": 27,
+    "contentHeight": 48,
+    "scale": 0.6575342465753424,
+    "frameRate": 14,
+    "sheetCols": 27,
+    "sheetRows": 1,
+    "durationMs": 1929,
+    "hitDelayMs": 868,
+    "source": "assets-src/rock-lee-skill1 (frame_001…038)"
+  },
+  "skill-konoha-senpu": {
+    "image": "/sprites/player/rock-lee/konoha-senpu.png",
+    "frameWidth": 45,
+    "frameHeight": 63,
+    "frameCount": 27,
+    "contentHeight": 48,
+    "scale": 0.6575342465753424,
+    "frameRate": 14,
+    "sheetCols": 27,
+    "sheetRows": 1,
+    "durationMs": 1929,
+    "hitDelayMs": 868,
+    "source": "assets-src/rock-lee-skill1 (frame_001…038)",
+    "note": "1ª skill Rock Lee"
+  },
+  "rock-lee-omote-renge": {
+    "image": "/sprites/player/rock-lee/omote-renge.png",
+    "frameWidth": 131,
+    "frameHeight": 101,
+    "frameCount": 52,
+    "contentHeight": 48,
+    "scale": 0.7741935483870968,
+    "frameRate": 14,
+    "sheetCols": 31,
+    "sheetRows": 2,
+    "durationMs": 3714,
+    "hitDelayMs": 1671,
+    "source": "assets-src/rock-lee-skill2 (frame_001…052)"
+  },
+  "skill-omote-renge": {
+    "image": "/sprites/player/rock-lee/omote-renge.png",
+    "frameWidth": 131,
+    "frameHeight": 101,
+    "frameCount": 52,
+    "contentHeight": 48,
+    "scale": 0.7741935483870968,
+    "frameRate": 14,
+    "sheetCols": 31,
+    "sheetRows": 2,
+    "durationMs": 3714,
+    "hitDelayMs": 1671,
+    "source": "assets-src/rock-lee-skill2 (frame_001…052)",
+    "note": "2ª skill Rock Lee"
+  }
+}

@@ -1,10 +1,11 @@
 import type { EquipSlot, ItemDefinition, ItemRarity } from '@/types/loot';
 import { formatModifierLine } from '@/utils/attributes';
+import { WONSR_EQUIP_ITEMS } from '@/data/wonsr-equip-subset';
 
 export const ITEMS: Record<string, ItemDefinition> = {
   'item-slime-gel': {
     id: 'item-slime-gel',
-    name: 'Gel de Slime',
+    name: 'Bandagem Usada',
     rarity: 'common',
     stackMax: 99,
   },
@@ -12,7 +13,7 @@ export const ITEMS: Record<string, ItemDefinition> = {
     id: 'item-copper-coin',
     name: 'Moeda de Cobre',
     rarity: 'common',
-    stackMax: 999,
+    stackMax: 999999,
   },
   'item-wolf-fang': {
     id: 'item-wolf-fang',
@@ -80,6 +81,13 @@ export const ITEMS: Record<string, ItemDefinition> = {
     equipSlot: 'accessory',
     bonuses: { strength: 3, hp: 10, critical: 5 },
   },
+  'item-sealing-scroll': {
+    id: 'item-sealing-scroll',
+    name: 'Pergaminho de Selamento',
+    rarity: 'uncommon',
+    stackMax: 999,
+  },
+  ...Object.fromEntries(WONSR_EQUIP_ITEMS.map((item) => [item.id, item])),
 };
 
 /** Ids conhecidos do catálogo (fechado em compile-time quando possível). */
@@ -94,7 +102,9 @@ export type ItemId =
   | 'item-flak-vest'
   | 'item-shinobi-gloves'
   | 'item-shinobi-boots'
-  | 'item-lucky-charm';
+  | 'item-lucky-charm'
+  | 'item-sealing-scroll'
+  | `wonsr-item-${number}`;
 
 export const RARITY_COLOR: Record<ItemRarity, number> = {
   common: 0xb0b0b0,

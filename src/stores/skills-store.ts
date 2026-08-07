@@ -1,8 +1,10 @@
 import { SKILL_HOTBAR_SIZE } from '@/constants/skill';
+import { listSkillUnlocksFor } from '@/data/skill-unlocks';
 import { getHotbarSkillIdsForStarter, getSkill, STARTER_KNOWN_SKILL_IDS } from '@/data/skills';
 import { createStore } from '@/stores/create-store';
 import type { StarterCharacterId } from '@/types/player-creation';
 import type { HotbarSlot, SkillsState } from '@/types/skill';
+import type { VillageId } from '@/types/village';
 
 function emptyHotbar(): HotbarSlot[] {
   return Array.from({ length: SKILL_HOTBAR_SIZE }, () => null);
@@ -18,8 +20,23 @@ function buildHotbarForStarter(starterId: StarterCharacterId): HotbarSlot[] {
   return hotbar;
 }
 
+function knownIdsForStarter(starterId: StarterCharacterId): string[] {
+  const fromHotbar = getHotbarSkillIdsForStarter(starterId).filter((id) => getSkill(id));
+  return [...new Set([...STARTER_KNOWN_SKILL_IDS, ...fromHotbar])];
+}
+
+function buildHotbarFromIds(skillIds: readonly string[]): HotbarSlot[] {
+  const hotbar = emptyHotbar();
+  skillIds.forEach((id, index) => {
+    if (index < SKILL_HOTBAR_SIZE && getSkill(id)) {
+      hotbar[index] = id;
+    }
+  });
+  return hotbar;
+}
+
 const store = createStore<SkillsState>({
-  knownIds: [...STARTER_KNOWN_SKILL_IDS],
+  knownIds: knownIdsForStarter('naruto-classic'),
   hotbar: buildHotbarForStarter('naruto-classic'),
   cooldownReadyAt: {},
   pendingCastId: null,
@@ -34,9 +51,27 @@ export const skillsStore = {
 
   reset(starterId: StarterCharacterId = 'naruto-classic'): void {
     store.setState({
-      knownIds: [...STARTER_KNOWN_SKILL_IDS],
+      knownIds: knownIdsForStarter(starterId),
       hotbar: buildHotbarForStarter(starterId),
       cooldownReadyAt: {},
+      pendingCastId: null,
+    });
+  },
+
+  /**
+   * Troca a hotbar do personagem ativo sem limpar skills conhecidas
+   * (progressão do jogador) nem reiniciar a sessão.
+   */
+  applyCharacterHotbar(skillIds: readonly string[]): void {
+    const state = store.getSnapshot();
+    const nextKnown = new Set(state.knownIds);
+    for (const id of skillIds) {
+      if (getSkill(id)) nextKnown.add(id);
+    }
+    store.setState({
+      ...state,
+      knownIds: [...nextKnown],
+      hotbar: buildHotbarFromIds(skillIds),
       pendingCastId: null,
     });
   },
@@ -46,6 +81,26 @@ export const skillsStore = {
     if (!getSkill(skillId) || state.knownIds.includes(skillId)) return false;
     store.setState({ ...state, knownIds: [...state.knownIds, skillId] });
     return true;
+  },
+
+  /**
+   * Aprende os jutsus liberados pelo nível e equipa os novos nos slots livres.
+   * É idempotente: chamar novamente no mesmo nível não duplica habilidades.
+   *
+   * @returns ids aprendidos nesta chamada.
+   */
+  syncLevelUnlocks(villageId: VillageId, level: number): string[] {
+    const learned: string[] = [];
+
+    for (const unlock of listSkillUnlocksFor(villageId, level)) {
+      if (!this.learnSkill(unlock.skillId)) continue;
+      learned.push(unlock.skillId);
+
+      const freeSlot = store.getSnapshot().hotbar.findIndex((slot) => slot == null);
+      if (freeSlot >= 0) this.setHotbarSlot(freeSlot, unlock.skillId);
+    }
+
+    return learned;
   },
 
   setHotbarSlot(index: number, skillId: string | null): boolean {

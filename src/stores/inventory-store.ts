@@ -1,5 +1,6 @@
 import { INVENTORY_SLOT_COUNT } from '@/constants/inventory';
 import { getEquipSlot, getItem } from '@/data/items';
+import { WONSR_STARTER_LOADOUT } from '@/data/wonsr-equip-subset';
 import { emitItemGained } from '@/lib/item-events';
 import { attributesStore } from '@/stores/attributes-store';
 import { createStore } from '@/stores/create-store';
@@ -82,13 +83,12 @@ export const inventoryStore = {
 
   reset(): void {
     const slots = emptySlots();
-    slots[0] = { itemId: 'item-kunai', quantity: 1 };
-    slots[1] = { itemId: 'item-leaf-band', quantity: 1 };
-    slots[2] = { itemId: 'item-flak-vest', quantity: 1 };
-    slots[3] = { itemId: 'item-shinobi-gloves', quantity: 1 };
-    slots[4] = { itemId: 'item-shinobi-boots', quantity: 1 };
-    slots[5] = { itemId: 'item-lucky-charm', quantity: 1 };
-    slots[6] = { itemId: 'item-copper-coin', quantity: 5 };
+    let index = 0;
+    for (const entry of WONSR_STARTER_LOADOUT) {
+      if (!getItem(entry.itemId) || index >= INVENTORY_SLOT_COUNT) continue;
+      slots[index] = { itemId: entry.itemId, quantity: entry.quantity };
+      index += 1;
+    }
 
     const equipment = createEmptyEquipment();
     store.setState({
@@ -236,5 +236,75 @@ export const inventoryStore = {
       selectedIndex: state.selectedIndex === index && left <= 0 ? null : state.selectedIndex,
     });
     return true;
+  },
+
+  /** Quantidade total de um item no inventário (todos os stacks). */
+  countItem(itemId: string): number {
+    return store.getSnapshot().slots.reduce((total, slot) => {
+      if (!slot || slot.itemId !== itemId) return total;
+      return total + slot.quantity;
+    }, 0);
+  },
+
+  /** Remove quantidade de um item; falha sem alterar nada se não houver estoque. */
+  removeItem(itemId: string, quantity: number): boolean {
+    if (quantity <= 0) return true;
+    if (this.countItem(itemId) < quantity) return false;
+
+    const state = store.getSnapshot();
+    const slots = cloneSlots(state.slots);
+    let remaining = quantity;
+
+    for (let i = slots.length - 1; i >= 0 && remaining > 0; i -= 1) {
+      const slot = slots[i];
+      if (!slot || slot.itemId !== itemId) continue;
+      const remove = Math.min(slot.quantity, remaining);
+      const left = slot.quantity - remove;
+      slots[i] = left > 0 ? { itemId, quantity: left } : null;
+      remaining -= remove;
+    }
+
+    commit({
+      ...state,
+      slots,
+      selectedIndex:
+        state.selectedIndex != null && !slots[state.selectedIndex]
+          ? null
+          : state.selectedIndex,
+    });
+    return remaining === 0;
+  },
+
+  /**
+   * Compra transacional: só desconta moeda se o item caber no inventário.
+   * @returns null em sucesso, ou motivo da falha.
+   */
+  buyItem(params: {
+    itemId: string;
+    quantity: number;
+    price: number;
+    currencyItemId: string;
+  }): 'ok' | 'invalid' | 'no-funds' | 'no-space' {
+    const { itemId, quantity, price, currencyItemId } = params;
+    const def = getItem(itemId);
+    if (!def || quantity <= 0 || price < 0) return 'invalid';
+
+    const totalCost = price * quantity;
+    if (this.countItem(currencyItemId) < totalCost) return 'no-funds';
+
+    const state = store.getSnapshot();
+    const trialSlots = cloneSlots(state.slots);
+    const leftover = insertStack(trialSlots, { itemId, quantity });
+    if (leftover) return 'no-space';
+
+    if (!this.removeItem(currencyItemId, totalCost)) return 'no-funds';
+    const remaining = this.addItem(itemId, quantity);
+    if (remaining > 0) {
+      // Reembolso defensivo — não deveria ocorrer após o trial.
+      this.addItem(currencyItemId, totalCost);
+      this.removeItem(itemId, quantity - remaining);
+      return 'no-space';
+    }
+    return 'ok';
   },
 };

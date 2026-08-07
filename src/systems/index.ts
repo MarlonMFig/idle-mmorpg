@@ -8,4 +8,6 @@ export { LootPickupSystem } from '@/systems/loot-pickup-system';
 export { SkillVfx } from '@/systems/skill-vfx';
 export { RemotePlayerManager } from '@/systems/remote-player-manager';
 export { PlayerSyncSystem } from '@/systems/player-sync-system';
+export { PlayerInputSystem } from '@/systems/player-input-system';
+export { HubInteractableManager } from '@/systems/hub-interactable-manager';
 export { rollDropTable } from '@/systems/loot-table';

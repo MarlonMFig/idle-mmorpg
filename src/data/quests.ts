@@ -9,16 +9,16 @@ const QUEST_LIST: QuestDefinition[] = [
   {
     id: 'quest-academy-intro',
     name: 'Primeiros Passos',
-    description: 'Iruka pede que você derrote slimes perto da vila.',
+    description: 'Iruka pede que você derrote ninjas renegados perto da vila.',
     npcId: 'npc-iruka',
     requiresQuestId: undefined,
     nextQuestId: 'quest-academy-report',
     objectives: [
       {
-        id: 'obj-kill-slime',
+        id: 'obj-kill-ninja',
         kind: 'kill',
-        description: 'Derrotar Slimes da Folha',
-        targetId: 'leaf-slime',
+        description: 'Derrotar Ninjas Renegados',
+        targetId: 'leaf-ninja',
         amount: 2,
       },
     ],
@@ -30,10 +30,10 @@ const QUEST_LIST: QuestDefinition[] = [
       offer: [
         'Bem-vindo à Academia.',
         'Antes das missões oficiais, quero ver seu básico em campo.',
-        'Derrote dois Slimes da Folha e volte a falar comigo.',
+        'Derrote dois Ninjas Renegados e volte a falar comigo.',
       ],
       active: [
-        'Ainda faltam slimes. Treine perto da entrada da floresta.',
+        'Ainda faltam renegados. Treine perto da entrada da floresta.',
       ],
       turnIn: [
         'Bom trabalho. Isso é digno de um genin em formação.',
@@ -78,15 +78,15 @@ const QUEST_LIST: QuestDefinition[] = [
   },
   {
     id: 'quest-teuchi-gel',
-    name: 'Gel para o Caldo',
-    description: 'Teuchi precisa de gel de slime para um caldo experimental.',
+    name: 'Bandagens do Caldo',
+    description: 'Teuchi precisa de bandagens usadas para um “caldo experimental”.',
     npcId: 'npc-teuchi',
     requiresQuestId: 'quest-academy-report',
     objectives: [
       {
         id: 'obj-collect-gel',
         kind: 'collect',
-        description: 'Coletar Gel de Slime',
+        description: 'Coletar Bandagens Usadas',
         targetId: 'item-slime-gel',
         amount: 3,
       },
@@ -101,12 +101,12 @@ const QUEST_LIST: QuestDefinition[] = [
     dialogue: {
       offer: [
         'Iruka mandou o recado — e eu tenho um favor.',
-        'Me traga três Géis de Slime para o caldo especial.',
-        'Os slimes soltam isso com frequência.',
+        'Me traga três Bandagens Usadas dos ninjas renegados.',
+        'Não pergunte o que vou fazer com isso no caldo.',
       ],
-      active: ['Ainda preciso de mais gel. Combata os slimes da vila.'],
+      active: ['Ainda preciso de mais bandagens. Combata os renegados da vila.'],
       turnIn: [
-        'Perfeito! O caldo vai ficar lendário.',
+        'Perfeito! O caldo vai ficar… interessante.',
         'Aqui está sua parte — e um fragmento de chakra por garantia.',
       ],
       completed: ['Volte quando quiser um ramen. Genin come de graça… às vezes.'],

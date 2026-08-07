@@ -1,0 +1,22 @@
+{
+  "rasengan": {
+    "frameWidth": 72,
+    "frameHeight": 72,
+    "frames": 10
+  },
+  "chakra-burst": {
+    "frameWidth": 134,
+    "frameHeight": 122,
+    "frames": 11
+  },
+  "rasengan-gold": {
+    "frameWidth": 80,
+    "frameHeight": 84,
+    "frames": 4
+  },
+  "smoke-poof": {
+    "frameWidth": 54,
+    "frameHeight": 66,
+    "frames": 6
+  }
+}

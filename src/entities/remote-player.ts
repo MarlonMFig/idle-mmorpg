@@ -1,8 +1,15 @@
 import * as Phaser from 'phaser';
+import { NAMEPLATE_GAP_PX } from '@/constants/combat';
 import { MULTIPLAYER_INTERPOLATION } from '@/constants/multiplayer';
+import { REMOTE_NAMEPLATE_STYLE, worldDepthForY } from '@/constants/nameplate';
 import { directionFacesLeft, type PlayerDirection } from '@/constants/player';
-import { getCharacterPack } from '@/data/character-packs';
-import { Player } from '@/entities/player';
+import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
+import {
+  characterBaseScale,
+  getCharacterPack,
+  type CharacterPack,
+} from '@/data/character-packs';
+import { Player, playerIdleFrame, playerWalkAnimKey } from '@/entities/player';
 import { getPlayerSession } from '@/game/registry';
 import type { PlayerAnimState, PlayerNetState } from '@/types/net';
 
@@ -20,10 +27,12 @@ export class RemotePlayer {
   private direction: PlayerDirection;
   private anim: PlayerAnimState;
   private nickname: string;
+  private readonly pack: CharacterPack;
 
   constructor(scene: Phaser.Scene, state: PlayerNetState) {
     const session = getPlayerSession(scene.registry);
     const pack = getCharacterPack(session?.starterCharacterId ?? 'naruto-classic');
+    this.pack = pack;
     Player.ensureAnimations(scene, pack);
 
     this.playerId = state.playerId;
@@ -35,23 +44,17 @@ export class RemotePlayer {
 
     this.sprite = scene.add.sprite(state.x, state.y, pack.walk.key, 0);
     this.sprite.setOrigin(0.5, 1);
-    this.sprite.setScale(pack.displayHeight / pack.walk.frameHeight);
-    this.sprite.setDepth(9);
+    this.sprite.setScale(characterBaseScale(pack));
     this.sprite.setTint(0xb8d4ff);
     this.sprite.setData('remotePlayerId', state.playerId);
+    this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
 
     this.nameLabel = scene.add
-      .text(state.x, state.y - pack.displayHeight - 8, state.nickname, {
-        fontFamily: 'sans-serif',
-        fontSize: '10px',
-        color: '#9ec8ff',
-        stroke: '#000000',
-        strokeThickness: 3,
-      })
-      .setOrigin(0.5, 1)
-      .setDepth(11);
+      .text(state.x, state.y - CHARACTER_DISPLAY_HEIGHT - NAMEPLATE_GAP_PX, state.nickname, REMOTE_NAMEPLATE_STYLE)
+      .setOrigin(0.5, 1);
 
     this.applyAnimation();
+    this.syncPresentation();
   }
 
   applyNetworkState(state: PlayerNetState): void {
@@ -70,7 +73,17 @@ export class RemotePlayer {
     const t = MULTIPLAYER_INTERPOLATION;
     this.sprite.x += (this.targetX - this.sprite.x) * t;
     this.sprite.y += (this.targetY - this.sprite.y) * t;
-    this.nameLabel.setPosition(this.sprite.x, this.sprite.y - this.sprite.displayHeight - 8);
+    this.syncPresentation();
+  }
+
+  private syncPresentation(): void {
+    const depth = worldDepthForY(this.sprite.y, 10);
+    this.sprite.setDepth(depth);
+    this.nameLabel.setPosition(
+      this.sprite.x,
+      this.sprite.y - CHARACTER_DISPLAY_HEIGHT - NAMEPLATE_GAP_PX,
+    );
+    this.nameLabel.setDepth(depth + 3);
   }
 
   destroy(): void {
@@ -79,10 +92,15 @@ export class RemotePlayer {
   }
 
   private applyAnimation(): void {
-    this.sprite.setFlipX(directionFacesLeft(this.direction));
-    const animKey = this.anim === 'walk' ? 'player-walk' : 'player-idle';
-    if (this.sprite.anims.currentAnim?.key !== animKey) {
-      this.sprite.anims.play(animKey, true);
+    this.sprite.setFlipX(this.pack.outfit ? false : directionFacesLeft(this.direction));
+    if (this.anim === 'walk') {
+      const animKey = playerWalkAnimKey(this.pack, this.direction);
+      if (this.sprite.anims.currentAnim?.key !== animKey) {
+        this.sprite.anims.play(animKey, true);
+      }
+    } else {
+      this.sprite.anims.stop();
+      this.sprite.setTexture(this.pack.walk.key, playerIdleFrame(this.pack, this.direction));
     }
   }
 }

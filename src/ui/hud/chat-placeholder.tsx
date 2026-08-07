@@ -1,17 +1,22 @@
-const PLACEHOLDER_LINES = [
-  '[Sistema] Bem-vindo à jornada.',
-  '[Sistema] Chat em breve.',
-] as const;
+'use client';
 
+import { useStore } from '@/hooks/use-store';
+import { systemLogStore } from '@/lib/system-log';
+
+/**
+ * Log de sistema (compras, selamentos, feedback de equipe).
+ */
 export function ChatPlaceholder() {
+  const lines = useStore(systemLogStore, (s) => s.lines);
+
   return (
     <section className="hud-panel hud-chat" aria-label="Chat">
       <header className="hud-panel__head">
         <h2 className="hud-panel__title">Chat</h2>
       </header>
       <div className="hud-chat__log" aria-live="polite">
-        {PLACEHOLDER_LINES.map((line) => (
-          <p key={line} className="hud-chat__line">
+        {lines.map((line, index) => (
+          <p key={`${index}-${line}`} className="hud-chat__line">
             {line}
           </p>
         ))}
