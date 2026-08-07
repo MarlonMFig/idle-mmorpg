@@ -1,7 +1,11 @@
-import * as Phaser from 'phaser';
+import type * as Phaser from 'phaser';
 import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
 import type { WonsrDirection } from '@/data/wonsr-sprites';
 import type { StarterCharacterId } from '@/types/player-creation';
+
+/** Avoid runtime `phaser` import — this module is used by React stores during SSR. */
+const PHASER_LOADER_COMPLETE = 'complete';
+const PHASER_TEXTURE_FILTER_NEAREST = 1;
 
 /** Definição de um spritesheet de personagem. */
 export interface SpriteSheetDef {
@@ -1050,7 +1054,7 @@ export function preloadCharacterPack(scene: Phaser.Scene, pack: CharacterPack): 
   }
 
   // Pixel art nítido (sem blur bilinear).
-  scene.load.once(Phaser.Loader.Events.COMPLETE, () => {
+  scene.load.once(PHASER_LOADER_COMPLETE, () => {
     applyNearestFilter(scene, seen);
   });
 }
@@ -1082,7 +1086,7 @@ export function packDeathAnimKey(pack: CharacterPack): string | null {
 function applyNearestFilter(scene: Phaser.Scene, keys: Iterable<string>): void {
   for (const key of keys) {
     if (!scene.textures.exists(key)) continue;
-    scene.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+    scene.textures.get(key).setFilter(PHASER_TEXTURE_FILTER_NEAREST);
   }
 }
 
@@ -1126,7 +1130,7 @@ export function loadCharacterPack(
   }
 
   return new Promise((resolve) => {
-    scene.load.once(Phaser.Loader.Events.COMPLETE, () => {
+    scene.load.once(PHASER_LOADER_COMPLETE, () => {
       applyNearestFilter(scene, queued);
       resolve();
     });
