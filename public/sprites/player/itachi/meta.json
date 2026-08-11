@@ -2,13 +2,262 @@
   "itachi-walk": {
     "image": "/sprites/player/itachi/walk.png",
     "frameWidth": 26,
-    "frameHeight": 51,
+    "frameHeight": 52,
     "frameCount": 6,
     "contentHeight": 48,
-    "scale": 0.8275862068965517,
-    "source": "itachi-walk-sheet.png",
+    "scale": 0.35294117647058826,
+    "maxContentH": 136,
     "frameRate": 10,
+    "source": "assets/naruto-source/nu/itachi/walk/frame_001..006.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 1403,
+    "contentHeights": [
+      47,
+      47,
+      47,
+      47,
+      48,
+      48
+    ],
+    "bodyHeightVariance": 1,
     "direction": "right",
-    "note": "6-frame horizontal strip; exterior black (+ green) key; RIGHT only"
+    "note": "6-frame walk; alpha-only; uniform global scale (max contentH → 48); black hair preserved"
+  },
+  "itachi-idle": {
+    "image": "/sprites/player/itachi/idle.png",
+    "frameWidth": 24,
+    "frameHeight": 49,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.35294117647058826,
+    "frameRate": 7,
+    "source": "assets/naruto-source/nu/itachi/idle/frame_001..004.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 994,
+    "walkMatchedScale": 0.35294117647058826,
+    "bodyLock": {
+      "destBodyCx": 35,
+      "destFeetY": 137,
+      "bodyCxStd": 0.038,
+      "bodyCxRange": 0.099,
+      "feetYDelta": 0
+    },
+    "note": "4-frame idle; alpha-only; body-lock (shared feetY + torso-core X); scale matched walk"
+  },
+  "itachi-combo1": {
+    "image": "/sprites/player/itachi/combo1.png",
+    "frameWidth": 54,
+    "frameHeight": 52,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.35294117647058826,
+    "frameRate": 12,
+    "source": "assets/naruto-source/nu/itachi/combo/frame_001..013.png",
+    "range": [
+      0,
+      5
+    ],
+    "residualGreen": 0,
+    "pureBlack": 1186,
+    "bodyHeightVariance": 6,
+    "contentHeights": [
+      46,
+      46,
+      48,
+      48,
+      42
+    ],
+    "note": "prep + first strike (5f); alpha-only; uniform global scale matched to walk"
+  },
+  "itachi-combo2": {
+    "image": "/sprites/player/itachi/combo2.png",
+    "frameWidth": 54,
+    "frameHeight": 52,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.35294117647058826,
+    "frameRate": 12,
+    "source": "assets/naruto-source/nu/itachi/combo/frame_001..013.png",
+    "range": [
+      5,
+      10
+    ],
+    "residualGreen": 0,
+    "pureBlack": 1099,
+    "bodyHeightVariance": 7,
+    "contentHeights": [
+      42,
+      42,
+      47,
+      41,
+      40
+    ],
+    "note": "second strike (5f); alpha-only; uniform global scale matched to walk"
+  },
+  "itachi-combo3": {
+    "image": "/sprites/player/itachi/combo3.png",
+    "frameWidth": 54,
+    "frameHeight": 52,
+    "frameCount": 3,
+    "contentHeight": 48,
+    "scale": 0.35294117647058826,
+    "frameRate": 12,
+    "source": "assets/naruto-source/nu/itachi/combo/frame_001..013.png",
+    "range": [
+      10,
+      13
+    ],
+    "residualGreen": 0,
+    "pureBlack": 709,
+    "bodyHeightVariance": 6,
+    "contentHeights": [
+      40,
+      39,
+      45
+    ],
+    "note": "finisher / recovery (3f); alpha-only; uniform global scale matched to walk"
+  },
+  "itachi-attack": {
+    "image": "/sprites/player/itachi/attack.png",
+    "frameWidth": 54,
+    "frameHeight": 52,
+    "frameCount": 13,
+    "contentHeight": 48,
+    "scale": 0.35294117647058826,
+    "frameRate": 12,
+    "source": "assets/naruto-source/nu/itachi/combo/frame_001..013.png",
+    "residualGreen": 0,
+    "pureBlack": 2994,
+    "walkMatchedScale": 0.35294117647058826,
+    "contentHeights": [
+      46,
+      46,
+      48,
+      48,
+      42,
+      42,
+      42,
+      47,
+      41,
+      40,
+      40,
+      39,
+      45
+    ],
+    "note": "full combo strip (13f); 5+5+3 splits; alpha-only; scale=0.3529 matched walk"
+  },
+  "itachi-hurt": {
+    "image": "/sprites/player/itachi/hurt.png",
+    "frameWidth": 59,
+    "frameHeight": 51,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "scale": 0.39344262295081966,
+    "frameRate": 9,
+    "source": "assets/naruto-source/nu/itachi/damage/frame_001..005.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 574,
+    "note": "frames 1–2 hit reaction; alpha-only; black hair preserved"
+  },
+  "itachi-death": {
+    "image": "/sprites/player/itachi/death.png",
+    "frameWidth": 59,
+    "frameHeight": 51,
+    "frameCount": 3,
+    "contentHeight": 48,
+    "scale": 0.39344262295081966,
+    "frameRate": 8,
+    "source": "assets/naruto-source/nu/itachi/damage/frame_001..005.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 803,
+    "note": "frames 3–5 death collapse hold last; alpha-only; black hair preserved"
+  },
+  "itachi-amaterasu": {
+    "image": "/sprites/player/itachi/amaterasu.png",
+    "frameWidth": 23,
+    "frameHeight": 49,
+    "frameCount": 12,
+    "contentHeight": 48,
+    "scale": 0.35294117647058826,
+    "frameRate": 12,
+    "residualGreen": 0,
+    "pureBlack": 2056,
+    "red": 276,
+    "source": "assets/naruto-source/nu/itachi/jutsu/frame_*.png",
+    "durationMs": 1000,
+    "hitDelayMs": 917,
+    "note": "Amaterasu cast 12f body-lock (shared feetY + bodyCx); mirrored to RIGHT; hit last frame",
+    "inventory": {
+      "sourceBody": 12,
+      "bakedFrameCount": 12,
+      "bodyLock": {
+        "destBodyCx": 34,
+        "destFeetY": 137,
+        "burstStdPx": 0.294,
+        "burstMaxDrift": 0.728
+      }
+    }
+  },
+  "skill-amaterasu": {
+    "image": "/sprites/player/itachi/amaterasu.png",
+    "frameWidth": 23,
+    "frameHeight": 49,
+    "frameCount": 12,
+    "contentHeight": 48,
+    "scale": 0.35294117647058826,
+    "frameRate": 12,
+    "residualGreen": 0,
+    "pureBlack": 2056,
+    "red": 276,
+    "source": "assets/naruto-source/nu/itachi/jutsu/frame_*.png",
+    "durationMs": 1000,
+    "hitDelayMs": 917,
+    "note": "skill-amaterasu — Amaterasu (body-lock pack, hit last frame)",
+    "inventory": {
+      "sourceBody": 12,
+      "bakedFrameCount": 12,
+      "bodyLock": {
+        "destBodyCx": 34,
+        "destFeetY": 137,
+        "burstStdPx": 0.294,
+        "burstMaxDrift": 0.728
+      }
+    }
+  },
+  "itachi-amaterasu-fx": {
+    "image": "/sprites/player/itachi/amaterasu-fx.png",
+    "frameWidth": 44,
+    "frameHeight": 52,
+    "frameCount": 19,
+    "contentHeight": 52,
+    "scale": 0.36879432624113473,
+    "frameRate": 12,
+    "durationMs": 1583,
+    "source": "assets/naruto-source/nu/itachi/amaterasu-fx-source.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 41,
+    "navy": 6759,
+    "note": "19f Amaterasu black-flame VFX only — exterior green key, centered cells"
+  },
+  "skill-amaterasu-fx": {
+    "image": "/sprites/player/itachi/amaterasu-fx.png",
+    "frameWidth": 44,
+    "frameHeight": 52,
+    "frameCount": 19,
+    "contentHeight": 52,
+    "scale": 0.36879432624113473,
+    "frameRate": 12,
+    "durationMs": 1583,
+    "source": "assets/naruto-source/nu/itachi/amaterasu-fx-source.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 41,
+    "navy": 6759,
+    "note": "skill-amaterasu FX — black flames on target (hitDelay−80)"
   }
 }

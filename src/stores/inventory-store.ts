@@ -1,5 +1,5 @@
 import { INVENTORY_SLOT_COUNT } from '@/constants/inventory';
-import { getEquipSlot, getItem } from '@/data/items';
+import { getItem } from '@/data/items';
 import { WONSR_STARTER_LOADOUT } from '@/data/wonsr-equip-subset';
 import { emitItemGained } from '@/lib/item-events';
 import { attributesStore } from '@/stores/attributes-store';
@@ -66,16 +66,13 @@ const store = createStore<InventoryState>({
   isOpen: true,
 });
 
-function commit(next: InventoryState, syncAttributes = false): void {
+function commit(next: InventoryState): void {
   store.setState(next);
-  if (syncAttributes) {
-    attributesStore.recalculate(next.equipment);
-  }
 }
 
 /**
- * Inventário (React) — mover, empilhar, equipar, descartar.
- * Equipar/desequipar recalcula atributos.
+ * Inventário (React) — mover, empilhar, descartar.
+ * Equipamento removido do jogo (sem slots de equip).
  */
 export const inventoryStore = {
   subscribe: store.subscribe,
@@ -97,7 +94,7 @@ export const inventoryStore = {
       selectedIndex: null,
       isOpen: true,
     });
-    attributesStore.recalculate(equipment, true);
+    attributesStore.recalculate(true);
   },
 
   toggleOpen(): void {
@@ -177,47 +174,14 @@ export const inventoryStore = {
     this.moveSlot(selectedIndex, index);
   },
 
-  equipFromSlot(index: number): boolean {
-    const state = store.getSnapshot();
-    const slots = cloneSlots(state.slots);
-    const stack = slots[index];
-    if (!stack) return false;
-
-    const equipSlot = getEquipSlot(stack.itemId);
-    if (!equipSlot) return false;
-
-    const equipment = cloneEquipment(state.equipment);
-    const previous = equipment[equipSlot];
-
-    if (stack.quantity <= 1) {
-      slots[index] = null;
-    } else {
-      slots[index] = { itemId: stack.itemId, quantity: stack.quantity - 1 };
-    }
-
-    if (previous) {
-      const leftover = insertStack(slots, previous);
-      if (leftover) return false;
-    }
-
-    equipment[equipSlot] = { itemId: stack.itemId, quantity: 1 };
-    commit({ ...state, slots, equipment, selectedIndex: null }, true);
-    return true;
+  /** Removido do jogo — mantido como no-op para não quebrar imports legados. */
+  equipFromSlot(_index: number): boolean {
+    return false;
   },
 
-  unequip(slot: EquipSlot): boolean {
-    const state = store.getSnapshot();
-    const equipment = cloneEquipment(state.equipment);
-    const equipped = equipment[slot];
-    if (!equipped) return false;
-
-    const slots = cloneSlots(state.slots);
-    const leftover = insertStack(slots, equipped);
-    if (leftover) return false;
-
-    equipment[slot] = null;
-    commit({ ...state, slots, equipment, selectedIndex: null }, true);
-    return true;
+  /** Removido do jogo — mantido como no-op. */
+  unequip(_slot: EquipSlot): boolean {
+    return false;
   },
 
   discardSlot(index: number, quantity?: number): boolean {

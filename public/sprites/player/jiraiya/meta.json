@@ -1,0 +1,277 @@
+{
+  "jiraiya-walk": {
+    "image": "/sprites/player/jiraiya/walk.png",
+    "frameWidth": 28,
+    "frameHeight": 49,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.21333333333333335,
+    "maxContentH": 225,
+    "frameRate": 10,
+    "source": "assets/naruto-source/nu/jiraiya/walk/frame_001..006.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 1191,
+    "whiteHair": 742,
+    "contentHeights": [
+      48,
+      48,
+      46,
+      47,
+      48,
+      48
+    ],
+    "bodyLock": {
+      "destBodyCx": 67,
+      "destFeetY": 226,
+      "bodyCxStd": 0.139,
+      "bodyCxRange": 0.396,
+      "feetYDelta": 0
+    },
+    "note": "6-frame walk; alpha-only; body-lock torso+feet; nearest maxContentH→48; white hair preserved"
+  },
+  "jiraiya-idle": {
+    "image": "/sprites/player/jiraiya/idle.png",
+    "frameWidth": 29,
+    "frameHeight": 49,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.21333333333333335,
+    "frameRate": 8,
+    "source": "assets/naruto-source/nu/jiraiya/idle/frame_001..006.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 1284,
+    "whiteHair": 672,
+    "walkMatchedScale": 0.21333333333333335,
+    "contentHeights": [
+      48,
+      48,
+      48,
+      48,
+      49,
+      48
+    ],
+    "bodyLock": {
+      "destBodyCx": 68,
+      "destFeetY": 229,
+      "bodyCxStd": 0.06,
+      "bodyCxRange": 0.179,
+      "feetYDelta": 0
+    },
+    "note": "6-frame idle; alpha-only; body-lock torso+feet; nearest scale matched walk; white hair preserved"
+  },
+  "jiraiya-combo1": {
+    "image": "/sprites/player/jiraiya/combo1.png",
+    "frameWidth": 53,
+    "frameHeight": 59,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.3137254901960784,
+    "frameRate": 12,
+    "source": "assets/naruto-source/nu/jiraiya/combo/frame_001..018.png",
+    "range": [
+      0,
+      5
+    ],
+    "residualGreen": 0,
+    "pureBlack": 1258,
+    "bodyHeightVariance": 2,
+    "contentHeights": [
+      49,
+      48,
+      48,
+      47,
+      48
+    ],
+    "note": "prep + first strike (5f); alpha-only; body-lock; nearest→48 contentH=48"
+  },
+  "jiraiya-combo2": {
+    "image": "/sprites/player/jiraiya/combo2.png",
+    "frameWidth": 53,
+    "frameHeight": 59,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.3137254901960784,
+    "frameRate": 12,
+    "source": "assets/naruto-source/nu/jiraiya/combo/frame_001..018.png",
+    "range": [
+      5,
+      10
+    ],
+    "residualGreen": 0,
+    "pureBlack": 1140,
+    "bodyHeightVariance": 3,
+    "contentHeights": [
+      48,
+      46,
+      47,
+      47,
+      49
+    ],
+    "note": "mid combo thrusts (5f); alpha-only; body-lock; nearest→48 contentH=48"
+  },
+  "jiraiya-combo3": {
+    "image": "/sprites/player/jiraiya/combo3.png",
+    "frameWidth": 53,
+    "frameHeight": 59,
+    "frameCount": 8,
+    "contentHeight": 48,
+    "scale": 0.3137254901960784,
+    "frameRate": 12,
+    "source": "assets/naruto-source/nu/jiraiya/combo/frame_001..018.png",
+    "range": [
+      10,
+      18
+    ],
+    "residualGreen": 0,
+    "pureBlack": 2036,
+    "bodyHeightVariance": 12,
+    "contentHeights": [
+      46,
+      58,
+      58,
+      55,
+      52,
+      52,
+      49,
+      47
+    ],
+    "note": "overhead finisher + recovery (8f); alpha-only; body-lock; nearest→48 contentH=48"
+  },
+  "jiraiya-attack": {
+    "image": "/sprites/player/jiraiya/attack.png",
+    "frameWidth": 53,
+    "frameHeight": 59,
+    "frameCount": 18,
+    "contentHeight": 48,
+    "scale": 0.3137254901960784,
+    "frameRate": 12,
+    "source": "assets/naruto-source/nu/jiraiya/combo/frame_001..018.png",
+    "residualGreen": 0,
+    "whiteHair": 2797,
+    "tanEnergy": 0,
+    "pureBlack": 4434,
+    "walkMatchedScale": 0.21333333333333335,
+    "absoluteScaleSource": "body-match-nearest→48",
+    "contentHeights": [
+      49,
+      48,
+      48,
+      47,
+      48,
+      48,
+      46,
+      47,
+      47,
+      49,
+      46,
+      58,
+      58,
+      55,
+      52,
+      52,
+      49,
+      47
+    ],
+    "phaseSplit": [
+      5,
+      5,
+      8
+    ],
+    "bodyLock": {
+      "destBodyCx": 88,
+      "destFeetY": 186,
+      "bodyCxStd": 0.173,
+      "bodyCxRange": 0.654,
+      "feetYDelta": 0
+    },
+    "note": "full combo strip (18f); split 5+5+8; alpha-only; body-lock; nearest scale=0.3137 contentH=48"
+  },
+  "jiraiya-hurt": {
+    "image": "/sprites/player/jiraiya/hurt.png",
+    "frameWidth": 50,
+    "frameHeight": 51,
+    "frameCount": 3,
+    "contentHeight": 48,
+    "scale": 0.21333333333333335,
+    "frameRate": 9,
+    "source": "assets/naruto-source/nu/jiraiya/damage/frame_001..007.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 702,
+    "whiteHair": 296,
+    "note": "frames 1–3 hit reaction; alpha-only; white hair preserved"
+  },
+  "jiraiya-death": {
+    "image": "/sprites/player/jiraiya/death.png",
+    "frameWidth": 50,
+    "frameHeight": 51,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.21333333333333335,
+    "frameRate": 8,
+    "source": "assets/naruto-source/nu/jiraiya/damage/frame_001..007.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 834,
+    "whiteHair": 385,
+    "note": "frames 4–7 death collapse hold last; alpha-only; white hair preserved"
+  },
+  "jiraiya-kuchiyose": {
+    "image": "/sprites/player/jiraiya/kuchiyose.png",
+    "frameWidth": 151,
+    "frameHeight": 69,
+    "frameCount": 23,
+    "contentHeight": 48,
+    "scale": 0.3157894736842105,
+    "frameRate": 12,
+    "residualGreen": 0,
+    "fire": 26598,
+    "whiteHair": 5381,
+    "toad": 10032,
+    "pureBlack": 4354,
+    "source": "assets/naruto-source/nu/jiraiya/jutsu/frame_*.png",
+    "durationMs": 1917,
+    "hitDelayMs": 1481,
+    "note": "Kuchiyose cast 23f body-lock (shared feetY + bodyCx); toad+fire expands in-cell",
+    "inventory": {
+      "sourceBody": 23,
+      "bakedFrameCount": 23,
+      "bodyLock": {
+        "destBodyCx": 106,
+        "destFeetY": 216,
+        "burstStdPx": 2.997,
+        "burstMaxDrift": 10.318
+      }
+    }
+  },
+  "skill-kuchiyose": {
+    "image": "/sprites/player/jiraiya/kuchiyose.png",
+    "frameWidth": 151,
+    "frameHeight": 69,
+    "frameCount": 23,
+    "contentHeight": 48,
+    "scale": 0.3157894736842105,
+    "frameRate": 12,
+    "residualGreen": 0,
+    "fire": 26598,
+    "whiteHair": 5381,
+    "toad": 10032,
+    "pureBlack": 4354,
+    "source": "assets/naruto-source/nu/jiraiya/jutsu/frame_*.png",
+    "durationMs": 1917,
+    "hitDelayMs": 1481,
+    "note": "skill-kuchiyose — Kuchiyose no Jutsu / Gamabunta oil-flame collab (body-lock pack)",
+    "inventory": {
+      "sourceBody": 23,
+      "bakedFrameCount": 23,
+      "bodyLock": {
+        "destBodyCx": 106,
+        "destFeetY": 216,
+        "burstStdPx": 2.997,
+        "burstMaxDrift": 10.318
+      }
+    }
+  }
+}

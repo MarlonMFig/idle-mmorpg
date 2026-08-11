@@ -4,7 +4,6 @@ import {
   BASE_ATTRIBUTES,
   LEVEL_ATTRIBUTE_GROWTH,
 } from '@/constants/attributes';
-import { getItem } from '@/data/items';
 import type {
   AttributeBuff,
   AttributeId,
@@ -12,7 +11,7 @@ import type {
   AttributeValues,
   PlayerAttributes,
 } from '@/types/attributes';
-import type { EquipmentState } from '@/types/inventory';
+import { applyStarBonusToBase } from '@/utils/star-bonus';
 
 export function emptyModifiers(): AttributeModifiers {
   return {};
@@ -62,52 +61,38 @@ export function levelModifiersFor(level: number): AttributeModifiers {
   return result;
 }
 
-/** Soma bônus de todos os itens equipados. */
-export function sumEquipmentBonuses(equipment: EquipmentState): AttributeModifiers {
-  const total = createZeroValues();
-
-  for (const stack of Object.values(equipment)) {
-    if (!stack) continue;
-    const bonuses = getItem(stack.itemId)?.bonuses;
-    if (!bonuses) continue;
-    addModifiers(total, bonuses);
-  }
-
-  return sumModifiers(total);
-}
-
 export function sumBuffModifiers(buffs: readonly AttributeBuff[], now = Date.now()): AttributeModifiers {
   const active = buffs.filter((buff) => buff.expiresAt == null || buff.expiresAt > now);
   return sumModifiers(...active.map((buff) => buff.modifiers));
 }
 
 /**
- * Compõe atributos finais: base + nível + equipamento + buffs.
- * Buffs ficam prontos para o sistema futuro.
+ * Compõe atributos: base×estrelas + nível + buffs.
+ * Equipamento removido do jogo.
  */
 export function computePlayerAttributes(input: {
   level: number;
-  equipment: EquipmentState;
+  stars?: number;
   buffs?: readonly AttributeBuff[];
   now?: number;
 }): PlayerAttributes {
-  const base = cloneValues(BASE_ATTRIBUTES);
+  const baseRaw = cloneValues(BASE_ATTRIBUTES);
+  const stars = input.stars ?? 0;
+  const base = applyStarBonusToBase(baseRaw, stars);
   const level = levelModifiersFor(input.level);
-  const equipment = sumEquipmentBonuses(input.equipment);
   const buffList = input.buffs ?? [];
   const buffs = sumBuffModifiers(buffList, input.now);
 
   const totals = createZeroValues();
   addModifiers(totals, base);
   addModifiers(totals, level);
-  addModifiers(totals, equipment);
   addModifiers(totals, buffs);
 
   return {
     totals,
     base,
     level,
-    equipment,
+    equipment: {},
     buffs,
     activeBuffs: buffList.filter(
       (buff) => buff.expiresAt == null || buff.expiresAt > (input.now ?? Date.now()),

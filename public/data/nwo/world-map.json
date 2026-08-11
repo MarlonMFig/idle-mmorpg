@@ -1,0 +1,1094 @@
+{
+  "generatedAt": "2026-04-09T23:17:05.883790+00:00",
+  "map": {
+    "width": 2048,
+    "height": 2048,
+    "tileSize": 256,
+    "rows": 8,
+    "cols": 8
+  },
+  "floors": [
+    6,
+    7
+  ],
+  "markerCount": 268,
+  "monsters": [
+    {
+      "name": "Bandit",
+      "kind": "monster",
+      "looktype": 707,
+      "image": "images/outfit/707.png",
+      "levelMin": 12,
+      "aliases": [
+        "Bandit"
+      ],
+      "spawnCount": 185,
+      "markerCount": 9,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Bandit Shinobi",
+      "kind": "monster",
+      "looktype": 655,
+      "image": "images/outfit/655.png",
+      "levelMin": 35,
+      "aliases": [
+        "Bandit Shinobi"
+      ],
+      "spawnCount": 60,
+      "markerCount": 12,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Bandit Sword",
+      "kind": "monster",
+      "looktype": 643,
+      "image": "images/outfit/643.png",
+      "levelMin": 25,
+      "aliases": [
+        "Bandit Sword"
+      ],
+      "spawnCount": 14,
+      "markerCount": 5,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Bear",
+      "kind": "monster",
+      "looktype": 2003,
+      "image": "images/outfit/2003.png",
+      "levelMin": 20,
+      "aliases": [
+        "Bear"
+      ],
+      "spawnCount": 102,
+      "markerCount": 6,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Boar",
+      "kind": "monster",
+      "looktype": 2036,
+      "image": "images/outfit/2036.png",
+      "levelMin": 6,
+      "aliases": [
+        "Boar"
+      ],
+      "spawnCount": 129,
+      "markerCount": 3,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Chakra Golem",
+      "kind": "monster",
+      "looktype": 2144,
+      "image": "images/outfit/2144.png",
+      "levelMin": 150,
+      "aliases": [
+        "Chakra Golem"
+      ],
+      "spawnCount": 224,
+      "markerCount": 3,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Coelho",
+      "kind": "monster",
+      "looktype": 2197,
+      "image": "images/outfit/2197.png",
+      "levelMin": 100,
+      "aliases": [
+        "Coelho"
+      ],
+      "spawnCount": 83,
+      "markerCount": 57,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Concentrate Monk",
+      "kind": "monster",
+      "looktype": 2164,
+      "image": "images/outfit/2164.png",
+      "levelMin": 150,
+      "aliases": [
+        "Concentrate Monk"
+      ],
+      "spawnCount": 104,
+      "markerCount": 3,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Cursed puppet",
+      "kind": "monster",
+      "looktype": 2120,
+      "image": "images/outfit/2120.png",
+      "levelMin": 100,
+      "aliases": [
+        "Cursed puppet"
+      ],
+      "spawnCount": 98,
+      "markerCount": 3,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Dirt Pugilist",
+      "kind": "monster",
+      "looktype": 2131,
+      "image": "images/outfit/2131.png",
+      "levelMin": 170,
+      "aliases": [
+        "Dirt Pugilist"
+      ],
+      "spawnCount": 117,
+      "markerCount": 2,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Dirt Samurai",
+      "kind": "monster",
+      "looktype": 2127,
+      "image": "images/outfit/2127.png",
+      "levelMin": 190,
+      "aliases": [
+        "Dirt Samurai"
+      ],
+      "spawnCount": 48,
+      "markerCount": 5,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Duna",
+      "kind": "monster",
+      "looktype": 2121,
+      "image": "images/outfit/2121.png",
+      "levelMin": 100,
+      "aliases": [
+        "Duna"
+      ],
+      "spawnCount": 259,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Earth Monk",
+      "kind": "monster",
+      "looktype": 2165,
+      "image": "images/outfit/2165.png",
+      "levelMin": 220,
+      "aliases": [
+        "Earth Monk"
+      ],
+      "spawnCount": 108,
+      "markerCount": 3,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Electric Hawk",
+      "kind": "monster",
+      "looktype": 2138,
+      "image": "images/outfit/2138.png",
+      "levelMin": 180,
+      "aliases": [
+        "Electric Hawk"
+      ],
+      "spawnCount": 16,
+      "markerCount": 1,
+      "floors": [
+        6
+      ]
+    },
+    {
+      "name": "Elite Swordsman",
+      "kind": "monster",
+      "looktype": 663,
+      "image": "images/outfit/663.png",
+      "levelMin": 50,
+      "aliases": [
+        "Elite Swordsman"
+      ],
+      "spawnCount": 11,
+      "markerCount": 2,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Enraged Bear",
+      "kind": "monster",
+      "looktype": 2007,
+      "image": "images/outfit/2007.png",
+      "levelMin": 25,
+      "aliases": [
+        "Enraged Bear"
+      ],
+      "spawnCount": 21,
+      "markerCount": 4,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Gennin",
+      "kind": "monster",
+      "looktype": 706,
+      "image": "images/outfit/706.png",
+      "levelMin": 40,
+      "aliases": [
+        "Gennin"
+      ],
+      "spawnCount": 129,
+      "markerCount": 5,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Giant Scorpion",
+      "kind": "monster",
+      "looktype": 2017,
+      "image": "images/outfit/2017.png",
+      "levelMin": 100,
+      "aliases": [
+        "Giant Scorpion"
+      ],
+      "spawnCount": 28,
+      "markerCount": 5,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Giant Spider",
+      "kind": "monster",
+      "looktype": 2029,
+      "image": "images/outfit/2029.png",
+      "levelMin": 50,
+      "aliases": [
+        "Giant Spider"
+      ],
+      "spawnCount": 26,
+      "markerCount": 5,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Gorila",
+      "kind": "monster",
+      "looktype": 2145,
+      "image": "images/outfit/2145.png",
+      "levelMin": 70,
+      "aliases": [
+        "Gorila"
+      ],
+      "spawnCount": 199,
+      "markerCount": 4,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Kagen Uchiha",
+      "kind": "monster",
+      "looktype": 647,
+      "image": "images/outfit/647.png",
+      "levelMin": 25,
+      "aliases": [
+        "Kagen Uchiha"
+      ],
+      "spawnCount": 13,
+      "markerCount": 2,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Karasu",
+      "kind": "monster",
+      "looktype": 2191,
+      "image": "images/outfit/2191.png",
+      "levelMin": 100,
+      "aliases": [
+        "Karasu"
+      ],
+      "spawnCount": 16,
+      "markerCount": 2,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Lightning Panther",
+      "kind": "monster",
+      "looktype": 2163,
+      "image": "images/outfit/2163.png",
+      "levelMin": 190,
+      "aliases": [
+        "Lightning Panther"
+      ],
+      "spawnCount": 62,
+      "markerCount": 2,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Lizard",
+      "kind": "monster",
+      "looktype": 2136,
+      "image": "images/outfit/2136.png",
+      "levelMin": 70,
+      "aliases": [
+        "Lizard"
+      ],
+      "spawnCount": 204,
+      "markerCount": 18,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Monk",
+      "kind": "monster",
+      "looktype": 648,
+      "image": "images/outfit/648.png",
+      "levelMin": 25,
+      "aliases": [
+        "Monk"
+      ],
+      "spawnCount": 99,
+      "markerCount": 3,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Monk Chiriku",
+      "kind": "monster",
+      "looktype": 649,
+      "image": "images/outfit/649.png",
+      "levelMin": 25,
+      "aliases": [
+        "Monk Chiriku"
+      ],
+      "spawnCount": 23,
+      "markerCount": 3,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Nomad",
+      "kind": "monster",
+      "looktype": 2135,
+      "image": "images/outfit/2135.png",
+      "levelMin": 120,
+      "aliases": [
+        "Nomad"
+      ],
+      "spawnCount": 260,
+      "markerCount": 4,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Rabbit",
+      "kind": "monster",
+      "looktype": 2078,
+      "image": "images/outfit/1.png",
+      "levelMin": 1,
+      "aliases": [
+        "Rabbit"
+      ],
+      "spawnCount": 6,
+      "markerCount": 3,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Reaper",
+      "kind": "monster",
+      "looktype": 2168,
+      "image": "images/outfit/2168.png",
+      "levelMin": 150,
+      "aliases": [
+        "Reaper"
+      ],
+      "spawnCount": 43,
+      "markerCount": 4,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Sand Disaster",
+      "kind": "monster",
+      "looktype": 2093,
+      "image": "images/outfit/2093.png",
+      "levelMin": 90,
+      "aliases": [
+        "Sand Disaster"
+      ],
+      "spawnCount": 34,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Scarab",
+      "kind": "monster",
+      "looktype": 2133,
+      "image": "images/outfit/2133.png",
+      "levelMin": 80,
+      "aliases": [
+        "Scarab"
+      ],
+      "spawnCount": 32,
+      "markerCount": 18,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Scorpion",
+      "kind": "monster",
+      "looktype": 2016,
+      "image": "images/outfit/1.png",
+      "levelMin": 70,
+      "aliases": [
+        "Scorpion"
+      ],
+      "spawnCount": 221,
+      "markerCount": 16,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Shukaku Fragment",
+      "kind": "monster",
+      "looktype": 2119,
+      "image": "images/outfit/2119.png",
+      "levelMin": 110,
+      "aliases": [
+        "Shukaku Fragment"
+      ],
+      "spawnCount": 7,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Shukaku Worshiper",
+      "kind": "monster",
+      "looktype": 2132,
+      "image": "images/outfit/2132.png",
+      "levelMin": 100,
+      "aliases": [
+        "Shukaku Worshiper"
+      ],
+      "spawnCount": 262,
+      "markerCount": 3,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Snake",
+      "kind": "monster",
+      "looktype": 2014,
+      "image": "images/outfit/2014.png",
+      "levelMin": 15,
+      "aliases": [
+        "Snake"
+      ],
+      "spawnCount": 45,
+      "markerCount": 6,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Spider",
+      "kind": "monster",
+      "looktype": 2030,
+      "image": "images/outfit/2030.png",
+      "levelMin": 40,
+      "aliases": [
+        "Spider"
+      ],
+      "spawnCount": 98,
+      "markerCount": 3,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Strong Swordsman",
+      "kind": "monster",
+      "looktype": 662,
+      "image": "images/outfit/662.png",
+      "levelMin": 55,
+      "aliases": [
+        "Strong Swordsman"
+      ],
+      "spawnCount": 11,
+      "markerCount": 2,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Suna Shinobi",
+      "kind": "monster",
+      "looktype": 711,
+      "image": "images/outfit/711.png",
+      "levelMin": 130,
+      "aliases": [
+        "Suna Shinobi"
+      ],
+      "spawnCount": 69,
+      "markerCount": 2,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Swordsman",
+      "kind": "monster",
+      "looktype": 645,
+      "image": "images/outfit/645.png",
+      "levelMin": 45,
+      "aliases": [
+        "Swordsman"
+      ],
+      "spawnCount": 89,
+      "markerCount": 2,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Swordsman Boss",
+      "kind": "monster",
+      "looktype": 646,
+      "image": "images/outfit/646.png",
+      "levelMin": 60,
+      "aliases": [
+        "Swordsman Boss"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Tiger",
+      "kind": "monster",
+      "looktype": 2013,
+      "image": "images/outfit/2013.png",
+      "levelMin": 65,
+      "aliases": [
+        "Tiger"
+      ],
+      "spawnCount": 42,
+      "markerCount": 5,
+      "floors": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "Toxic Snake",
+      "kind": "monster",
+      "looktype": 2015,
+      "image": "images/outfit/2015.png",
+      "levelMin": 20,
+      "aliases": [
+        "Toxic Snake"
+      ],
+      "spawnCount": 4,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Training Stump",
+      "kind": "monster",
+      "looktype": 1299,
+      "image": "images/outfit/1.png",
+      "levelMin": null,
+      "aliases": [
+        "Trainer",
+        "Training Stump"
+      ],
+      "spawnCount": 3,
+      "markerCount": 1,
+      "floors": [
+        6
+      ]
+    },
+    {
+      "name": "White Wolf",
+      "kind": "monster",
+      "looktype": 2024,
+      "image": "images/outfit/2024.png",
+      "levelMin": 20,
+      "aliases": [
+        "White Wolf"
+      ],
+      "spawnCount": 47,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    }
+  ],
+  "npcs": [
+    {
+      "name": "Akemi Kuroda",
+      "kind": "npc",
+      "looktype": 2156,
+      "image": "images/outfit/2156.png",
+      "levelMin": null,
+      "aliases": [
+        "Akemi Kuroda",
+        "TM AkemiKuroda"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Aya",
+      "kind": "npc",
+      "looktype": 1136,
+      "image": "images/outfit/1136.png",
+      "levelMin": null,
+      "aliases": [
+        "Aya",
+        "MS Aya"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        6
+      ]
+    },
+    {
+      "name": "Daichi Arashi",
+      "kind": "npc",
+      "looktype": 2151,
+      "image": "images/outfit/2151.png",
+      "levelMin": null,
+      "aliases": [
+        "Daichi Arashi",
+        "TM DaichiArashi"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Gata Tora",
+      "kind": "npc",
+      "looktype": 2080,
+      "image": "images/outfit/2080.png",
+      "levelMin": null,
+      "aliases": [
+        "Gata Tora",
+        "GataTora"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        6
+      ]
+    },
+    {
+      "name": "Hana",
+      "kind": "npc",
+      "looktype": 2158,
+      "image": "images/outfit/2158.png",
+      "levelMin": null,
+      "aliases": [
+        "Hana",
+        "TM Hana"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        6
+      ]
+    },
+    {
+      "name": "Hanami",
+      "kind": "npc",
+      "looktype": 2228,
+      "image": "images/outfit/2228.png",
+      "levelMin": null,
+      "aliases": [
+        "Coelha da Pascoa",
+        "Hanami"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        6
+      ]
+    },
+    {
+      "name": "Hayato",
+      "kind": "npc",
+      "looktype": 1142,
+      "image": "images/outfit/1142.png",
+      "levelMin": null,
+      "aliases": [
+        "Hayato",
+        "TB Hayato"
+      ],
+      "spawnCount": 2,
+      "markerCount": 2,
+      "floors": [
+        6
+      ]
+    },
+    {
+      "name": "Kaito Sazanami",
+      "kind": "npc",
+      "looktype": 2153,
+      "image": "images/outfit/2153.png",
+      "levelMin": null,
+      "aliases": [
+        "Kaito Sazanami",
+        "TM KaitoSazanami"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Kenji Sakamoto",
+      "kind": "npc",
+      "looktype": 2161,
+      "image": "images/outfit/2161.png",
+      "levelMin": null,
+      "aliases": [
+        "Kenji Sakamoto",
+        "TM KenjiSakamoto"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Mabui",
+      "kind": "npc",
+      "looktype": 1144,
+      "image": "images/outfit/1144.png",
+      "levelMin": null,
+      "aliases": [
+        "Mabui"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Misaki Kugutsu",
+      "kind": "npc",
+      "looktype": 2160,
+      "image": "images/outfit/2160.png",
+      "levelMin": null,
+      "aliases": [
+        "Misaki Kugutsu",
+        "TM MisakiKugutsu"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Nao Kazane",
+      "kind": "npc",
+      "looktype": 2161,
+      "image": "images/outfit/2161.png",
+      "levelMin": null,
+      "aliases": [
+        "Nao Kazane",
+        "TM NaoKazane"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Recepcionista Hokage",
+      "kind": "npc",
+      "looktype": 1151,
+      "image": "images/outfit/1151.png",
+      "levelMin": null,
+      "aliases": [
+        "M Recepcionista",
+        "Recepcionista Hokage"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        6
+      ]
+    },
+    {
+      "name": "Ren Sato",
+      "kind": "npc",
+      "looktype": 2159,
+      "image": "images/outfit/2159.png",
+      "levelMin": null,
+      "aliases": [
+        "Ren Sato",
+        "TM RenSato"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        6
+      ]
+    },
+    {
+      "name": "Renji Fuusa",
+      "kind": "npc",
+      "looktype": 2147,
+      "image": "images/outfit/2147.png",
+      "levelMin": null,
+      "aliases": [
+        "Renji Fuusa",
+        "TM RenjiFuusa"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Riku Daisen",
+      "kind": "npc",
+      "looktype": 2160,
+      "image": "images/outfit/2160.png",
+      "levelMin": null,
+      "aliases": [
+        "Riku Daisen",
+        "TM RikuDaisen"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Ryuji",
+      "kind": "npc",
+      "looktype": 1135,
+      "image": "images/outfit/1135.png",
+      "levelMin": null,
+      "aliases": [
+        "Ryuji"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Ryusei Inaba",
+      "kind": "npc",
+      "looktype": 2154,
+      "image": "images/outfit/2154.png",
+      "levelMin": null,
+      "aliases": [
+        "Ryusei Inaba",
+        "TM RyuseiInaba"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        6
+      ]
+    },
+    {
+      "name": "Sayuri Aoki",
+      "kind": "npc",
+      "looktype": 2155,
+      "image": "images/outfit/2155.png",
+      "levelMin": null,
+      "aliases": [
+        "Sayuri Aoki",
+        "TM SayuriAoki"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Shizuka",
+      "kind": "npc",
+      "looktype": 1145,
+      "image": "images/outfit/1145.png",
+      "levelMin": null,
+      "aliases": [
+        "Shizuka",
+        "TB Shizuka"
+      ],
+      "spawnCount": 2,
+      "markerCount": 2,
+      "floors": [
+        6
+      ]
+    },
+    {
+      "name": "Takao Mori",
+      "kind": "npc",
+      "looktype": 2149,
+      "image": "images/outfit/2149.png",
+      "levelMin": null,
+      "aliases": [
+        "TM TakaoMori",
+        "Takao Mori"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        6
+      ]
+    },
+    {
+      "name": "Takeshi",
+      "kind": "npc",
+      "looktype": 1141,
+      "image": "images/outfit/1141.png",
+      "levelMin": null,
+      "aliases": [
+        "Takeshi"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Tetsu Ishida",
+      "kind": "npc",
+      "looktype": 2148,
+      "image": "images/outfit/2148.png",
+      "levelMin": null,
+      "aliases": [
+        "TM TetsuIshida",
+        "Tetsu Ishida"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        7
+      ]
+    },
+    {
+      "name": "Yuna Soryu",
+      "kind": "npc",
+      "looktype": 2157,
+      "image": "images/outfit/2157.png",
+      "levelMin": null,
+      "aliases": [
+        "TM YunaSoryu",
+        "Yuna Soryu"
+      ],
+      "spawnCount": 1,
+      "markerCount": 1,
+      "floors": [
+        6
+      ]
+    }
+  ]
+}

@@ -7,6 +7,8 @@ export const HUB_KEYS = {
 
 export type HubKey = (typeof HUB_KEYS)[keyof typeof HUB_KEYS];
 
+export type HubCameraMode = 'cover' | 'follow';
+
 export interface HubBackgroundDef {
   key: HubKey;
   url: string;
@@ -15,11 +17,11 @@ export interface HubBackgroundDef {
   /** Spawn do jogador no hub. */
   spawn: { x: number; y: number };
   /**
-   * Quando definido, o hub usa o TMX recortado do WONSR (câmera segue o
-   * jogador) em vez da arte fullscreen.
+   * Quando definido, o hub usa o TMX (câmera conforme `cameraMode`) em vez da
+   * arte fullscreen pura sem colisão.
    */
   tilemapKey?: MapKey;
-  /** PNG renderizado do recorte — usado como imagem única (evita bug do tileset 96×96). */
+  /** PNG renderizado — imagem única + colisão do TMX. */
   tilemapImageKey?: string;
   tilemapImageUrl?: string;
   /** Dimensões do mundo tilemap (px). */
@@ -27,22 +29,28 @@ export interface HubBackgroundDef {
   tilemapHeight?: number;
   /** Spawn do jogador no TMX (px). */
   tilemapSpawn?: { x: number; y: number };
+  /**
+   * `cover` preenche o viewport (hub ilustrado 16:9).
+   * `follow` segue o jogador com zoom fixo (mapas grandes tipo WONSR).
+   */
+  cameraMode?: HubCameraMode;
 }
 
 export const HUB_BACKGROUNDS: Record<HubKey, HubBackgroundDef> = {
   [HUB_KEYS.konoha]: {
     key: HUB_KEYS.konoha,
-    url: '/hubs/konoha.png?v=1',
+    url: '/hubs/konoha.png?v=2',
     width: 1024,
     height: 576,
-    spawn: { x: 512, y: 340 },
-    tilemapKey: MAP_KEYS.wonsrKonoha,
-    tilemapImageKey: 'hub-wonsr-konoha',
-    tilemapImageUrl: '/maps/wonsr-konoha.png',
-    tilemapWidth: 3072,
-    tilemapHeight: 3072,
-    // Praça central do recorte — tile (47,41), validado contra o layer de colisão.
-    tilemapSpawn: { x: 1520, y: 1328 },
+    spawn: { x: 528, y: 336 },
+    tilemapKey: MAP_KEYS.leafVillageHub,
+    tilemapImageKey: 'hub-leaf-village',
+    tilemapImageUrl: '/maps/leaf-village-hub.png?v=2',
+    tilemapWidth: 1024,
+    tilemapHeight: 576,
+    // Centro da praça de pedra — validado contra o layer de colisão.
+    tilemapSpawn: { x: 528, y: 336 },
+    cameraMode: 'cover',
   },
 };
 

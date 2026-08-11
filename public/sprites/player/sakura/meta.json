@@ -1,70 +1,70 @@
 {
   "sakura-idle": {
     "image": "/sprites/player/sakura/idle.png",
-    "frameWidth": 21,
+    "frameWidth": 34,
     "frameHeight": 51,
-    "frameCount": 4,
-    "frameRate": 12,
-    "durationMs": 333,
+    "frameCount": 6,
     "contentHeight": 48,
-    "scale": 0.7272727272727273,
-    "source": "sakura-idle.png"
+    "scale": 0.384
   },
   "sakura-walk": {
     "image": "/sprites/player/sakura/walk.png",
-    "frameWidth": 51,
+    "frameWidth": 31,
     "frameHeight": 52,
     "frameCount": 6,
-    "frameRate": 12,
-    "durationMs": 500,
     "contentHeight": 48,
-    "scale": 0.8571428571428571,
-    "source": "sakura-run.png"
+    "scale": 0.384,
+    "residualGreen": 0,
+    "pureBlack": 1060
   },
   "sakura-chou-bakou": {
     "image": "/sprites/player/sakura/chou-bakou.png",
-    "frameWidth": 46,
-    "frameHeight": 50,
-    "frameCount": 13,
-    "frameRate": 12,
-    "durationMs": 1083,
+    "frameWidth": 79,
+    "frameHeight": 88,
+    "frameCount": 19,
     "contentHeight": 48,
-    "scale": 0.5714285714285714,
-    "source": "sakura-jutsu1.png",
-    "hitDelayMs": 596
+    "scale": 0.384,
+    "frameRate": 12,
+    "durationMs": 1583,
+    "hitDelayMs": 917,
+    "residualGreen": 0,
+    "pureBlack": 3553
   },
   "sakura-combo1": {
     "image": "/sprites/player/sakura/combo1.png",
-    "frameWidth": 46,
-    "frameHeight": 50,
-    "frameCount": 2,
-    "frameRate": 12,
-    "durationMs": 167,
+    "frameWidth": 44,
+    "frameHeight": 52,
+    "frameCount": 4,
     "contentHeight": 48,
-    "scale": 0.5714285714285714,
-    "source": "sakura-jutsu1.png"
+    "scale": 0.3609022556390977,
+    "range": [
+      0,
+      4
+    ]
   },
   "sakura-combo2": {
     "image": "/sprites/player/sakura/combo2.png",
-    "frameWidth": 46,
-    "frameHeight": 50,
-    "frameCount": 2,
-    "frameRate": 12,
-    "durationMs": 167,
+    "frameWidth": 44,
+    "frameHeight": 52,
+    "frameCount": 4,
     "contentHeight": 48,
-    "scale": 0.5714285714285714,
-    "source": "sakura-jutsu1.png"
+    "scale": 0.3609022556390977,
+    "range": [
+      4,
+      8
+    ]
   },
   "sakura-combo3": {
     "image": "/sprites/player/sakura/combo3.png",
-    "frameWidth": 46,
-    "frameHeight": 50,
-    "frameCount": 1,
-    "frameRate": 12,
-    "durationMs": 83,
+    "frameWidth": 44,
+    "frameHeight": 52,
+    "frameCount": 4,
     "contentHeight": 48,
-    "scale": 0.5714285714285714,
-    "source": "sakura-jutsu1.png"
+    "scale": 0.3609022556390977,
+    "range": [
+      8,
+      12
+    ]
   },
   "sakura-chakra-strength": {
     "image": "/sprites/player/sakura/chakra-strength.png",
@@ -80,15 +80,16 @@
   },
   "skill-chou-bakou": {
     "image": "/sprites/player/sakura/chou-bakou.png",
-    "frameWidth": 46,
-    "frameHeight": 50,
-    "frameCount": 13,
-    "frameRate": 12,
-    "durationMs": 1083,
+    "frameWidth": 79,
+    "frameHeight": 88,
+    "frameCount": 19,
     "contentHeight": 48,
-    "scale": 0.5714285714285714,
-    "source": "sakura-jutsu1.png",
-    "hitDelayMs": 596
+    "scale": 0.384,
+    "frameRate": 12,
+    "durationMs": 1583,
+    "hitDelayMs": 917,
+    "residualGreen": 0,
+    "pureBlack": 3553
   },
   "skill-chakra-strength": {
     "image": "/sprites/player/sakura/chakra-strength.png",
@@ -101,5 +102,23 @@
     "scale": 0.6486486486486487,
     "source": "sakura-jutsu2.png",
     "hitDelayMs": 600
+  },
+  "sakura-hurt": {
+    "image": "/sprites/player/sakura/hurt.png",
+    "frameWidth": 55,
+    "frameHeight": 47,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "frameRate": 10,
+    "scale": 0.384
+  },
+  "sakura-death": {
+    "image": "/sprites/player/sakura/death.png",
+    "frameWidth": 55,
+    "frameHeight": 47,
+    "frameCount": 3,
+    "contentHeight": 48,
+    "frameRate": 8,
+    "scale": 0.384
   }
 }

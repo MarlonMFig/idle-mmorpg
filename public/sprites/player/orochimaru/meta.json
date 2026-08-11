@@ -1,0 +1,74 @@
+{
+  "orochimaru-walk": {
+    "image": "/sprites/player/orochimaru/walk.png",
+    "frameWidth": 24,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.4444444444444444,
+    "residualGreen": 0,
+    "pureBlack": 1423
+  },
+  "orochimaru-idle": {
+    "image": "/sprites/player/orochimaru/idle.png",
+    "frameWidth": 25,
+    "frameHeight": 52,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.43636363636363634
+  },
+  "orochimaru-combo1": {
+    "image": "/sprites/player/orochimaru/combo1.png",
+    "frameWidth": 63,
+    "frameHeight": 52,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.4444444444444444,
+    "range": [
+      0,
+      5
+    ]
+  },
+  "orochimaru-combo2": {
+    "image": "/sprites/player/orochimaru/combo2.png",
+    "frameWidth": 63,
+    "frameHeight": 52,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.4444444444444444,
+    "range": [
+      5,
+      10
+    ]
+  },
+  "orochimaru-combo3": {
+    "image": "/sprites/player/orochimaru/combo3.png",
+    "frameWidth": 63,
+    "frameHeight": 52,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.4444444444444444,
+    "range": [
+      10,
+      15
+    ]
+  },
+  "orochimaru-hurt": {
+    "image": "/sprites/player/orochimaru/hurt.png",
+    "frameWidth": 51,
+    "frameHeight": 49,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "frameRate": 10,
+    "scale": 0.4444444444444444
+  },
+  "orochimaru-death": {
+    "image": "/sprites/player/orochimaru/death.png",
+    "frameWidth": 51,
+    "frameHeight": 49,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "frameRate": 8,
+    "scale": 0.4444444444444444
+  }
+}

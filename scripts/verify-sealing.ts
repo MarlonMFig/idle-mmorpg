@@ -43,25 +43,41 @@ assert(teamStore.getSnapshot().collection.length === 1, 'starter na coleção');
 assert(teamStore.getSnapshot().teamIds.length === 1, 'starter na equipe');
 
 let result = trySealEnemy(enemy(), () => 0);
+// reset dá 20 scrolls — mas teste limpa? inventory reset com 20. força zerar
+// ensure no scrolls: discard by resetting slots via remove
+while (inventoryStore.countItem(SEALING_SCROLL_ITEM_ID) > 0) {
+  inventoryStore.removeItem(SEALING_SCROLL_ITEM_ID, inventoryStore.countItem(SEALING_SCROLL_ITEM_ID));
+}
+
+result = trySealEnemy(enemy(), () => 0);
 assert(result.kind === 'skipped' && result.reason === 'no-scroll', 'sem pergaminho');
 
 inventoryStore.addItem(SEALING_SCROLL_ITEM_ID, 5);
 assert(inventoryStore.countItem(SEALING_SCROLL_ITEM_ID) === 5, '5 pergaminhos');
 
 result = trySealEnemy(enemy(), () => 0.99);
-assert(result.kind === 'failed', 'falha 10%');
+assert(result.kind === 'failed', 'falha RNG');
 assert(inventoryStore.countItem(SEALING_SCROLL_ITEM_ID) === 4, 'consumiu 1 na falha');
 
+const beforeCount = teamStore.getSnapshot().collection.length;
 result = trySealEnemy(enemy(), () => 0);
 assert(result.kind === 'success', 'sucesso');
-assert(teamStore.hasCharacter('wonsr-vocation-30'), 'na coleção');
+assert(teamStore.getSnapshot().collection.length === beforeCount + 1, 'cópia na coleção');
 assert(inventoryStore.countItem(SEALING_SCROLL_ITEM_ID) === 3, 'consumiu 1 no sucesso');
 
+// Duplicatas permitidas (forja)
 result = trySealEnemy(enemy(), () => 0);
-assert(result.kind === 'skipped' && result.reason === 'already-owned', 'duplicata');
-assert(inventoryStore.countItem(SEALING_SCROLL_ITEM_ID) === 3, 'não consumiu em duplicata');
+assert(result.kind === 'success', 'segunda cópia permitida');
+assert(teamStore.getSnapshot().collection.length === beforeCount + 2, '2 cópias na bag');
+assert(inventoryStore.countItem(SEALING_SCROLL_ITEM_ID) === 2, 'consumiu no 2º selo');
 
-assert(teamStore.addToTeam('wonsr-vocation-30'), 'add team 2');
+const sakuraIds = teamStore
+  .getSnapshot()
+  .collection.filter((entry) => entry.lookType === 1423)
+  .map((entry) => entry.id);
+assert(sakuraIds.length >= 2, 'pelo menos 2 sakura');
+assert(teamStore.addToTeam(sakuraIds[0]), 'add team 2');
+
 const second = {
   id: 'wonsr-vocation-80',
   name: 'Hinata Hyuga',
@@ -82,8 +98,8 @@ const fourth = {
 assert(teamStore.addToCollection(fourth), 'add collection 4');
 assert(!teamStore.addToTeam(fourth.id), 'limite 3');
 
-assert(teamStore.setActive('wonsr-vocation-30'), 'troca ativo');
-assert(teamStore.getActive()?.id === 'wonsr-vocation-30', 'ativo ok');
-assert(!teamStore.removeFromTeam('wonsr-vocation-30'), 'não remove ativo');
+assert(teamStore.setActive(sakuraIds[0]), 'troca ativo');
+assert(teamStore.getActive()?.id === sakuraIds[0], 'ativo ok');
+assert(!teamStore.removeFromTeam(sakuraIds[0]), 'não remove ativo');
 
 console.log('verify-sealing: ok');

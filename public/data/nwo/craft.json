@@ -1,0 +1,494 @@
+[
+  {
+    "route": "Rota Hunter",
+    "title": "Set inicial",
+    "sources": [
+      "Boar",
+      "Bear",
+      "Snake"
+    ],
+    "recipes": [
+      {
+        "result": "Hunter Amulet",
+        "resultId": 24261,
+        "slotType": "Amuleto",
+        "materials": [
+          {
+            "name": "Fang",
+            "amount": 3
+          },
+          {
+            "name": "Raw leather",
+            "amount": 1
+          }
+        ],
+        "hyo": 150,
+        "durationSec": 40,
+        "image": "images/wiki/items/24261.png",
+        "rawTitle": "Hunter Amulet | Fang x3 | Raw leather x1 | 150 Hyo | 40s"
+      },
+      {
+        "result": "Hunter bandana",
+        "resultId": 24266,
+        "slotType": "Head",
+        "materials": [
+          {
+            "name": "Raw leather",
+            "amount": 2
+          },
+          {
+            "name": "Hardened Leather",
+            "amount": 3
+          }
+        ],
+        "hyo": 200,
+        "durationSec": 20,
+        "image": "images/wiki/items/24266.png",
+        "rawTitle": "Hunter bandana | Raw leather x2 | Hardened Leather x3 | 200 Hyo | 20s"
+      },
+      {
+        "result": "Bone Knife",
+        "resultId": 14476,
+        "slotType": "Arma",
+        "materials": [
+          {
+            "name": "Fang",
+            "amount": 1
+          },
+          {
+            "name": "Raw leather",
+            "amount": 3
+          }
+        ],
+        "hyo": 30,
+        "durationSec": 10,
+        "image": "images/wiki/items/14476.png",
+        "rawTitle": "Bone Knife | Fang x1 | Raw leather x3 | 30 Hyo | 10s"
+      },
+      {
+        "result": "Bone Shuriken",
+        "resultId": 14475,
+        "slotType": "Extra",
+        "materials": [
+          {
+            "name": "Raw leather",
+            "amount": 1
+          },
+          {
+            "name": "Fang",
+            "amount": 1
+          }
+        ],
+        "hyo": 10,
+        "durationSec": 10,
+        "image": "images/wiki/items/14475.png",
+        "rawTitle": "Bone Shuriken | Raw leather x1 | Fang x1 | 10 Hyo | 10s"
+      },
+      {
+        "result": "Hunter Gloves",
+        "resultId": 24264,
+        "slotType": "Hands",
+        "materials": [
+          {
+            "name": "Raw leather",
+            "amount": 3
+          },
+          {
+            "name": "Hardened Leather",
+            "amount": 2
+          }
+        ],
+        "hyo": 70,
+        "durationSec": 20,
+        "image": "images/wiki/items/24264.png",
+        "rawTitle": "Hunter Gloves | Raw leather x3 | Hardened Leather x2 | 70 Hyo | 20s"
+      },
+      {
+        "result": "Hunter Armor",
+        "resultId": 24267,
+        "slotType": "Body",
+        "materials": [
+          {
+            "name": "Hardened Leather",
+            "amount": 3
+          },
+          {
+            "name": "Raw leather",
+            "amount": 2
+          }
+        ],
+        "hyo": 300,
+        "durationSec": 40,
+        "image": "images/wiki/items/24267.png",
+        "rawTitle": "Hunter Armor | Hardened Leather x3 | Raw leather x2 | 300 Hyo | 40s"
+      },
+      {
+        "result": "Hunter Legs",
+        "resultId": 24268,
+        "slotType": "Legs",
+        "materials": [
+          {
+            "name": "Raw leather",
+            "amount": 3
+          },
+          {
+            "name": "Snake scale",
+            "amount": 4
+          }
+        ],
+        "hyo": 250,
+        "durationSec": 30,
+        "image": "images/wiki/items/24268.png",
+        "rawTitle": "Hunter Legs | Raw leather x3 | Snake scale x4 | 250 Hyo | 30s"
+      },
+      {
+        "result": "Hunter Boots",
+        "resultId": 24269,
+        "slotType": "Feet",
+        "materials": [
+          {
+            "name": "Raw leather",
+            "amount": 2
+          },
+          {
+            "name": "Piece of cloth",
+            "amount": 1
+          }
+        ],
+        "hyo": 150,
+        "durationSec": 20,
+        "image": "images/wiki/items/24269.png",
+        "rawTitle": "Hunter Boots | Raw leather x2 | Piece of cloth x1 | 150 Hyo | 20s"
+      }
+    ]
+  },
+  {
+    "route": "Rota Bandit",
+    "title": "Set intermediario",
+    "sources": [
+      "Bandit",
+      "Bandit Shinobi",
+      "Enraged Bear"
+    ],
+    "recipes": [
+      {
+        "result": "Bandit ring",
+        "resultId": 24272,
+        "slotType": "Anel",
+        "materials": [
+          {
+            "name": "Bandit badge",
+            "amount": 1
+          },
+          {
+            "name": "Bandit Sword",
+            "amount": 1
+          }
+        ],
+        "hyo": 400,
+        "durationSec": 200,
+        "image": "images/wiki/items/24272.png",
+        "rawTitle": "Bandit ring | Bandit badge x1 | Bandit Sword x1 | 400 Hyo | 200s"
+      },
+      {
+        "result": "Bandit bandana",
+        "resultId": 24275,
+        "slotType": "Head",
+        "materials": [
+          {
+            "name": "Black Hardened Leather",
+            "amount": 1
+          },
+          {
+            "name": "Piece of cloth",
+            "amount": 3
+          }
+        ],
+        "hyo": 350,
+        "durationSec": 30,
+        "image": "images/wiki/items/24275.png",
+        "rawTitle": "Bandit bandana | Black Hardened Leather x1 | Piece of cloth x3 | 350 Hyo | 30s"
+      },
+      {
+        "result": "Simple lance",
+        "resultId": 14480,
+        "slotType": "Arma",
+        "materials": [
+          {
+            "name": "Broken lance",
+            "amount": 1
+          }
+        ],
+        "hyo": 1000,
+        "durationSec": 180,
+        "image": "images/wiki/items/14480.png",
+        "rawTitle": "Simple lance | Broken lance x1 | 1000 Hyo | 180s"
+      },
+      {
+        "result": "Bandit Gloves",
+        "resultId": 24273,
+        "slotType": "Hands",
+        "materials": [
+          {
+            "name": "Piece of cloth",
+            "amount": 4
+          },
+          {
+            "name": "Black Bear Paw",
+            "amount": 1
+          }
+        ],
+        "hyo": 600,
+        "durationSec": 100,
+        "image": "images/wiki/items/24273.png",
+        "rawTitle": "Bandit Gloves | Piece of cloth x4 | Black Bear Paw x1 | 600 Hyo | 100s"
+      },
+      {
+        "result": "Bandit Armor",
+        "resultId": 24276,
+        "slotType": "Body",
+        "materials": [
+          {
+            "name": "Piece of cloth",
+            "amount": 4
+          },
+          {
+            "name": "Black Bear Paw",
+            "amount": 1
+          }
+        ],
+        "hyo": 600,
+        "durationSec": 100,
+        "image": "images/wiki/items/24276.png",
+        "rawTitle": "Bandit Armor | Piece of cloth x4 | Black Bear Paw x1 | 600 Hyo | 100s"
+      },
+      {
+        "result": "Bandit Legs",
+        "resultId": 24277,
+        "slotType": "Legs",
+        "materials": [
+          {
+            "name": "Piece of cloth",
+            "amount": 4
+          },
+          {
+            "name": "Black Hardened Leather",
+            "amount": 1
+          }
+        ],
+        "hyo": 700,
+        "durationSec": 60,
+        "image": "images/wiki/items/24277.png",
+        "rawTitle": "Bandit Legs | Piece of cloth x4 | Black Hardened Leather x1 | 700 Hyo | 60s"
+      },
+      {
+        "result": "Bandit Boots",
+        "resultId": 24278,
+        "slotType": "Feet",
+        "materials": [
+          {
+            "name": "Piece of cloth",
+            "amount": 2
+          },
+          {
+            "name": "Black Raw leather",
+            "amount": 2
+          }
+        ],
+        "hyo": 350,
+        "durationSec": 30,
+        "image": "images/wiki/items/24278.png",
+        "rawTitle": "Bandit Boots | Piece of cloth x2 | Black Raw leather x2 | 350 Hyo | 30s"
+      }
+    ]
+  },
+  {
+    "route": "Rota Desert Ronin",
+    "title": "Set pesado de Suna",
+    "sources": [
+      "Nomad",
+      "Scorpion",
+      "Shukaku",
+      "Puppet Chief"
+    ],
+    "recipes": [
+      {
+        "result": "Desert Ronin collar",
+        "resultId": 24279,
+        "slotType": "Amuleto",
+        "materials": [
+          {
+            "name": "Shukaku's Eye",
+            "amount": 1
+          },
+          {
+            "name": "Chakra strings",
+            "amount": 10
+          },
+          {
+            "name": "Special Sand",
+            "amount": 20
+          }
+        ],
+        "hyo": null,
+        "durationSec": 600,
+        "image": "images/wiki/items/24279.png",
+        "rawTitle": "Desert Ronin collar | Shukaku's Eye x1 | Chakra strings x10 | Special Sand x20 | 10k Hyo | 600s"
+      },
+      {
+        "result": "Desert Ronin bandana",
+        "resultId": 24284,
+        "slotType": "Head",
+        "materials": [
+          {
+            "name": "Black cloth",
+            "amount": 3
+          },
+          {
+            "name": "Yellow cloth",
+            "amount": 3
+          },
+          {
+            "name": "Giant scorpion scale",
+            "amount": 10
+          },
+          {
+            "name": "Special Sand",
+            "amount": 20
+          }
+        ],
+        "hyo": null,
+        "durationSec": 900,
+        "image": "images/wiki/items/24284.png",
+        "rawTitle": "Desert Ronin bandana | Black cloth x3 | Yellow cloth x3 | Giant scorpion scale x10 | Special Sand x20 | 10k Hyo | 900s"
+      },
+      {
+        "result": "Desert Ronin ring",
+        "resultId": 24281,
+        "slotType": "Anel",
+        "materials": [
+          {
+            "name": "Shukaku's Eye",
+            "amount": 3
+          },
+          {
+            "name": "Puppet Core",
+            "amount": 1
+          },
+          {
+            "name": "Special Sand",
+            "amount": 20
+          }
+        ],
+        "hyo": null,
+        "durationSec": 1000,
+        "image": "images/wiki/items/24281.png",
+        "rawTitle": "Desert Ronin ring | Shukaku's Eye x3 | Puppet Core x1 | Special Sand x20 | 50k Hyo | 1000s"
+      },
+      {
+        "result": "Desert Ronin Gloves",
+        "resultId": 24282,
+        "slotType": "Hands",
+        "materials": [
+          {
+            "name": "Black cloth",
+            "amount": 2
+          },
+          {
+            "name": "Yellow cloth",
+            "amount": 2
+          },
+          {
+            "name": "Special Sand",
+            "amount": 20
+          }
+        ],
+        "hyo": null,
+        "durationSec": 500,
+        "image": "images/wiki/items/24282.png",
+        "rawTitle": "Desert Ronin Gloves | Black cloth x2 | Yellow cloth x2 | Special Sand x20 | 30k Hyo | 500s"
+      },
+      {
+        "result": "Desert Ronin cloth",
+        "resultId": 24285,
+        "slotType": "Body",
+        "materials": [
+          {
+            "name": "Black cloth",
+            "amount": 5
+          },
+          {
+            "name": "Yellow cloth",
+            "amount": 5
+          },
+          {
+            "name": "Giant scorpion scale",
+            "amount": 30
+          },
+          {
+            "name": "Special Sand",
+            "amount": 40
+          }
+        ],
+        "hyo": null,
+        "durationSec": 700,
+        "image": "images/wiki/items/24285.png",
+        "rawTitle": "Desert Ronin cloth | Black cloth x5 | Yellow cloth x5 | Giant scorpion scale x30 | Special Sand x40 | 100k Hyo | 700s"
+      },
+      {
+        "result": "Desert Ronin Legs",
+        "resultId": 24286,
+        "slotType": "Legs",
+        "materials": [
+          {
+            "name": "Black cloth",
+            "amount": 2
+          },
+          {
+            "name": "Yellow cloth",
+            "amount": 4
+          },
+          {
+            "name": "Giant scorpion scale",
+            "amount": 20
+          },
+          {
+            "name": "Special Sand",
+            "amount": 30
+          }
+        ],
+        "hyo": null,
+        "durationSec": 1000,
+        "image": "images/wiki/items/24286.png",
+        "rawTitle": "Desert Ronin Legs | Black cloth x2 | Yellow cloth x4 | Giant scorpion scale x20 | Special Sand x30 | 60k Hyo | 1000s"
+      },
+      {
+        "result": "Desert Ronin Boots",
+        "resultId": 24287,
+        "slotType": "Feet",
+        "materials": [
+          {
+            "name": "Black cloth",
+            "amount": 2
+          },
+          {
+            "name": "Yellow cloth",
+            "amount": 2
+          },
+          {
+            "name": "Giant scorpion scale",
+            "amount": 10
+          },
+          {
+            "name": "Special Sand",
+            "amount": 20
+          }
+        ],
+        "hyo": null,
+        "durationSec": 700,
+        "image": "images/wiki/items/24287.png",
+        "rawTitle": "Desert Ronin Boots | Black cloth x2 | Yellow cloth x2 | Giant scorpion scale x10 | Special Sand x20 | 40k Hyo | 700s"
+      }
+    ]
+  }
+]

@@ -1,5 +1,6 @@
 import { BASE_ATTRIBUTES } from '@/constants/attributes';
 import { createStore } from '@/stores/create-store';
+import { teamStore } from '@/stores/team-store';
 import { vitalsStore } from '@/stores/vitals-store';
 import type {
   AttributeBuff,
@@ -7,22 +8,19 @@ import type {
   AttributeModifiers,
   PlayerAttributes,
 } from '@/types/attributes';
-import type { EquipmentState } from '@/types/inventory';
 import { computePlayerAttributes, emptyModifiers } from '@/utils/attributes';
-import { createEmptyEquipment } from '@/utils/equipment';
 
-function buildState(
-  level: number,
-  equipment: EquipmentState,
-  activeBuffs: AttributeBuff[],
-): PlayerAttributes {
-  return computePlayerAttributes({ level, equipment, buffs: activeBuffs });
+function activeStars(): number {
+  return teamStore.getActive()?.stars ?? 0;
 }
 
-let equipmentRef: EquipmentState = createEmptyEquipment();
+function buildState(level: number, stars: number, activeBuffs: AttributeBuff[]): PlayerAttributes {
+  return computePlayerAttributes({ level, stars, buffs: activeBuffs });
+}
+
 let buffs: AttributeBuff[] = [];
 
-const store = createStore<PlayerAttributes>(buildState(1, equipmentRef, buffs));
+const store = createStore<PlayerAttributes>(buildState(1, 0, buffs));
 
 function syncVitals(fullHeal: boolean): void {
   const { totals } = store.getSnapshot();
@@ -30,8 +28,8 @@ function syncVitals(fullHeal: boolean): void {
 }
 
 /**
- * Atributos do jogador em camadas (base / nível / equipamento / buffs).
- * Buffs: API pronta; duração opcional via `expiresAt`.
+ * Atributos do jogador: base×estrelas do principal + nível + buffs.
+ * Sem camada de equipamento.
  */
 export const attributesStore = {
   subscribe: store.subscribe,
@@ -62,38 +60,35 @@ export const attributesStore = {
   },
 
   /**
-   * Recalcula totais a partir do equipamento (e buffs ativos).
+   * Recalcula totais (estrelas do principal ativo + nível + buffs).
    * @param fullHeal restaura HP ao máximo (início de partida).
    */
-  recalculate(equipment: EquipmentState, fullHeal = false): void {
-    equipmentRef = equipment;
+  recalculate(fullHeal = false): void {
     this.pruneExpiredBuffs();
-    store.setState(buildState(vitalsStore.getLevel(), equipmentRef, buffs));
+    store.setState(buildState(vitalsStore.getLevel(), activeStars(), buffs));
     syncVitals(fullHeal);
   },
 
-  /** Chamado após level-up para incluir a camada de nível. */
+  /** Chamado após level-up / troca de principal / forja. */
   onLevelChanged(fullHeal = true): void {
-    this.pruneExpiredBuffs();
-    store.setState(buildState(vitalsStore.getLevel(), equipmentRef, buffs));
-    syncVitals(fullHeal);
+    this.recalculate(fullHeal);
   },
 
-  reset(equipment?: EquipmentState): void {
+  /** Recalcular quando estrelas ou principal mudam. */
+  onActiveCharacterChanged(fullHeal = false): void {
+    this.recalculate(fullHeal);
+  },
+
+  reset(): void {
     buffs = [];
-    equipmentRef = equipment ?? createEmptyEquipment();
-    store.setState(buildState(1, equipmentRef, buffs));
+    store.setState(buildState(1, 0, buffs));
     syncVitals(true);
   },
 
-  /**
-   * Adiciona ou substitui um buff pela `id`.
-   * Preparado para sistema de buffs futuro.
-   */
   addBuff(id: string, modifiers: AttributeModifiers, durationMs?: number): void {
     const expiresAt = durationMs != null ? Date.now() + durationMs : undefined;
     buffs = [...buffs.filter((buff) => buff.id !== id), { id, modifiers, expiresAt }];
-    store.setState(buildState(vitalsStore.getLevel(), equipmentRef, buffs));
+    store.setState(buildState(vitalsStore.getLevel(), activeStars(), buffs));
     syncVitals(false);
   },
 
@@ -101,14 +96,14 @@ export const attributesStore = {
     const next = buffs.filter((buff) => buff.id !== id);
     if (next.length === buffs.length) return;
     buffs = next;
-    store.setState(buildState(vitalsStore.getLevel(), equipmentRef, buffs));
+    store.setState(buildState(vitalsStore.getLevel(), activeStars(), buffs));
     syncVitals(false);
   },
 
   clearBuffs(): void {
     if (buffs.length === 0) return;
     buffs = [];
-    store.setState(buildState(vitalsStore.getLevel(), equipmentRef, buffs));
+    store.setState(buildState(vitalsStore.getLevel(), activeStars(), buffs));
     syncVitals(false);
   },
 
@@ -118,7 +113,6 @@ export const attributesStore = {
     buffs = next;
   },
 
-  /** Camada de buffs vazia — útil para UI / testes. */
   getBuffLayer(): AttributeModifiers {
     return store.getSnapshot().buffs ?? emptyModifiers();
   },

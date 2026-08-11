@@ -248,7 +248,8 @@ export class GameScene extends Phaser.Scene {
       this.cameras.main.setBounds(0, 0, worldW, worldH);
       this.worldW = worldW;
       this.worldH = worldH;
-      this.cameraLayout = 'follow';
+      // Hubs ilustrados (16:9) usam cover; mapas grandes WONSR usam follow.
+      this.cameraLayout = hub.cameraMode === 'follow' ? 'follow' : 'cover';
       this.applyCameraLayout();
     } else {
       const maps = new MapLoader(this);
@@ -341,7 +342,10 @@ export class GameScene extends Phaser.Scene {
 
       if (this.hubCollisionLayer) {
         this.physics.add.collider(this.player.sprite, this.hubCollisionLayer);
-        this.cameras.main.startFollow(this.player.sprite, true, 1, 1);
+        // Cover stays centered on the illustration; only follow in follow mode.
+        if (this.cameraLayout === 'follow') {
+          this.cameras.main.startFollow(this.player.sprite, true, 1, 1);
+        }
       }
     }
 

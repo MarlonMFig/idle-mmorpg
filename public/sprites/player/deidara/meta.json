@@ -1,0 +1,100 @@
+{
+  "deidara-walk": {
+    "image": "/sprites/player/deidara/walk.png",
+    "frameWidth": 29,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.39669421487603307,
+    "residualGreen": 0,
+    "pureBlack": 1019
+  },
+  "deidara-idle": {
+    "image": "/sprites/player/deidara/idle.png",
+    "frameWidth": 26,
+    "frameHeight": 52,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.3870967741935484
+  },
+  "deidara-combo1": {
+    "image": "/sprites/player/deidara/combo1.png",
+    "frameWidth": 55,
+    "frameHeight": 46,
+    "frameCount": 8,
+    "contentHeight": 48,
+    "scale": 0.39669421487603307,
+    "range": [
+      0,
+      8
+    ]
+  },
+  "deidara-combo2": {
+    "image": "/sprites/player/deidara/combo2.png",
+    "frameWidth": 55,
+    "frameHeight": 46,
+    "frameCount": 8,
+    "contentHeight": 48,
+    "scale": 0.39669421487603307,
+    "range": [
+      8,
+      16
+    ]
+  },
+  "deidara-combo3": {
+    "image": "/sprites/player/deidara/combo3.png",
+    "frameWidth": 55,
+    "frameHeight": 46,
+    "frameCount": 9,
+    "contentHeight": 48,
+    "scale": 0.39669421487603307,
+    "range": [
+      16,
+      25
+    ]
+  },
+  "deidara-hurt": {
+    "image": "/sprites/player/deidara/hurt.png",
+    "frameWidth": 55,
+    "frameHeight": 47,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "frameRate": 10,
+    "scale": 0.39669421487603307
+  },
+  "deidara-death": {
+    "image": "/sprites/player/deidara/death.png",
+    "frameWidth": 55,
+    "frameHeight": 47,
+    "frameCount": 3,
+    "contentHeight": 48,
+    "frameRate": 8,
+    "scale": 0.39669421487603307
+  },
+  "deidara-kijutsu": {
+    "image": "/sprites/player/deidara/kijutsu.png",
+    "frameWidth": 37,
+    "frameHeight": 52,
+    "frameCount": 7,
+    "contentHeight": 48,
+    "scale": 0.5853658536585366,
+    "frameRate": 12,
+    "durationMs": 583,
+    "hitDelayMs": 333,
+    "residualGreen": 0,
+    "pureBlack": 904
+  },
+  "skill-c2-dragon": {
+    "image": "/sprites/player/deidara/kijutsu.png",
+    "frameWidth": 37,
+    "frameHeight": 52,
+    "frameCount": 7,
+    "contentHeight": 48,
+    "scale": 0.5853658536585366,
+    "frameRate": 12,
+    "durationMs": 583,
+    "hitDelayMs": 333,
+    "residualGreen": 0,
+    "pureBlack": 904
+  }
+}

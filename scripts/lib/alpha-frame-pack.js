@@ -154,6 +154,188 @@ async function scaleFrames(frames, fw, fh, contentHeight, targetBodyH = 48) {
   };
 }
 
+/** Average X of opaque pixels in the bottom `band` rows (feet stance). */
+function footCenterX(data, w, h, band = 5) {
+  let sum = 0;
+  let n = 0;
+  let maxY = -1;
+  for (let y = 0; y < h; y += 1) {
+    for (let x = 0; x < w; x += 1) {
+      if (data[(y * w + x) * 4 + 3] < ALPHA_KEEP) continue;
+      if (y > maxY) maxY = y;
+    }
+  }
+  if (maxY < 0) return w / 2;
+  const y0 = Math.max(0, maxY - band + 1);
+  for (let y = y0; y <= maxY; y += 1) {
+    for (let x = 0; x < w; x += 1) {
+      if (data[(y * w + x) * 4 + 3] < ALPHA_KEEP) continue;
+      sum += x;
+      n += 1;
+    }
+  }
+  return n > 0 ? sum / n : w / 2;
+}
+
+/**
+ * Uniform body scale for walk / combo / etc.
+ *
+ * Per-frame `scale = target / frameH` warps body size when poses raise arms/hair
+ * (taller bbox → smaller scale → character shrinks). Instead:
+ *   1) one global scale for the whole sequence
+ *   2) scale each bbox crop with that same scale
+ *   3) floor-align + place into shared cell
+ *
+ * Horizontal place (`alignX`):
+ *   - `'bbox'` (default) — center crop box (OK for compact body)
+ *   - `'feet'` — lock feet mass X (idle with cloak/tail that would otherwise
+ *     slide the torso left-right when centering the full silhouette)
+ *
+ * Scale selection (first match):
+ *   - `absoluteScale` — fix a known scale (e.g. match walk pack density so crouch
+ *     combos are not over-scaled when their shorter bbox is forced to targetBodyH)
+ *   - `refContentH` — scale so this source height maps to targetBodyH
+ *   - default — scale so max frame content height maps to targetBodyH
+ *
+ * When `absoluteScale` is set, by default projected body is capped so max source
+ * height → targetBodyH (walk/idle/combo stay compact). For jutsus that mix body
+ * poses with full-canvas VFX, pass `allowOversizedFrames: true` so the walk
+ * density is kept and early body frames are not crushed by effect bboxes.
+ *
+ * contentHeight is reported as targetBodyH (shared pack body bar).
+ */
+async function packUniformGlobalScale(
+  frames,
+  widths,
+  heights,
+  {
+    targetBodyH = 48,
+    pad = 2,
+    absoluteScale = null,
+    refContentH = null,
+    allowOversizedFrames = false,
+    alignX = 'bbox',
+  } = {},
+) {
+  const boxes = frames.map((frame, i) => bbox(frame, widths[i], heights[i]));
+  const srcHeights = boxes.map((b) => b.height);
+  const srcWidths = boxes.map((b) => b.width);
+  const maxContentH = Math.max(...srcHeights);
+  let scale;
+  if (absoluteScale != null && absoluteScale > 0) {
+    scale = absoluteScale;
+    // Walk density can overshoot on taller poses (idle hair / raised arms).
+    // Cap so no frame body exceeds targetBodyH — skip for body+VFX jutsus.
+    if (!allowOversizedFrames) {
+      const projected = maxContentH * scale;
+      if (projected > targetBodyH) {
+        scale = targetBodyH / Math.max(1, maxContentH);
+      }
+    }
+  } else if (refContentH != null && refContentH > 0) {
+    scale = targetBodyH / refContentH;
+  } else {
+    scale = targetBodyH / Math.max(1, maxContentH);
+  }
+
+  const crops = [];
+  for (let i = 0; i < frames.length; i += 1) {
+    const box = boxes[i];
+    const srcW = widths[i];
+    const crop = Buffer.alloc(box.width * box.height * 4);
+    for (let y = 0; y < box.height; y += 1) {
+      for (let x = 0; x < box.width; x += 1) {
+        const si = ((box.minY + y) * srcW + (box.minX + x)) * 4;
+        const di = (y * box.width + x) * 4;
+        crop[di] = frames[i][si];
+        crop[di + 1] = frames[i][si + 1];
+        crop[di + 2] = frames[i][si + 2];
+        crop[di + 3] = frames[i][si + 3];
+      }
+    }
+    const outW = Math.max(1, Math.round(box.width * scale));
+    const outH = Math.max(1, Math.round(box.height * scale));
+    const { data } = await sharp(crop, {
+      raw: { width: box.width, height: box.height, channels: 4 },
+    })
+      .resize(outW, outH, { kernel: sharp.kernel.nearest })
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    for (let p = 0; p < data.length; p += 4) {
+      if (data[p + 3] < 128) {
+        data[p] = 0;
+        data[p + 1] = 0;
+        data[p + 2] = 0;
+        data[p + 3] = 0;
+      } else {
+        data[p + 3] = 255;
+        if (isChromaGreen(data[p], data[p + 1], data[p + 2])) {
+          data[p] = 0;
+          data[p + 1] = 0;
+          data[p + 2] = 0;
+          data[p + 3] = 0;
+        }
+      }
+    }
+    const feetX = footCenterX(data, outW, outH);
+    crops.push({ data, width: outW, height: outH, feetX });
+  }
+
+  let fw;
+  let destFeetX = null;
+  if (alignX === 'feet') {
+    const maxLeft = Math.max(...crops.map((c) => Math.ceil(c.feetX)));
+    const maxRight = Math.max(...crops.map((c) => Math.ceil(c.width - c.feetX)));
+    fw = maxLeft + maxRight + pad * 2;
+    destFeetX = pad + maxLeft;
+  } else {
+    fw = Math.max(...crops.map((c) => c.width)) + pad * 2;
+  }
+  const fh = Math.max(...crops.map((c) => c.height)) + pad * 2;
+  const packed = crops.map((crop) => {
+    const canvas = Buffer.alloc(fw * fh * 4);
+    let destX;
+    if (alignX === 'feet' && destFeetX != null) {
+      destX = Math.round(destFeetX - crop.feetX);
+    } else {
+      destX = Math.floor((fw - crop.width) / 2);
+    }
+    const destY = fh - crop.height - pad;
+    for (let y = 0; y < crop.height; y += 1) {
+      for (let x = 0; x < crop.width; x += 1) {
+        const si = (y * crop.width + x) * 4;
+        const di = ((destY + y) * fw + destX + x) * 4;
+        if (di < 0 || di + 3 >= canvas.length) continue;
+        canvas[di] = crop.data[si];
+        canvas[di + 1] = crop.data[si + 1];
+        canvas[di + 2] = crop.data[si + 2];
+        canvas[di + 3] = crop.data[si + 3];
+      }
+    }
+    return canvas;
+  });
+
+  const scaledHeights = crops.map((c) => c.height);
+  const scaledWidths = crops.map((c) => c.width);
+
+  return {
+    frames: packed,
+    frameWidth: fw,
+    frameHeight: fh,
+    contentHeight: targetBodyH,
+    scale,
+    boxes,
+    srcHeights,
+    srcWidths,
+    scaledHeights,
+    scaledWidths,
+    maxContentH,
+    alignX,
+  };
+}
+
 function stitch(frames, fw, fh) {
   const sheetW = fw * frames.length;
   const sheet = Buffer.alloc(sheetW * fh * 4);
@@ -169,11 +351,21 @@ function listFramePngs(dir) {
   if (!fs.existsSync(dir)) return [];
   return fs
     .readdirSync(dir)
-    .filter((f) => f.toLowerCase().endsWith('.png') && /^frame_\d+/i.test(f))
+    .filter((f) => {
+      if (!f.toLowerCase().endsWith('.png')) return false;
+      return /^frame_\d+/i.test(f) || /^sprite-\d+-\d+/i.test(f) || /^sprite-\d+\.png$/i.test(f);
+    })
     .sort((a, b) => {
-      const na = +(a.match(/frame_(\d+)/i) || [])[1] || 0;
-      const nb = +(b.match(/frame_(\d+)/i) || [])[1] || 0;
-      return na - nb || a.localeCompare(b);
+      const order = (name) => {
+        const frame = name.match(/frame_(\d+)/i);
+        if (frame) return +frame[1];
+        const pair = name.match(/sprite-(\d+)-(\d+)/i);
+        if (pair) return +pair[1] * 1000 + +pair[2];
+        const single = name.match(/sprite-(\d+)/i);
+        if (single) return +single[1];
+        return 0;
+      };
+      return order(a) - order(b) || a.localeCompare(b);
     });
 }
 
@@ -423,6 +615,24 @@ async function loadAlphaFrames(inputDir, expected = null) {
     const box = bbox(frame, info.width, info.height);
     const opaque = countOpaque(frame);
     if (opaque < 80 || box.width < 4 || box.height < 8) {
+      // Some sequences include 1-frame flashes that key out completely.
+      // Reuse previous pose so timing/frameCount stay stable.
+      if (keyed.length > 0) {
+        const prev = keyed[keyed.length - 1];
+        console.warn(
+          `WARN ${file} empty after preserve (opaque=${opaque}) — clone previous ${prev.file}`,
+        );
+        keyed.push({
+          file,
+          frame: Buffer.from(prev.frame),
+          width: prev.width,
+          height: prev.height,
+          box: prev.box,
+          opaque: prev.opaque,
+          clonedFrom: prev.file,
+        });
+        continue;
+      }
       throw new Error(
         `${file} empty after preserve (opaque=${opaque} box=${box.width}x${box.height})`,
       );
@@ -466,6 +676,7 @@ module.exports = {
   bbox,
   normalize,
   scaleFrames,
+  packUniformGlobalScale,
   stitch,
   listFramePngs,
   countOpaque,

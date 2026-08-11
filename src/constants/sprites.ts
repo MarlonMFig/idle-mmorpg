@@ -7,7 +7,7 @@
  * ~52px com zoom 2 aproxima o peso visual dos sprites pixel do vídeo ref.
  * (luta idle top-down) sem cobrir o mapa.
  */
-export const CHARACTER_DISPLAY_HEIGHT = 52;
+export const CHARACTER_DISPLAY_HEIGHT = 42;
 
 /**
  * Pegada física no chão (px de mundo), igual para todos. Convertida para

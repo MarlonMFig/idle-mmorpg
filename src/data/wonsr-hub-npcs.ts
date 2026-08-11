@@ -1,7 +1,7 @@
 /**
  * NPCs do hub Konoha — diálogo/lookType do WONSR, sprite compartilhado do idle.
- * Posições em px no TMX recortado `wonsr-konoha` (96×96 tiles → 3072×3072 px).
- * Todas conferidas contra o layer de colisão via `scripts/find-spawn.js`.
+ * Posições em px no hub ilustrado `leaf-village-hub` (1024×576).
+ * Todas em tiles caminháveis do layer de colisão.
  */
 import { NPC_INTERACTION_ICON_KEY } from '@/constants/npc';
 import { MAP_KEYS } from '@/maps/map-registry';
@@ -33,8 +33,9 @@ const HUB_SEEDS: readonly HubNpcSeed[] = [
     id: 'wonsr-npc-iruka',
     name: 'Iruka',
     lookType: 587,
-    x: 1456,
-    y: 1264,
+    // Norte-oeste da praça central.
+    x: 464,
+    y: 304,
     dialogue: [
       'Ola, entao veio para a academia de shinobis e quer se tornar um {certo}?',
       'Treine na floresta e volte quando estiver mais forte.',
@@ -45,8 +46,9 @@ const HUB_SEEDS: readonly HubNpcSeed[] = [
     id: 'wonsr-npc-kakashi-sensei',
     name: 'Kakashi Sensei',
     lookType: 891,
-    x: 1552,
-    y: 1264,
+    // Norte-leste da praça central.
+    x: 560,
+    y: 304,
     dialogue: [
       'Ola shinobi, por favor, tenho {missoes} rank a para voce fazer.',
       'Comece pelas criaturas da floresta. Sem pressa — mas sem moleza.',
@@ -57,8 +59,9 @@ const HUB_SEEDS: readonly HubNpcSeed[] = [
     id: 'wonsr-npc-hiruzen-sarutobi',
     name: 'Hiruzen Sarutobi',
     lookType: 365,
-    x: 1520,
-    y: 1232,
+    // Norte da praça (rumo ao Hokage).
+    x: 528,
+    y: 272,
     dialogue: [
       'Olá Shinobi, recentemente muitos vieram ate min me pedindo para fazer um {treinamento} leve, você também veio por isto?',
       'A Vila da Folha precisa de genin disciplinados.',
@@ -68,8 +71,9 @@ const HUB_SEEDS: readonly HubNpcSeed[] = [
     id: 'wonsr-npc-kuro',
     name: 'Kuro',
     lookType: 734,
-    x: 1264,
-    y: 1584,
+    // Mercado / loja a sudeste da praça.
+    x: 784,
+    y: 432,
     dialogue: [
       'Hello, I buy and sell items, if you are interested in something or want to sell me something say {trade}.',
       '(Troca ainda em breve — por enquanto só conversa.)',
@@ -79,8 +83,9 @@ const HUB_SEEDS: readonly HubNpcSeed[] = [
     id: 'wonsr-npc-anko',
     name: 'Anko',
     lookType: 590,
-    x: 1264,
-    y: 1712,
+    // Path leste em direção à área de treino.
+    x: 816,
+    y: 304,
     dialogue: [
       'Hello |PLAYERNAME|. I see you came to try your luck at the {exame} chunin !!',
       'Quando o exame abrir, eu te aviso. Por agora, sobreviva à floresta.',

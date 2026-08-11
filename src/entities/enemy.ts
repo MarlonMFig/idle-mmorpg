@@ -66,7 +66,7 @@ export class Enemy {
         originY: 1,
       };
     this.sprite.setOrigin(fit.originX, fit.originY);
-    this.sprite.setScale(fit.scale);
+    this.sprite.setScale(fit.scaleX ?? fit.scale, fit.scale);
     this.sprite.setCollideWorldBounds(true);
     if (this.sprite.texture) {
       this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
@@ -74,8 +74,10 @@ export class Enemy {
 
     // O Phaser multiplica tamanho e offset do corpo pela escala, então a
     // pegada é convertida para px de textura para sair igual no mundo.
-    const bodyWidth = CHARACTER_BODY_WIDTH / fit.scale;
-    const bodyHeight = CHARACTER_BODY_HEIGHT / fit.scale;
+    const scaleX = fit.scaleX ?? fit.scale;
+    const scaleY = fit.scale;
+    const bodyWidth = CHARACTER_BODY_WIDTH / scaleX;
+    const bodyHeight = CHARACTER_BODY_HEIGHT / scaleY;
     this.sprite.body!.setSize(bodyWidth, bodyHeight, false);
     this.sprite.body!.setOffset(
       this.sprite.displayOriginX - bodyWidth / 2,

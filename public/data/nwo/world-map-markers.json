@@ -1,0 +1,8358 @@
+[
+  {
+    "id": "monster-6-bandit-1",
+    "kind": "monster",
+    "name": "Bandit",
+    "referenceName": "Bandit",
+    "aliases": [
+      "Bandit"
+    ],
+    "searchTerms": [
+      "Bandit"
+    ],
+    "looktype": 707,
+    "image": "images/outfit/707.png",
+    "sprite": {
+      "offsetXRatio": -0.2266,
+      "offsetYRatio": -0.2422,
+      "scale": 1.2434
+    },
+    "levelMin": 12,
+    "x": 1346.05,
+    "y": 635.1,
+    "radius": 143,
+    "spawnCount": 39,
+    "bounds": {
+      "minX": 1237,
+      "minY": 545,
+      "maxX": 1460,
+      "maxY": 724
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-bandit-2",
+    "kind": "monster",
+    "name": "Bandit",
+    "referenceName": "Bandit",
+    "aliases": [
+      "Bandit"
+    ],
+    "searchTerms": [
+      "Bandit"
+    ],
+    "looktype": 707,
+    "image": "images/outfit/707.png",
+    "sprite": {
+      "offsetXRatio": -0.2266,
+      "offsetYRatio": -0.2422,
+      "scale": 1.2434
+    },
+    "levelMin": 12,
+    "x": 1127,
+    "y": 631.2,
+    "radius": 42,
+    "spawnCount": 5,
+    "bounds": {
+      "minX": 1104,
+      "minY": 628,
+      "maxX": 1143,
+      "maxY": 638
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-bandit-3",
+    "kind": "monster",
+    "name": "Bandit",
+    "referenceName": "Bandit",
+    "aliases": [
+      "Bandit"
+    ],
+    "searchTerms": [
+      "Bandit"
+    ],
+    "looktype": 707,
+    "image": "images/outfit/707.png",
+    "sprite": {
+      "offsetXRatio": -0.2266,
+      "offsetYRatio": -0.2422,
+      "scale": 1.2434
+    },
+    "levelMin": 12,
+    "x": 1444.67,
+    "y": 785.33,
+    "radius": 43,
+    "spawnCount": 6,
+    "bounds": {
+      "minX": 1440,
+      "minY": 764,
+      "maxX": 1451,
+      "maxY": 809
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-bandit-4",
+    "kind": "monster",
+    "name": "Bandit",
+    "referenceName": "Bandit",
+    "aliases": [
+      "Bandit"
+    ],
+    "searchTerms": [
+      "Bandit"
+    ],
+    "looktype": 707,
+    "image": "images/outfit/707.png",
+    "sprite": {
+      "offsetXRatio": -0.2266,
+      "offsetYRatio": -0.2422,
+      "scale": 1.2434
+    },
+    "levelMin": 12,
+    "x": 1148.57,
+    "y": 902.13,
+    "radius": 77,
+    "spawnCount": 23,
+    "bounds": {
+      "minX": 1093,
+      "minY": 885,
+      "maxX": 1186,
+      "maxY": 919
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-bandit-shinobi-1",
+    "kind": "monster",
+    "name": "Bandit Shinobi",
+    "referenceName": "Bandit Shinobi",
+    "aliases": [
+      "Bandit Shinobi"
+    ],
+    "searchTerms": [
+      "Bandit Shinobi"
+    ],
+    "looktype": 655,
+    "image": "images/outfit/655.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1762
+    },
+    "levelMin": 35,
+    "x": 1328.25,
+    "y": 550.75,
+    "radius": 44,
+    "spawnCount": 8,
+    "bounds": {
+      "minX": 1303,
+      "minY": 545,
+      "maxX": 1347,
+      "maxY": 558
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-bandit-shinobi-2",
+    "kind": "monster",
+    "name": "Bandit Shinobi",
+    "referenceName": "Bandit Shinobi",
+    "aliases": [
+      "Bandit Shinobi"
+    ],
+    "searchTerms": [
+      "Bandit Shinobi"
+    ],
+    "looktype": 655,
+    "image": "images/outfit/655.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1762
+    },
+    "levelMin": 35,
+    "x": 1270.5,
+    "y": 647,
+    "radius": 26,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1264,
+      "minY": 647,
+      "maxX": 1277,
+      "maxY": 647
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-bandit-shinobi-3",
+    "kind": "monster",
+    "name": "Bandit Shinobi",
+    "referenceName": "Bandit Shinobi",
+    "aliases": [
+      "Bandit Shinobi"
+    ],
+    "searchTerms": [
+      "Bandit Shinobi"
+    ],
+    "looktype": 655,
+    "image": "images/outfit/655.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1762
+    },
+    "levelMin": 35,
+    "x": 1427.33,
+    "y": 663.33,
+    "radius": 39,
+    "spawnCount": 6,
+    "bounds": {
+      "minX": 1411,
+      "minY": 652,
+      "maxX": 1444,
+      "maxY": 673
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-bandit-shinobi-4",
+    "kind": "monster",
+    "name": "Bandit Shinobi",
+    "referenceName": "Bandit Shinobi",
+    "aliases": [
+      "Bandit Shinobi"
+    ],
+    "searchTerms": [
+      "Bandit Shinobi"
+    ],
+    "looktype": 655,
+    "image": "images/outfit/655.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1762
+    },
+    "levelMin": 35,
+    "x": 1448,
+    "y": 769,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1448,
+      "minY": 769,
+      "maxX": 1448,
+      "maxY": 769
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-bandit-shinobi-5",
+    "kind": "monster",
+    "name": "Bandit Shinobi",
+    "referenceName": "Bandit Shinobi",
+    "aliases": [
+      "Bandit Shinobi"
+    ],
+    "searchTerms": [
+      "Bandit Shinobi"
+    ],
+    "looktype": 655,
+    "image": "images/outfit/655.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1762
+    },
+    "levelMin": 35,
+    "x": 1161,
+    "y": 914.33,
+    "radius": 41,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 1153,
+      "minY": 896,
+      "maxX": 1173,
+      "maxY": 929
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-bandit-sword-1",
+    "kind": "monster",
+    "name": "Bandit Sword",
+    "referenceName": "Bandit Sword",
+    "aliases": [
+      "Bandit Sword"
+    ],
+    "searchTerms": [
+      "Bandit Sword"
+    ],
+    "looktype": 643,
+    "image": "images/outfit/643.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.0703,
+      "scale": 1.1159
+    },
+    "levelMin": 25,
+    "x": 1104,
+    "y": 631,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1104,
+      "minY": 631,
+      "maxX": 1104,
+      "maxY": 631
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-bandit-sword-2",
+    "kind": "monster",
+    "name": "Bandit Sword",
+    "referenceName": "Bandit Sword",
+    "aliases": [
+      "Bandit Sword"
+    ],
+    "searchTerms": [
+      "Bandit Sword"
+    ],
+    "looktype": 643,
+    "image": "images/outfit/643.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.0703,
+      "scale": 1.1159
+    },
+    "levelMin": 25,
+    "x": 1137,
+    "y": 898.5,
+    "radius": 40,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1116,
+      "minY": 897,
+      "maxX": 1158,
+      "maxY": 900
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-bear-1",
+    "kind": "monster",
+    "name": "Bear",
+    "referenceName": "Bear",
+    "aliases": [
+      "Bear"
+    ],
+    "searchTerms": [
+      "Bear"
+    ],
+    "looktype": 2003,
+    "image": "images/outfit/2003.png",
+    "sprite": {
+      "offsetXRatio": -0.2812,
+      "offsetYRatio": -0.1797,
+      "scale": 1.0615
+    },
+    "levelMin": 20,
+    "x": 1157.92,
+    "y": 710.34,
+    "radius": 131,
+    "spawnCount": 62,
+    "bounds": {
+      "minX": 1124,
+      "minY": 619,
+      "maxX": 1227,
+      "maxY": 804
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-bear-2",
+    "kind": "monster",
+    "name": "Bear",
+    "referenceName": "Bear",
+    "aliases": [
+      "Bear"
+    ],
+    "searchTerms": [
+      "Bear"
+    ],
+    "looktype": 2003,
+    "image": "images/outfit/2003.png",
+    "sprite": {
+      "offsetXRatio": -0.2812,
+      "offsetYRatio": -0.1797,
+      "scale": 1.0615
+    },
+    "levelMin": 20,
+    "x": 1398.18,
+    "y": 828.91,
+    "radius": 52,
+    "spawnCount": 11,
+    "bounds": {
+      "minX": 1381,
+      "minY": 805,
+      "maxX": 1425,
+      "maxY": 848
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-bear-3",
+    "kind": "monster",
+    "name": "Bear",
+    "referenceName": "Bear",
+    "aliases": [
+      "Bear"
+    ],
+    "searchTerms": [
+      "Bear"
+    ],
+    "looktype": 2003,
+    "image": "images/outfit/2003.png",
+    "sprite": {
+      "offsetXRatio": -0.2812,
+      "offsetYRatio": -0.1797,
+      "scale": 1.0615
+    },
+    "levelMin": 20,
+    "x": 1232,
+    "y": 939,
+    "radius": 40,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 1216,
+      "minY": 926,
+      "maxX": 1250,
+      "maxY": 950
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-boar-1",
+    "kind": "monster",
+    "name": "Boar",
+    "referenceName": "Boar",
+    "aliases": [
+      "Boar"
+    ],
+    "searchTerms": [
+      "Boar"
+    ],
+    "looktype": 2036,
+    "image": "images/outfit/2036.png",
+    "sprite": {
+      "offsetXRatio": -0.3359,
+      "offsetYRatio": -0.25,
+      "scale": 1.28
+    },
+    "levelMin": 6,
+    "x": 1451.5,
+    "y": 726,
+    "radius": 24,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1450,
+      "minY": 724,
+      "maxX": 1453,
+      "maxY": 728
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-boar-2",
+    "kind": "monster",
+    "name": "Boar",
+    "referenceName": "Boar",
+    "aliases": [
+      "Boar"
+    ],
+    "searchTerms": [
+      "Boar"
+    ],
+    "looktype": 2036,
+    "image": "images/outfit/2036.png",
+    "sprite": {
+      "offsetXRatio": -0.3359,
+      "offsetYRatio": -0.25,
+      "scale": 1.28
+    },
+    "levelMin": 6,
+    "x": 1305.21,
+    "y": 872.43,
+    "radius": 186,
+    "spawnCount": 115,
+    "bounds": {
+      "minX": 1180,
+      "minY": 727,
+      "maxX": 1415,
+      "maxY": 953
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-chakra-golem-1",
+    "kind": "monster",
+    "name": "Chakra Golem",
+    "referenceName": "Chakra Golem",
+    "aliases": [
+      "Chakra Golem"
+    ],
+    "searchTerms": [
+      "Chakra Golem"
+    ],
+    "looktype": 2144,
+    "image": "images/outfit/2144.png",
+    "sprite": {
+      "offsetXRatio": -0.0547,
+      "offsetYRatio": -0.0859,
+      "scale": 0.8882
+    },
+    "levelMin": 150,
+    "x": 686.2,
+    "y": 378.83,
+    "radius": 144,
+    "spawnCount": 148,
+    "bounds": {
+      "minX": 574,
+      "minY": 318,
+      "maxX": 807,
+      "maxY": 456
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-1",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1825,
+    "y": 606,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1825,
+      "minY": 606,
+      "maxX": 1825,
+      "maxY": 606
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-2",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1950,
+    "y": 649,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1950,
+      "minY": 649,
+      "maxX": 1950,
+      "maxY": 649
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-3",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1807,
+    "y": 658,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1807,
+      "minY": 658,
+      "maxX": 1807,
+      "maxY": 658
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-4",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1758,
+    "y": 725,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1758,
+      "minY": 725,
+      "maxX": 1758,
+      "maxY": 725
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-5",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 778,
+    "y": 739,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 778,
+      "minY": 739,
+      "maxX": 778,
+      "maxY": 739
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-6",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1182.5,
+    "y": 784.5,
+    "radius": 43,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1179,
+      "minY": 761,
+      "maxX": 1186,
+      "maxY": 808
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-7",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 976,
+    "y": 767,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 976,
+      "minY": 767,
+      "maxX": 976,
+      "maxY": 767
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-8",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 719,
+    "y": 770,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 719,
+      "minY": 770,
+      "maxX": 719,
+      "maxY": 770
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-9",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 770.5,
+    "y": 811.5,
+    "radius": 33,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 764,
+      "minY": 799,
+      "maxX": 777,
+      "maxY": 824
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-10",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 897.5,
+    "y": 819.5,
+    "radius": 39,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 893,
+      "minY": 800,
+      "maxX": 902,
+      "maxY": 839
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-11",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 848,
+    "y": 832,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 848,
+      "minY": 832,
+      "maxX": 848,
+      "maxY": 832
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-12",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1407,
+    "y": 844,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1407,
+      "minY": 844,
+      "maxX": 1407,
+      "maxY": 844
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-13",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1245.5,
+    "y": 881,
+    "radius": 42,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1243,
+      "minY": 858,
+      "maxX": 1248,
+      "maxY": 904
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-14",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1300,
+    "y": 876,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1300,
+      "minY": 876,
+      "maxX": 1300,
+      "maxY": 876
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-15",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 411,
+    "y": 877,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 411,
+      "minY": 877,
+      "maxX": 411,
+      "maxY": 877
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-16",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 463,
+    "y": 898,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 463,
+      "minY": 898,
+      "maxX": 463,
+      "maxY": 898
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-17",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1294,
+    "y": 933,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1294,
+      "minY": 933,
+      "maxX": 1294,
+      "maxY": 933
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-18",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1358,
+    "y": 937,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1358,
+      "minY": 937,
+      "maxX": 1358,
+      "maxY": 937
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-19",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 408,
+    "y": 952,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 408,
+      "minY": 952,
+      "maxX": 408,
+      "maxY": 952
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-20",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1029,
+    "y": 993,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1029,
+      "minY": 993,
+      "maxX": 1029,
+      "maxY": 993
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-coelho-21",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 454,
+    "y": 1019.5,
+    "radius": 40,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 442,
+      "minY": 1002,
+      "maxX": 466,
+      "maxY": 1037
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-concentrate-monk-1",
+    "kind": "monster",
+    "name": "Concentrate Monk",
+    "referenceName": "Concentrate Monk",
+    "aliases": [
+      "Concentrate Monk"
+    ],
+    "searchTerms": [
+      "Concentrate Monk"
+    ],
+    "looktype": 2164,
+    "image": "images/outfit/2164.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1875,
+      "scale": 1.0615
+    },
+    "levelMin": 150,
+    "x": 1784.48,
+    "y": 238.14,
+    "radius": 53,
+    "spawnCount": 29,
+    "bounds": {
+      "minX": 1754,
+      "minY": 223,
+      "maxX": 1814,
+      "maxY": 260
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-cursed-puppet-1",
+    "kind": "monster",
+    "name": "Cursed puppet",
+    "referenceName": "Cursed puppet",
+    "aliases": [
+      "Cursed puppet"
+    ],
+    "searchTerms": [
+      "Cursed puppet"
+    ],
+    "looktype": 2120,
+    "image": "images/outfit/2120.png",
+    "sprite": {
+      "offsetXRatio": -0.0625,
+      "offsetYRatio": -0.0781,
+      "scale": 1.088
+    },
+    "levelMin": 100,
+    "x": 732.95,
+    "y": 761.84,
+    "radius": 108,
+    "spawnCount": 44,
+    "bounds": {
+      "minX": 697,
+      "minY": 727,
+      "maxX": 806,
+      "maxY": 841
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-dirt-pugilist-1",
+    "kind": "monster",
+    "name": "Dirt Pugilist",
+    "referenceName": "Dirt Pugilist",
+    "aliases": [
+      "Dirt Pugilist"
+    ],
+    "searchTerms": [
+      "Dirt Pugilist"
+    ],
+    "looktype": 2131,
+    "image": "images/outfit/2131.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1797,
+      "scale": 1.1159
+    },
+    "levelMin": 170,
+    "x": 838.33,
+    "y": 230.67,
+    "radius": 33,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 826,
+      "minY": 224,
+      "maxX": 846,
+      "maxY": 240
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-dirt-samurai-1",
+    "kind": "monster",
+    "name": "Dirt Samurai",
+    "referenceName": "Dirt Samurai",
+    "aliases": [
+      "Dirt Samurai"
+    ],
+    "searchTerms": [
+      "Dirt Samurai"
+    ],
+    "looktype": 2127,
+    "image": "images/outfit/2127.png",
+    "sprite": {
+      "offsetXRatio": -0.0781,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1159
+    },
+    "levelMin": 190,
+    "x": 837.2,
+    "y": 234,
+    "radius": 36,
+    "spawnCount": 5,
+    "bounds": {
+      "minX": 825,
+      "minY": 226,
+      "maxX": 853,
+      "maxY": 247
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-dirt-samurai-2",
+    "kind": "monster",
+    "name": "Dirt Samurai",
+    "referenceName": "Dirt Samurai",
+    "aliases": [
+      "Dirt Samurai"
+    ],
+    "searchTerms": [
+      "Dirt Samurai"
+    ],
+    "looktype": 2127,
+    "image": "images/outfit/2127.png",
+    "sprite": {
+      "offsetXRatio": -0.0781,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1159
+    },
+    "levelMin": 190,
+    "x": 741.5,
+    "y": 300.88,
+    "radius": 41,
+    "spawnCount": 8,
+    "bounds": {
+      "minX": 724,
+      "minY": 285,
+      "maxX": 759,
+      "maxY": 313
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-dirt-samurai-3",
+    "kind": "monster",
+    "name": "Dirt Samurai",
+    "referenceName": "Dirt Samurai",
+    "aliases": [
+      "Dirt Samurai"
+    ],
+    "searchTerms": [
+      "Dirt Samurai"
+    ],
+    "looktype": 2127,
+    "image": "images/outfit/2127.png",
+    "sprite": {
+      "offsetXRatio": -0.0781,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1159
+    },
+    "levelMin": 190,
+    "x": 422,
+    "y": 302.5,
+    "radius": 24,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 418,
+      "minY": 301,
+      "maxX": 426,
+      "maxY": 304
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-earth-monk-1",
+    "kind": "monster",
+    "name": "Earth Monk",
+    "referenceName": "Earth Monk",
+    "aliases": [
+      "Earth Monk"
+    ],
+    "searchTerms": [
+      "Earth Monk"
+    ],
+    "looktype": 2165,
+    "image": "images/outfit/2165.png",
+    "sprite": {
+      "offsetXRatio": -0.0156,
+      "offsetYRatio": -0.0938,
+      "scale": 0.9461
+    },
+    "levelMin": 220,
+    "x": 440.33,
+    "y": 381.95,
+    "radius": 82,
+    "spawnCount": 64,
+    "bounds": {
+      "minX": 382,
+      "minY": 323,
+      "maxX": 489,
+      "maxY": 440
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-electric-hawk-1",
+    "kind": "monster",
+    "name": "Electric Hawk",
+    "referenceName": "Electric Hawk",
+    "aliases": [
+      "Electric Hawk"
+    ],
+    "searchTerms": [
+      "Electric Hawk"
+    ],
+    "looktype": 2138,
+    "image": "images/outfit/2138.png",
+    "sprite": {
+      "offsetXRatio": 0.125,
+      "offsetYRatio": -0.1172,
+      "scale": 0.8882
+    },
+    "levelMin": 180,
+    "x": 1717.44,
+    "y": 449,
+    "radius": 70,
+    "spawnCount": 16,
+    "bounds": {
+      "minX": 1680,
+      "minY": 414,
+      "maxX": 1743,
+      "maxY": 484
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-enraged-bear-1",
+    "kind": "monster",
+    "name": "Enraged Bear",
+    "referenceName": "Enraged Bear",
+    "aliases": [
+      "Enraged Bear"
+    ],
+    "searchTerms": [
+      "Enraged Bear"
+    ],
+    "looktype": 2007,
+    "image": "images/outfit/2007.png",
+    "sprite": {
+      "offsetXRatio": -0.25,
+      "offsetYRatio": -0.125,
+      "scale": 0.9067
+    },
+    "levelMin": 25,
+    "x": 1203.33,
+    "y": 637.17,
+    "radius": 55,
+    "spawnCount": 6,
+    "bounds": {
+      "minX": 1170,
+      "minY": 618,
+      "maxX": 1225,
+      "maxY": 651
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-enraged-bear-2",
+    "kind": "monster",
+    "name": "Enraged Bear",
+    "referenceName": "Enraged Bear",
+    "aliases": [
+      "Enraged Bear"
+    ],
+    "searchTerms": [
+      "Enraged Bear"
+    ],
+    "looktype": 2007,
+    "image": "images/outfit/2007.png",
+    "sprite": {
+      "offsetXRatio": -0.25,
+      "offsetYRatio": -0.125,
+      "scale": 0.9067
+    },
+    "levelMin": 25,
+    "x": 1136,
+    "y": 731.67,
+    "radius": 54,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 1126,
+      "minY": 698,
+      "maxX": 1153,
+      "maxY": 756
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-gennin-1",
+    "kind": "monster",
+    "name": "Gennin",
+    "referenceName": "Gennin",
+    "aliases": [
+      "Gennin"
+    ],
+    "searchTerms": [
+      "Gennin"
+    ],
+    "looktype": 706,
+    "image": "images/outfit/706.png",
+    "sprite": {
+      "offsetXRatio": -0.1094,
+      "offsetYRatio": -0.1016,
+      "scale": 1.2434
+    },
+    "levelMin": 40,
+    "x": 1320,
+    "y": 460.19,
+    "radius": 72,
+    "spawnCount": 31,
+    "bounds": {
+      "minX": 1274,
+      "minY": 437,
+      "maxX": 1369,
+      "maxY": 483
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-gennin-2",
+    "kind": "monster",
+    "name": "Gennin",
+    "referenceName": "Gennin",
+    "aliases": [
+      "Gennin"
+    ],
+    "searchTerms": [
+      "Gennin"
+    ],
+    "looktype": 706,
+    "image": "images/outfit/706.png",
+    "sprite": {
+      "offsetXRatio": -0.1094,
+      "offsetYRatio": -0.1016,
+      "scale": 1.2434
+    },
+    "levelMin": 40,
+    "x": 1730.15,
+    "y": 695.73,
+    "radius": 65,
+    "spawnCount": 26,
+    "bounds": {
+      "minX": 1699,
+      "minY": 654,
+      "maxX": 1760,
+      "maxY": 740
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-giant-scorpion-1",
+    "kind": "monster",
+    "name": "Giant Scorpion",
+    "referenceName": "Giant Scorpion",
+    "aliases": [
+      "Giant Scorpion"
+    ],
+    "searchTerms": [
+      "Giant Scorpion"
+    ],
+    "looktype": 2017,
+    "image": "images/outfit/2017.png",
+    "sprite": {
+      "offsetXRatio": -0.1562,
+      "offsetYRatio": -0.0078,
+      "scale": 0.78
+    },
+    "levelMin": 100,
+    "x": 862.17,
+    "y": 809,
+    "radius": 55,
+    "spawnCount": 6,
+    "bounds": {
+      "minX": 837,
+      "minY": 789,
+      "maxX": 890,
+      "maxY": 835
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-giant-scorpion-2",
+    "kind": "monster",
+    "name": "Giant Scorpion",
+    "referenceName": "Giant Scorpion",
+    "aliases": [
+      "Giant Scorpion"
+    ],
+    "searchTerms": [
+      "Giant Scorpion"
+    ],
+    "looktype": 2017,
+    "image": "images/outfit/2017.png",
+    "sprite": {
+      "offsetXRatio": -0.1562,
+      "offsetYRatio": -0.0078,
+      "scale": 0.78
+    },
+    "levelMin": 100,
+    "x": 621.43,
+    "y": 835.64,
+    "radius": 62,
+    "spawnCount": 14,
+    "bounds": {
+      "minX": 598,
+      "minY": 805,
+      "maxX": 655,
+      "maxY": 864
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-giant-spider-1",
+    "kind": "monster",
+    "name": "Giant Spider",
+    "referenceName": "Giant Spider",
+    "aliases": [
+      "Giant Spider"
+    ],
+    "searchTerms": [
+      "Giant Spider"
+    ],
+    "looktype": 2029,
+    "image": "images/outfit/2029.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1172,
+      "scale": 0.9671
+    },
+    "levelMin": 50,
+    "x": 1844.18,
+    "y": 660.53,
+    "radius": 79,
+    "spawnCount": 17,
+    "bounds": {
+      "minX": 1800,
+      "minY": 642,
+      "maxX": 1902,
+      "maxY": 679
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-giant-spider-2",
+    "kind": "monster",
+    "name": "Giant Spider",
+    "referenceName": "Giant Spider",
+    "aliases": [
+      "Giant Spider"
+    ],
+    "searchTerms": [
+      "Giant Spider"
+    ],
+    "looktype": 2029,
+    "image": "images/outfit/2029.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1172,
+      "scale": 0.9671
+    },
+    "levelMin": 50,
+    "x": 1947.8,
+    "y": 735,
+    "radius": 48,
+    "spawnCount": 5,
+    "bounds": {
+      "minX": 1930,
+      "minY": 711,
+      "maxX": 1970,
+      "maxY": 763
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-giant-spider-3",
+    "kind": "monster",
+    "name": "Giant Spider",
+    "referenceName": "Giant Spider",
+    "aliases": [
+      "Giant Spider"
+    ],
+    "searchTerms": [
+      "Giant Spider"
+    ],
+    "looktype": 2029,
+    "image": "images/outfit/2029.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1172,
+      "scale": 0.9671
+    },
+    "levelMin": 50,
+    "x": 1860,
+    "y": 773,
+    "radius": 39,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1850,
+      "minY": 756,
+      "maxX": 1870,
+      "maxY": 790
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-gorila-1",
+    "kind": "monster",
+    "name": "Gorila",
+    "referenceName": "Gorila",
+    "aliases": [
+      "Gorila"
+    ],
+    "searchTerms": [
+      "Gorila"
+    ],
+    "looktype": 2145,
+    "image": "images/outfit/2145.png",
+    "sprite": {
+      "offsetXRatio": -0.0234,
+      "offsetYRatio": -0.2969,
+      "scale": 0.78
+    },
+    "levelMin": 70,
+    "x": 1228.88,
+    "y": 1195.6,
+    "radius": 50,
+    "spawnCount": 25,
+    "bounds": {
+      "minX": 1207,
+      "minY": 1177,
+      "maxX": 1258,
+      "maxY": 1220
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-kagen-uchiha-1",
+    "kind": "monster",
+    "name": "Kagen Uchiha",
+    "referenceName": "Kagen Uchiha",
+    "aliases": [
+      "Kagen Uchiha"
+    ],
+    "searchTerms": [
+      "Kagen Uchiha"
+    ],
+    "looktype": 647,
+    "image": "images/outfit/647.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.125,
+      "scale": 1.28
+    },
+    "levelMin": 25,
+    "x": 1422.83,
+    "y": 484.67,
+    "radius": 31,
+    "spawnCount": 6,
+    "bounds": {
+      "minX": 1416,
+      "minY": 473,
+      "maxX": 1430,
+      "maxY": 493
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-karasu-1",
+    "kind": "monster",
+    "name": "Karasu",
+    "referenceName": "Karasu",
+    "aliases": [
+      "Karasu"
+    ],
+    "searchTerms": [
+      "Karasu"
+    ],
+    "looktype": 2191,
+    "image": "images/outfit/2191.png",
+    "sprite": {
+      "offsetXRatio": -0.1875,
+      "offsetYRatio": -0.1875,
+      "scale": 1.2089
+    },
+    "levelMin": 100,
+    "x": 723.5,
+    "y": 758.5,
+    "radius": 28,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 718,
+      "minY": 752,
+      "maxX": 729,
+      "maxY": 765
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-lightning-panther-1",
+    "kind": "monster",
+    "name": "Lightning Panther",
+    "referenceName": "Lightning Panther",
+    "aliases": [
+      "Lightning Panther"
+    ],
+    "searchTerms": [
+      "Lightning Panther"
+    ],
+    "looktype": 2163,
+    "image": "images/outfit/2163.png",
+    "sprite": {
+      "offsetXRatio": -0.2188,
+      "offsetYRatio": -0.1172,
+      "scale": 0.8882
+    },
+    "levelMin": 190,
+    "x": 1697.47,
+    "y": 263.71,
+    "radius": 68,
+    "spawnCount": 34,
+    "bounds": {
+      "minX": 1663,
+      "minY": 226,
+      "maxX": 1735,
+      "maxY": 310
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-lizard-1",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 972.2,
+    "y": 643.2,
+    "radius": 34,
+    "spawnCount": 5,
+    "bounds": {
+      "minX": 965,
+      "minY": 631,
+      "maxX": 981,
+      "maxY": 658
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-lizard-2",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 779,
+    "y": 745,
+    "radius": 43,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 759,
+      "minY": 732,
+      "maxX": 799,
+      "maxY": 758
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-lizard-3",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 777,
+    "y": 826.5,
+    "radius": 38,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 766,
+      "minY": 811,
+      "maxX": 788,
+      "maxY": 842
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-monk-1",
+    "kind": "monster",
+    "name": "Monk",
+    "referenceName": "Monk",
+    "aliases": [
+      "Monk"
+    ],
+    "searchTerms": [
+      "Monk"
+    ],
+    "looktype": 648,
+    "image": "images/outfit/648.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.125,
+      "scale": 1.28
+    },
+    "levelMin": 25,
+    "x": 1313.65,
+    "y": 1073.4,
+    "radius": 147,
+    "spawnCount": 75,
+    "bounds": {
+      "minX": 1211,
+      "minY": 1001,
+      "maxX": 1407,
+      "maxY": 1201
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-monk-chiriku-1",
+    "kind": "monster",
+    "name": "Monk Chiriku",
+    "referenceName": "Monk Chiriku",
+    "aliases": [
+      "Monk Chiriku"
+    ],
+    "searchTerms": [
+      "Monk Chiriku"
+    ],
+    "looktype": 649,
+    "image": "images/outfit/649.png",
+    "sprite": {
+      "offsetXRatio": -0.125,
+      "offsetYRatio": -0.125,
+      "scale": 1.28
+    },
+    "levelMin": 25,
+    "x": 1280.46,
+    "y": 1116.23,
+    "radius": 116,
+    "spawnCount": 13,
+    "bounds": {
+      "minX": 1225,
+      "minY": 1028,
+      "maxX": 1320,
+      "maxY": 1198
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-nomad-1",
+    "kind": "monster",
+    "name": "Nomad",
+    "referenceName": "Nomad",
+    "aliases": [
+      "Nomad"
+    ],
+    "searchTerms": [
+      "Nomad"
+    ],
+    "looktype": 2135,
+    "image": "images/outfit/2135.png",
+    "sprite": {
+      "offsetXRatio": -0.1953,
+      "offsetYRatio": -0.2031,
+      "scale": 1.1762
+    },
+    "levelMin": 120,
+    "x": 1377,
+    "y": 1443.37,
+    "radius": 47,
+    "spawnCount": 19,
+    "bounds": {
+      "minX": 1352,
+      "minY": 1422,
+      "maxX": 1404,
+      "maxY": 1459
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-rabbit-1",
+    "kind": "monster",
+    "name": "Rabbit",
+    "referenceName": "Rabbit",
+    "aliases": [
+      "Rabbit"
+    ],
+    "searchTerms": [
+      "Rabbit"
+    ],
+    "looktype": 2078,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 1,
+    "x": 1190,
+    "y": 816,
+    "radius": 27,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1184,
+      "minY": 811,
+      "maxX": 1196,
+      "maxY": 821
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-rabbit-2",
+    "kind": "monster",
+    "name": "Rabbit",
+    "referenceName": "Rabbit",
+    "aliases": [
+      "Rabbit"
+    ],
+    "searchTerms": [
+      "Rabbit"
+    ],
+    "looktype": 2078,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 1,
+    "x": 1226.67,
+    "y": 920.33,
+    "radius": 55,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 1205,
+      "minY": 906,
+      "maxX": 1261,
+      "maxY": 930
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-reaper-1",
+    "kind": "monster",
+    "name": "Reaper",
+    "referenceName": "Reaper",
+    "aliases": [
+      "Reaper"
+    ],
+    "searchTerms": [
+      "Reaper"
+    ],
+    "looktype": 2168,
+    "image": "images/outfit/2168.png",
+    "sprite": {
+      "offsetXRatio": 0.0312,
+      "offsetYRatio": -0.0469,
+      "scale": 0.8369
+    },
+    "levelMin": 150,
+    "x": 1618.12,
+    "y": 249.53,
+    "radius": 39,
+    "spawnCount": 17,
+    "bounds": {
+      "minX": 1599,
+      "minY": 233,
+      "maxX": 1637,
+      "maxY": 266
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-reaper-2",
+    "kind": "monster",
+    "name": "Reaper",
+    "referenceName": "Reaper",
+    "aliases": [
+      "Reaper"
+    ],
+    "searchTerms": [
+      "Reaper"
+    ],
+    "looktype": 2168,
+    "image": "images/outfit/2168.png",
+    "sprite": {
+      "offsetXRatio": 0.0312,
+      "offsetYRatio": -0.0469,
+      "scale": 0.8369
+    },
+    "levelMin": 150,
+    "x": 1757.6,
+    "y": 340.6,
+    "radius": 29,
+    "spawnCount": 5,
+    "bounds": {
+      "minX": 1751,
+      "minY": 333,
+      "maxX": 1764,
+      "maxY": 348
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-scarab-1",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 796,
+    "y": 744,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 796,
+      "minY": 744,
+      "maxX": 796,
+      "maxY": 744
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-scarab-2",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 973,
+    "y": 787,
+    "radius": 51,
+    "spawnCount": 4,
+    "bounds": {
+      "minX": 971,
+      "minY": 758,
+      "maxX": 976,
+      "maxY": 819
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-scarab-3",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 776,
+    "y": 818,
+    "radius": 40,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 763,
+      "minY": 801,
+      "maxX": 789,
+      "maxY": 835
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-scorpion-1",
+    "kind": "monster",
+    "name": "Scorpion",
+    "referenceName": "Scorpion",
+    "aliases": [
+      "Scorpion"
+    ],
+    "searchTerms": [
+      "Scorpion"
+    ],
+    "looktype": 2016,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 70,
+    "x": 972.33,
+    "y": 779,
+    "radius": 46,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 963,
+      "minY": 753,
+      "maxX": 979,
+      "maxY": 797
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-scorpion-2",
+    "kind": "monster",
+    "name": "Scorpion",
+    "referenceName": "Scorpion",
+    "aliases": [
+      "Scorpion"
+    ],
+    "searchTerms": [
+      "Scorpion"
+    ],
+    "looktype": 2016,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 70,
+    "x": 863.33,
+    "y": 807.33,
+    "radius": 51,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 847,
+      "minY": 790,
+      "maxX": 893,
+      "maxY": 835
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-scorpion-3",
+    "kind": "monster",
+    "name": "Scorpion",
+    "referenceName": "Scorpion",
+    "aliases": [
+      "Scorpion"
+    ],
+    "searchTerms": [
+      "Scorpion"
+    ],
+    "looktype": 2016,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 70,
+    "x": 1002.86,
+    "y": 1042.41,
+    "radius": 163,
+    "spawnCount": 64,
+    "bounds": {
+      "minX": 925,
+      "minY": 915,
+      "maxX": 1087,
+      "maxY": 1174
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-shukaku-worshiper-1",
+    "kind": "monster",
+    "name": "Shukaku Worshiper",
+    "referenceName": "Shukaku Worshiper",
+    "aliases": [
+      "Shukaku Worshiper"
+    ],
+    "searchTerms": [
+      "Shukaku Worshiper"
+    ],
+    "looktype": 2132,
+    "image": "images/outfit/2132.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1172,
+      "scale": 1.1159
+    },
+    "levelMin": 100,
+    "x": 458.06,
+    "y": 967.95,
+    "radius": 137,
+    "spawnCount": 154,
+    "bounds": {
+      "minX": 386,
+      "minY": 868,
+      "maxX": 523,
+      "maxY": 1081
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-shukaku-worshiper-2",
+    "kind": "monster",
+    "name": "Shukaku Worshiper",
+    "referenceName": "Shukaku Worshiper",
+    "aliases": [
+      "Shukaku Worshiper"
+    ],
+    "searchTerms": [
+      "Shukaku Worshiper"
+    ],
+    "looktype": 2132,
+    "image": "images/outfit/2132.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1172,
+      "scale": 1.1159
+    },
+    "levelMin": 100,
+    "x": 926,
+    "y": 941,
+    "radius": 24,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 923,
+      "minY": 940,
+      "maxX": 929,
+      "maxY": 942
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-snake-1",
+    "kind": "monster",
+    "name": "Snake",
+    "referenceName": "Snake",
+    "aliases": [
+      "Snake"
+    ],
+    "searchTerms": [
+      "Snake"
+    ],
+    "looktype": 2014,
+    "image": "images/outfit/2014.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.0391,
+      "scale": 1.28
+    },
+    "levelMin": 15,
+    "x": 1353.5,
+    "y": 831,
+    "radius": 35,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1352,
+      "minY": 815,
+      "maxX": 1355,
+      "maxY": 847
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-snake-2",
+    "kind": "monster",
+    "name": "Snake",
+    "referenceName": "Snake",
+    "aliases": [
+      "Snake"
+    ],
+    "searchTerms": [
+      "Snake"
+    ],
+    "looktype": 2014,
+    "image": "images/outfit/2014.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.0391,
+      "scale": 1.28
+    },
+    "levelMin": 15,
+    "x": 1212.6,
+    "y": 875.6,
+    "radius": 74,
+    "spawnCount": 5,
+    "bounds": {
+      "minX": 1201,
+      "minY": 839,
+      "maxX": 1224,
+      "maxY": 929
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-snake-3",
+    "kind": "monster",
+    "name": "Snake",
+    "referenceName": "Snake",
+    "aliases": [
+      "Snake"
+    ],
+    "searchTerms": [
+      "Snake"
+    ],
+    "looktype": 2014,
+    "image": "images/outfit/2014.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.0391,
+      "scale": 1.28
+    },
+    "levelMin": 15,
+    "x": 1339.67,
+    "y": 930,
+    "radius": 57,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 1302,
+      "minY": 921,
+      "maxX": 1374,
+      "maxY": 936
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-spider-1",
+    "kind": "monster",
+    "name": "Spider",
+    "referenceName": "Spider",
+    "aliases": [
+      "Spider"
+    ],
+    "searchTerms": [
+      "Spider"
+    ],
+    "looktype": 2030,
+    "image": "images/outfit/2030.png",
+    "sprite": {
+      "offsetXRatio": -0.2812,
+      "offsetYRatio": -0.2578,
+      "scale": 1.28
+    },
+    "levelMin": 40,
+    "x": 1832,
+    "y": 660.55,
+    "radius": 49,
+    "spawnCount": 11,
+    "bounds": {
+      "minX": 1802,
+      "minY": 644,
+      "maxX": 1857,
+      "maxY": 683
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-spider-2",
+    "kind": "monster",
+    "name": "Spider",
+    "referenceName": "Spider",
+    "aliases": [
+      "Spider"
+    ],
+    "searchTerms": [
+      "Spider"
+    ],
+    "looktype": 2030,
+    "image": "images/outfit/2030.png",
+    "sprite": {
+      "offsetXRatio": -0.2812,
+      "offsetYRatio": -0.2578,
+      "scale": 1.28
+    },
+    "levelMin": 40,
+    "x": 1901.6,
+    "y": 752.62,
+    "radius": 96,
+    "spawnCount": 42,
+    "bounds": {
+      "minX": 1836,
+      "minY": 705,
+      "maxX": 1976,
+      "maxY": 796
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-suna-shinobi-1",
+    "kind": "monster",
+    "name": "Suna Shinobi",
+    "referenceName": "Suna Shinobi",
+    "aliases": [
+      "Suna Shinobi"
+    ],
+    "searchTerms": [
+      "Suna Shinobi"
+    ],
+    "looktype": 711,
+    "image": "images/outfit/711.png",
+    "sprite": {
+      "offsetXRatio": -0.1094,
+      "offsetYRatio": -0.1172,
+      "scale": 1.28
+    },
+    "levelMin": 130,
+    "x": 905.06,
+    "y": 846.65,
+    "radius": 68,
+    "spawnCount": 34,
+    "bounds": {
+      "minX": 867,
+      "minY": 826,
+      "maxX": 952,
+      "maxY": 863
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-tiger-1",
+    "kind": "monster",
+    "name": "Tiger",
+    "referenceName": "Tiger",
+    "aliases": [
+      "Tiger"
+    ],
+    "searchTerms": [
+      "Tiger"
+    ],
+    "looktype": 2013,
+    "image": "images/outfit/2013.png",
+    "sprite": {
+      "offsetXRatio": 0.1641,
+      "offsetYRatio": -0.2812,
+      "scale": 1.0121
+    },
+    "levelMin": 65,
+    "x": 1826,
+    "y": 596.57,
+    "radius": 32,
+    "spawnCount": 7,
+    "bounds": {
+      "minX": 1819,
+      "minY": 584,
+      "maxX": 1835,
+      "maxY": 608
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-tiger-2",
+    "kind": "monster",
+    "name": "Tiger",
+    "referenceName": "Tiger",
+    "aliases": [
+      "Tiger"
+    ],
+    "searchTerms": [
+      "Tiger"
+    ],
+    "looktype": 2013,
+    "image": "images/outfit/2013.png",
+    "sprite": {
+      "offsetXRatio": 0.1641,
+      "offsetYRatio": -0.2812,
+      "scale": 1.0121
+    },
+    "levelMin": 65,
+    "x": 1903,
+    "y": 592,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1903,
+      "minY": 592,
+      "maxX": 1903,
+      "maxY": 592
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-tiger-3",
+    "kind": "monster",
+    "name": "Tiger",
+    "referenceName": "Tiger",
+    "aliases": [
+      "Tiger"
+    ],
+    "searchTerms": [
+      "Tiger"
+    ],
+    "looktype": 2013,
+    "image": "images/outfit/2013.png",
+    "sprite": {
+      "offsetXRatio": 0.1641,
+      "offsetYRatio": -0.2812,
+      "scale": 1.0121
+    },
+    "levelMin": 65,
+    "x": 1950.5,
+    "y": 647.5,
+    "radius": 24,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1948,
+      "minY": 645,
+      "maxX": 1953,
+      "maxY": 650
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-tiger-4",
+    "kind": "monster",
+    "name": "Tiger",
+    "referenceName": "Tiger",
+    "aliases": [
+      "Tiger"
+    ],
+    "searchTerms": [
+      "Tiger"
+    ],
+    "looktype": 2013,
+    "image": "images/outfit/2013.png",
+    "sprite": {
+      "offsetXRatio": 0.1641,
+      "offsetYRatio": -0.2812,
+      "scale": 1.0121
+    },
+    "levelMin": 65,
+    "x": 1000.43,
+    "y": 870.62,
+    "radius": 76,
+    "spawnCount": 21,
+    "bounds": {
+      "minX": 947,
+      "minY": 821,
+      "maxX": 1044,
+      "maxY": 923
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-6-training-stump-1",
+    "kind": "monster",
+    "name": "Training Stump",
+    "referenceName": "Trainer",
+    "aliases": [
+      "Trainer",
+      "Training Stump"
+    ],
+    "searchTerms": [
+      "Trainer",
+      "Training Stump"
+    ],
+    "looktype": 1299,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": null,
+    "x": 1252,
+    "y": 897.67,
+    "radius": 24,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 1249,
+      "minY": 897,
+      "maxX": 1255,
+      "maxY": 898
+    },
+    "floor": 6
+  },
+  {
+    "id": "npc-6-aya-1",
+    "kind": "npc",
+    "name": "Aya",
+    "referenceName": "MS_Aya",
+    "aliases": [
+      "Aya",
+      "MS Aya"
+    ],
+    "searchTerms": [
+      "Aya",
+      "MS Aya"
+    ],
+    "looktype": 1136,
+    "image": "images/outfit/1136.png",
+    "sprite": {
+      "offsetXRatio": -0.0703,
+      "offsetYRatio": -0.1094,
+      "scale": 1.1159
+    },
+    "levelMin": null,
+    "x": 1324,
+    "y": 718,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1324,
+      "minY": 718,
+      "maxX": 1324,
+      "maxY": 718
+    },
+    "floor": 6
+  },
+  {
+    "id": "npc-6-gata-tora-1",
+    "kind": "npc",
+    "name": "Gata Tora",
+    "referenceName": "GataTora",
+    "aliases": [
+      "Gata Tora",
+      "GataTora"
+    ],
+    "searchTerms": [
+      "Gata Tora",
+      "GataTora"
+    ],
+    "looktype": 2080,
+    "image": "images/outfit/2080.png",
+    "sprite": {
+      "offsetXRatio": -0.0078,
+      "offsetYRatio": 0.0469,
+      "scale": 0.78
+    },
+    "levelMin": null,
+    "x": 1203,
+    "y": 756,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1203,
+      "minY": 756,
+      "maxX": 1203,
+      "maxY": 756
+    },
+    "floor": 6
+  },
+  {
+    "id": "npc-6-hana-1",
+    "kind": "npc",
+    "name": "Hana",
+    "referenceName": "TM_Hana",
+    "aliases": [
+      "Hana",
+      "TM Hana"
+    ],
+    "searchTerms": [
+      "Hana",
+      "TM Hana"
+    ],
+    "looktype": 2158,
+    "image": "images/outfit/2158.png",
+    "sprite": {
+      "offsetXRatio": -0.0703,
+      "offsetYRatio": -0.0938,
+      "scale": 1.1159
+    },
+    "levelMin": null,
+    "x": 1269,
+    "y": 868,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1269,
+      "minY": 868,
+      "maxX": 1269,
+      "maxY": 868
+    },
+    "floor": 6
+  },
+  {
+    "id": "npc-6-hanami-1",
+    "kind": "npc",
+    "name": "Hanami",
+    "referenceName": "Coelha_da_Pascoa",
+    "aliases": [
+      "Coelha da Pascoa",
+      "Hanami"
+    ],
+    "searchTerms": [
+      "Coelha da Pascoa",
+      "Hanami"
+    ],
+    "looktype": 2228,
+    "image": "images/outfit/2228.png",
+    "sprite": {
+      "offsetXRatio": 0,
+      "offsetYRatio": -0.0156,
+      "scale": 0.9067
+    },
+    "levelMin": null,
+    "x": 1256,
+    "y": 705,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1256,
+      "minY": 705,
+      "maxX": 1256,
+      "maxY": 705
+    },
+    "floor": 6
+  },
+  {
+    "id": "npc-6-hayato-1",
+    "kind": "npc",
+    "name": "Hayato",
+    "referenceName": "TB_Hayato",
+    "aliases": [
+      "Hayato",
+      "TB Hayato"
+    ],
+    "searchTerms": [
+      "Hayato",
+      "TB Hayato"
+    ],
+    "looktype": 1142,
+    "image": "images/outfit/1142.png",
+    "sprite": {
+      "offsetXRatio": -0.0625,
+      "offsetYRatio": -0.0859,
+      "scale": 1.088
+    },
+    "levelMin": null,
+    "x": 1261,
+    "y": 995,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1261,
+      "minY": 995,
+      "maxX": 1261,
+      "maxY": 995
+    },
+    "floor": 6
+  },
+  {
+    "id": "npc-6-hayato-2",
+    "kind": "npc",
+    "name": "Hayato",
+    "referenceName": "TB_Hayato",
+    "aliases": [
+      "Hayato",
+      "TB Hayato"
+    ],
+    "searchTerms": [
+      "Hayato",
+      "TB Hayato"
+    ],
+    "looktype": 1142,
+    "image": "images/outfit/1142.png",
+    "sprite": {
+      "offsetXRatio": -0.0625,
+      "offsetYRatio": -0.0859,
+      "scale": 1.088
+    },
+    "levelMin": null,
+    "x": 730,
+    "y": 1254,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 730,
+      "minY": 1254,
+      "maxX": 730,
+      "maxY": 1254
+    },
+    "floor": 6
+  },
+  {
+    "id": "npc-6-recepcionista-hokage-1",
+    "kind": "npc",
+    "name": "Recepcionista Hokage",
+    "referenceName": "M_Recepcionista",
+    "aliases": [
+      "M Recepcionista",
+      "Recepcionista Hokage"
+    ],
+    "searchTerms": [
+      "M Recepcionista",
+      "Recepcionista Hokage"
+    ],
+    "looktype": 1151,
+    "image": "images/outfit/1151.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1172,
+      "scale": 1.2434
+    },
+    "levelMin": null,
+    "x": 1283,
+    "y": 699,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1283,
+      "minY": 699,
+      "maxX": 1283,
+      "maxY": 699
+    },
+    "floor": 6
+  },
+  {
+    "id": "npc-6-ren-sato-1",
+    "kind": "npc",
+    "name": "Ren Sato",
+    "referenceName": "TM_RenSato",
+    "aliases": [
+      "Ren Sato",
+      "TM RenSato"
+    ],
+    "searchTerms": [
+      "Ren Sato",
+      "TM RenSato"
+    ],
+    "looktype": 2159,
+    "image": "images/outfit/2159.png",
+    "sprite": {
+      "offsetXRatio": -0.1094,
+      "offsetYRatio": -0.1172,
+      "scale": 1.28
+    },
+    "levelMin": null,
+    "x": 1339,
+    "y": 910,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1339,
+      "minY": 910,
+      "maxX": 1339,
+      "maxY": 910
+    },
+    "floor": 6
+  },
+  {
+    "id": "npc-6-ryusei-inaba-1",
+    "kind": "npc",
+    "name": "Ryusei Inaba",
+    "referenceName": "TM_RyuseiInaba",
+    "aliases": [
+      "Ryusei Inaba",
+      "TM RyuseiInaba"
+    ],
+    "searchTerms": [
+      "Ryusei Inaba",
+      "TM RyuseiInaba"
+    ],
+    "looktype": 2154,
+    "image": "images/outfit/2154.png",
+    "sprite": {
+      "offsetXRatio": -0.0859,
+      "offsetYRatio": -0.1094,
+      "scale": 1.1762
+    },
+    "levelMin": null,
+    "x": 1738,
+    "y": 744,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1738,
+      "minY": 744,
+      "maxX": 1738,
+      "maxY": 744
+    },
+    "floor": 6
+  },
+  {
+    "id": "npc-6-shizuka-1",
+    "kind": "npc",
+    "name": "Shizuka",
+    "referenceName": "TB_Shizuka",
+    "aliases": [
+      "Shizuka",
+      "TB Shizuka"
+    ],
+    "searchTerms": [
+      "Shizuka",
+      "TB Shizuka"
+    ],
+    "looktype": 1145,
+    "image": "images/outfit/1145.png",
+    "sprite": {
+      "offsetXRatio": -0.0625,
+      "offsetYRatio": -0.0859,
+      "scale": 1.088
+    },
+    "levelMin": null,
+    "x": 1778,
+    "y": 803,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1778,
+      "minY": 803,
+      "maxX": 1778,
+      "maxY": 803
+    },
+    "floor": 6
+  },
+  {
+    "id": "npc-6-shizuka-2",
+    "kind": "npc",
+    "name": "Shizuka",
+    "referenceName": "TB_Shizuka",
+    "aliases": [
+      "Shizuka",
+      "TB Shizuka"
+    ],
+    "searchTerms": [
+      "Shizuka",
+      "TB Shizuka"
+    ],
+    "looktype": 1145,
+    "image": "images/outfit/1145.png",
+    "sprite": {
+      "offsetXRatio": -0.0625,
+      "offsetYRatio": -0.0859,
+      "scale": 1.088
+    },
+    "levelMin": null,
+    "x": 1284,
+    "y": 982,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1284,
+      "minY": 982,
+      "maxX": 1284,
+      "maxY": 982
+    },
+    "floor": 6
+  },
+  {
+    "id": "npc-6-takao-mori-1",
+    "kind": "npc",
+    "name": "Takao Mori",
+    "referenceName": "TM_TakaoMori",
+    "aliases": [
+      "TM TakaoMori",
+      "Takao Mori"
+    ],
+    "searchTerms": [
+      "TM TakaoMori",
+      "Takao Mori"
+    ],
+    "looktype": 2149,
+    "image": "images/outfit/2149.png",
+    "sprite": {
+      "offsetXRatio": -0.1094,
+      "offsetYRatio": -0.1172,
+      "scale": 1.28
+    },
+    "levelMin": null,
+    "x": 1190,
+    "y": 673,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1190,
+      "minY": 673,
+      "maxX": 1190,
+      "maxY": 673
+    },
+    "floor": 6
+  },
+  {
+    "id": "npc-6-yuna-soryu-1",
+    "kind": "npc",
+    "name": "Yuna Soryu",
+    "referenceName": "TM_YunaSoryu",
+    "aliases": [
+      "TM YunaSoryu",
+      "Yuna Soryu"
+    ],
+    "searchTerms": [
+      "TM YunaSoryu",
+      "Yuna Soryu"
+    ],
+    "looktype": 2157,
+    "image": "images/outfit/2157.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1016,
+      "scale": 1.2089
+    },
+    "levelMin": null,
+    "x": 1029,
+    "y": 865,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1029,
+      "minY": 865,
+      "maxX": 1029,
+      "maxY": 865
+    },
+    "floor": 6
+  },
+  {
+    "id": "monster-7-bandit-1",
+    "kind": "monster",
+    "name": "Bandit",
+    "referenceName": "Bandit",
+    "aliases": [
+      "Bandit"
+    ],
+    "searchTerms": [
+      "Bandit"
+    ],
+    "looktype": 707,
+    "image": "images/outfit/707.png",
+    "sprite": {
+      "offsetXRatio": -0.2266,
+      "offsetYRatio": -0.2422,
+      "scale": 1.2434
+    },
+    "levelMin": 12,
+    "x": 1409.91,
+    "y": 682.17,
+    "radius": 201,
+    "spawnCount": 58,
+    "bounds": {
+      "minX": 1300,
+      "minY": 533,
+      "maxX": 1476,
+      "maxY": 816
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bandit-2",
+    "kind": "monster",
+    "name": "Bandit",
+    "referenceName": "Bandit",
+    "aliases": [
+      "Bandit"
+    ],
+    "searchTerms": [
+      "Bandit"
+    ],
+    "looktype": 707,
+    "image": "images/outfit/707.png",
+    "sprite": {
+      "offsetXRatio": -0.2266,
+      "offsetYRatio": -0.2422,
+      "scale": 1.2434
+    },
+    "levelMin": 12,
+    "x": 1120.92,
+    "y": 624.25,
+    "radius": 56,
+    "spawnCount": 12,
+    "bounds": {
+      "minX": 1086,
+      "minY": 609,
+      "maxX": 1154,
+      "maxY": 645
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bandit-3",
+    "kind": "monster",
+    "name": "Bandit",
+    "referenceName": "Bandit",
+    "aliases": [
+      "Bandit"
+    ],
+    "searchTerms": [
+      "Bandit"
+    ],
+    "looktype": 707,
+    "image": "images/outfit/707.png",
+    "sprite": {
+      "offsetXRatio": -0.2266,
+      "offsetYRatio": -0.2422,
+      "scale": 1.2434
+    },
+    "levelMin": 12,
+    "x": 1291.67,
+    "y": 640,
+    "radius": 30,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 1285,
+      "minY": 630,
+      "maxX": 1297,
+      "maxY": 647
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bandit-4",
+    "kind": "monster",
+    "name": "Bandit",
+    "referenceName": "Bandit",
+    "aliases": [
+      "Bandit"
+    ],
+    "searchTerms": [
+      "Bandit"
+    ],
+    "looktype": 707,
+    "image": "images/outfit/707.png",
+    "sprite": {
+      "offsetXRatio": -0.2266,
+      "offsetYRatio": -0.2422,
+      "scale": 1.2434
+    },
+    "levelMin": 12,
+    "x": 1007,
+    "y": 711.67,
+    "radius": 29,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 1000,
+      "minY": 703,
+      "maxX": 1016,
+      "maxY": 717
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bandit-5",
+    "kind": "monster",
+    "name": "Bandit",
+    "referenceName": "Bandit",
+    "aliases": [
+      "Bandit"
+    ],
+    "searchTerms": [
+      "Bandit"
+    ],
+    "looktype": 707,
+    "image": "images/outfit/707.png",
+    "sprite": {
+      "offsetXRatio": -0.2266,
+      "offsetYRatio": -0.2422,
+      "scale": 1.2434
+    },
+    "levelMin": 12,
+    "x": 1151.22,
+    "y": 917.56,
+    "radius": 81,
+    "spawnCount": 36,
+    "bounds": {
+      "minX": 1094,
+      "minY": 889,
+      "maxX": 1191,
+      "maxY": 958
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bandit-shinobi-1",
+    "kind": "monster",
+    "name": "Bandit Shinobi",
+    "referenceName": "Bandit Shinobi",
+    "aliases": [
+      "Bandit Shinobi"
+    ],
+    "searchTerms": [
+      "Bandit Shinobi"
+    ],
+    "looktype": 655,
+    "image": "images/outfit/655.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1762
+    },
+    "levelMin": 35,
+    "x": 1324.56,
+    "y": 549.89,
+    "radius": 43,
+    "spawnCount": 9,
+    "bounds": {
+      "minX": 1301,
+      "minY": 535,
+      "maxX": 1347,
+      "maxY": 560
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bandit-shinobi-2",
+    "kind": "monster",
+    "name": "Bandit Shinobi",
+    "referenceName": "Bandit Shinobi",
+    "aliases": [
+      "Bandit Shinobi"
+    ],
+    "searchTerms": [
+      "Bandit Shinobi"
+    ],
+    "looktype": 655,
+    "image": "images/outfit/655.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1762
+    },
+    "levelMin": 35,
+    "x": 1111.75,
+    "y": 623.5,
+    "radius": 44,
+    "spawnCount": 4,
+    "bounds": {
+      "minX": 1094,
+      "minY": 611,
+      "maxX": 1135,
+      "maxY": 642
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bandit-shinobi-3",
+    "kind": "monster",
+    "name": "Bandit Shinobi",
+    "referenceName": "Bandit Shinobi",
+    "aliases": [
+      "Bandit Shinobi"
+    ],
+    "searchTerms": [
+      "Bandit Shinobi"
+    ],
+    "looktype": 655,
+    "image": "images/outfit/655.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1762
+    },
+    "levelMin": 35,
+    "x": 1429.62,
+    "y": 663.62,
+    "radius": 71,
+    "spawnCount": 8,
+    "bounds": {
+      "minX": 1395,
+      "minY": 623,
+      "maxX": 1469,
+      "maxY": 702
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bandit-shinobi-4",
+    "kind": "monster",
+    "name": "Bandit Shinobi",
+    "referenceName": "Bandit Shinobi",
+    "aliases": [
+      "Bandit Shinobi"
+    ],
+    "searchTerms": [
+      "Bandit Shinobi"
+    ],
+    "looktype": 655,
+    "image": "images/outfit/655.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1762
+    },
+    "levelMin": 35,
+    "x": 1299.75,
+    "y": 647.75,
+    "radius": 41,
+    "spawnCount": 4,
+    "bounds": {
+      "minX": 1298,
+      "minY": 626,
+      "maxX": 1302,
+      "maxY": 663
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bandit-shinobi-5",
+    "kind": "monster",
+    "name": "Bandit Shinobi",
+    "referenceName": "Bandit Shinobi",
+    "aliases": [
+      "Bandit Shinobi"
+    ],
+    "searchTerms": [
+      "Bandit Shinobi"
+    ],
+    "looktype": 655,
+    "image": "images/outfit/655.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1762
+    },
+    "levelMin": 35,
+    "x": 1023.33,
+    "y": 708,
+    "radius": 36,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 1017,
+      "minY": 694,
+      "maxX": 1028,
+      "maxY": 725
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bandit-shinobi-6",
+    "kind": "monster",
+    "name": "Bandit Shinobi",
+    "referenceName": "Bandit Shinobi",
+    "aliases": [
+      "Bandit Shinobi"
+    ],
+    "searchTerms": [
+      "Bandit Shinobi"
+    ],
+    "looktype": 655,
+    "image": "images/outfit/655.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1762
+    },
+    "levelMin": 35,
+    "x": 1424,
+    "y": 767,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1424,
+      "minY": 767,
+      "maxX": 1424,
+      "maxY": 767
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bandit-shinobi-7",
+    "kind": "monster",
+    "name": "Bandit Shinobi",
+    "referenceName": "Bandit Shinobi",
+    "aliases": [
+      "Bandit Shinobi"
+    ],
+    "searchTerms": [
+      "Bandit Shinobi"
+    ],
+    "looktype": 655,
+    "image": "images/outfit/655.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1762
+    },
+    "levelMin": 35,
+    "x": 1155.36,
+    "y": 919.91,
+    "radius": 78,
+    "spawnCount": 11,
+    "bounds": {
+      "minX": 1098,
+      "minY": 894,
+      "maxX": 1182,
+      "maxY": 952
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bandit-sword-1",
+    "kind": "monster",
+    "name": "Bandit Sword",
+    "referenceName": "Bandit Sword",
+    "aliases": [
+      "Bandit Sword"
+    ],
+    "searchTerms": [
+      "Bandit Sword"
+    ],
+    "looktype": 643,
+    "image": "images/outfit/643.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.0703,
+      "scale": 1.1159
+    },
+    "levelMin": 25,
+    "x": 1121.75,
+    "y": 620.5,
+    "radius": 44,
+    "spawnCount": 4,
+    "bounds": {
+      "minX": 1108,
+      "minY": 604,
+      "maxX": 1144,
+      "maxY": 632
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bandit-sword-2",
+    "kind": "monster",
+    "name": "Bandit Sword",
+    "referenceName": "Bandit Sword",
+    "aliases": [
+      "Bandit Sword"
+    ],
+    "searchTerms": [
+      "Bandit Sword"
+    ],
+    "looktype": 643,
+    "image": "images/outfit/643.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.0703,
+      "scale": 1.1159
+    },
+    "levelMin": 25,
+    "x": 1005,
+    "y": 707,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1005,
+      "minY": 707,
+      "maxX": 1005,
+      "maxY": 707
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bandit-sword-3",
+    "kind": "monster",
+    "name": "Bandit Sword",
+    "referenceName": "Bandit Sword",
+    "aliases": [
+      "Bandit Sword"
+    ],
+    "searchTerms": [
+      "Bandit Sword"
+    ],
+    "looktype": 643,
+    "image": "images/outfit/643.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.0703,
+      "scale": 1.1159
+    },
+    "levelMin": 25,
+    "x": 1165.67,
+    "y": 903.67,
+    "radius": 55,
+    "spawnCount": 6,
+    "bounds": {
+      "minX": 1132,
+      "minY": 892,
+      "maxX": 1183,
+      "maxY": 916
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bear-1",
+    "kind": "monster",
+    "name": "Bear",
+    "referenceName": "Bear",
+    "aliases": [
+      "Bear"
+    ],
+    "searchTerms": [
+      "Bear"
+    ],
+    "looktype": 2003,
+    "image": "images/outfit/2003.png",
+    "sprite": {
+      "offsetXRatio": -0.2812,
+      "offsetYRatio": -0.1797,
+      "scale": 1.0615
+    },
+    "levelMin": 20,
+    "x": 1434.41,
+    "y": 825.36,
+    "radius": 97,
+    "spawnCount": 22,
+    "bounds": {
+      "minX": 1359,
+      "minY": 785,
+      "maxX": 1506,
+      "maxY": 854
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bear-2",
+    "kind": "monster",
+    "name": "Bear",
+    "referenceName": "Bear",
+    "aliases": [
+      "Bear"
+    ],
+    "searchTerms": [
+      "Bear"
+    ],
+    "looktype": 2003,
+    "image": "images/outfit/2003.png",
+    "sprite": {
+      "offsetXRatio": -0.2812,
+      "offsetYRatio": -0.1797,
+      "scale": 1.0615
+    },
+    "levelMin": 20,
+    "x": 1028,
+    "y": 806,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1028,
+      "minY": 806,
+      "maxX": 1028,
+      "maxY": 806
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-bear-3",
+    "kind": "monster",
+    "name": "Bear",
+    "referenceName": "Bear",
+    "aliases": [
+      "Bear"
+    ],
+    "searchTerms": [
+      "Bear"
+    ],
+    "looktype": 2003,
+    "image": "images/outfit/2003.png",
+    "sprite": {
+      "offsetXRatio": -0.2812,
+      "offsetYRatio": -0.1797,
+      "scale": 1.0615
+    },
+    "levelMin": 20,
+    "x": 1242.67,
+    "y": 965,
+    "radius": 35,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 1227,
+      "minY": 959,
+      "maxX": 1256,
+      "maxY": 972
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-boar-1",
+    "kind": "monster",
+    "name": "Boar",
+    "referenceName": "Boar",
+    "aliases": [
+      "Boar"
+    ],
+    "searchTerms": [
+      "Boar"
+    ],
+    "looktype": 2036,
+    "image": "images/outfit/2036.png",
+    "sprite": {
+      "offsetXRatio": -0.3359,
+      "offsetYRatio": -0.25,
+      "scale": 1.28
+    },
+    "levelMin": 6,
+    "x": 1447.42,
+    "y": 734.08,
+    "radius": 67,
+    "spawnCount": 12,
+    "bounds": {
+      "minX": 1403,
+      "minY": 713,
+      "maxX": 1479,
+      "maxY": 770
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-chakra-golem-1",
+    "kind": "monster",
+    "name": "Chakra Golem",
+    "referenceName": "Chakra Golem",
+    "aliases": [
+      "Chakra Golem"
+    ],
+    "searchTerms": [
+      "Chakra Golem"
+    ],
+    "looktype": 2144,
+    "image": "images/outfit/2144.png",
+    "sprite": {
+      "offsetXRatio": -0.0547,
+      "offsetYRatio": -0.0859,
+      "scale": 0.8882
+    },
+    "levelMin": 150,
+    "x": 739.22,
+    "y": 185.67,
+    "radius": 54,
+    "spawnCount": 18,
+    "bounds": {
+      "minX": 716,
+      "minY": 161,
+      "maxX": 772,
+      "maxY": 206
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-chakra-golem-2",
+    "kind": "monster",
+    "name": "Chakra Golem",
+    "referenceName": "Chakra Golem",
+    "aliases": [
+      "Chakra Golem"
+    ],
+    "searchTerms": [
+      "Chakra Golem"
+    ],
+    "looktype": 2144,
+    "image": "images/outfit/2144.png",
+    "sprite": {
+      "offsetXRatio": -0.0547,
+      "offsetYRatio": -0.0859,
+      "scale": 0.8882
+    },
+    "levelMin": 150,
+    "x": 910.74,
+    "y": 272.48,
+    "radius": 88,
+    "spawnCount": 58,
+    "bounds": {
+      "minX": 884,
+      "minY": 208,
+      "maxX": 944,
+      "maxY": 341
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-1",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1868,
+    "y": 594.5,
+    "radius": 40,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1850,
+      "minY": 583,
+      "maxX": 1886,
+      "maxY": 606
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-2",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1946,
+    "y": 613.5,
+    "radius": 36,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1938,
+      "minY": 598,
+      "maxX": 1954,
+      "maxY": 629
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-3",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1103,
+    "y": 613,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1103,
+      "minY": 613,
+      "maxX": 1103,
+      "maxY": 613
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-4",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1849,
+    "y": 659,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1849,
+      "minY": 659,
+      "maxX": 1849,
+      "maxY": 659
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-5",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1428,
+    "y": 662,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1428,
+      "minY": 662,
+      "maxX": 1428,
+      "maxY": 662
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-6",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1782,
+    "y": 668,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1782,
+      "minY": 668,
+      "maxX": 1782,
+      "maxY": 668
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-7",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1052,
+    "y": 693,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1052,
+      "minY": 693,
+      "maxX": 1052,
+      "maxY": 693
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-8",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1883,
+    "y": 700,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1883,
+      "minY": 700,
+      "maxX": 1883,
+      "maxY": 700
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-9",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1471,
+    "y": 728,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1471,
+      "minY": 728,
+      "maxX": 1471,
+      "maxY": 728
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-10",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 744.25,
+    "y": 766.5,
+    "radius": 54,
+    "spawnCount": 4,
+    "bounds": {
+      "minX": 727,
+      "minY": 743,
+      "maxX": 773,
+      "maxY": 787
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-11",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1826,
+    "y": 757,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1826,
+      "minY": 757,
+      "maxX": 1826,
+      "maxY": 757
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-12",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 576.1,
+    "y": 821.6,
+    "radius": 115,
+    "spawnCount": 10,
+    "bounds": {
+      "minX": 516,
+      "minY": 765,
+      "maxX": 654,
+      "maxY": 894
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-13",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1882,
+    "y": 768,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1882,
+      "minY": 768,
+      "maxX": 1882,
+      "maxY": 768
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-14",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 846,
+    "y": 771,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 846,
+      "minY": 771,
+      "maxX": 846,
+      "maxY": 771
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-15",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1025,
+    "y": 779,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1025,
+      "minY": 779,
+      "maxX": 1025,
+      "maxY": 779
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-16",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1442,
+    "y": 779,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1442,
+      "minY": 779,
+      "maxX": 1442,
+      "maxY": 779
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-17",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 918,
+    "y": 822,
+    "radius": 65,
+    "spawnCount": 4,
+    "bounds": {
+      "minX": 879,
+      "minY": 805,
+      "maxX": 947,
+      "maxY": 847
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-18",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1479,
+    "y": 821.5,
+    "radius": 37,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1468,
+      "minY": 807,
+      "maxX": 1490,
+      "maxY": 836
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-19",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 621,
+    "y": 879,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 621,
+      "minY": 879,
+      "maxX": 621,
+      "maxY": 879
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-20",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 1353.5,
+    "y": 920.5,
+    "radius": 43,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1342,
+      "minY": 900,
+      "maxX": 1365,
+      "maxY": 941
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-21",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 912,
+    "y": 948,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 912,
+      "minY": 948,
+      "maxX": 912,
+      "maxY": 948
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-22",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 548.5,
+    "y": 1019.5,
+    "radius": 24,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 546,
+      "minY": 1018,
+      "maxX": 551,
+      "maxY": 1021
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-23",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 871,
+    "y": 1038,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 871,
+      "minY": 1038,
+      "maxX": 871,
+      "maxY": 1038
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-24",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 648,
+    "y": 1056.5,
+    "radius": 40,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 627,
+      "minY": 1054,
+      "maxX": 669,
+      "maxY": 1059
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-25",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 915,
+    "y": 1077,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 915,
+      "minY": 1077,
+      "maxX": 915,
+      "maxY": 1077
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-26",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 534,
+    "y": 1083,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 534,
+      "minY": 1083,
+      "maxX": 534,
+      "maxY": 1083
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-27",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 473,
+    "y": 1094,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 473,
+      "minY": 1094,
+      "maxX": 473,
+      "maxY": 1094
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-28",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 758,
+    "y": 1117,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 758,
+      "minY": 1117,
+      "maxX": 758,
+      "maxY": 1117
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-29",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 594,
+    "y": 1120,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 594,
+      "minY": 1120,
+      "maxX": 594,
+      "maxY": 1120
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-30",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 845,
+    "y": 1130,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 845,
+      "minY": 1130,
+      "maxX": 845,
+      "maxY": 1130
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-31",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 469,
+    "y": 1155,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 469,
+      "minY": 1155,
+      "maxX": 469,
+      "maxY": 1155
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-32",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 691,
+    "y": 1161,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 691,
+      "minY": 1161,
+      "maxX": 691,
+      "maxY": 1161
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-33",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 494,
+    "y": 1232,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 494,
+      "minY": 1232,
+      "maxX": 494,
+      "maxY": 1232
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-34",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 586,
+    "y": 1239,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 586,
+      "minY": 1239,
+      "maxX": 586,
+      "maxY": 1239
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-35",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 450,
+    "y": 1261,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 450,
+      "minY": 1261,
+      "maxX": 450,
+      "maxY": 1261
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-coelho-36",
+    "kind": "monster",
+    "name": "Coelho",
+    "referenceName": "Coelho",
+    "aliases": [
+      "Coelho"
+    ],
+    "searchTerms": [
+      "Coelho"
+    ],
+    "looktype": 2197,
+    "image": "images/outfit/2197.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1016,
+      "scale": 1.1762
+    },
+    "levelMin": 100,
+    "x": 481,
+    "y": 1332,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 481,
+      "minY": 1332,
+      "maxX": 481,
+      "maxY": 1332
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-concentrate-monk-1",
+    "kind": "monster",
+    "name": "Concentrate Monk",
+    "referenceName": "Concentrate Monk",
+    "aliases": [
+      "Concentrate Monk"
+    ],
+    "searchTerms": [
+      "Concentrate Monk"
+    ],
+    "looktype": 2164,
+    "image": "images/outfit/2164.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1875,
+      "scale": 1.0615
+    },
+    "levelMin": 150,
+    "x": 1798.1,
+    "y": 275.73,
+    "radius": 150,
+    "spawnCount": 49,
+    "bounds": {
+      "minX": 1756,
+      "minY": 210,
+      "maxX": 1865,
+      "maxY": 404
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-concentrate-monk-2",
+    "kind": "monster",
+    "name": "Concentrate Monk",
+    "referenceName": "Concentrate Monk",
+    "aliases": [
+      "Concentrate Monk"
+    ],
+    "searchTerms": [
+      "Concentrate Monk"
+    ],
+    "looktype": 2164,
+    "image": "images/outfit/2164.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1875,
+      "scale": 1.0615
+    },
+    "levelMin": 150,
+    "x": 1562.65,
+    "y": 320.08,
+    "radius": 60,
+    "spawnCount": 26,
+    "bounds": {
+      "minX": 1536,
+      "minY": 295,
+      "maxX": 1602,
+      "maxY": 343
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-cursed-puppet-1",
+    "kind": "monster",
+    "name": "Cursed puppet",
+    "referenceName": "Cursed puppet",
+    "aliases": [
+      "Cursed puppet"
+    ],
+    "searchTerms": [
+      "Cursed puppet"
+    ],
+    "looktype": 2120,
+    "image": "images/outfit/2120.png",
+    "sprite": {
+      "offsetXRatio": -0.0625,
+      "offsetYRatio": -0.0781,
+      "scale": 1.088
+    },
+    "levelMin": 100,
+    "x": 746.1,
+    "y": 764.52,
+    "radius": 86,
+    "spawnCount": 52,
+    "bounds": {
+      "minX": 694,
+      "minY": 727,
+      "maxX": 793,
+      "maxY": 812
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-cursed-puppet-2",
+    "kind": "monster",
+    "name": "Cursed puppet",
+    "referenceName": "Cursed puppet",
+    "aliases": [
+      "Cursed puppet"
+    ],
+    "searchTerms": [
+      "Cursed puppet"
+    ],
+    "looktype": 2120,
+    "image": "images/outfit/2120.png",
+    "sprite": {
+      "offsetXRatio": -0.0625,
+      "offsetYRatio": -0.0781,
+      "scale": 1.088
+    },
+    "levelMin": 100,
+    "x": 775,
+    "y": 863.5,
+    "radius": 26,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 769,
+      "minY": 861,
+      "maxX": 781,
+      "maxY": 866
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-dirt-pugilist-1",
+    "kind": "monster",
+    "name": "Dirt Pugilist",
+    "referenceName": "Dirt Pugilist",
+    "aliases": [
+      "Dirt Pugilist"
+    ],
+    "searchTerms": [
+      "Dirt Pugilist"
+    ],
+    "looktype": 2131,
+    "image": "images/outfit/2131.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1797,
+      "scale": 1.1159
+    },
+    "levelMin": 170,
+    "x": 784.5,
+    "y": 267.63,
+    "radius": 130,
+    "spawnCount": 114,
+    "bounds": {
+      "minX": 695,
+      "minY": 198,
+      "maxX": 894,
+      "maxY": 334
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-dirt-samurai-1",
+    "kind": "monster",
+    "name": "Dirt Samurai",
+    "referenceName": "Dirt Samurai",
+    "aliases": [
+      "Dirt Samurai"
+    ],
+    "searchTerms": [
+      "Dirt Samurai"
+    ],
+    "looktype": 2127,
+    "image": "images/outfit/2127.png",
+    "sprite": {
+      "offsetXRatio": -0.0781,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1159
+    },
+    "levelMin": 190,
+    "x": 407.11,
+    "y": 239.5,
+    "radius": 88,
+    "spawnCount": 28,
+    "bounds": {
+      "minX": 349,
+      "minY": 202,
+      "maxX": 460,
+      "maxY": 293
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-dirt-samurai-2",
+    "kind": "monster",
+    "name": "Dirt Samurai",
+    "referenceName": "Dirt Samurai",
+    "aliases": [
+      "Dirt Samurai"
+    ],
+    "searchTerms": [
+      "Dirt Samurai"
+    ],
+    "looktype": 2127,
+    "image": "images/outfit/2127.png",
+    "sprite": {
+      "offsetXRatio": -0.0781,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1159
+    },
+    "levelMin": 190,
+    "x": 736.6,
+    "y": 297.6,
+    "radius": 44,
+    "spawnCount": 5,
+    "bounds": {
+      "minX": 712,
+      "minY": 283,
+      "maxX": 757,
+      "maxY": 311
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-duna-1",
+    "kind": "monster",
+    "name": "Duna",
+    "referenceName": "Duna",
+    "aliases": [
+      "Duna"
+    ],
+    "searchTerms": [
+      "Duna"
+    ],
+    "looktype": 2121,
+    "image": "images/outfit/2121.png",
+    "sprite": {
+      "offsetXRatio": 0.1406,
+      "offsetYRatio": -0.1484,
+      "scale": 1.0615
+    },
+    "levelMin": 100,
+    "x": 495.14,
+    "y": 1237.6,
+    "radius": 214,
+    "spawnCount": 259,
+    "bounds": {
+      "minX": 375,
+      "minY": 1111,
+      "maxX": 676,
+      "maxY": 1372
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-earth-monk-1",
+    "kind": "monster",
+    "name": "Earth Monk",
+    "referenceName": "Earth Monk",
+    "aliases": [
+      "Earth Monk"
+    ],
+    "searchTerms": [
+      "Earth Monk"
+    ],
+    "looktype": 2165,
+    "image": "images/outfit/2165.png",
+    "sprite": {
+      "offsetXRatio": -0.0156,
+      "offsetYRatio": -0.0938,
+      "scale": 0.9461
+    },
+    "levelMin": 220,
+    "x": 542.41,
+    "y": 350.62,
+    "radius": 71,
+    "spawnCount": 37,
+    "bounds": {
+      "minX": 505,
+      "minY": 311,
+      "maxX": 581,
+      "maxY": 400
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-earth-monk-2",
+    "kind": "monster",
+    "name": "Earth Monk",
+    "referenceName": "Earth Monk",
+    "aliases": [
+      "Earth Monk"
+    ],
+    "searchTerms": [
+      "Earth Monk"
+    ],
+    "looktype": 2165,
+    "image": "images/outfit/2165.png",
+    "sprite": {
+      "offsetXRatio": -0.0156,
+      "offsetYRatio": -0.0938,
+      "scale": 0.9461
+    },
+    "levelMin": 220,
+    "x": 450.14,
+    "y": 445.43,
+    "radius": 45,
+    "spawnCount": 7,
+    "bounds": {
+      "minX": 427,
+      "minY": 437,
+      "maxX": 474,
+      "maxY": 457
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-elite-swordsman-1",
+    "kind": "monster",
+    "name": "Elite Swordsman",
+    "referenceName": "Elite Swordsman",
+    "aliases": [
+      "Elite Swordsman"
+    ],
+    "searchTerms": [
+      "Elite Swordsman"
+    ],
+    "looktype": 663,
+    "image": "images/outfit/663.png",
+    "sprite": {
+      "offsetXRatio": 0.0547,
+      "offsetYRatio": 0.0312,
+      "scale": 0.7913
+    },
+    "levelMin": 50,
+    "x": 1880.67,
+    "y": 595.78,
+    "radius": 74,
+    "spawnCount": 9,
+    "bounds": {
+      "minX": 1834,
+      "minY": 576,
+      "maxX": 1926,
+      "maxY": 638
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-elite-swordsman-2",
+    "kind": "monster",
+    "name": "Elite Swordsman",
+    "referenceName": "Elite Swordsman",
+    "aliases": [
+      "Elite Swordsman"
+    ],
+    "searchTerms": [
+      "Elite Swordsman"
+    ],
+    "looktype": 663,
+    "image": "images/outfit/663.png",
+    "sprite": {
+      "offsetXRatio": 0.0547,
+      "offsetYRatio": 0.0312,
+      "scale": 0.7913
+    },
+    "levelMin": 50,
+    "x": 1995.5,
+    "y": 701.5,
+    "radius": 24,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1991,
+      "minY": 700,
+      "maxX": 2000,
+      "maxY": 703
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-enraged-bear-1",
+    "kind": "monster",
+    "name": "Enraged Bear",
+    "referenceName": "Enraged Bear",
+    "aliases": [
+      "Enraged Bear"
+    ],
+    "searchTerms": [
+      "Enraged Bear"
+    ],
+    "looktype": 2007,
+    "image": "images/outfit/2007.png",
+    "sprite": {
+      "offsetXRatio": -0.25,
+      "offsetYRatio": -0.125,
+      "scale": 0.9067
+    },
+    "levelMin": 25,
+    "x": 1494.6,
+    "y": 804.2,
+    "radius": 49,
+    "spawnCount": 5,
+    "bounds": {
+      "minX": 1488,
+      "minY": 784,
+      "maxX": 1507,
+      "maxY": 834
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-enraged-bear-2",
+    "kind": "monster",
+    "name": "Enraged Bear",
+    "referenceName": "Enraged Bear",
+    "aliases": [
+      "Enraged Bear"
+    ],
+    "searchTerms": [
+      "Enraged Bear"
+    ],
+    "looktype": 2007,
+    "image": "images/outfit/2007.png",
+    "sprite": {
+      "offsetXRatio": -0.25,
+      "offsetYRatio": -0.125,
+      "scale": 0.9067
+    },
+    "levelMin": 25,
+    "x": 1386.29,
+    "y": 825.57,
+    "radius": 52,
+    "spawnCount": 7,
+    "bounds": {
+      "minX": 1363,
+      "minY": 793,
+      "maxX": 1401,
+      "maxY": 854
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-gennin-1",
+    "kind": "monster",
+    "name": "Gennin",
+    "referenceName": "Gennin",
+    "aliases": [
+      "Gennin"
+    ],
+    "searchTerms": [
+      "Gennin"
+    ],
+    "looktype": 706,
+    "image": "images/outfit/706.png",
+    "sprite": {
+      "offsetXRatio": -0.1094,
+      "offsetYRatio": -0.1016,
+      "scale": 1.2434
+    },
+    "levelMin": 40,
+    "x": 1232.12,
+    "y": 563.25,
+    "radius": 95,
+    "spawnCount": 60,
+    "bounds": {
+      "minX": 1161,
+      "minY": 498,
+      "maxX": 1283,
+      "maxY": 616
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-gennin-2",
+    "kind": "monster",
+    "name": "Gennin",
+    "referenceName": "Gennin",
+    "aliases": [
+      "Gennin"
+    ],
+    "searchTerms": [
+      "Gennin"
+    ],
+    "looktype": 706,
+    "image": "images/outfit/706.png",
+    "sprite": {
+      "offsetXRatio": -0.1094,
+      "offsetYRatio": -0.1016,
+      "scale": 1.2434
+    },
+    "levelMin": 40,
+    "x": 1791.56,
+    "y": 686.11,
+    "radius": 49,
+    "spawnCount": 9,
+    "bounds": {
+      "minX": 1770,
+      "minY": 661,
+      "maxX": 1814,
+      "maxY": 710
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-gennin-3",
+    "kind": "monster",
+    "name": "Gennin",
+    "referenceName": "Gennin",
+    "aliases": [
+      "Gennin"
+    ],
+    "searchTerms": [
+      "Gennin"
+    ],
+    "looktype": 706,
+    "image": "images/outfit/706.png",
+    "sprite": {
+      "offsetXRatio": -0.1094,
+      "offsetYRatio": -0.1016,
+      "scale": 1.2434
+    },
+    "levelMin": 40,
+    "x": 1822,
+    "y": 773.67,
+    "radius": 33,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 1815,
+      "minY": 760,
+      "maxX": 1830,
+      "maxY": 783
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-giant-scorpion-1",
+    "kind": "monster",
+    "name": "Giant Scorpion",
+    "referenceName": "Giant Scorpion",
+    "aliases": [
+      "Giant Scorpion"
+    ],
+    "searchTerms": [
+      "Giant Scorpion"
+    ],
+    "looktype": 2017,
+    "image": "images/outfit/2017.png",
+    "sprite": {
+      "offsetXRatio": -0.1562,
+      "offsetYRatio": -0.0078,
+      "scale": 0.78
+    },
+    "levelMin": 100,
+    "x": 1004,
+    "y": 813,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1004,
+      "minY": 813,
+      "maxX": 1004,
+      "maxY": 813
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-giant-scorpion-2",
+    "kind": "monster",
+    "name": "Giant Scorpion",
+    "referenceName": "Giant Scorpion",
+    "aliases": [
+      "Giant Scorpion"
+    ],
+    "searchTerms": [
+      "Giant Scorpion"
+    ],
+    "looktype": 2017,
+    "image": "images/outfit/2017.png",
+    "sprite": {
+      "offsetXRatio": -0.1562,
+      "offsetYRatio": -0.0078,
+      "scale": 0.78
+    },
+    "levelMin": 100,
+    "x": 432.5,
+    "y": 921,
+    "radius": 41,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 428,
+      "minY": 899,
+      "maxX": 437,
+      "maxY": 943
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-giant-scorpion-3",
+    "kind": "monster",
+    "name": "Giant Scorpion",
+    "referenceName": "Giant Scorpion",
+    "aliases": [
+      "Giant Scorpion"
+    ],
+    "searchTerms": [
+      "Giant Scorpion"
+    ],
+    "looktype": 2017,
+    "image": "images/outfit/2017.png",
+    "sprite": {
+      "offsetXRatio": -0.1562,
+      "offsetYRatio": -0.0078,
+      "scale": 0.78
+    },
+    "levelMin": 100,
+    "x": 481.6,
+    "y": 1020.2,
+    "radius": 87,
+    "spawnCount": 5,
+    "bounds": {
+      "minX": 465,
+      "minY": 952,
+      "maxX": 508,
+      "maxY": 1080
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-giant-spider-1",
+    "kind": "monster",
+    "name": "Giant Spider",
+    "referenceName": "Giant Spider",
+    "aliases": [
+      "Giant Spider"
+    ],
+    "searchTerms": [
+      "Giant Spider"
+    ],
+    "looktype": 2029,
+    "image": "images/outfit/2029.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1172,
+      "scale": 0.9671
+    },
+    "levelMin": 50,
+    "x": 1840,
+    "y": 681,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1840,
+      "minY": 681,
+      "maxX": 1840,
+      "maxY": 681
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-giant-spider-2",
+    "kind": "monster",
+    "name": "Giant Spider",
+    "referenceName": "Giant Spider",
+    "aliases": [
+      "Giant Spider"
+    ],
+    "searchTerms": [
+      "Giant Spider"
+    ],
+    "looktype": 2029,
+    "image": "images/outfit/2029.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1172,
+      "scale": 0.9671
+    },
+    "levelMin": 50,
+    "x": 1885,
+    "y": 761,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1885,
+      "minY": 761,
+      "maxX": 1885,
+      "maxY": 761
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-gorila-1",
+    "kind": "monster",
+    "name": "Gorila",
+    "referenceName": "Gorila",
+    "aliases": [
+      "Gorila"
+    ],
+    "searchTerms": [
+      "Gorila"
+    ],
+    "looktype": 2145,
+    "image": "images/outfit/2145.png",
+    "sprite": {
+      "offsetXRatio": -0.0234,
+      "offsetYRatio": -0.2969,
+      "scale": 0.78
+    },
+    "levelMin": 70,
+    "x": 1617,
+    "y": 545.1,
+    "radius": 118,
+    "spawnCount": 42,
+    "bounds": {
+      "minX": 1530,
+      "minY": 493,
+      "maxX": 1713,
+      "maxY": 594
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-gorila-2",
+    "kind": "monster",
+    "name": "Gorila",
+    "referenceName": "Gorila",
+    "aliases": [
+      "Gorila"
+    ],
+    "searchTerms": [
+      "Gorila"
+    ],
+    "looktype": 2145,
+    "image": "images/outfit/2145.png",
+    "sprite": {
+      "offsetXRatio": -0.0234,
+      "offsetYRatio": -0.2969,
+      "scale": 0.78
+    },
+    "levelMin": 70,
+    "x": 837.43,
+    "y": 612.98,
+    "radius": 117,
+    "spawnCount": 89,
+    "bounds": {
+      "minX": 763,
+      "minY": 546,
+      "maxX": 925,
+      "maxY": 685
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-gorila-3",
+    "kind": "monster",
+    "name": "Gorila",
+    "referenceName": "Gorila",
+    "aliases": [
+      "Gorila"
+    ],
+    "searchTerms": [
+      "Gorila"
+    ],
+    "looktype": 2145,
+    "image": "images/outfit/2145.png",
+    "sprite": {
+      "offsetXRatio": -0.0234,
+      "offsetYRatio": -0.2969,
+      "scale": 0.78
+    },
+    "levelMin": 70,
+    "x": 1245.98,
+    "y": 1199.56,
+    "radius": 83,
+    "spawnCount": 43,
+    "bounds": {
+      "minX": 1193,
+      "minY": 1162,
+      "maxX": 1308,
+      "maxY": 1235
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-kagen-uchiha-1",
+    "kind": "monster",
+    "name": "Kagen Uchiha",
+    "referenceName": "Kagen Uchiha",
+    "aliases": [
+      "Kagen Uchiha"
+    ],
+    "searchTerms": [
+      "Kagen Uchiha"
+    ],
+    "looktype": 647,
+    "image": "images/outfit/647.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.125,
+      "scale": 1.28
+    },
+    "levelMin": 25,
+    "x": 1419,
+    "y": 486.57,
+    "radius": 36,
+    "spawnCount": 7,
+    "bounds": {
+      "minX": 1402,
+      "minY": 474,
+      "maxX": 1434,
+      "maxY": 498
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-karasu-1",
+    "kind": "monster",
+    "name": "Karasu",
+    "referenceName": "Karasu",
+    "aliases": [
+      "Karasu"
+    ],
+    "searchTerms": [
+      "Karasu"
+    ],
+    "looktype": 2191,
+    "image": "images/outfit/2191.png",
+    "sprite": {
+      "offsetXRatio": -0.1875,
+      "offsetYRatio": -0.1875,
+      "scale": 1.2089
+    },
+    "levelMin": 100,
+    "x": 754.57,
+    "y": 762.36,
+    "radius": 63,
+    "spawnCount": 14,
+    "bounds": {
+      "minX": 711,
+      "minY": 737,
+      "maxX": 788,
+      "maxY": 791
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-lightning-panther-1",
+    "kind": "monster",
+    "name": "Lightning Panther",
+    "referenceName": "Lightning Panther",
+    "aliases": [
+      "Lightning Panther"
+    ],
+    "searchTerms": [
+      "Lightning Panther"
+    ],
+    "looktype": 2163,
+    "image": "images/outfit/2163.png",
+    "sprite": {
+      "offsetXRatio": -0.2188,
+      "offsetYRatio": -0.1172,
+      "scale": 0.8882
+    },
+    "levelMin": 190,
+    "x": 1823.93,
+    "y": 163.46,
+    "radius": 90,
+    "spawnCount": 28,
+    "bounds": {
+      "minX": 1755,
+      "minY": 119,
+      "maxX": 1873,
+      "maxY": 194
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-lizard-1",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 680.73,
+    "y": 527.27,
+    "radius": 175,
+    "spawnCount": 80,
+    "bounds": {
+      "minX": 571,
+      "minY": 421,
+      "maxX": 782,
+      "maxY": 671
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-lizard-2",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 946.71,
+    "y": 614.45,
+    "radius": 168,
+    "spawnCount": 95,
+    "bounds": {
+      "minX": 816,
+      "minY": 482,
+      "maxX": 1034,
+      "maxY": 717
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-lizard-3",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 603,
+    "y": 746,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 603,
+      "minY": 746,
+      "maxX": 603,
+      "maxY": 746
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-lizard-4",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 621.67,
+    "y": 836,
+    "radius": 38,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 616,
+      "minY": 822,
+      "maxX": 631,
+      "maxY": 854
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-lizard-5",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 697,
+    "y": 844.5,
+    "radius": 43,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 688,
+      "minY": 822,
+      "maxX": 706,
+      "maxY": 867
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-lizard-6",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 474,
+    "y": 843,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 474,
+      "minY": 843,
+      "maxX": 474,
+      "maxY": 843
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-lizard-7",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 1068,
+    "y": 877,
+    "radius": 24,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1067,
+      "minY": 873,
+      "maxX": 1069,
+      "maxY": 881
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-lizard-8",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 511,
+    "y": 884,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 511,
+      "minY": 884,
+      "maxX": 511,
+      "maxY": 884
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-lizard-9",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 565,
+    "y": 888,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 565,
+      "minY": 888,
+      "maxX": 565,
+      "maxY": 888
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-lizard-10",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 992,
+    "y": 906,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 992,
+      "minY": 906,
+      "maxX": 992,
+      "maxY": 906
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-lizard-11",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 1000,
+    "y": 967,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1000,
+      "minY": 967,
+      "maxX": 1000,
+      "maxY": 967
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-lizard-12",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 699,
+    "y": 1055,
+    "radius": 43,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 685,
+      "minY": 1042,
+      "maxX": 719,
+      "maxY": 1074
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-lizard-13",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 553,
+    "y": 1054,
+    "radius": 29,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 546,
+      "minY": 1047,
+      "maxX": 560,
+      "maxY": 1061
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-lizard-14",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 900,
+    "y": 1066,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 900,
+      "minY": 1066,
+      "maxX": 900,
+      "maxY": 1066
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-lizard-15",
+    "kind": "monster",
+    "name": "Lizard",
+    "referenceName": "Lizard",
+    "aliases": [
+      "Lizard"
+    ],
+    "searchTerms": [
+      "Lizard"
+    ],
+    "looktype": 2136,
+    "image": "images/outfit/2136.png",
+    "sprite": {
+      "offsetXRatio": -0.2109,
+      "offsetYRatio": -0.0938,
+      "scale": 0.8704
+    },
+    "levelMin": 70,
+    "x": 809,
+    "y": 1070,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 809,
+      "minY": 1070,
+      "maxX": 809,
+      "maxY": 1070
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-monk-1",
+    "kind": "monster",
+    "name": "Monk",
+    "referenceName": "Monk",
+    "aliases": [
+      "Monk"
+    ],
+    "searchTerms": [
+      "Monk"
+    ],
+    "looktype": 648,
+    "image": "images/outfit/648.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.125,
+      "scale": 1.28
+    },
+    "levelMin": 25,
+    "x": 1456.84,
+    "y": 1002.74,
+    "radius": 86,
+    "spawnCount": 19,
+    "bounds": {
+      "minX": 1395,
+      "minY": 963,
+      "maxX": 1497,
+      "maxY": 1026
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-monk-2",
+    "kind": "monster",
+    "name": "Monk",
+    "referenceName": "Monk",
+    "aliases": [
+      "Monk"
+    ],
+    "searchTerms": [
+      "Monk"
+    ],
+    "looktype": 648,
+    "image": "images/outfit/648.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.125,
+      "scale": 1.28
+    },
+    "levelMin": 25,
+    "x": 1316.4,
+    "y": 1089.4,
+    "radius": 50,
+    "spawnCount": 5,
+    "bounds": {
+      "minX": 1308,
+      "minY": 1061,
+      "maxX": 1323,
+      "maxY": 1120
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-monk-chiriku-1",
+    "kind": "monster",
+    "name": "Monk Chiriku",
+    "referenceName": "Monk Chiriku",
+    "aliases": [
+      "Monk Chiriku"
+    ],
+    "searchTerms": [
+      "Monk Chiriku"
+    ],
+    "looktype": 649,
+    "image": "images/outfit/649.png",
+    "sprite": {
+      "offsetXRatio": -0.125,
+      "offsetYRatio": -0.125,
+      "scale": 1.28
+    },
+    "levelMin": 25,
+    "x": 1437,
+    "y": 1017,
+    "radius": 35,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1421,
+      "minY": 1016,
+      "maxX": 1453,
+      "maxY": 1018
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-monk-chiriku-2",
+    "kind": "monster",
+    "name": "Monk Chiriku",
+    "referenceName": "Monk Chiriku",
+    "aliases": [
+      "Monk Chiriku"
+    ],
+    "searchTerms": [
+      "Monk Chiriku"
+    ],
+    "looktype": 649,
+    "image": "images/outfit/649.png",
+    "sprite": {
+      "offsetXRatio": -0.125,
+      "offsetYRatio": -0.125,
+      "scale": 1.28
+    },
+    "levelMin": 25,
+    "x": 1279.62,
+    "y": 1111.12,
+    "radius": 70,
+    "spawnCount": 8,
+    "bounds": {
+      "minX": 1237,
+      "minY": 1086,
+      "maxX": 1324,
+      "maxY": 1139
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-nomad-1",
+    "kind": "monster",
+    "name": "Nomad",
+    "referenceName": "Nomad",
+    "aliases": [
+      "Nomad"
+    ],
+    "searchTerms": [
+      "Nomad"
+    ],
+    "looktype": 2135,
+    "image": "images/outfit/2135.png",
+    "sprite": {
+      "offsetXRatio": -0.1953,
+      "offsetYRatio": -0.2031,
+      "scale": 1.1762
+    },
+    "levelMin": 120,
+    "x": 568.66,
+    "y": 810.83,
+    "radius": 101,
+    "spawnCount": 80,
+    "bounds": {
+      "minX": 496,
+      "minY": 754,
+      "maxX": 643,
+      "maxY": 867
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-nomad-2",
+    "kind": "monster",
+    "name": "Nomad",
+    "referenceName": "Nomad",
+    "aliases": [
+      "Nomad"
+    ],
+    "searchTerms": [
+      "Nomad"
+    ],
+    "looktype": 2135,
+    "image": "images/outfit/2135.png",
+    "sprite": {
+      "offsetXRatio": -0.1953,
+      "offsetYRatio": -0.2031,
+      "scale": 1.1762
+    },
+    "levelMin": 120,
+    "x": 756.24,
+    "y": 1166.63,
+    "radius": 95,
+    "spawnCount": 75,
+    "bounds": {
+      "minX": 688,
+      "minY": 1104,
+      "maxX": 802,
+      "maxY": 1229
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-nomad-3",
+    "kind": "monster",
+    "name": "Nomad",
+    "referenceName": "Nomad",
+    "aliases": [
+      "Nomad"
+    ],
+    "searchTerms": [
+      "Nomad"
+    ],
+    "looktype": 2135,
+    "image": "images/outfit/2135.png",
+    "sprite": {
+      "offsetXRatio": -0.1953,
+      "offsetYRatio": -0.2031,
+      "scale": 1.1762
+    },
+    "levelMin": 120,
+    "x": 1301.94,
+    "y": 1358.95,
+    "radius": 141,
+    "spawnCount": 86,
+    "bounds": {
+      "minX": 1225,
+      "minY": 1238,
+      "maxX": 1383,
+      "maxY": 1451
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-rabbit-1",
+    "kind": "monster",
+    "name": "Rabbit",
+    "referenceName": "Rabbit",
+    "aliases": [
+      "Rabbit"
+    ],
+    "searchTerms": [
+      "Rabbit"
+    ],
+    "looktype": 2078,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 1,
+    "x": 1940,
+    "y": 777,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1940,
+      "minY": 777,
+      "maxX": 1940,
+      "maxY": 777
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-reaper-1",
+    "kind": "monster",
+    "name": "Reaper",
+    "referenceName": "Reaper",
+    "aliases": [
+      "Reaper"
+    ],
+    "searchTerms": [
+      "Reaper"
+    ],
+    "looktype": 2168,
+    "image": "images/outfit/2168.png",
+    "sprite": {
+      "offsetXRatio": 0.0312,
+      "offsetYRatio": -0.0469,
+      "scale": 0.8369
+    },
+    "levelMin": 150,
+    "x": 1617.12,
+    "y": 250.29,
+    "radius": 42,
+    "spawnCount": 17,
+    "bounds": {
+      "minX": 1601,
+      "minY": 233,
+      "maxX": 1639,
+      "maxY": 267
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-reaper-2",
+    "kind": "monster",
+    "name": "Reaper",
+    "referenceName": "Reaper",
+    "aliases": [
+      "Reaper"
+    ],
+    "searchTerms": [
+      "Reaper"
+    ],
+    "looktype": 2168,
+    "image": "images/outfit/2168.png",
+    "sprite": {
+      "offsetXRatio": 0.0312,
+      "offsetYRatio": -0.0469,
+      "scale": 0.8369
+    },
+    "levelMin": 150,
+    "x": 1758.25,
+    "y": 342.75,
+    "radius": 33,
+    "spawnCount": 4,
+    "bounds": {
+      "minX": 1752,
+      "minY": 331,
+      "maxX": 1765,
+      "maxY": 355
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-sand-disaster-1",
+    "kind": "monster",
+    "name": "Sand Disaster",
+    "referenceName": "Sand Disaster",
+    "aliases": [
+      "Sand Disaster"
+    ],
+    "searchTerms": [
+      "Sand Disaster"
+    ],
+    "looktype": 2093,
+    "image": "images/outfit/2093.png",
+    "sprite": {
+      "offsetXRatio": 0.0234,
+      "offsetYRatio": -0.1406,
+      "scale": 0.78
+    },
+    "levelMin": 90,
+    "x": 899.26,
+    "y": 1177.32,
+    "radius": 130,
+    "spawnCount": 34,
+    "bounds": {
+      "minX": 817,
+      "minY": 1126,
+      "maxX": 1000,
+      "maxY": 1232
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scarab-1",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 646,
+    "y": 743,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 646,
+      "minY": 743,
+      "maxX": 646,
+      "maxY": 743
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scarab-2",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 879.71,
+    "y": 795.57,
+    "radius": 97,
+    "spawnCount": 7,
+    "bounds": {
+      "minX": 819,
+      "minY": 747,
+      "maxX": 950,
+      "maxY": 849
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scarab-3",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 539,
+    "y": 790,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 539,
+      "minY": 790,
+      "maxX": 539,
+      "maxY": 790
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scarab-4",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 675,
+    "y": 802.5,
+    "radius": 29,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 669,
+      "minY": 795,
+      "maxX": 681,
+      "maxY": 810
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scarab-5",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 733.5,
+    "y": 848,
+    "radius": 37,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 718,
+      "minY": 839,
+      "maxX": 749,
+      "maxY": 857
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scarab-6",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 497,
+    "y": 867,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 497,
+      "minY": 867,
+      "maxX": 497,
+      "maxY": 867
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scarab-7",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 676,
+    "y": 876,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 676,
+      "minY": 876,
+      "maxX": 676,
+      "maxY": 876
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scarab-8",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 531,
+    "y": 911,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 531,
+      "minY": 911,
+      "maxX": 531,
+      "maxY": 911
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scarab-9",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 695,
+    "y": 923,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 695,
+      "minY": 923,
+      "maxX": 695,
+      "maxY": 923
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scarab-10",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 544,
+    "y": 968,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 544,
+      "minY": 968,
+      "maxX": 544,
+      "maxY": 968
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scarab-11",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 542,
+    "y": 1025.5,
+    "radius": 24,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 537,
+      "minY": 1024,
+      "maxX": 547,
+      "maxY": 1027
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scarab-12",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 592,
+    "y": 1067,
+    "radius": 29,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 588,
+      "minY": 1058,
+      "maxX": 596,
+      "maxY": 1076
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scarab-13",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 538,
+    "y": 1090,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 538,
+      "minY": 1090,
+      "maxX": 538,
+      "maxY": 1090
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scarab-14",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 719,
+    "y": 1092,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 719,
+      "minY": 1092,
+      "maxX": 719,
+      "maxY": 1092
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scarab-15",
+    "kind": "monster",
+    "name": "Scarab",
+    "referenceName": "Scarab",
+    "aliases": [
+      "Scarab"
+    ],
+    "searchTerms": [
+      "Scarab"
+    ],
+    "looktype": 2133,
+    "image": "images/outfit/2133.png",
+    "sprite": {
+      "offsetXRatio": -0.1797,
+      "offsetYRatio": -0.1562,
+      "scale": 1.088
+    },
+    "levelMin": 80,
+    "x": 683,
+    "y": 1148,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 683,
+      "minY": 1148,
+      "maxX": 683,
+      "maxY": 1148
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scorpion-1",
+    "kind": "monster",
+    "name": "Scorpion",
+    "referenceName": "Scorpion",
+    "aliases": [
+      "Scorpion"
+    ],
+    "searchTerms": [
+      "Scorpion"
+    ],
+    "looktype": 2016,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 70,
+    "x": 665.67,
+    "y": 756.33,
+    "radius": 47,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 653,
+      "minY": 733,
+      "maxX": 673,
+      "maxY": 781
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scorpion-2",
+    "kind": "monster",
+    "name": "Scorpion",
+    "referenceName": "Scorpion",
+    "aliases": [
+      "Scorpion"
+    ],
+    "searchTerms": [
+      "Scorpion"
+    ],
+    "looktype": 2016,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 70,
+    "x": 816.29,
+    "y": 822.86,
+    "radius": 96,
+    "spawnCount": 7,
+    "bounds": {
+      "minX": 771,
+      "minY": 758,
+      "maxX": 842,
+      "maxY": 885
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scorpion-3",
+    "kind": "monster",
+    "name": "Scorpion",
+    "referenceName": "Scorpion",
+    "aliases": [
+      "Scorpion"
+    ],
+    "searchTerms": [
+      "Scorpion"
+    ],
+    "looktype": 2016,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 70,
+    "x": 1010.5,
+    "y": 812,
+    "radius": 24,
+    "spawnCount": 2,
+    "bounds": {
+      "minX": 1007,
+      "minY": 808,
+      "maxX": 1014,
+      "maxY": 816
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scorpion-4",
+    "kind": "monster",
+    "name": "Scorpion",
+    "referenceName": "Scorpion",
+    "aliases": [
+      "Scorpion"
+    ],
+    "searchTerms": [
+      "Scorpion"
+    ],
+    "looktype": 2016,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 70,
+    "x": 470.26,
+    "y": 974.67,
+    "radius": 136,
+    "spawnCount": 102,
+    "bounds": {
+      "minX": 410,
+      "minY": 864,
+      "maxX": 563,
+      "maxY": 1092
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scorpion-5",
+    "kind": "monster",
+    "name": "Scorpion",
+    "referenceName": "Scorpion",
+    "aliases": [
+      "Scorpion"
+    ],
+    "searchTerms": [
+      "Scorpion"
+    ],
+    "looktype": 2016,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 70,
+    "x": 951.67,
+    "y": 920,
+    "radius": 95,
+    "spawnCount": 9,
+    "bounds": {
+      "minX": 882,
+      "minY": 876,
+      "maxX": 1012,
+      "maxY": 991
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scorpion-6",
+    "kind": "monster",
+    "name": "Scorpion",
+    "referenceName": "Scorpion",
+    "aliases": [
+      "Scorpion"
+    ],
+    "searchTerms": [
+      "Scorpion"
+    ],
+    "looktype": 2016,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 70,
+    "x": 665,
+    "y": 898,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 665,
+      "minY": 898,
+      "maxX": 665,
+      "maxY": 898
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scorpion-7",
+    "kind": "monster",
+    "name": "Scorpion",
+    "referenceName": "Scorpion",
+    "aliases": [
+      "Scorpion"
+    ],
+    "searchTerms": [
+      "Scorpion"
+    ],
+    "looktype": 2016,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 70,
+    "x": 1091.67,
+    "y": 951.67,
+    "radius": 52,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 1068,
+      "minY": 929,
+      "maxX": 1113,
+      "maxY": 971
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scorpion-8",
+    "kind": "monster",
+    "name": "Scorpion",
+    "referenceName": "Scorpion",
+    "aliases": [
+      "Scorpion"
+    ],
+    "searchTerms": [
+      "Scorpion"
+    ],
+    "looktype": 2016,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 70,
+    "x": 699.6,
+    "y": 1019.6,
+    "radius": 70,
+    "spawnCount": 5,
+    "bounds": {
+      "minX": 691,
+      "minY": 969,
+      "maxX": 712,
+      "maxY": 1048
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scorpion-9",
+    "kind": "monster",
+    "name": "Scorpion",
+    "referenceName": "Scorpion",
+    "aliases": [
+      "Scorpion"
+    ],
+    "searchTerms": [
+      "Scorpion"
+    ],
+    "looktype": 2016,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 70,
+    "x": 857.67,
+    "y": 1058.33,
+    "radius": 53,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 841,
+      "minY": 1030,
+      "maxX": 875,
+      "maxY": 1088
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scorpion-10",
+    "kind": "monster",
+    "name": "Scorpion",
+    "referenceName": "Scorpion",
+    "aliases": [
+      "Scorpion"
+    ],
+    "searchTerms": [
+      "Scorpion"
+    ],
+    "looktype": 2016,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 70,
+    "x": 623.71,
+    "y": 1094.86,
+    "radius": 81,
+    "spawnCount": 7,
+    "bounds": {
+      "minX": 563,
+      "minY": 1049,
+      "maxX": 664,
+      "maxY": 1130
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scorpion-11",
+    "kind": "monster",
+    "name": "Scorpion",
+    "referenceName": "Scorpion",
+    "aliases": [
+      "Scorpion"
+    ],
+    "searchTerms": [
+      "Scorpion"
+    ],
+    "looktype": 2016,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 70,
+    "x": 940.86,
+    "y": 1082.86,
+    "radius": 52,
+    "spawnCount": 7,
+    "bounds": {
+      "minX": 929,
+      "minY": 1057,
+      "maxX": 947,
+      "maxY": 1116
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scorpion-12",
+    "kind": "monster",
+    "name": "Scorpion",
+    "referenceName": "Scorpion",
+    "aliases": [
+      "Scorpion"
+    ],
+    "searchTerms": [
+      "Scorpion"
+    ],
+    "looktype": 2016,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 70,
+    "x": 781,
+    "y": 1083,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 781,
+      "minY": 1083,
+      "maxX": 781,
+      "maxY": 1083
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-scorpion-13",
+    "kind": "monster",
+    "name": "Scorpion",
+    "referenceName": "Scorpion",
+    "aliases": [
+      "Scorpion"
+    ],
+    "searchTerms": [
+      "Scorpion"
+    ],
+    "looktype": 2016,
+    "image": "images/outfit/1.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": 70,
+    "x": 727,
+    "y": 1140,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 727,
+      "minY": 1140,
+      "maxX": 727,
+      "maxY": 1140
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-shukaku-fragment-1",
+    "kind": "monster",
+    "name": "Shukaku Fragment",
+    "referenceName": "Shukaku Fragment",
+    "aliases": [
+      "Shukaku Fragment"
+    ],
+    "searchTerms": [
+      "Shukaku Fragment"
+    ],
+    "looktype": 2119,
+    "image": "images/outfit/2119.png",
+    "sprite": {
+      "offsetXRatio": -0.0859,
+      "offsetYRatio": -0.125,
+      "scale": 1.1762
+    },
+    "levelMin": 110,
+    "x": 917.86,
+    "y": 949.14,
+    "radius": 62,
+    "spawnCount": 7,
+    "bounds": {
+      "minX": 895,
+      "minY": 911,
+      "maxX": 942,
+      "maxY": 984
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-shukaku-worshiper-1",
+    "kind": "monster",
+    "name": "Shukaku Worshiper",
+    "referenceName": "Shukaku Worshiper",
+    "aliases": [
+      "Shukaku Worshiper"
+    ],
+    "searchTerms": [
+      "Shukaku Worshiper"
+    ],
+    "looktype": 2132,
+    "image": "images/outfit/2132.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1172,
+      "scale": 1.1159
+    },
+    "levelMin": 100,
+    "x": 834.73,
+    "y": 959.98,
+    "radius": 137,
+    "spawnCount": 106,
+    "bounds": {
+      "minX": 721,
+      "minY": 894,
+      "maxX": 946,
+      "maxY": 1042
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-snake-1",
+    "kind": "monster",
+    "name": "Snake",
+    "referenceName": "Snake",
+    "aliases": [
+      "Snake"
+    ],
+    "searchTerms": [
+      "Snake"
+    ],
+    "looktype": 2014,
+    "image": "images/outfit/2014.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.0391,
+      "scale": 1.28
+    },
+    "levelMin": 15,
+    "x": 1378.67,
+    "y": 820.67,
+    "radius": 52,
+    "spawnCount": 3,
+    "bounds": {
+      "minX": 1367,
+      "minY": 793,
+      "maxX": 1397,
+      "maxY": 846
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-snake-2",
+    "kind": "monster",
+    "name": "Snake",
+    "referenceName": "Snake",
+    "aliases": [
+      "Snake"
+    ],
+    "searchTerms": [
+      "Snake"
+    ],
+    "looktype": 2014,
+    "image": "images/outfit/2014.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.0391,
+      "scale": 1.28
+    },
+    "levelMin": 15,
+    "x": 1348.92,
+    "y": 922.77,
+    "radius": 74,
+    "spawnCount": 13,
+    "bounds": {
+      "minX": 1317,
+      "minY": 890,
+      "maxX": 1394,
+      "maxY": 969
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-snake-3",
+    "kind": "monster",
+    "name": "Snake",
+    "referenceName": "Snake",
+    "aliases": [
+      "Snake"
+    ],
+    "searchTerms": [
+      "Snake"
+    ],
+    "looktype": 2014,
+    "image": "images/outfit/2014.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.0391,
+      "scale": 1.28
+    },
+    "levelMin": 15,
+    "x": 1238.53,
+    "y": 916.47,
+    "radius": 47,
+    "spawnCount": 19,
+    "bounds": {
+      "minX": 1213,
+      "minY": 901,
+      "maxX": 1264,
+      "maxY": 933
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-spider-1",
+    "kind": "monster",
+    "name": "Spider",
+    "referenceName": "Spider",
+    "aliases": [
+      "Spider"
+    ],
+    "searchTerms": [
+      "Spider"
+    ],
+    "looktype": 2030,
+    "image": "images/outfit/2030.png",
+    "sprite": {
+      "offsetXRatio": -0.2812,
+      "offsetYRatio": -0.2578,
+      "scale": 1.28
+    },
+    "levelMin": 40,
+    "x": 1878.76,
+    "y": 740.16,
+    "radius": 124,
+    "spawnCount": 45,
+    "bounds": {
+      "minX": 1792,
+      "minY": 675,
+      "maxX": 1983,
+      "maxY": 784
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-strong-swordsman-1",
+    "kind": "monster",
+    "name": "Strong Swordsman",
+    "referenceName": "Strong Swordsman",
+    "aliases": [
+      "Strong Swordsman"
+    ],
+    "searchTerms": [
+      "Strong Swordsman"
+    ],
+    "looktype": 662,
+    "image": "images/outfit/662.png",
+    "sprite": {
+      "offsetXRatio": -0.0859,
+      "offsetYRatio": -0.1719,
+      "scale": 1.0362
+    },
+    "levelMin": 55,
+    "x": 1886.3,
+    "y": 611.2,
+    "radius": 62,
+    "spawnCount": 10,
+    "bounds": {
+      "minX": 1859,
+      "minY": 580,
+      "maxX": 1919,
+      "maxY": 653
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-strong-swordsman-2",
+    "kind": "monster",
+    "name": "Strong Swordsman",
+    "referenceName": "Strong Swordsman",
+    "aliases": [
+      "Strong Swordsman"
+    ],
+    "searchTerms": [
+      "Strong Swordsman"
+    ],
+    "looktype": 662,
+    "image": "images/outfit/662.png",
+    "sprite": {
+      "offsetXRatio": -0.0859,
+      "offsetYRatio": -0.1719,
+      "scale": 1.0362
+    },
+    "levelMin": 55,
+    "x": 1802,
+    "y": 609,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1802,
+      "minY": 609,
+      "maxX": 1802,
+      "maxY": 609
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-suna-shinobi-1",
+    "kind": "monster",
+    "name": "Suna Shinobi",
+    "referenceName": "Suna Shinobi",
+    "aliases": [
+      "Suna Shinobi"
+    ],
+    "searchTerms": [
+      "Suna Shinobi"
+    ],
+    "looktype": 711,
+    "image": "images/outfit/711.png",
+    "sprite": {
+      "offsetXRatio": -0.1094,
+      "offsetYRatio": -0.1172,
+      "scale": 1.28
+    },
+    "levelMin": 130,
+    "x": 891.51,
+    "y": 843.26,
+    "radius": 61,
+    "spawnCount": 35,
+    "bounds": {
+      "minX": 866,
+      "minY": 827,
+      "maxX": 933,
+      "maxY": 861
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-swordsman-1",
+    "kind": "monster",
+    "name": "Swordsman",
+    "referenceName": "Swordsman",
+    "aliases": [
+      "Swordsman"
+    ],
+    "searchTerms": [
+      "Swordsman"
+    ],
+    "looktype": 645,
+    "image": "images/outfit/645.png",
+    "sprite": {
+      "offsetXRatio": 0.0078,
+      "offsetYRatio": -0.1094,
+      "scale": 0.8882
+    },
+    "levelMin": 45,
+    "x": 1877.7,
+    "y": 650.84,
+    "radius": 178,
+    "spawnCount": 82,
+    "bounds": {
+      "minX": 1756,
+      "minY": 580,
+      "maxX": 2004,
+      "maxY": 763
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-swordsman-2",
+    "kind": "monster",
+    "name": "Swordsman",
+    "referenceName": "Swordsman",
+    "aliases": [
+      "Swordsman"
+    ],
+    "searchTerms": [
+      "Swordsman"
+    ],
+    "looktype": 645,
+    "image": "images/outfit/645.png",
+    "sprite": {
+      "offsetXRatio": 0.0078,
+      "offsetYRatio": -0.1094,
+      "scale": 0.8882
+    },
+    "levelMin": 45,
+    "x": 1908.43,
+    "y": 795.14,
+    "radius": 47,
+    "spawnCount": 7,
+    "bounds": {
+      "minX": 1894,
+      "minY": 771,
+      "maxX": 1927,
+      "maxY": 821
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-swordsman-boss-1",
+    "kind": "monster",
+    "name": "Swordsman Boss",
+    "referenceName": "Swordsman Boss",
+    "aliases": [
+      "Swordsman Boss"
+    ],
+    "searchTerms": [
+      "Swordsman Boss"
+    ],
+    "looktype": 646,
+    "image": "images/outfit/646.png",
+    "sprite": {
+      "offsetXRatio": 0.0625,
+      "offsetYRatio": 0.0469,
+      "scale": 0.78
+    },
+    "levelMin": 60,
+    "x": 1885,
+    "y": 588,
+    "radius": 24,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1885,
+      "minY": 588,
+      "maxX": 1885,
+      "maxY": 588
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-tiger-1",
+    "kind": "monster",
+    "name": "Tiger",
+    "referenceName": "Tiger",
+    "aliases": [
+      "Tiger"
+    ],
+    "searchTerms": [
+      "Tiger"
+    ],
+    "looktype": 2013,
+    "image": "images/outfit/2013.png",
+    "sprite": {
+      "offsetXRatio": 0.1641,
+      "offsetYRatio": -0.2812,
+      "scale": 1.0121
+    },
+    "levelMin": 65,
+    "x": 1953.09,
+    "y": 627.64,
+    "radius": 55,
+    "spawnCount": 11,
+    "bounds": {
+      "minX": 1936,
+      "minY": 593,
+      "maxX": 1968,
+      "maxY": 663
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-toxic-snake-1",
+    "kind": "monster",
+    "name": "Toxic Snake",
+    "referenceName": "Toxic Snake",
+    "aliases": [
+      "Toxic Snake"
+    ],
+    "searchTerms": [
+      "Toxic Snake"
+    ],
+    "looktype": 2015,
+    "image": "images/outfit/2015.png",
+    "sprite": {
+      "offsetXRatio": 0.2109,
+      "offsetYRatio": -0.2812,
+      "scale": 1.28
+    },
+    "levelMin": 20,
+    "x": 1350,
+    "y": 915.5,
+    "radius": 65,
+    "spawnCount": 4,
+    "bounds": {
+      "minX": 1315,
+      "minY": 886,
+      "maxX": 1373,
+      "maxY": 949
+    },
+    "floor": 7
+  },
+  {
+    "id": "monster-7-white-wolf-1",
+    "kind": "monster",
+    "name": "White Wolf",
+    "referenceName": "White Wolf",
+    "aliases": [
+      "White Wolf"
+    ],
+    "searchTerms": [
+      "White Wolf"
+    ],
+    "looktype": 2024,
+    "image": "images/outfit/2024.png",
+    "sprite": {
+      "offsetXRatio": -0.3047,
+      "offsetYRatio": -0.1094,
+      "scale": 0.8704
+    },
+    "levelMin": 20,
+    "x": 1425.87,
+    "y": 562.36,
+    "radius": 88,
+    "spawnCount": 47,
+    "bounds": {
+      "minX": 1372,
+      "minY": 512,
+      "maxX": 1491,
+      "maxY": 603
+    },
+    "floor": 7
+  },
+  {
+    "id": "npc-7-akemi-kuroda-1",
+    "kind": "npc",
+    "name": "Akemi Kuroda",
+    "referenceName": "TM_AkemiKuroda",
+    "aliases": [
+      "Akemi Kuroda",
+      "TM AkemiKuroda"
+    ],
+    "searchTerms": [
+      "Akemi Kuroda",
+      "TM AkemiKuroda"
+    ],
+    "looktype": 2156,
+    "image": "images/outfit/2156.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1016,
+      "scale": 1.2089
+    },
+    "levelMin": null,
+    "x": 1202,
+    "y": 962,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1202,
+      "minY": 962,
+      "maxX": 1202,
+      "maxY": 962
+    },
+    "floor": 7
+  },
+  {
+    "id": "npc-7-daichi-arashi-1",
+    "kind": "npc",
+    "name": "Daichi Arashi",
+    "referenceName": "TM_DaichiArashi",
+    "aliases": [
+      "Daichi Arashi",
+      "TM DaichiArashi"
+    ],
+    "searchTerms": [
+      "Daichi Arashi",
+      "TM DaichiArashi"
+    ],
+    "looktype": 2151,
+    "image": "images/outfit/2151.png",
+    "sprite": {
+      "offsetXRatio": -0.1094,
+      "offsetYRatio": -0.1016,
+      "scale": 1.28
+    },
+    "levelMin": null,
+    "x": 852,
+    "y": 1105,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 852,
+      "minY": 1105,
+      "maxX": 852,
+      "maxY": 1105
+    },
+    "floor": 7
+  },
+  {
+    "id": "npc-7-kaito-sazanami-1",
+    "kind": "npc",
+    "name": "Kaito Sazanami",
+    "referenceName": "TM_KaitoSazanami",
+    "aliases": [
+      "Kaito Sazanami",
+      "TM KaitoSazanami"
+    ],
+    "searchTerms": [
+      "Kaito Sazanami",
+      "TM KaitoSazanami"
+    ],
+    "looktype": 2153,
+    "image": "images/outfit/2153.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.1172,
+      "scale": 1.28
+    },
+    "levelMin": null,
+    "x": 680,
+    "y": 731,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 680,
+      "minY": 731,
+      "maxX": 680,
+      "maxY": 731
+    },
+    "floor": 7
+  },
+  {
+    "id": "npc-7-kenji-sakamoto-1",
+    "kind": "npc",
+    "name": "Kenji Sakamoto",
+    "referenceName": "TM_KenjiSakamoto",
+    "aliases": [
+      "Kenji Sakamoto",
+      "TM KenjiSakamoto"
+    ],
+    "searchTerms": [
+      "Kenji Sakamoto",
+      "TM KenjiSakamoto"
+    ],
+    "looktype": 2161,
+    "image": "images/outfit/2161.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.1094,
+      "scale": 1.28
+    },
+    "levelMin": null,
+    "x": 1790,
+    "y": 781,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1790,
+      "minY": 781,
+      "maxX": 1790,
+      "maxY": 781
+    },
+    "floor": 7
+  },
+  {
+    "id": "npc-7-mabui-1",
+    "kind": "npc",
+    "name": "Mabui",
+    "referenceName": "Mabui",
+    "aliases": [
+      "Mabui"
+    ],
+    "searchTerms": [
+      "Mabui"
+    ],
+    "looktype": 1144,
+    "image": "images/outfit/1144.png",
+    "sprite": {
+      "offsetXRatio": -0.1016,
+      "offsetYRatio": -0.1172,
+      "scale": 1.2434
+    },
+    "levelMin": null,
+    "x": 615,
+    "y": 965,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 615,
+      "minY": 965,
+      "maxX": 615,
+      "maxY": 965
+    },
+    "floor": 7
+  },
+  {
+    "id": "npc-7-misaki-kugutsu-1",
+    "kind": "npc",
+    "name": "Misaki Kugutsu",
+    "referenceName": "TM_MisakiKugutsu",
+    "aliases": [
+      "Misaki Kugutsu",
+      "TM MisakiKugutsu"
+    ],
+    "searchTerms": [
+      "Misaki Kugutsu",
+      "TM MisakiKugutsu"
+    ],
+    "looktype": 2160,
+    "image": "images/outfit/2160.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.1094,
+      "scale": 1.28
+    },
+    "levelMin": null,
+    "x": 716,
+    "y": 809,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 716,
+      "minY": 809,
+      "maxX": 716,
+      "maxY": 809
+    },
+    "floor": 7
+  },
+  {
+    "id": "npc-7-nao-kazane-1",
+    "kind": "npc",
+    "name": "Nao Kazane",
+    "referenceName": "TM_NaoKazane",
+    "aliases": [
+      "Nao Kazane",
+      "TM NaoKazane"
+    ],
+    "searchTerms": [
+      "Nao Kazane",
+      "TM NaoKazane"
+    ],
+    "looktype": 2161,
+    "image": "images/outfit/2161.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.1094,
+      "scale": 1.28
+    },
+    "levelMin": null,
+    "x": 769,
+    "y": 1069,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 769,
+      "minY": 1069,
+      "maxX": 769,
+      "maxY": 1069
+    },
+    "floor": 7
+  },
+  {
+    "id": "npc-7-renji-fuusa-1",
+    "kind": "npc",
+    "name": "Renji Fuusa",
+    "referenceName": "TM_RenjiFuusa",
+    "aliases": [
+      "Renji Fuusa",
+      "TM RenjiFuusa"
+    ],
+    "searchTerms": [
+      "Renji Fuusa",
+      "TM RenjiFuusa"
+    ],
+    "looktype": 2147,
+    "image": "images/outfit/2147.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1094,
+      "scale": 1.2089
+    },
+    "levelMin": null,
+    "x": 706,
+    "y": 925,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 706,
+      "minY": 925,
+      "maxX": 706,
+      "maxY": 925
+    },
+    "floor": 7
+  },
+  {
+    "id": "npc-7-riku-daisen-1",
+    "kind": "npc",
+    "name": "Riku Daisen",
+    "referenceName": "TM_RikuDaisen",
+    "aliases": [
+      "Riku Daisen",
+      "TM RikuDaisen"
+    ],
+    "searchTerms": [
+      "Riku Daisen",
+      "TM RikuDaisen"
+    ],
+    "looktype": 2160,
+    "image": "images/outfit/2160.png",
+    "sprite": {
+      "offsetXRatio": -0.1172,
+      "offsetYRatio": -0.1094,
+      "scale": 1.28
+    },
+    "levelMin": null,
+    "x": 579,
+    "y": 1138,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 579,
+      "minY": 1138,
+      "maxX": 579,
+      "maxY": 1138
+    },
+    "floor": 7
+  },
+  {
+    "id": "npc-7-ryuji-1",
+    "kind": "npc",
+    "name": "Ryuji",
+    "referenceName": "Ryuji",
+    "aliases": [
+      "Ryuji"
+    ],
+    "searchTerms": [
+      "Ryuji"
+    ],
+    "looktype": 1135,
+    "image": "images/outfit/1135.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.0859,
+      "scale": 1.1762
+    },
+    "levelMin": null,
+    "x": 610,
+    "y": 975,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 610,
+      "minY": 975,
+      "maxX": 610,
+      "maxY": 975
+    },
+    "floor": 7
+  },
+  {
+    "id": "npc-7-sayuri-aoki-1",
+    "kind": "npc",
+    "name": "Sayuri Aoki",
+    "referenceName": "TM_SayuriAoki",
+    "aliases": [
+      "Sayuri Aoki",
+      "TM SayuriAoki"
+    ],
+    "searchTerms": [
+      "Sayuri Aoki",
+      "TM SayuriAoki"
+    ],
+    "looktype": 2155,
+    "image": "images/outfit/2155.png",
+    "sprite": {
+      "offsetXRatio": -0.0859,
+      "offsetYRatio": -0.1094,
+      "scale": 1.1762
+    },
+    "levelMin": null,
+    "x": 1803,
+    "y": 675,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1803,
+      "minY": 675,
+      "maxX": 1803,
+      "maxY": 675
+    },
+    "floor": 7
+  },
+  {
+    "id": "npc-7-takeshi-1",
+    "kind": "npc",
+    "name": "Takeshi",
+    "referenceName": "Takeshi",
+    "aliases": [
+      "Takeshi"
+    ],
+    "searchTerms": [
+      "Takeshi"
+    ],
+    "looktype": 1141,
+    "image": "images/outfit/1141.png",
+    "sprite": {
+      "offsetXRatio": -0.125,
+      "offsetYRatio": -0.1406,
+      "scale": 1.28
+    },
+    "levelMin": null,
+    "x": 632,
+    "y": 983,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 632,
+      "minY": 983,
+      "maxX": 632,
+      "maxY": 983
+    },
+    "floor": 7
+  },
+  {
+    "id": "npc-7-tetsu-ishida-1",
+    "kind": "npc",
+    "name": "Tetsu Ishida",
+    "referenceName": "TM_TetsuIshida",
+    "aliases": [
+      "TM TetsuIshida",
+      "Tetsu Ishida"
+    ],
+    "searchTerms": [
+      "TM TetsuIshida",
+      "Tetsu Ishida"
+    ],
+    "looktype": 2148,
+    "image": "images/outfit/2148.png",
+    "sprite": {
+      "offsetXRatio": -0.0938,
+      "offsetYRatio": -0.1016,
+      "scale": 1.2089
+    },
+    "levelMin": null,
+    "x": 1924,
+    "y": 679,
+    "radius": 18,
+    "spawnCount": 1,
+    "bounds": {
+      "minX": 1924,
+      "minY": 679,
+      "maxX": 1924,
+      "maxY": 679
+    },
+    "floor": 7
+  }
+]

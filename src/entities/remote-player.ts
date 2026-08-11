@@ -5,7 +5,7 @@ import { REMOTE_NAMEPLATE_STYLE, worldDepthForY } from '@/constants/nameplate';
 import { directionFacesLeft, type PlayerDirection } from '@/constants/player';
 import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
 import {
-  characterBaseScale,
+  characterDisplayScale,
   getCharacterPack,
   type CharacterPack,
 } from '@/data/character-packs';
@@ -44,7 +44,8 @@ export class RemotePlayer {
 
     this.sprite = scene.add.sprite(state.x, state.y, pack.walk.key, 0);
     this.sprite.setOrigin(0.5, 1);
-    this.sprite.setScale(characterBaseScale(pack));
+    const scale = characterDisplayScale(pack);
+    this.sprite.setScale(scale.x, scale.y);
     this.sprite.setTint(0xb8d4ff);
     this.sprite.setData('remotePlayerId', state.playerId);
     this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);

@@ -1,12 +1,13 @@
 import { resolveCharacterPack } from '@/data/resolve-character-pack';
 import type { WonsrSpriteIndex } from '@/data/wonsr-sprites';
+import { attributesStore } from '@/stores/attributes-store';
 import { locationStore } from '@/stores/location-store';
 import { skillsStore } from '@/stores/skills-store';
 import { teamStore } from '@/stores/team-store';
 import type { StarterCharacterId } from '@/types/player-creation';
 
 /**
- * Troca o personagem ativo: atualiza hotbar e reinicia a cena
+ * Troca o personagem ativo: atualiza hotbar, atributos (estrelas) e reinicia a cena
  * sem limpar XP / inventário / progresso (`sessionStarted` permanece).
  */
 export function switchActiveCharacter(
@@ -18,6 +19,7 @@ export function switchActiveCharacter(
   const member = teamStore.getActive();
   const pack = resolveCharacterPack(member, member?.starterId ?? 'naruto-classic', spriteIndex);
   skillsStore.applyCharacterHotbar(pack.hotbarSkillIds);
+  attributesStore.onActiveCharacterChanged(false);
   locationStore.reloadScene();
   return true;
 }

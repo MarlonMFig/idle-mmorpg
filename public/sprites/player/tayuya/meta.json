@@ -1,0 +1,124 @@
+{
+  "tayuya-walk": {
+    "image": "/sprites/player/tayuya/walk.png",
+    "frameWidth": 39,
+    "frameHeight": 52,
+    "frameCount": 8,
+    "contentHeight": 48,
+    "scale": 0.5106382978723404,
+    "residualGreen": 0,
+    "pureBlack": 3139
+  },
+  "tayuya-idle": {
+    "image": "/sprites/player/tayuya/idle.png",
+    "frameWidth": 42,
+    "frameHeight": 50,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.5106382978723404
+  },
+  "tayuya-combo1": {
+    "image": "/sprites/player/tayuya/combo1.png",
+    "frameWidth": 54,
+    "frameHeight": 50,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.5106382978723404,
+    "range": [
+      0,
+      5
+    ]
+  },
+  "tayuya-combo2": {
+    "image": "/sprites/player/tayuya/combo2.png",
+    "frameWidth": 54,
+    "frameHeight": 50,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.5106382978723404,
+    "range": [
+      5,
+      10
+    ]
+  },
+  "tayuya-combo3": {
+    "image": "/sprites/player/tayuya/combo3.png",
+    "frameWidth": 54,
+    "frameHeight": 50,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.5106382978723404,
+    "range": [
+      10,
+      15
+    ]
+  },
+  "tayuya-hurt": {
+    "image": "/sprites/player/tayuya/hurt.png",
+    "frameWidth": 55,
+    "frameHeight": 51,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "frameRate": 10,
+    "scale": 0.5106382978723404
+  },
+  "tayuya-death": {
+    "image": "/sprites/player/tayuya/death.png",
+    "frameWidth": 55,
+    "frameHeight": 51,
+    "frameCount": 3,
+    "contentHeight": 48,
+    "frameRate": 8,
+    "scale": 0.5106382978723404
+  },
+  "tayuya-magen-mateki": {
+    "image": "/sprites/player/tayuya/magen-mateki.png",
+    "frameWidth": 90,
+    "frameHeight": 95,
+    "frameCount": 18,
+    "contentHeight": 48,
+    "scale": 0.5106382978723404,
+    "frameRate": 12,
+    "durationMs": 1500,
+    "hitDelayMs": 917,
+    "residualGreen": 0,
+    "pureBlack": 6497
+  },
+  "skill-magen-mateki": {
+    "image": "/sprites/player/tayuya/magen-mateki.png",
+    "frameWidth": 90,
+    "frameHeight": 95,
+    "frameCount": 18,
+    "contentHeight": 48,
+    "scale": 0.5106382978723404,
+    "frameRate": 12,
+    "durationMs": 1500,
+    "hitDelayMs": 917,
+    "residualGreen": 0,
+    "pureBlack": 6497
+  },
+  "tayuya-magen-mateki-fx": {
+    "image": "/sprites/player/tayuya/magen-mateki-fx.png",
+    "frameWidth": 34,
+    "frameHeight": 44,
+    "frameCount": 4,
+    "contentHeight": 40,
+    "scale": 1.1428571428571428,
+    "frameRate": 12,
+    "durationMs": 333,
+    "residualGreen": 0,
+    "source": "tayuya/jutsu-vfx (VFX JUTSU.zip, 4f music notes)"
+  },
+  "skill-magen-mateki-fx": {
+    "image": "/sprites/player/tayuya/magen-mateki-fx.png",
+    "frameWidth": 34,
+    "frameHeight": 44,
+    "frameCount": 4,
+    "contentHeight": 40,
+    "scale": 1.1428571428571428,
+    "frameRate": 12,
+    "durationMs": 333,
+    "residualGreen": 0,
+    "source": "tayuya/jutsu-vfx (VFX JUTSU.zip, 4f music notes)"
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "tenten-walk": {
+    "image": "/sprites/player/tenten/walk.png",
+    "frameWidth": 30,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.5647058823529412,
+    "residualGreen": 0,
+    "pureBlack": 1440
+  },
+  "tenten-idle": {
+    "image": "/sprites/player/tenten/idle.png",
+    "frameWidth": 38,
+    "frameHeight": 49,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.5647058823529412
+  },
+  "tenten-combo1": {
+    "image": "/sprites/player/tenten/combo1.png",
+    "frameWidth": 49,
+    "frameHeight": 52,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.4948453608247423,
+    "range": [
+      0,
+      5
+    ]
+  },
+  "tenten-combo2": {
+    "image": "/sprites/player/tenten/combo2.png",
+    "frameWidth": 49,
+    "frameHeight": 52,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.4948453608247423,
+    "range": [
+      5,
+      10
+    ]
+  },
+  "tenten-combo3": {
+    "image": "/sprites/player/tenten/combo3.png",
+    "frameWidth": 49,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.4948453608247423,
+    "range": [
+      10,
+      16
+    ]
+  },
+  "tenten-hurt": {
+    "image": "/sprites/player/tenten/hurt.png",
+    "frameWidth": 54,
+    "frameHeight": 48,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "frameRate": 10,
+    "scale": 0.5647058823529412
+  },
+  "tenten-death": {
+    "image": "/sprites/player/tenten/death.png",
+    "frameWidth": 54,
+    "frameHeight": 48,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "frameRate": 8,
+    "scale": 0.5647058823529412
+  },
+  "tenten-soushuriken": {
+    "image": "/sprites/player/tenten/soushuriken.png",
+    "frameWidth": 107,
+    "frameHeight": 206,
+    "frameCount": 31,
+    "contentHeight": 48,
+    "scale": 0.5647058823529412,
+    "frameRate": 12,
+    "durationMs": 2583,
+    "hitDelayMs": 1583,
+    "residualGreen": 0,
+    "pureBlack": 30927
+  },
+  "skill-soushuriken": {
+    "image": "/sprites/player/tenten/soushuriken.png",
+    "frameWidth": 107,
+    "frameHeight": 206,
+    "frameCount": 31,
+    "contentHeight": 48,
+    "scale": 0.5647058823529412,
+    "frameRate": 12,
+    "durationMs": 2583,
+    "hitDelayMs": 1583,
+    "residualGreen": 0,
+    "pureBlack": 30927
+  },
+  "tenten-soushuriken-fx": {
+    "image": "/sprites/player/tenten/soushuriken-fx.png",
+    "frameWidth": 35,
+    "frameHeight": 42,
+    "frameCount": 21,
+    "contentHeight": 40,
+    "scale": 0.5263157894736842,
+    "frameRate": 14,
+    "durationMs": 1500,
+    "residualCyan": 0,
+    "source": "tenten/jutsu-fx-source.png (21f weapons 16+5)"
+  },
+  "skill-soushuriken-fx": {
+    "image": "/sprites/player/tenten/soushuriken-fx.png",
+    "frameWidth": 35,
+    "frameHeight": 42,
+    "frameCount": 21,
+    "contentHeight": 40,
+    "scale": 0.5263157894736842,
+    "frameRate": 14,
+    "durationMs": 1500,
+    "residualCyan": 0,
+    "source": "tenten/jutsu-fx-source.png (21f weapons 16+5)"
+  }
+}

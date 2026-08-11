@@ -1,0 +1,273 @@
+{
+  "kakashi-walk": {
+    "image": "/sprites/player/kakashi/walk.png",
+    "frameWidth": 26,
+    "frameHeight": 49,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.3,
+    "maxContentH": 160,
+    "frameRate": 10,
+    "source": "assets/naruto-source/nu/kakashi/walk/frame_001..006.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 1104,
+    "silverHair": 1810,
+    "contentHeights": [
+      47,
+      48,
+      48,
+      48,
+      48,
+      48
+    ],
+    "bodyLock": {
+      "destBodyCx": 44,
+      "destFeetY": 161,
+      "bodyCxStd": 0.28,
+      "bodyCxRange": 0.872,
+      "feetYDelta": 0
+    },
+    "note": "6-frame walk; alpha-only; body-lock torso+feet; nearest maxContentH→48; silver hair preserved"
+  },
+  "kakashi-idle": {
+    "image": "/sprites/player/kakashi/idle.png",
+    "frameWidth": 31,
+    "frameHeight": 48,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.3,
+    "frameRate": 7,
+    "source": "assets/naruto-source/nu/kakashi/idle/frame_001..006.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 1084,
+    "silverHair": 2183,
+    "walkMatchedScale": 0.3,
+    "contentHeights": [
+      46,
+      46,
+      44,
+      43,
+      44,
+      46
+    ],
+    "bodyLock": {
+      "destBodyCx": 50,
+      "destFeetY": 157,
+      "bodyCxStd": 0.471,
+      "bodyCxRange": 1.187,
+      "feetYDelta": 0
+    },
+    "note": "6-frame idle; alpha-only; body-lock torso+feet; nearest scale matched walk; silver hair preserved"
+  },
+  "kakashi-combo1": {
+    "image": "/sprites/player/kakashi/combo1.png",
+    "frameWidth": 56,
+    "frameHeight": 57,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.3779527559055118,
+    "frameRate": 12,
+    "source": "assets/naruto-source/nu/kakashi/combo/frame_001..013.png",
+    "range": [
+      0,
+      5
+    ],
+    "residualGreen": 0,
+    "pureBlack": 682,
+    "bodyHeightVariance": 3,
+    "contentHeights": [
+      48,
+      48,
+      47,
+      49,
+      50
+    ],
+    "note": "prep + first strike (5f); alpha-only; body-lock; lanczos3→48 contentH=48"
+  },
+  "kakashi-combo2": {
+    "image": "/sprites/player/kakashi/combo2.png",
+    "frameWidth": 56,
+    "frameHeight": 57,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.3779527559055118,
+    "frameRate": 12,
+    "source": "assets/naruto-source/nu/kakashi/combo/frame_001..013.png",
+    "range": [
+      5,
+      9
+    ],
+    "residualGreen": 0,
+    "pureBlack": 454,
+    "bodyHeightVariance": 0,
+    "contentHeights": [
+      48,
+      48,
+      48,
+      48
+    ],
+    "note": "second strike (4f); alpha-only; body-lock; lanczos3→48 contentH=48"
+  },
+  "kakashi-combo3": {
+    "image": "/sprites/player/kakashi/combo3.png",
+    "frameWidth": 56,
+    "frameHeight": 57,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.3779527559055118,
+    "frameRate": 12,
+    "source": "assets/naruto-source/nu/kakashi/combo/frame_001..013.png",
+    "range": [
+      9,
+      13
+    ],
+    "residualGreen": 0,
+    "pureBlack": 433,
+    "bodyHeightVariance": 0,
+    "contentHeights": [
+      56,
+      56,
+      56,
+      56
+    ],
+    "note": "finisher / recovery (4f); alpha-only; body-lock; lanczos3→48 contentH=48"
+  },
+  "kakashi-attack": {
+    "image": "/sprites/player/kakashi/attack.png",
+    "frameWidth": 56,
+    "frameHeight": 57,
+    "frameCount": 13,
+    "contentHeight": 48,
+    "scale": 0.3779527559055118,
+    "frameRate": 12,
+    "source": "assets/naruto-source/nu/kakashi/combo/frame_001..013.png",
+    "residualGreen": 0,
+    "silverHair": 8396,
+    "fire": 391,
+    "pureBlack": 1569,
+    "walkMatchedScale": 0.3,
+    "absoluteScaleSource": "body-match-lanczos3→48",
+    "contentHeights": [
+      48,
+      48,
+      47,
+      49,
+      50,
+      48,
+      48,
+      48,
+      48,
+      56,
+      56,
+      56,
+      56
+    ],
+    "phaseSplit": [
+      5,
+      4,
+      4
+    ],
+    "bodyLock": {
+      "destBodyCx": 69,
+      "destFeetY": 149,
+      "bodyCxStd": 2.983,
+      "bodyCxRange": 10.751,
+      "feetYDelta": 0
+    },
+    "note": "full combo strip (13f); split 5+4+4; alpha-only; body-lock; lanczos3 scale=0.3780 contentH=48"
+  },
+  "kakashi-hurt": {
+    "image": "/sprites/player/kakashi/hurt.png",
+    "frameWidth": 68,
+    "frameHeight": 51,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "scale": 0.4,
+    "frameRate": 9,
+    "source": "assets/naruto-source/nu/kakashi/damage/frame_001..005.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 704,
+    "silverHair": 1074,
+    "note": "frames 1–2 hit reaction; alpha-only; dark silver hair preserved"
+  },
+  "kakashi-death": {
+    "image": "/sprites/player/kakashi/death.png",
+    "frameWidth": 68,
+    "frameHeight": 51,
+    "frameCount": 3,
+    "contentHeight": 48,
+    "scale": 0.4,
+    "frameRate": 8,
+    "source": "assets/naruto-source/nu/kakashi/damage/frame_001..005.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 1024,
+    "silverHair": 1757,
+    "note": "frames 3–5 death collapse hold last; alpha-only; dark silver hair preserved"
+  },
+  "kakashi-raikiri": {
+    "image": "/sprites/player/kakashi/raikiri.png",
+    "frameWidth": 73,
+    "frameHeight": 53,
+    "frameCount": 26,
+    "contentHeight": 48,
+    "scale": 0.43636363636363634,
+    "frameRate": 12,
+    "residualGreen": 0,
+    "lightning": 9276,
+    "silverHair": 6636,
+    "olive": 1054,
+    "pureBlack": 2203,
+    "source": "assets/naruto-source/nu/kakashi/jutsu/frame_*.png",
+    "durationMs": 2167,
+    "hitDelayMs": 1417,
+    "note": "Raikiri cast 26f body-lock lanczos3→48; peak hit f18",
+    "inventory": {
+      "sourceBody": 26,
+      "bakedFrameCount": 26,
+      "bodyLock": {
+        "destBodyCx": 86,
+        "destFeetY": 111,
+        "burstStdPx": 3.782,
+        "burstMaxDrift": 9.295
+      },
+      "peakFrame": 18,
+      "scaleMethod": "lanczos3-body-match",
+      "standingBodyH": 110
+    }
+  },
+  "skill-raikiri": {
+    "image": "/sprites/player/kakashi/raikiri.png",
+    "frameWidth": 73,
+    "frameHeight": 53,
+    "frameCount": 26,
+    "contentHeight": 48,
+    "scale": 0.43636363636363634,
+    "frameRate": 12,
+    "residualGreen": 0,
+    "lightning": 9276,
+    "silverHair": 6636,
+    "olive": 1054,
+    "pureBlack": 2203,
+    "source": "assets/naruto-source/nu/kakashi/jutsu/frame_*.png",
+    "durationMs": 2167,
+    "hitDelayMs": 1417,
+    "note": "skill-raikiri — Lightning Blade / Raikiri (HQ alpha body-lock pack)",
+    "inventory": {
+      "sourceBody": 26,
+      "bakedFrameCount": 26,
+      "bodyLock": {
+        "destBodyCx": 86,
+        "destFeetY": 111,
+        "burstStdPx": 3.782,
+        "burstMaxDrift": 9.295
+      },
+      "peakFrame": 18,
+      "scaleMethod": "lanczos3-body-match",
+      "standingBodyH": 110
+    }
+  }
+}

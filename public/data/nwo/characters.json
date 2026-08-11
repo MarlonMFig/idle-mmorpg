@@ -1,0 +1,3737 @@
+[
+  {
+    "slug": "naruto",
+    "name": "Naruto",
+    "role": "Assassino",
+    "combatStyle": "Melee",
+    "unlock": "Roster inicial",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/naruto-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-naruto.html",
+    "stats": {
+      "penetration": 2,
+      "armor": 1,
+      "hpPerLevel": 45,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "2.0",
+        "Armadura": "1.0",
+        "Vida / lvl": "45",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Assassino",
+      "Explosao rapida",
+      "Combate",
+      "8 skills",
+      "4 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/naruto-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/naruto-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano na área ao seu redor.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/naruto-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/naruto-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/naruto-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/naruto-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/naruto-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/naruto-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Self",
+        "description": "Naruto utiliza o Jutsu Sexy, além de causar dano, atordoa mobs e alvos homens. Seu clone pode replicar a técnica.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/naruto-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/naruto-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Area",
+        "description": "Naruto avança rapidamente para frente, atordoando os inimigos atingidos.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/naruto-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/naruto-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Area",
+        "description": "Naruto cria um clone para ajuda-lo em combate. Recastar a habilidade faz trocar de lugar com o clone.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/naruto-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/naruto-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Area / Alcance 4",
+        "description": "Naruto arremessa um rasenshuriken gigante na área designada.",
+        "level": 100,
+        "chakra": 200,
+        "range": 4,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/naruto-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/naruto-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 99,
+        "name": "Naruto Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/99.png"
+      },
+      {
+        "id": 301,
+        "name": "Naruto Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/301.png"
+      },
+      {
+        "id": 401,
+        "name": "Naruto Praiano",
+        "variant": "Praiano",
+        "image": "images/wiki/skins/401.png"
+      },
+      {
+        "id": 2216,
+        "name": "Naruto Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2216.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 4
+  },
+  {
+    "slug": "sasuke",
+    "name": "Sasuke",
+    "role": "Assassino",
+    "combatStyle": "Melee",
+    "unlock": "Roster inicial",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/sasuke-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-sasuke.html",
+    "stats": {
+      "penetration": 2,
+      "armor": 1,
+      "hpPerLevel": 45,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "2.0",
+        "Armadura": "1.0",
+        "Vida / lvl": "45",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Assassino",
+      "Explosao rapida",
+      "Combate",
+      "8 skills",
+      "4 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/sasuke-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/sasuke-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano na área ao seu redor.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/sasuke-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/sasuke-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 3",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/sasuke-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/sasuke-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 3",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/sasuke-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/sasuke-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Area",
+        "description": "Sasuke ateia chamas negras na área, causando dano durante alguns segundos.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/sasuke-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/sasuke-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Alvo / Alcance 4",
+        "description": "Sasuke troca de lugar com o alvo.",
+        "level": 60,
+        "chakra": 150,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/sasuke-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/sasuke-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Alvo / Alcance 4",
+        "description": "Sasuke utiliza o Kirin na área designada",
+        "level": 80,
+        "chakra": 150,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/sasuke-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/sasuke-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Area / Alcance 4",
+        "description": "Sasuke utiliza o Kirin para causar dano e atordoamento nos alvos.",
+        "level": 100,
+        "chakra": 200,
+        "range": 4,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/sasuke-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/sasuke-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 2,
+        "name": "Sasuke Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/2.png"
+      },
+      {
+        "id": 302,
+        "name": "Sasuke Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/302.png"
+      },
+      {
+        "id": 402,
+        "name": "Sasuke Praiano",
+        "variant": "Praiano",
+        "image": "images/wiki/skins/402.png"
+      },
+      {
+        "id": 2220,
+        "name": "Sasuke Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2220.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 4
+  },
+  {
+    "slug": "sakura",
+    "name": "Sakura",
+    "role": "Buffer",
+    "combatStyle": "Melee",
+    "unlock": "Roster inicial",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/sakura-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-sakura.html",
+    "stats": {
+      "penetration": 1.2,
+      "armor": 1.5,
+      "hpPerLevel": 50,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "1.2",
+        "Armadura": "1.5",
+        "Vida / lvl": "50",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Buffer",
+      "Cura e suporte",
+      "Combate",
+      "8 skills",
+      "5 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/sakura-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/sakura-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano na área ao seu redor.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/sakura-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/sakura-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/sakura-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/sakura-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/sakura-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/sakura-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Self",
+        "description": "Sakura {cura, #33ffcc} e {aumenta a defesa, #7eb4e1} dos aliados dentro da área designada em 20% por 1 segundo a cada tick.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/sakura-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/sakura-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Self",
+        "description": "Sakura da um soco no chão, atordoando os alvos.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/sakura-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/sakura-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Direcao",
+        "description": "Sakura da um soco frontal, atordoando brevemente os alvos.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": null,
+        "icon": "/images/nwo/spells/sakura-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/sakura-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Direcao",
+        "description": "Sakura invoca Katsuyu para {curar, #33ffcc} passivamente os aliados ao seu redor após 5 segundos, com cura periódica reduzida. É possível recastar antes disso para a Katsuyu se dividir e {curar, #33ffcc} instantaneamente aliados próximos com cura completa.",
+        "level": 100,
+        "chakra": 200,
+        "range": null,
+        "targeting": null,
+        "icon": "/images/nwo/spells/sakura-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/sakura-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 3,
+        "name": "Sakura Classica",
+        "variant": "Classica",
+        "image": "images/wiki/skins/3.png"
+      },
+      {
+        "id": 303,
+        "name": "Sakura Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/303.png"
+      },
+      {
+        "id": 403,
+        "name": "Sakura Praiana",
+        "variant": "Praiana",
+        "image": "images/wiki/skins/403.png"
+      },
+      {
+        "id": 2189,
+        "name": "Sakura Angelical",
+        "variant": "Angelical",
+        "image": "images/wiki/skins/2189.png"
+      },
+      {
+        "id": 2219,
+        "name": "Sakura Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2219.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 5
+  },
+  {
+    "slug": "ino",
+    "name": "Ino",
+    "role": "Buffer",
+    "combatStyle": "Ranged",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/ino-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-ino.html",
+    "stats": {
+      "penetration": 1.2,
+      "armor": 1.5,
+      "hpPerLevel": 50,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "1.2",
+        "Armadura": "1.5",
+        "Vida / lvl": "50",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Buffer",
+      "Cura e suporte",
+      "Combate",
+      "8 skills",
+      "4 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/ino-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/ino-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano na área ao seu redor.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/ino-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/ino-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/ino-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/ino-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/ino-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/ino-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Self",
+        "description": "Ino {cura, #33ffcc} os aliados dentro da área designada, {amplificando o dano, #e55555} deles em 20% por 5 segundos a cada tick.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/ino-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/ino-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Self",
+        "description": "Ino projeta sua consciência para frente, causando dano. Em PvE, também causa um longo atordoamento.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/ino-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/ino-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Self",
+        "description": "Ino entra na mente dos aliados ao seu redor, {amplificando o dano, #e55555} deles em 30% por 5 segundos.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/ino-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/ino-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Self",
+        "description": "Ino causa {dano, #e55555} aos inimigos ao redor, aplica {lentidao, #33ffcc} e {rastreia, #ffff66} os alvos atingidos. Se estiver em party, membros proximos tambem recebem o rastreio.",
+        "level": 100,
+        "chakra": 200,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/ino-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/ino-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 4,
+        "name": "Ino Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/4.png"
+      },
+      {
+        "id": 304,
+        "name": "Ino Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/304.png"
+      },
+      {
+        "id": 404,
+        "name": "Ino Praiana",
+        "variant": "Praiana",
+        "image": "images/wiki/skins/404.png"
+      },
+      {
+        "id": 2212,
+        "name": "Ino Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2212.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 4
+  },
+  {
+    "slug": "shikamaru",
+    "name": "Shikamaru",
+    "role": "Controller",
+    "combatStyle": "Ranged",
+    "unlock": "Roster inicial",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/shikamaru-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-shikamaru.html",
+    "stats": {
+      "penetration": 1,
+      "armor": 1.5,
+      "hpPerLevel": 50,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "1.0",
+        "Armadura": "1.5",
+        "Vida / lvl": "50",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Controller",
+      "Controle e setup",
+      "Combate",
+      "8 skills",
+      "4 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/shikamaru-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/shikamaru-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano na área ao seu redor.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/shikamaru-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/shikamaru-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/shikamaru-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/shikamaru-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/shikamaru-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/shikamaru-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Direcao",
+        "description": "Shikamaru projeta uma sombra para frente, atordoando os alvos.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": null,
+        "icon": "/images/nwo/spells/shikamaru-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/shikamaru-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Self",
+        "description": "Shikamaru projeta uma sombra para frente, causando dano e marcando os alvos.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/shikamaru-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/shikamaru-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Alvo / Alcance 4",
+        "description": "Shikamaru projeta espinhos de sombra {diretamente nos alvos marcados com sombra, #ff2929} que estão próximos.",
+        "level": 80,
+        "chakra": 150,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/shikamaru-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/shikamaru-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Self",
+        "description": "Shikamaru expande sua sombra em forma circular, atordoando e marcando os alvos.",
+        "level": 100,
+        "chakra": 200,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/shikamaru-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/shikamaru-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 5,
+        "name": "Shikamaru Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/5.png"
+      },
+      {
+        "id": 305,
+        "name": "Shikamaru Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/305.png"
+      },
+      {
+        "id": 405,
+        "name": "Shikamaru Praiano",
+        "variant": "Praiano",
+        "image": "images/wiki/skins/405.png"
+      },
+      {
+        "id": 2221,
+        "name": "Shikamaru Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2221.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 4
+  },
+  {
+    "slug": "choji",
+    "name": "Choji",
+    "role": "Tanque",
+    "combatStyle": "Melee",
+    "unlock": "Roster inicial",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/choji-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-choji.html",
+    "stats": {
+      "penetration": 1,
+      "armor": 2,
+      "hpPerLevel": 63,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "1.0",
+        "Armadura": "2.0",
+        "Vida / lvl": "63",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Tanque",
+      "Linha de frente",
+      "Combate",
+      "8 skills",
+      "4 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/choji-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/choji-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano na área ao redor e {provoca, #f7dc59} os alvos por 8 segundos.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/choji-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/choji-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/choji-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/choji-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/choji-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/choji-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Self",
+        "description": "Choji infla seu corpo, {provocando, #f7dc59} alvos proximos e se tornando {imune a dano, #7eb4e1} por 4 segundos.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/choji-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/choji-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Self",
+        "description": "Choji entra em forma de bola e avança rapidamente para frente, atordoando os alvos.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/choji-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/choji-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Self",
+        "description": "Choji causa um pequeno terremoto ao seu redor, causando dano e atordoando os alvos.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/choji-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/choji-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Self",
+        "description": "Choji entra em forma de bola e pula para cima, atordoando os alvos no impacto.",
+        "level": 100,
+        "chakra": 200,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/choji-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/choji-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 6,
+        "name": "Choji Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/6.png"
+      },
+      {
+        "id": 306,
+        "name": "Choji Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/306.png"
+      },
+      {
+        "id": 406,
+        "name": "Choji Praiano",
+        "variant": "Praiano",
+        "image": "images/wiki/skins/406.png"
+      },
+      {
+        "id": 2205,
+        "name": "Choji Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2205.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 4
+  },
+  {
+    "slug": "tenten",
+    "name": "Tenten",
+    "role": "Shooter",
+    "combatStyle": "Ranged",
+    "unlock": "Roster inicial",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/tenten-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-tenten.html",
+    "stats": {
+      "penetration": 1.6,
+      "armor": 1,
+      "hpPerLevel": 45,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "1.6",
+        "Armadura": "1.0",
+        "Vida / lvl": "45",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Shooter",
+      "Ataque a distancia",
+      "Combate",
+      "8 skills",
+      "4 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/tenten-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tenten-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Alvo",
+        "description": "Atira um projetil no alvo, causando dano em área.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/tenten-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tenten-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 6",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 6,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/tenten-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tenten-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 6",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 6,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/tenten-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tenten-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Alvo / Alcance 7",
+        "description": "Tenten arremessa shurikens no alvo, atingindo todos os bonecos próximos.",
+        "level": 45,
+        "chakra": 50,
+        "range": 7,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/tenten-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tenten-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Area",
+        "description": "Tenten joga shurikens para frente e avança para trás causando lentidão nos alvos.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/tenten-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tenten-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Self",
+        "description": "Tenten arremessa bombas que explodem após breve período causando dano em área.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/tenten-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tenten-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Area / Alcance 8",
+        "description": "Tenten arremessa um pergaminho que dispara diversos papeis bombas causando dano em área.",
+        "level": 100,
+        "chakra": 200,
+        "range": 8,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/tenten-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tenten-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 7,
+        "name": "Tenten Classica",
+        "variant": "Classica",
+        "image": "images/wiki/skins/7.png"
+      },
+      {
+        "id": 307,
+        "name": "Tenten Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/307.png"
+      },
+      {
+        "id": 407,
+        "name": "Tenten Praiana",
+        "variant": "Praiana",
+        "image": "images/wiki/skins/407.png"
+      },
+      {
+        "id": 2224,
+        "name": "Tenten Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2224.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 4
+  },
+  {
+    "slug": "rock-lee",
+    "name": "Rock Lee",
+    "role": "Assassino",
+    "combatStyle": "Melee",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/rock-lee-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-rock-lee.html",
+    "stats": {
+      "penetration": 2,
+      "armor": 1,
+      "hpPerLevel": 45,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "2.0",
+        "Armadura": "1.0",
+        "Vida / lvl": "45",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Assassino",
+      "Explosao rapida",
+      "Combate",
+      "8 skills",
+      "4 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/rock-lee-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/rock-lee-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano na área ao seu redor.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/rock-lee-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/rock-lee-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/rock-lee-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/rock-lee-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/rock-lee-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/rock-lee-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Direcao",
+        "description": "Rock Lee avança para frente, empurrando os alvos.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": null,
+        "icon": "/images/nwo/spells/rock-lee-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/rock-lee-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Alvo / Alcance 4",
+        "description": "Rock Lee avança até o alvo, dando uma série de chutes em sequência nos alvos próximos.",
+        "level": 60,
+        "chakra": 150,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/rock-lee-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/rock-lee-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Alvo / Alcance 4",
+        "description": "Rock Lee avança até o alvo, atordoando-o e causando dano.",
+        "level": 80,
+        "chakra": 150,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/rock-lee-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/rock-lee-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Self",
+        "description": "Rock Lee desfere uma sequência de investidas rápidas, ficando invisível por um instante e atingindo os inimigos em golpes consecutivos.",
+        "level": 100,
+        "chakra": 200,
+        "range": null,
+        "targeting": "Self",
+        "icon": null,
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/rock-lee-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 8,
+        "name": "Rock Lee Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/8.png"
+      },
+      {
+        "id": 308,
+        "name": "Rock Lee Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/308.png"
+      },
+      {
+        "id": 408,
+        "name": "Lee Praiano",
+        "variant": "Praiano",
+        "image": "images/wiki/skins/408.png"
+      },
+      {
+        "id": 2218,
+        "name": "Rock Lee Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2218.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 4
+  },
+  {
+    "slug": "neji",
+    "name": "Neji",
+    "role": "Tanque",
+    "combatStyle": "Melee",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/neji-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-neji.html",
+    "stats": {
+      "penetration": 1,
+      "armor": 2,
+      "hpPerLevel": 63,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "1.0",
+        "Armadura": "2.0",
+        "Vida / lvl": "63",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Tanque",
+      "Linha de frente",
+      "Combate",
+      "8 skills",
+      "4 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/neji-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/neji-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano em área e {provoca, #f7dc59} os alvos por 8 segundos.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/neji-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/neji-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/neji-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/neji-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/neji-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/neji-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Self",
+        "description": "Neji ativa sua rotação {provocando, #f7dc59} os alvos próximos e se {tornando imune a dano, #7eb4e1} por 5 segundos.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/neji-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/neji-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Self",
+        "description": "Neji solta uma rajada de vento com sua palma, atordoando os alvos.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/neji-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/neji-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Alvo",
+        "description": "Neji entra em modo ofensivo, silenciando por 400 ms a cada golpe e causando lentidão no alvo caso esteja próximo.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/neji-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/neji-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Self",
+        "description": "Neji desfere uma sequência de golpes ao redor de si, causando dano e lentidão nos alvos por breve período.",
+        "level": 100,
+        "chakra": 200,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/neji-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/neji-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 9,
+        "name": "Neji Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/9.png"
+      },
+      {
+        "id": 309,
+        "name": "Neji Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/309.png"
+      },
+      {
+        "id": 409,
+        "name": "Neji Praiano",
+        "variant": "Praiano",
+        "image": "images/wiki/skins/409.png"
+      },
+      {
+        "id": 2217,
+        "name": "Neji Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2217.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 4
+  },
+  {
+    "slug": "guren",
+    "name": "Guren",
+    "role": "Shooter",
+    "combatStyle": "Ranged",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/guren-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-guren.html",
+    "stats": {
+      "penetration": 1.6,
+      "armor": 1,
+      "hpPerLevel": 45,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "1.6",
+        "Armadura": "1.0",
+        "Vida / lvl": "45",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Shooter",
+      "Ataque a distancia",
+      "Combate",
+      "8 skills",
+      "5 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/guren-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/guren-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Alvo",
+        "description": "Atira um projetil no alvo, causando dano em área.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/guren-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/guren-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 6",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 6,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/guren-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/guren-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 6",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 6,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/guren-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/guren-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Direcao",
+        "description": "Guren dispara seus cristais para frente, causando dano e {feridas dolorosas, #ff5f68} por 6 segundos.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": null,
+        "icon": "/images/nwo/spells/guren-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/guren-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Area",
+        "description": "Guren faz cristais emergirem na área designada, causando dano.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/guren-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/guren-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Alvo / Alcance 7",
+        "description": "Guren faz uma chuva de cristais cairem no alvo, causando dano.",
+        "level": 80,
+        "chakra": 150,
+        "range": 7,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/guren-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/guren-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 150 / Alvo / Alcance 7",
+        "description": "Guren dispara uma sequência de projéteis em linha à sua frente, causando dano repetido na área atingida.",
+        "level": 100,
+        "chakra": 150,
+        "range": 7,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/guren-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/guren-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 10,
+        "name": "Guren Classica",
+        "variant": "Classica",
+        "image": "images/wiki/skins/10.png"
+      },
+      {
+        "id": 310,
+        "name": "Guren Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/310.png"
+      },
+      {
+        "id": 410,
+        "name": "Guren Praiana",
+        "variant": "Praiana",
+        "image": "images/wiki/skins/410.png"
+      },
+      {
+        "id": 2188,
+        "name": "Guren Angelical",
+        "variant": "Angelical",
+        "image": "images/wiki/skins/2188.png"
+      },
+      {
+        "id": 2208,
+        "name": "Guren Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2208.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 5
+  },
+  {
+    "slug": "kurenai",
+    "name": "Kurenai",
+    "role": "Controller",
+    "combatStyle": "Ranged",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/kurenai-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-kurenai.html",
+    "stats": {
+      "penetration": 1,
+      "armor": 1.5,
+      "hpPerLevel": 50,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "1.0",
+        "Armadura": "1.5",
+        "Vida / lvl": "50",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Controller",
+      "Controle e setup",
+      "Combate",
+      "8 skills",
+      "5 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/kurenai-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/kurenai-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano na área ao seu redor.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/kurenai-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/kurenai-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/kurenai-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/kurenai-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/kurenai-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/kurenai-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Self",
+        "description": "Kurenai cria um genjutsu ao redor, causando confusão e silence por 2 segundos nos inimigos.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/kurenai-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/kurenai-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Area",
+        "description": "Kurenai cria um genjutsu imobilizando os atingidos. Alvos que já estiverem sob genjutsu tem parte de seu chakra consumido.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/kurenai-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/kurenai-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Direcao",
+        "description": "Kurenai cria um genjutsu na área designada, gerando ilusões de obstáculos e causando silence por 3 segundos.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": null,
+        "icon": "/images/nwo/spells/kurenai-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/kurenai-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Self",
+        "description": "Kurenai cria um genjutsu ao seu redor, fazendo ela e seus aliados ficarem invisíveis.",
+        "level": 100,
+        "chakra": 200,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/kurenai-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/kurenai-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 11,
+        "name": "Kurenai Classica",
+        "variant": "Classica",
+        "image": "images/wiki/skins/11.png"
+      },
+      {
+        "id": 311,
+        "name": "Kurenai Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/311.png"
+      },
+      {
+        "id": 411,
+        "name": "Kurenai Praiana",
+        "variant": "Praiana",
+        "image": "images/wiki/skins/411.png"
+      },
+      {
+        "id": 2231,
+        "name": "Kurenai Easter",
+        "variant": "Easter",
+        "image": "images/wiki/skins/2231.png"
+      },
+      {
+        "id": 2214,
+        "name": "Kurenai Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2214.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 5
+  },
+  {
+    "slug": "haku",
+    "name": "Haku",
+    "role": "Controller",
+    "combatStyle": "Ranged",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/haku-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-haku.html",
+    "stats": {
+      "penetration": 1,
+      "armor": 1.5,
+      "hpPerLevel": 50,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "1.0",
+        "Armadura": "1.5",
+        "Vida / lvl": "50",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Controller",
+      "Controle e setup",
+      "Combate",
+      "8 skills",
+      "4 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/haku-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/haku-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano na área ao seu redor.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/haku-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/haku-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/haku-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/haku-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/haku-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/haku-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Self",
+        "description": "Haku causa dano e lentidão ao seu redor.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/haku-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/haku-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Area",
+        "description": "Haku atira uma saraivada de senbons e avança para frente.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/haku-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/haku-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Self",
+        "description": "Haku causa dano e lentidão na área designada.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/haku-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/haku-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Self",
+        "description": "Cria varias paredes de gelo, cercando a área e causando dano nos alvos presos.",
+        "level": 100,
+        "chakra": 200,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/haku-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/haku-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 12,
+        "name": "Haku Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/12.png"
+      },
+      {
+        "id": 312,
+        "name": "Haku Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/312.png"
+      },
+      {
+        "id": 412,
+        "name": "Haku Praiana",
+        "variant": "Praiana",
+        "image": "images/wiki/skins/412.png"
+      },
+      {
+        "id": 2209,
+        "name": "Haku Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2209.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 4
+  },
+  {
+    "slug": "gaara",
+    "name": "Gaara",
+    "role": "Shooter",
+    "combatStyle": "Ranged",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/gaara-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-gaara.html",
+    "stats": {
+      "penetration": 1.6,
+      "armor": 1,
+      "hpPerLevel": 45,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "1.6",
+        "Armadura": "1.0",
+        "Vida / lvl": "45",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Shooter",
+      "Ataque a distancia",
+      "Combate",
+      "8 skills",
+      "5 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/gaara-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/gaara-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Alvo",
+        "description": "Atira um projetil no alvo, causando dano em área.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/gaara-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/gaara-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 6",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 6,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/gaara-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/gaara-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 6",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 6,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/gaara-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/gaara-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Direcao",
+        "description": "Gaara emite uma rajada de areia em linha reta, causando mais dano nos alvos no centro.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": null,
+        "icon": "/images/nwo/spells/gaara-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/gaara-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Area",
+        "description": "Gaara dispara uma bomba de areia, causando dano na área do alvo.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/gaara-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/gaara-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Alvo / Alcance 7",
+        "description": "Gaara cria um redemoinho no alvo, causando dano e lentidão.",
+        "level": 80,
+        "chakra": 150,
+        "range": 7,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/gaara-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/gaara-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Area / Alcance 8",
+        "description": "Gaara utiliza o caixão de areia nos alvos na posição designada, causando atordoamento e dano nos alvos.",
+        "level": 100,
+        "chakra": 200,
+        "range": 8,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/gaara-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/gaara-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 13,
+        "name": "Gaara Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/13.png"
+      },
+      {
+        "id": 313,
+        "name": "Gaara Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/313.png"
+      },
+      {
+        "id": 413,
+        "name": "Gaara Praiano",
+        "variant": "Praiano",
+        "image": "images/wiki/skins/413.png"
+      },
+      {
+        "id": 2230,
+        "name": "Gaara Easter",
+        "variant": "Easter",
+        "image": "images/wiki/skins/2230.png"
+      },
+      {
+        "id": 2207,
+        "name": "Gaara Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2207.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 5
+  },
+  {
+    "slug": "temari",
+    "name": "Temari",
+    "role": "Shooter",
+    "combatStyle": "Ranged",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/temari-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-temari.html",
+    "stats": {
+      "penetration": 1.6,
+      "armor": 1,
+      "hpPerLevel": 45,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "1.6",
+        "Armadura": "1.0",
+        "Vida / lvl": "45",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Shooter",
+      "Ataque a distancia",
+      "Combate",
+      "8 skills",
+      "5 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/temari-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/temari-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Alvo",
+        "description": "Atira um projetil no alvo, causando dano em área.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/temari-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/temari-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 6",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 6,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/temari-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/temari-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 6",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 6,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/temari-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/temari-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Direcao",
+        "description": "Temari dispara uma rajada de vento para sua frente, causando dano e empurrando os alvos para trás.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": null,
+        "icon": "/images/nwo/spells/temari-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/temari-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Alvo",
+        "description": "Temari invoca um pequeno tornado no alvo causando dano e lentidão.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/temari-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/temari-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Self",
+        "description": "Temari dispara uma rajada gigantesca de vento na área designada, causando dano.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/temari-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/temari-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Direcao",
+        "description": "Temari dispara um furacão que causa dano e leva os alvos para longe.",
+        "level": 100,
+        "chakra": 200,
+        "range": null,
+        "targeting": null,
+        "icon": "/images/nwo/spells/temari-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/temari-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 14,
+        "name": "Temari Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/14.png"
+      },
+      {
+        "id": 314,
+        "name": "Temari Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/314.png"
+      },
+      {
+        "id": 414,
+        "name": "Temari Praiana",
+        "variant": "Praiana",
+        "image": "images/wiki/skins/414.png"
+      },
+      {
+        "id": 2190,
+        "name": "Temari Angelical",
+        "variant": "Angelical",
+        "image": "images/wiki/skins/2190.png"
+      },
+      {
+        "id": 2223,
+        "name": "Temari Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2223.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 5
+  },
+  {
+    "slug": "deidara",
+    "name": "Deidara",
+    "role": "Shooter",
+    "combatStyle": "Ranged",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/deidara-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-deidara.html",
+    "stats": {
+      "penetration": 1.6,
+      "armor": 1,
+      "hpPerLevel": 45,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "1.6",
+        "Armadura": "1.0",
+        "Vida / lvl": "45",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Shooter",
+      "Ataque a distancia",
+      "Combate",
+      "8 skills",
+      "5 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/deidara-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/deidara-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Alvo",
+        "description": "Atira um projetil no alvo, causando dano em área.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/deidara-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/deidara-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 6",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 6,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/deidara-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/deidara-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 6",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 6,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/deidara-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/deidara-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Area",
+        "description": "Deidara joga um gigante golem de argila na área designada.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/deidara-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/deidara-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Area",
+        "description": "Deidara cria um clone de argila que explode e atordoa os alvos, podendo se mover enquanto isso.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/deidara-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/deidara-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Self",
+        "description": "Deidara cria duas aranhas de argila que perseguem o alvo e explodem e atordoam o alvo ao contato.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/deidara-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/deidara-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Self",
+        "description": "Deidara atira diversos explosivos de argila causando dano ao seu redor.",
+        "level": 100,
+        "chakra": 200,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/deidara-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/deidara-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 15,
+        "name": "Deidara Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/15.png"
+      },
+      {
+        "id": 315,
+        "name": "Deidara Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/315.png"
+      },
+      {
+        "id": 415,
+        "name": "Deidara Praiano",
+        "variant": "Praiano",
+        "image": "images/wiki/skins/415.png"
+      },
+      {
+        "id": 2206,
+        "name": "Deidara Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2206.png"
+      },
+      {
+        "id": 2192,
+        "name": "Deidara Void",
+        "variant": "Void",
+        "image": "images/wiki/skins/2192.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 5
+  },
+  {
+    "slug": "kisame",
+    "name": "Kisame",
+    "role": "Assassino",
+    "combatStyle": "Melee",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/kisame-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-kisame.html",
+    "stats": {
+      "penetration": 2,
+      "armor": 1,
+      "hpPerLevel": 45,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "2.0",
+        "Armadura": "1.0",
+        "Vida / lvl": "45",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Assassino",
+      "Explosao rapida",
+      "Combate",
+      "8 skills",
+      "5 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/kisame-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/kisame-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano na área ao seu redor.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/kisame-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/kisame-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/kisame-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/kisame-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/kisame-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/kisame-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Self",
+        "description": "Kisame invoca tubaraões de água para causar dano ao seu redor.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/kisame-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/kisame-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Area",
+        "description": "Kisame avança em linha reta causando dano, lentidão e arrastando os alvos junto consigo.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/kisame-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/kisame-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Area",
+        "description": "Kisame cria uma bolha de água, causando dano e lentidão nos alvos.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/kisame-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/kisame-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Self",
+        "description": "Kisame invoca multiplos tubarões para causar dano ao seu redor.",
+        "level": 100,
+        "chakra": 200,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/kisame-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/kisame-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 16,
+        "name": "Kisame Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/16.png"
+      },
+      {
+        "id": 316,
+        "name": "Kisame Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/316.png"
+      },
+      {
+        "id": 416,
+        "name": "Kisame Praiano",
+        "variant": "Praiano",
+        "image": "images/wiki/skins/416.png"
+      },
+      {
+        "id": 2213,
+        "name": "Kisame Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2213.png"
+      },
+      {
+        "id": 2194,
+        "name": "Kisame Void",
+        "variant": "Void",
+        "image": "images/wiki/skins/2194.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 5
+  },
+  {
+    "slug": "madara",
+    "name": "Madara",
+    "role": "Assassino",
+    "combatStyle": "Melee",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/madara-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-madara.html",
+    "stats": {
+      "penetration": 2,
+      "armor": 1,
+      "hpPerLevel": 45,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "2.0",
+        "Armadura": "1.0",
+        "Vida / lvl": "45",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Assassino",
+      "Explosao rapida",
+      "Combate",
+      "8 skills",
+      "6 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/madara-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/madara-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano na área ao seu redor.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/madara-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/madara-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/madara-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/madara-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/madara-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/madara-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Self",
+        "description": "Madara dispara bolas de fogo ao seu redor.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/madara-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/madara-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Area",
+        "description": "Madara avança rapidamente para frente, atordoando os alvos.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/madara-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/madara-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Area",
+        "description": "Madara atrai um meteoro fazendo com que ele caia na área designada, causando dano.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/madara-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/madara-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Area / Alcance 4",
+        "description": "Madara atrai dois meteoros fazendo com que eles caiam na área designada, um após o outro.",
+        "level": 100,
+        "chakra": 200,
+        "range": 4,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/madara-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/madara-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 17,
+        "name": "Madara Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/17.png"
+      },
+      {
+        "id": 317,
+        "name": "Madara Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/317.png"
+      },
+      {
+        "id": 417,
+        "name": "Madara Praiano",
+        "variant": "Praiano",
+        "image": "images/wiki/skins/417.png"
+      },
+      {
+        "id": 2187,
+        "name": "Madara Oni",
+        "variant": "Oni",
+        "image": "images/wiki/skins/2187.png"
+      },
+      {
+        "id": 2215,
+        "name": "Madara Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2215.png"
+      },
+      {
+        "id": 632,
+        "name": "Madara Six Path",
+        "variant": "Path",
+        "image": "images/wiki/skins/632.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 6
+  },
+  {
+    "slug": "tobirama",
+    "name": "Tobirama",
+    "role": "Assassino",
+    "combatStyle": "Melee",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/tobirama-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-tobirama.html",
+    "stats": {
+      "penetration": 2,
+      "armor": 1,
+      "hpPerLevel": 45,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "2.0",
+        "Armadura": "1.0",
+        "Vida / lvl": "45",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Assassino",
+      "Explosao rapida",
+      "Combate",
+      "8 skills",
+      "5 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/tobirama-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tobirama-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano na área ao seu redor.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/tobirama-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tobirama-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/tobirama-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tobirama-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/tobirama-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tobirama-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Self",
+        "description": "Tobirama dispara diversos projeteis de água letais ao seu redor.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/tobirama-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tobirama-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Area",
+        "description": "Tobirama atira sua kunai na posição designada, podendo se teleportar nela. Ao se teleportar, desfere um corte ao redor, que causa dano e {feridas dolorosas, #ff5f68} por 6 segundos.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/tobirama-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tobirama-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Self",
+        "description": "Tobirama desfere um corte em área, causando dano ao seu redor.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/tobirama-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tobirama-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Area / Alcance 4",
+        "description": "Tobirama desfere 5 golpes consecutivos ao redor de si, causando dano e {feridas dolorosas, #ff5f68} nos alvos atingidos.",
+        "level": 100,
+        "chakra": 200,
+        "range": 4,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/tobirama-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tobirama-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 18,
+        "name": "Tobirama Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/18.png"
+      },
+      {
+        "id": 318,
+        "name": "Tobirama Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/318.png"
+      },
+      {
+        "id": 418,
+        "name": "Tobirama Praiano",
+        "variant": "Praiano",
+        "image": "images/wiki/skins/418.png"
+      },
+      {
+        "id": 2182,
+        "name": "Tobirama Oni",
+        "variant": "Oni",
+        "image": "images/wiki/skins/2182.png"
+      },
+      {
+        "id": 2225,
+        "name": "Tobirama Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2225.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 5
+  },
+  {
+    "slug": "hashirama",
+    "name": "Hashirama",
+    "role": "Controller",
+    "combatStyle": "Melee",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/hashirama-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-hashirama.html",
+    "stats": {
+      "penetration": 1,
+      "armor": 1.5,
+      "hpPerLevel": 50,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "1.0",
+        "Armadura": "1.5",
+        "Vida / lvl": "50",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Controller",
+      "Controle e setup",
+      "Combate",
+      "8 skills",
+      "5 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/hashirama-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/hashirama-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano na área ao seu redor.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/hashirama-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/hashirama-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/hashirama-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/hashirama-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/hashirama-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/hashirama-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Direcao",
+        "description": "Hashirama faz varias vinhas crescerem do chão, causando dano frontal.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": null,
+        "icon": "/images/nwo/spells/hashirama-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/hashirama-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Alvo / Alcance 4",
+        "description": "Hashirama prende o alvo com madeira, causando dano e bloqueando a área por alguns segundos.",
+        "level": 60,
+        "chakra": 150,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/hashirama-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/hashirama-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Area",
+        "description": "Cria uma prisão de madeira em uma grande área ao redor. É possível desfazer a prisão apertando novamente.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Area",
+        "icon": "/images/nwo/spells/hashirama-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/hashirama-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Self",
+        "description": "Causa dano no alvo.",
+        "level": 100,
+        "chakra": 200,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/hashirama-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/hashirama-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 19,
+        "name": "Hashirama Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/19.png"
+      },
+      {
+        "id": 319,
+        "name": "Hashirama Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/319.png"
+      },
+      {
+        "id": 419,
+        "name": "Hashirama Praiano",
+        "variant": "Praiano",
+        "image": "images/wiki/skins/419.png"
+      },
+      {
+        "id": 2210,
+        "name": "Hashirama Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2210.png"
+      },
+      {
+        "id": 633,
+        "name": "Hashirama Six Path",
+        "variant": "Path",
+        "image": "images/wiki/skins/633.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 5
+  },
+  {
+    "slug": "hidan",
+    "name": "Hidan",
+    "role": "Tanque",
+    "combatStyle": "Melee",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/hidan-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-hidan.html",
+    "stats": {
+      "penetration": 1,
+      "armor": 2,
+      "hpPerLevel": 63,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "1.0",
+        "Armadura": "2.0",
+        "Vida / lvl": "63",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Tanque",
+      "Linha de frente",
+      "Combate",
+      "8 skills",
+      "5 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/hidan-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/hidan-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano em área e {provoca, #f7dc59} os alvos por 8 segundos.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/hidan-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/hidan-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/hidan-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/hidan-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/hidan-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/hidan-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Self",
+        "description": "Hidan marca o chão por 5 segundos {provocando, #f7dc59} os alvos e enquanto dentro da marca, se torna {imune a dano, #7eb4e1} e reflete o dano que seria recebido.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/hidan-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/hidan-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Direcao",
+        "description": "Hidan joga sua foice para frente, puxando os alvos e causando {feridas dolorosas, #ff5f68} por 5 segundos.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": null,
+        "icon": "/images/nwo/spells/hidan-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/hidan-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Self",
+        "description": "Hidan avança para frente, girando sua foice para causar e {feridas dolorosas, #ff5f68} por 6 segundos.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/hidan-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/hidan-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Self",
+        "description": "Hidan desfere um golpe em área ao seu redor, causando dano e {feridas dolorosas, #ff5f68} nos inimigos atingidos.",
+        "level": 100,
+        "chakra": 200,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/hidan-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/hidan-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 20,
+        "name": "Hidan Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/20.png"
+      },
+      {
+        "id": 320,
+        "name": "Hidan Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/320.png"
+      },
+      {
+        "id": 420,
+        "name": "Hidan Praiano",
+        "variant": "Praiano",
+        "image": "images/wiki/skins/420.png"
+      },
+      {
+        "id": 2211,
+        "name": "Hidan Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2211.png"
+      },
+      {
+        "id": 2193,
+        "name": "Hidan Void",
+        "variant": "Void",
+        "image": "images/wiki/skins/2193.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 5
+  },
+  {
+    "slug": "shizune",
+    "name": "Shizune",
+    "role": "Buffer",
+    "combatStyle": "Melee",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/shizune-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-shizune.html",
+    "stats": {
+      "penetration": 1.2,
+      "armor": 1.5,
+      "hpPerLevel": 50,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "1.2",
+        "Armadura": "1.5",
+        "Vida / lvl": "50",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Buffer",
+      "Cura e suporte",
+      "Combate",
+      "8 skills",
+      "4 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/shizune-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/shizune-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano na área ao seu redor.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/shizune-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/shizune-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/shizune-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/shizune-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/shizune-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/shizune-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Self",
+        "description": "Shizune {cura, #33ffcc} os aliados dentro da área designada, concedendo {um grande aumento velocidade de movimento, #fff381} por 5 segundos a cada tick.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/shizune-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/shizune-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Direcao",
+        "description": "Shizune dispara uma saraivada de senbons na área designada, causando dano e  {feridas dolorosas, #ff5f68} por 6 segundos.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": null,
+        "icon": "/images/nwo/spells/shizune-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/shizune-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Direcao",
+        "description": "Shizune envia Tonton em uma corrida à sua frente, causando múltiplos ataques em área e causando slow.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": null,
+        "icon": "/images/nwo/spells/shizune-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/shizune-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Direcao",
+        "description": "Shizune lança uma cortina de veneno para frente, causando dano e {feridas dolorosas, #ff5f68} por 6 segundos. Aliados que estiverem na área tem sua {cura aumentada, #67cb7d} em 50% por 5 segundos.",
+        "level": 100,
+        "chakra": 200,
+        "range": null,
+        "targeting": null,
+        "icon": "/images/nwo/spells/shizune-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/shizune-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 21,
+        "name": "Shizune Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/21.png"
+      },
+      {
+        "id": 321,
+        "name": "Shizune Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/321.png"
+      },
+      {
+        "id": 421,
+        "name": "Shizune Praiana",
+        "variant": "Praiana",
+        "image": "images/wiki/skins/421.png"
+      },
+      {
+        "id": 2222,
+        "name": "Shizune Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2222.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 4
+  },
+  {
+    "slug": "tsunade",
+    "name": "Tsunade",
+    "role": "Tanque",
+    "combatStyle": "Melee",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/tsunade-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-tsunade.html",
+    "stats": {
+      "penetration": 1,
+      "armor": 2,
+      "hpPerLevel": 63,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "1.0",
+        "Armadura": "2.0",
+        "Vida / lvl": "63",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Tanque",
+      "Linha de frente",
+      "Combate",
+      "8 skills",
+      "5 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/tsunade-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tsunade-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano em área e {provoca, #f7dc59} os alvos por 8 segundos.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/tsunade-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tsunade-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/tsunade-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tsunade-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/tsunade-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tsunade-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Self",
+        "description": "Tsunade se libera de lentidão, silence e {provoca, #f7dc59} os inimigos ao redor. Além disso, Tsunade regenera sua vida durante a duração da habilidade.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/tsunade-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tsunade-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Self",
+        "description": "Tsunade desfere um poderoso soco no chão abalando o solo. Inimigos sofrem dano e lentidão.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/tsunade-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tsunade-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Self",
+        "description": "Tsunade avança na posição alvo desferindo um poderoso chute causando dano e atordoamento nos inimigos.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/tsunade-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tsunade-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Self",
+        "description": "Tsunade invoca Katsuyu para causar dano em área, veneno, lentidão e puxar agro dos inimigos. É possível recastar antes disso para fazê-la se dividir entre os inimigos, causando dano reduzido e lentidão maior.",
+        "level": 100,
+        "chakra": 200,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/tsunade-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/tsunade-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 22,
+        "name": "Tsunade Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/22.png"
+      },
+      {
+        "id": 322,
+        "name": "Tsunade Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/322.png"
+      },
+      {
+        "id": 422,
+        "name": "Tsunade Praiana",
+        "variant": "Praiana",
+        "image": "images/wiki/skins/422.png"
+      },
+      {
+        "id": 2229,
+        "name": "Tsunade Easter",
+        "variant": "Easter",
+        "image": "images/wiki/skins/2229.png"
+      },
+      {
+        "id": 2226,
+        "name": "Tsunade Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2226.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 5
+  },
+  {
+    "slug": "zabuza",
+    "name": "Zabuza",
+    "role": "Assassino",
+    "combatStyle": "Melee",
+    "unlock": "Desbloqueio",
+    "lead": "Resumo completo do personagem com stats no topo, skills reais da spellbar e skins publicadas logo abaixo.",
+    "image": "images/wiki/characters/zabuza-background.png",
+    "url": "https://ninjaworldonline.com.br/wiki-personagem-zabuza.html",
+    "stats": {
+      "penetration": 2,
+      "armor": 1,
+      "hpPerLevel": 45,
+      "chakraPerLevel": 40,
+      "speed": 400,
+      "attackIntervalMs": 1500,
+      "raw": {
+        "Penetracao": "2.0",
+        "Armadura": "1.0",
+        "Vida / lvl": "45",
+        "Chakra / lvl": "40",
+        "Velocidade": "400",
+        "Ataque": "1500 ms"
+      }
+    },
+    "pills": [
+      "Assassino",
+      "Explosao rapida",
+      "Combate",
+      "8 skills",
+      "4 skins"
+    ],
+    "skills": [
+      {
+        "slot": "M1",
+        "name": "M1",
+        "meta": "Nivel 1 / Alvo / Alcance 3",
+        "description": "Ataque de longo alcance que arremessa uma arma ninja no alvo. Consome munição.",
+        "level": 1,
+        "chakra": null,
+        "range": 3,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/zabuza-m1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/zabuza-m1.png"
+      },
+      {
+        "slot": "M2",
+        "name": "M2",
+        "meta": "Nivel 15 / Chakra 50 / Self",
+        "description": "Causa dano na área ao seu redor.",
+        "level": 15,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/zabuza-m2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/zabuza-m2.png"
+      },
+      {
+        "slot": "M3",
+        "name": "M3",
+        "meta": "Nivel 20 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 20,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/zabuza-m3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/zabuza-m3.png"
+      },
+      {
+        "slot": "M4",
+        "name": "M4",
+        "meta": "Nivel 35 / Chakra 50 / Alvo / Alcance 4",
+        "description": "Causa dano no alvo.",
+        "level": 35,
+        "chakra": 50,
+        "range": 4,
+        "targeting": "Alvo",
+        "icon": "/images/nwo/spells/zabuza-m4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/zabuza-m4.png"
+      },
+      {
+        "slot": "E1",
+        "name": "E1",
+        "meta": "Nivel 45 / Chakra 50 / Self",
+        "description": "Zabuza molda água em linha à frente, causando dano e lentidão.",
+        "level": 45,
+        "chakra": 50,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/zabuza-e1.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/zabuza-e1.png"
+      },
+      {
+        "slot": "E2",
+        "name": "E2",
+        "meta": "Nivel 60 / Chakra 150 / Self",
+        "description": "Zabuza avança causando dano, atordoando os alvos e causando {feridas dolorosas, #ff5f68} por 6 segundos.",
+        "level": 60,
+        "chakra": 150,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/zabuza-e2.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/zabuza-e2.png"
+      },
+      {
+        "slot": "E3",
+        "name": "E3",
+        "meta": "Nivel 80 / Chakra 150 / Direcao",
+        "description": "Zabuza utiliza o Jutsu de Ocultação na Névoa, alterando seus próximos jutsus dentro dela.",
+        "level": 80,
+        "chakra": 150,
+        "range": null,
+        "targeting": null,
+        "icon": "/images/nwo/spells/zabuza-e3.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/zabuza-e3.png"
+      },
+      {
+        "slot": "E4",
+        "name": "E4",
+        "meta": "Nivel 100 / Chakra 200 / Self",
+        "description": "Zabuza desfere cortes ao redor e fica {imune a dano, #7eb4e1} por breve periodo. Durante a nevoa, causa dano maior e {feridas dolorosas, #ff5f68} por 6 segundos.",
+        "level": 100,
+        "chakra": 200,
+        "range": null,
+        "targeting": "Self",
+        "icon": "/images/nwo/spells/zabuza-e4.png",
+        "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/zabuza-e4.png"
+      }
+    ],
+    "skins": [
+      {
+        "id": 2183,
+        "name": "Zabuza Classico",
+        "variant": "Classico",
+        "image": "images/wiki/skins/2183.png"
+      },
+      {
+        "id": 2129,
+        "name": "Zabuza Shippuden",
+        "variant": "Shippuden",
+        "image": "images/wiki/skins/2129.png"
+      },
+      {
+        "id": 2184,
+        "name": "Zabuza Oni",
+        "variant": "Oni",
+        "image": "images/wiki/skins/2184.png"
+      },
+      {
+        "id": 2227,
+        "name": "Zabuza Rabbit",
+        "variant": "Rabbit",
+        "image": "images/wiki/skins/2227.png"
+      }
+    ],
+    "skillCount": 8,
+    "skinCount": 4
+  }
+]

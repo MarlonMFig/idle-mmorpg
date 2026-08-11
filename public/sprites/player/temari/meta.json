@@ -1,0 +1,124 @@
+{
+  "temari-walk": {
+    "image": "/sprites/player/temari/walk.png",
+    "frameWidth": 42,
+    "frameHeight": 52,
+    "frameCount": 8,
+    "contentHeight": 48,
+    "scale": 0.5454545454545454,
+    "residualGreen": 0,
+    "pureBlack": 3040
+  },
+  "temari-idle": {
+    "image": "/sprites/player/temari/idle.png",
+    "frameWidth": 44,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.5052631578947369
+  },
+  "temari-combo1": {
+    "image": "/sprites/player/temari/combo1.png",
+    "frameWidth": 50,
+    "frameHeight": 52,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.47058823529411764,
+    "range": [
+      0,
+      5
+    ]
+  },
+  "temari-combo2": {
+    "image": "/sprites/player/temari/combo2.png",
+    "frameWidth": 50,
+    "frameHeight": 52,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.47058823529411764,
+    "range": [
+      5,
+      10
+    ]
+  },
+  "temari-combo3": {
+    "image": "/sprites/player/temari/combo3.png",
+    "frameWidth": 50,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.47058823529411764,
+    "range": [
+      10,
+      16
+    ]
+  },
+  "temari-hurt": {
+    "image": "/sprites/player/temari/hurt.png",
+    "frameWidth": 61,
+    "frameHeight": 49,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "frameRate": 10,
+    "scale": 0.5454545454545454
+  },
+  "temari-death": {
+    "image": "/sprites/player/temari/death.png",
+    "frameWidth": 61,
+    "frameHeight": 49,
+    "frameCount": 3,
+    "contentHeight": 48,
+    "frameRate": 8,
+    "scale": 0.5454545454545454
+  },
+  "temari-kamaitachi": {
+    "image": "/sprites/player/temari/kamaitachi.png",
+    "frameWidth": 78,
+    "frameHeight": 59,
+    "frameCount": 14,
+    "contentHeight": 48,
+    "scale": 0.5454545454545454,
+    "frameRate": 12,
+    "durationMs": 1167,
+    "hitDelayMs": 750,
+    "residualGreen": 0,
+    "pureBlack": 6897
+  },
+  "skill-kamaitachi": {
+    "image": "/sprites/player/temari/kamaitachi.png",
+    "frameWidth": 78,
+    "frameHeight": 59,
+    "frameCount": 14,
+    "contentHeight": 48,
+    "scale": 0.5454545454545454,
+    "frameRate": 12,
+    "durationMs": 1167,
+    "hitDelayMs": 750,
+    "residualGreen": 0,
+    "pureBlack": 6897
+  },
+  "temari-kamaitachi-fx": {
+    "image": "/sprites/player/temari/kamaitachi-fx.png",
+    "frameWidth": 88,
+    "frameHeight": 52,
+    "frameCount": 13,
+    "contentHeight": 48,
+    "scale": 1.2972972972972974,
+    "frameRate": 14,
+    "durationMs": 929,
+    "residualGreen": 0,
+    "source": "temari/jutsu-vfx (VFX JUTSU.zip, 13f wind slash; 26=loop×2)"
+  },
+  "skill-kamaitachi-fx": {
+    "image": "/sprites/player/temari/kamaitachi-fx.png",
+    "frameWidth": 88,
+    "frameHeight": 52,
+    "frameCount": 13,
+    "contentHeight": 48,
+    "scale": 1.2972972972972974,
+    "frameRate": 14,
+    "durationMs": 929,
+    "residualGreen": 0,
+    "source": "temari/jutsu-vfx (VFX JUTSU.zip, 13f wind slash; 26=loop×2)"
+  }
+}

@@ -4,13 +4,13 @@
  * Storage key: `idle-mmorpg:session-v1`
  * Clear: `localStorage.removeItem('idle-mmorpg:session-v1')` or `clearPersistedSession()`.
  *
- * Restores nickname, starter pack, mode/map/hunt, team collection, and vitals
- * so F5 skips the new-game flow and resumes the last hub/hunt.
+ * Restores nickname, starter pack, mode/map/hunt, team collection, vitals, clan.
  */
 
 import { STARTERS } from '@/data/starters';
 import { xpRequiredForLevel } from '@/data/xp-stages';
 import { MAP_KEYS, type MapKey } from '@/maps/map-registry';
+import { accountStore } from '@/stores/account-store';
 import { attributesStore } from '@/stores/attributes-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { locationStore, type GameMode } from '@/stores/location-store';
@@ -18,13 +18,17 @@ import { skillsStore } from '@/stores/skills-store';
 import { teamStore } from '@/stores/team-store';
 import { villageStore } from '@/stores/village-store';
 import { vitalsStore } from '@/stores/vitals-store';
+import type { CharacterClanId } from '@/types/character-meta';
 import type { PlayerCreation, StarterCharacterId } from '@/types/player-creation';
 import type { SealedCharacter } from '@/types/team';
+import { isCharacterClanId, normalizeSealedCharacter } from '@/utils/character-identity';
 
-/** localStorage key — bump version suffix if the schema changes incompatibly. */
+/** localStorage key — manter id estável; version interna migra schema. */
 export const SESSION_STORAGE_KEY = 'idle-mmorpg:session-v1';
 
-const SESSION_VERSION = 1 as const;
+/** Schema atual (v2: quality/stars/clan + account clan). */
+const SESSION_VERSION = 2 as const;
+const LEGACY_SESSION_VERSIONS = new Set([1, 2]);
 const SAVE_DEBOUNCE_MS = 250;
 
 const STARTER_IDS = new Set<string>(STARTERS.map((entry) => entry.id));
@@ -47,12 +51,17 @@ export interface PersistedVitals {
   xp: number;
 }
 
+export interface PersistedAccount {
+  clanId: CharacterClanId | null;
+}
+
 export interface PersistedSession {
   version: typeof SESSION_VERSION;
   player: PlayerCreation;
   location: PersistedLocation;
   team: PersistedTeam;
   vitals: PersistedVitals;
+  account: PersistedAccount;
 }
 
 let trackedPlayer: PlayerCreation | null = null;
@@ -71,19 +80,6 @@ function isGameMode(value: unknown): value is GameMode {
   return value === 'hub' || value === 'combat';
 }
 
-function isSealedCharacter(value: unknown): value is SealedCharacter {
-  if (!value || typeof value !== 'object') return false;
-  const entry = value as Record<string, unknown>;
-  return (
-    typeof entry.id === 'string' &&
-    typeof entry.name === 'string' &&
-    typeof entry.lookType === 'number' &&
-    (entry.sourceId === null || typeof entry.sourceId === 'string') &&
-    (entry.starterId === null || isStarterId(entry.starterId)) &&
-    typeof entry.previewUrl === 'string'
-  );
-}
-
 /**
  * Parses and validates raw localStorage JSON.
  * Invalid/missing starter pack → null (caller shows new-game screen).
@@ -91,7 +87,9 @@ function isSealedCharacter(value: unknown): value is SealedCharacter {
 export function parsePersistedSession(raw: unknown): PersistedSession | null {
   if (!raw || typeof raw !== 'object') return null;
   const data = raw as Record<string, unknown>;
-  if (data.version !== SESSION_VERSION) return null;
+  if (typeof data.version !== 'number' || !LEGACY_SESSION_VERSIONS.has(data.version)) {
+    return null;
+  }
 
   const playerRaw = data.player as Record<string, unknown> | undefined;
   if (!playerRaw) return null;
@@ -113,7 +111,6 @@ export function parsePersistedSession(raw: unknown): PersistedSession | null {
     if (locRaw.huntId === null) huntId = null;
   }
 
-  // Combat without a valid map → fall back to hub so resume still works.
   if (mode === 'combat' && !isMapKey(mapKey)) {
     mode = 'hub';
     mapKey = MAP_KEYS.leafVillage;
@@ -126,7 +123,9 @@ export function parsePersistedSession(raw: unknown): PersistedSession | null {
 
   const teamRaw = data.team as Record<string, unknown> | undefined;
   const collection = Array.isArray(teamRaw?.collection)
-    ? teamRaw.collection.filter(isSealedCharacter)
+    ? teamRaw.collection
+        .map((entry) => normalizeSealedCharacter(entry))
+        .filter((entry): entry is SealedCharacter => entry != null)
     : [];
   const teamIds = Array.isArray(teamRaw?.teamIds)
     ? teamRaw.teamIds.filter((id): id is string => typeof id === 'string')
@@ -146,6 +145,10 @@ export function parsePersistedSession(raw: unknown): PersistedSession | null {
       ? Math.max(0, Math.floor(vitalsRaw.xp))
       : 0;
 
+  const accountRaw = data.account as Record<string, unknown> | undefined;
+  const clanId =
+    accountRaw && isCharacterClanId(accountRaw.clanId) ? accountRaw.clanId : null;
+
   return {
     version: SESSION_VERSION,
     player: {
@@ -156,6 +159,7 @@ export function parsePersistedSession(raw: unknown): PersistedSession | null {
     location: { mode, mapKey, huntId },
     team: { collection, teamIds, activeId },
     vitals: { level, xp },
+    account: { clanId },
   };
 }
 
@@ -181,13 +185,13 @@ function stopAutoSave(): void {
   }
 }
 
-/** Subscribe once to location/team/vitals so travel, seals, and XP persist. */
 function ensureAutoSave(): void {
   if (unsubAutoSave || typeof window === 'undefined') return;
   const unsubs = [
     locationStore.subscribe(scheduleSessionSave),
     teamStore.subscribe(scheduleSessionSave),
     vitalsStore.subscribe(scheduleSessionSave),
+    accountStore.subscribe(scheduleSessionSave),
   ];
   unsubAutoSave = () => {
     for (const unsub of unsubs) unsub();
@@ -201,7 +205,7 @@ export function clearPersistedSession(): void {
   try {
     window.localStorage.removeItem(SESSION_STORAGE_KEY);
   } catch {
-    // ignore quota / private mode
+    // ignore
   }
 }
 
@@ -224,7 +228,10 @@ function snapshotLocation(): PersistedLocation {
   return { mode, mapKey, huntId };
 }
 
-/** Writes current stores to localStorage (no-op if tracking is off). */
+function snapshotAccount(): PersistedAccount {
+  return { clanId: accountStore.getClanId() };
+}
+
 export function savePersistedSession(): void {
   if (typeof window === 'undefined' || !trackedPlayer) return;
 
@@ -234,16 +241,16 @@ export function savePersistedSession(): void {
     location: snapshotLocation(),
     team: snapshotTeam(),
     vitals: snapshotVitals(),
+    account: snapshotAccount(),
   };
 
   try {
     window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
   } catch {
-    // ignore quota / private mode
+    // ignore
   }
 }
 
-/** Debounced save — safe for XP ticks and frequent store updates. */
 export function scheduleSessionSave(): void {
   if (!trackedPlayer) return;
   if (saveTimer) clearTimeout(saveTimer);
@@ -253,10 +260,6 @@ export function scheduleSessionSave(): void {
   }, SAVE_DEBOUNCE_MS);
 }
 
-/**
- * Marks the active client session for auto-save and persists immediately.
- * Call after new game or successful restore.
- */
 export function trackSession(player: PlayerCreation): void {
   trackedPlayer = {
     nickname: player.nickname.trim(),
@@ -267,17 +270,13 @@ export function trackSession(player: PlayerCreation): void {
   savePersistedSession();
 }
 
-/**
- * Hydrates in-memory stores from a validated blob, then enables auto-save.
- * @returns player creation ready for Phaser / HUD.
- */
 export function applyPersistedSession(session: PersistedSession): PlayerCreation {
   const player = session.player;
 
   villageStore.reset();
   villageStore.joinVillage(player.villageId, player.nickname);
+  accountStore.hydrate(session.account ?? { clanId: null });
 
-  // Team first so skill hotbar can follow the active fighter.
   const teamOk = teamStore.hydrate(session.team);
   if (!teamOk) {
     teamStore.reset(player.starterCharacterId);
@@ -290,7 +289,6 @@ export function applyPersistedSession(session: PersistedSession): PlayerCreation
     skillsStore.reset(player.starterCharacterId);
   }
 
-  // Level/XP before inventory so attribute caps use the resumed level.
   const { level, xp } = session.vitals;
   const xpMax = xpRequiredForLevel(level);
   vitalsStore.reset({

@@ -89,7 +89,10 @@ export function outfitIdleFrame(
 
 /** Como desenhar uma folha num tamanho padrão, com os pés no ponto do mundo. */
 export interface WonsrSpriteFit {
+  /** Escala Y (altura). Também usada em X se `scaleX` omitido. */
   scale: number;
+  /** Escala X opcional (silhuetas largas). */
+  scaleX?: number;
   originX: number;
   originY: number;
 }

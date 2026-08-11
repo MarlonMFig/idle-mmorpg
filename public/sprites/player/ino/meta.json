@@ -1,0 +1,196 @@
+{
+  "ino-idle": {
+    "image": "/sprites/player/ino/idle.png",
+    "frameWidth": 24,
+    "frameHeight": 51,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.3902439024390244,
+    "frameRate": 7,
+    "source": "assets/naruto-source/nu/ino/idle/frame_001..006.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 1401,
+    "purpleHair": 546,
+    "note": "6-frame idle; alpha-only (no black flood/peel); purple hair preserved"
+  },
+  "ino-walk": {
+    "image": "/sprites/player/ino/walk.png",
+    "frameWidth": 30,
+    "frameHeight": 51,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.2981366459627329,
+    "frameRate": 10,
+    "source": "assets/naruto-source/nu/ino/walk/frame_001..006.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 1438,
+    "purpleHair": 507,
+    "note": "6-frame side walk RIGHT; alpha-only (no black flood/peel)"
+  },
+  "ino-combo1": {
+    "image": "/sprites/player/ino/combo1.png",
+    "frameWidth": 55,
+    "frameHeight": 52,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.32,
+    "frameRate": 12,
+    "source": "assets/naruto-source/nu/ino/combo/frame_001..014.png",
+    "range": [
+      0,
+      5
+    ],
+    "residualGreen": 0,
+    "note": "prep + first strike (5f); alpha-only pack"
+  },
+  "ino-combo2": {
+    "image": "/sprites/player/ino/combo2.png",
+    "frameWidth": 55,
+    "frameHeight": 52,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.32,
+    "frameRate": 12,
+    "source": "assets/naruto-source/nu/ino/combo/frame_001..014.png",
+    "range": [
+      5,
+      10
+    ],
+    "residualGreen": 0,
+    "note": "second strike (5f); alpha-only pack"
+  },
+  "ino-combo3": {
+    "image": "/sprites/player/ino/combo3.png",
+    "frameWidth": 55,
+    "frameHeight": 52,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.32,
+    "frameRate": 12,
+    "source": "assets/naruto-source/nu/ino/combo/frame_001..014.png",
+    "range": [
+      10,
+      14
+    ],
+    "residualGreen": 0,
+    "note": "finisher / recovery (4f); alpha-only pack"
+  },
+  "ino-attack": {
+    "image": "/sprites/player/ino/attack.png",
+    "frameWidth": 55,
+    "frameHeight": 52,
+    "frameCount": 14,
+    "contentHeight": 48,
+    "scale": 0.32,
+    "frameRate": 12,
+    "source": "assets/naruto-source/nu/ino/combo/frame_001..014.png",
+    "residualGreen": 0,
+    "purpleHair": 1688,
+    "note": "full combo strip (14f); 5+5+4 splits; alpha-only"
+  },
+  "ino-hurt": {
+    "image": "/sprites/player/ino/hurt.png",
+    "frameWidth": 49,
+    "frameHeight": 49,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "scale": 0.2981366459627329,
+    "frameRate": 9,
+    "source": "assets/naruto-source/nu/ino/damage/frame_001..005.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 500,
+    "purpleHair": 234,
+    "note": "frames 1–2 hit reaction; alpha-only; purple hair preserved"
+  },
+  "ino-death": {
+    "image": "/sprites/player/ino/death.png",
+    "frameWidth": 49,
+    "frameHeight": 49,
+    "frameCount": 3,
+    "contentHeight": 48,
+    "scale": 0.2981366459627329,
+    "frameRate": 8,
+    "source": "assets/naruto-source/nu/ino/damage/frame_001..005.png",
+    "residualGreen": 0,
+    "residualExteriorBlack": 0,
+    "pureBlack": 673,
+    "purpleHair": 348,
+    "note": "frames 3–5 death collapse hold last; alpha-only; purple hair preserved"
+  },
+  "ino-shinranshin": {
+    "image": "/sprites/player/ino/shinranshin.png",
+    "frameWidth": 174,
+    "frameHeight": 152,
+    "frameCount": 17,
+    "contentHeight": 48,
+    "scale": 0.34782608695652173,
+    "frameRate": 12,
+    "residualGreen": 0,
+    "pink": 8529,
+    "purple": 6335,
+    "blonde": 632,
+    "pureBlack": 2705,
+    "source": "assets/naruto-source/nu/ino/jutsu/frame_*.png",
+    "durationMs": 1417,
+    "hitDelayMs": 1162,
+    "note": "Shinranshin cast 17f body-lock (shared feetY + bodyCx); beam expands in-cell",
+    "inventory": {
+      "sourceBody": 17,
+      "bakedFrameCount": 17,
+      "bodyLock": {
+        "destBodyCx": 125,
+        "destFeetY": 264,
+        "burstStdPx": 0.235,
+        "burstMaxDriftVsF11": 0.567
+      }
+    }
+  },
+  "ino-shinranshin-fx": {
+    "image": "/sprites/player/ino/shinranshin-fx.png",
+    "frameWidth": 81,
+    "frameHeight": 14,
+    "frameCount": 3,
+    "contentHeight": 14,
+    "scale": 1.7142857142857142,
+    "frameRate": 12,
+    "residualGreen": 0,
+    "pink": 369,
+    "purple": 123,
+    "blonde": 0,
+    "pureBlack": 0,
+    "source": "assets/naruto-source/nu/ino/jutsu-source.png",
+    "note": "Mind Transfer beam projectile (3f strip bottom-left)"
+  },
+  "skill-shinranshin": {
+    "image": "/sprites/player/ino/shinranshin.png",
+    "frameWidth": 174,
+    "frameHeight": 152,
+    "frameCount": 17,
+    "contentHeight": 48,
+    "scale": 0.34782608695652173,
+    "frameRate": 12,
+    "residualGreen": 0,
+    "pink": 8529,
+    "purple": 6335,
+    "blonde": 632,
+    "pureBlack": 2705,
+    "source": "assets/naruto-source/nu/ino/jutsu/frame_*.png",
+    "durationMs": 1417,
+    "hitDelayMs": 1162,
+    "note": "skill-shinranshin — Mind Transfer / Shinranshin (body-lock pack)",
+    "inventory": {
+      "sourceBody": 17,
+      "bakedFrameCount": 17,
+      "bodyLock": {
+        "destBodyCx": 125,
+        "destFeetY": 264,
+        "burstStdPx": 0.235,
+        "burstMaxDriftVsF11": 0.567
+      }
+    },
+    "fx": "/sprites/player/ino/shinranshin-fx.png"
+  }
+}

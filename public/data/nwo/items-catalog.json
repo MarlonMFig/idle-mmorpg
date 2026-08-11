@@ -1,0 +1,717 @@
+[
+  {
+    "id": 24275,
+    "name": "Bandit bandana",
+    "slot": "Equipamento",
+    "status": "Helmet",
+    "search": "Bandit bandana Item com atributos publicos para montagem, progressao ou desbloqueio. Helmet equipamentos Shooter",
+    "image": "images/wiki/items/24275.png",
+    "stats": {},
+    "pills": [
+      "Helmet",
+      "Armadura 4",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24284,
+    "name": "Desert Ronin bandana",
+    "slot": "Equipamento",
+    "status": "Helmet",
+    "search": "Desert Ronin bandana Item com atributos publicos para montagem, progressao ou desbloqueio. Helmet equipamentos Shooter",
+    "image": "images/wiki/items/24284.png",
+    "stats": {},
+    "pills": [
+      "Helmet",
+      "Armadura 8",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24329,
+    "name": "Executor helmet",
+    "slot": "Equipamento",
+    "status": "Helmet",
+    "search": "Executor helmet Item com atributos publicos para montagem, progressao ou desbloqueio. Helmet equipamentos Shooter",
+    "image": "images/wiki/items/24329.png",
+    "stats": {},
+    "pills": [
+      "Helmet",
+      "Armadura 5",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24320,
+    "name": "Fang hood",
+    "slot": "Equipamento",
+    "status": "Helmet",
+    "search": "Fang hood Item com atributos publicos para montagem, progressao ou desbloqueio. Helmet equipamentos Shooter",
+    "image": "images/wiki/items/24320.png",
+    "stats": {},
+    "pills": [
+      "Helmet",
+      "Armadura 4",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24266,
+    "name": "Hunter bandana",
+    "slot": "Equipamento",
+    "status": "Helmet",
+    "search": "Hunter bandana Item com atributos publicos para montagem, progressao ou desbloqueio. Helmet equipamentos Shooter",
+    "image": "images/wiki/items/24266.png",
+    "stats": {},
+    "pills": [
+      "Helmet",
+      "Armadura 3",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24338,
+    "name": "Wild Ushanka",
+    "slot": "Equipamento",
+    "status": "Helmet",
+    "search": "Wild Ushanka Item com atributos publicos para montagem, progressao ou desbloqueio. Helmet equipamentos Shooter",
+    "image": "images/wiki/items/24338.png",
+    "stats": {},
+    "pills": [
+      "Helmet",
+      "Armadura 5",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24276,
+    "name": "Bandit Armor",
+    "slot": "Equipamento",
+    "status": "Armor",
+    "search": "Bandit Armor Item com atributos publicos para montagem, progressao ou desbloqueio. Armor equipamentos Shooter",
+    "image": "images/wiki/items/24276.png",
+    "stats": {},
+    "pills": [
+      "Armor",
+      "Armadura 4",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24285,
+    "name": "Desert Ronin cloth",
+    "slot": "Equipamento",
+    "status": "Armor",
+    "search": "Desert Ronin cloth Item com atributos publicos para montagem, progressao ou desbloqueio. Armor equipamentos Shooter",
+    "image": "images/wiki/items/24285.png",
+    "stats": {},
+    "pills": [
+      "Armor",
+      "Armadura 30",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24330,
+    "name": "Executor armor",
+    "slot": "Equipamento",
+    "status": "Armor",
+    "search": "Executor armor Item com atributos publicos para montagem, progressao ou desbloqueio. Armor equipamentos Shooter",
+    "image": "images/wiki/items/24330.png",
+    "stats": {},
+    "pills": [
+      "Armor",
+      "Armadura 15",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24321,
+    "name": "Fang vest",
+    "slot": "Equipamento",
+    "status": "Armor",
+    "search": "Fang vest Item com atributos publicos para montagem, progressao ou desbloqueio. Armor equipamentos Shooter",
+    "image": "images/wiki/items/24321.png",
+    "stats": {},
+    "pills": [
+      "Armor",
+      "Armadura 6",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24267,
+    "name": "Hunter Armor",
+    "slot": "Equipamento",
+    "status": "Armor",
+    "search": "Hunter Armor Item com atributos publicos para montagem, progressao ou desbloqueio. Armor equipamentos Shooter",
+    "image": "images/wiki/items/24267.png",
+    "stats": {},
+    "pills": [
+      "Armor",
+      "Armadura 3",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 14520,
+    "name": "Suna vest",
+    "slot": "Equipamento",
+    "status": "Armor",
+    "search": "Suna vest Item com atributos publicos para montagem, progressao ou desbloqueio. Armor equipamentos Shooter",
+    "image": "images/wiki/items/14520.png",
+    "stats": {},
+    "pills": [
+      "Armor",
+      "Armadura 20",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24339,
+    "name": "Wild coat",
+    "slot": "Equipamento",
+    "status": "Armor",
+    "search": "Wild coat Item com atributos publicos para montagem, progressao ou desbloqueio. Armor equipamentos Shooter",
+    "image": "images/wiki/items/24339.png",
+    "stats": {},
+    "pills": [
+      "Armor",
+      "Armadura 8",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24277,
+    "name": "Bandit Legs",
+    "slot": "Equipamento",
+    "status": "Legs",
+    "search": "Bandit Legs Item com atributos publicos para montagem, progressao ou desbloqueio. Legs equipamentos Shooter",
+    "image": "images/wiki/items/24277.png",
+    "stats": {},
+    "pills": [
+      "Legs",
+      "Armadura 4",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24286,
+    "name": "Desert Ronin Legs",
+    "slot": "Equipamento",
+    "status": "Legs",
+    "search": "Desert Ronin Legs Item com atributos publicos para montagem, progressao ou desbloqueio. Legs equipamentos Shooter",
+    "image": "images/wiki/items/24286.png",
+    "stats": {},
+    "pills": [
+      "Legs",
+      "Armadura 10",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24331,
+    "name": "Executor Legs",
+    "slot": "Equipamento",
+    "status": "Legs",
+    "search": "Executor Legs Item com atributos publicos para montagem, progressao ou desbloqueio. Legs equipamentos Shooter",
+    "image": "images/wiki/items/24331.png",
+    "stats": {},
+    "pills": [
+      "Legs",
+      "Armadura 6",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24322,
+    "name": "Fang Legs",
+    "slot": "Equipamento",
+    "status": "Legs",
+    "search": "Fang Legs Item com atributos publicos para montagem, progressao ou desbloqueio. Legs equipamentos Shooter",
+    "image": "images/wiki/items/24322.png",
+    "stats": {},
+    "pills": [
+      "Legs",
+      "Armadura 4",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24268,
+    "name": "Hunter Legs",
+    "slot": "Equipamento",
+    "status": "Legs",
+    "search": "Hunter Legs Item com atributos publicos para montagem, progressao ou desbloqueio. Legs equipamentos Shooter",
+    "image": "images/wiki/items/24268.png",
+    "stats": {},
+    "pills": [
+      "Legs",
+      "Armadura 3",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24340,
+    "name": "Wild Legs",
+    "slot": "Equipamento",
+    "status": "Legs",
+    "search": "Wild Legs Item com atributos publicos para montagem, progressao ou desbloqueio. Legs equipamentos Shooter",
+    "image": "images/wiki/items/24340.png",
+    "stats": {},
+    "pills": [
+      "Legs",
+      "Armadura 5",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24278,
+    "name": "Bandit Boots",
+    "slot": "Equipamento",
+    "status": "Boots",
+    "search": "Bandit Boots Item com atributos publicos para montagem, progressao ou desbloqueio. Boots equipamentos Shooter",
+    "image": "images/wiki/items/24278.png",
+    "stats": {},
+    "pills": [
+      "Boots",
+      "Armadura 4",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24287,
+    "name": "Desert Ronin Boots",
+    "slot": "Equipamento",
+    "status": "Boots",
+    "search": "Desert Ronin Boots Item com atributos publicos para montagem, progressao ou desbloqueio. Boots equipamentos Shooter",
+    "image": "images/wiki/items/24287.png",
+    "stats": {},
+    "pills": [
+      "Boots",
+      "Armadura 8",
+      "Velocidade 10",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24332,
+    "name": "Executor Boots",
+    "slot": "Equipamento",
+    "status": "Boots",
+    "search": "Executor Boots Item com atributos publicos para montagem, progressao ou desbloqueio. Boots equipamentos Shooter",
+    "image": "images/wiki/items/24332.png",
+    "stats": {},
+    "pills": [
+      "Boots",
+      "Armadura 5",
+      "Velocidade 5",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24323,
+    "name": "Fang Boots",
+    "slot": "Equipamento",
+    "status": "Boots",
+    "search": "Fang Boots Item com atributos publicos para montagem, progressao ou desbloqueio. Boots equipamentos Shooter",
+    "image": "images/wiki/items/24323.png",
+    "stats": {},
+    "pills": [
+      "Boots",
+      "Velocidade 10",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24269,
+    "name": "Hunter Boots",
+    "slot": "Equipamento",
+    "status": "Boots",
+    "search": "Hunter Boots Item com atributos publicos para montagem, progressao ou desbloqueio. Boots equipamentos Shooter",
+    "image": "images/wiki/items/24269.png",
+    "stats": {},
+    "pills": [
+      "Boots",
+      "Armadura 3",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24341,
+    "name": "Wild Boots",
+    "slot": "Equipamento",
+    "status": "Boots",
+    "search": "Wild Boots Item com atributos publicos para montagem, progressao ou desbloqueio. Boots equipamentos Shooter",
+    "image": "images/wiki/items/24341.png",
+    "stats": {},
+    "pills": [
+      "Boots",
+      "Armadura 5",
+      "Velocidade 5",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24279,
+    "name": "Desert Ronin collar",
+    "slot": "Equipamento",
+    "status": "Necklace",
+    "search": "Desert Ronin collar Item com atributos publicos para montagem, progressao ou desbloqueio. Necklace equipamentos Shooter",
+    "image": "images/wiki/items/24279.png",
+    "stats": {},
+    "pills": [
+      "Necklace",
+      "Penetracao 10",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24315,
+    "name": "Fang collar",
+    "slot": "Equipamento",
+    "status": "Necklace",
+    "search": "Fang collar Item com atributos publicos para montagem, progressao ou desbloqueio. Necklace equipamentos Shooter",
+    "image": "images/wiki/items/24315.png",
+    "stats": {},
+    "pills": [
+      "Necklace",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24261,
+    "name": "Hunter Amulet",
+    "slot": "Equipamento",
+    "status": "Necklace",
+    "search": "Hunter Amulet Item com atributos publicos para montagem, progressao ou desbloqueio. Necklace equipamentos Shooter",
+    "image": "images/wiki/items/24261.png",
+    "stats": {},
+    "pills": [
+      "Necklace",
+      "Armadura 3",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24272,
+    "name": "Bandit ring",
+    "slot": "Equipamento",
+    "status": "Ring",
+    "search": "Bandit ring Item com atributos publicos para montagem, progressao ou desbloqueio. Ring equipamentos Shooter",
+    "image": "images/wiki/items/24272.png",
+    "stats": {},
+    "pills": [
+      "Ring",
+      "Armadura 4",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24281,
+    "name": "Desert Ronin ring",
+    "slot": "Equipamento",
+    "status": "Ring",
+    "search": "Desert Ronin ring Item com atributos publicos para montagem, progressao ou desbloqueio. Ring equipamentos Shooter",
+    "image": "images/wiki/items/24281.png",
+    "stats": {},
+    "pills": [
+      "Ring",
+      "Armadura 8",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24317,
+    "name": "Fire ring",
+    "slot": "Equipamento",
+    "status": "Ring",
+    "search": "Fire ring Você sentirá a vontade do fogo! Ring equipamentos Shooter",
+    "image": "images/wiki/items/24317.png",
+    "stats": {},
+    "pills": [
+      "Ring",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24335,
+    "name": "Poison ring",
+    "slot": "Equipamento",
+    "status": "Ring",
+    "search": "Poison ring A dosagem é o que difere o veneno do remédio! Ring equipamentos Shooter",
+    "image": "images/wiki/items/24335.png",
+    "stats": {},
+    "pills": [
+      "Ring",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24273,
+    "name": "Bandit Gloves",
+    "slot": "Equipamento",
+    "status": "Glove",
+    "search": "Bandit Gloves Item com atributos publicos para montagem, progressao ou desbloqueio. Glove equipamentos Shooter",
+    "image": "images/wiki/items/24273.png",
+    "stats": {},
+    "pills": [
+      "Glove",
+      "Penetracao 4",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24282,
+    "name": "Desert Ronin Gloves",
+    "slot": "Equipamento",
+    "status": "Glove",
+    "search": "Desert Ronin Gloves Item com atributos publicos para montagem, progressao ou desbloqueio. Glove equipamentos Shooter",
+    "image": "images/wiki/items/24282.png",
+    "stats": {},
+    "pills": [
+      "Glove",
+      "Penetracao 15",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24327,
+    "name": "Executor Gloves",
+    "slot": "Equipamento",
+    "status": "Glove",
+    "search": "Executor Gloves Item com atributos publicos para montagem, progressao ou desbloqueio. Glove equipamentos Shooter",
+    "image": "images/wiki/items/24327.png",
+    "stats": {},
+    "pills": [
+      "Glove",
+      "Penetracao 12",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24318,
+    "name": "Fang Gloves",
+    "slot": "Equipamento",
+    "status": "Glove",
+    "search": "Fang Gloves Item com atributos publicos para montagem, progressao ou desbloqueio. Glove equipamentos Shooter",
+    "image": "images/wiki/items/24318.png",
+    "stats": {},
+    "pills": [
+      "Glove",
+      "Penetracao 10",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 14477,
+    "name": "Giant bandit sword",
+    "slot": "Equipamento",
+    "status": "Weapon",
+    "search": "Giant bandit sword Item com atributos publicos para montagem, progressao ou desbloqueio. Weapon equipamentos",
+    "image": "images/wiki/items/14477.png",
+    "stats": {},
+    "pills": [
+      "Weapon",
+      "Penetracao 20",
+      "Peso 1.00",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24264,
+    "name": "Hunter Gloves",
+    "slot": "Equipamento",
+    "status": "Glove",
+    "search": "Hunter Gloves Item com atributos publicos para montagem, progressao ou desbloqueio. Glove equipamentos Shooter",
+    "image": "images/wiki/items/24264.png",
+    "stats": {},
+    "pills": [
+      "Glove",
+      "Penetracao 2",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 14512,
+    "name": "Iron glove",
+    "slot": "Equipamento",
+    "status": "Glove",
+    "search": "Iron glove Item com atributos publicos para montagem, progressao ou desbloqueio. Glove equipamentos",
+    "image": "images/wiki/items/14512.png",
+    "stats": {},
+    "pills": [
+      "Glove",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 14515,
+    "name": "Legendary silver glove",
+    "slot": "Equipamento",
+    "status": "Glove",
+    "search": "Legendary silver glove Item com atributos publicos para montagem, progressao ou desbloqueio. Glove equipamentos Shooter",
+    "image": "images/wiki/items/14515.png",
+    "stats": {},
+    "pills": [
+      "Glove",
+      "Penetracao 20",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 14516,
+    "name": "Silver glove",
+    "slot": "Equipamento",
+    "status": "Glove",
+    "search": "Silver glove Item com atributos publicos para montagem, progressao ou desbloqueio. Glove equipamentos Shooter",
+    "image": "images/wiki/items/14516.png",
+    "stats": {},
+    "pills": [
+      "Glove",
+      "Penetracao 10",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 14480,
+    "name": "Simple lance",
+    "slot": "Equipamento",
+    "status": "Weapon",
+    "search": "Simple lance Item com atributos publicos para montagem, progressao ou desbloqueio. Weapon equipamentos",
+    "image": "images/wiki/items/14480.png",
+    "stats": {},
+    "pills": [
+      "Weapon",
+      "Penetracao 15",
+      "Peso 1.00",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 14509,
+    "name": "Unique sword",
+    "slot": "Equipamento",
+    "status": "Weapon",
+    "search": "Unique sword Item com atributos publicos para montagem, progressao ou desbloqueio. Weapon equipamentos",
+    "image": "images/wiki/items/14509.png",
+    "stats": {},
+    "pills": [
+      "Weapon",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24336,
+    "name": "Wild Gloves",
+    "slot": "Equipamento",
+    "status": "Glove",
+    "search": "Wild Gloves Item com atributos publicos para montagem, progressao ou desbloqueio. Glove equipamentos Shooter",
+    "image": "images/wiki/items/24336.png",
+    "stats": {},
+    "pills": [
+      "Glove",
+      "Armadura 5",
+      "Penetracao 5",
+      "Shooter",
+      "Tier 0-5"
+    ],
+    "details": {}
+  },
+  {
+    "id": 24265,
+    "name": "Ronin Shuriken",
+    "slot": "Equipamento",
+    "status": "Bag Shuriken",
+    "search": "Ronin Shuriken Level: 1\\nCausa 40 de dano adicional na shuriken. Bag Shuriken equipamentos",
+    "image": "images/wiki/items/24265.png",
+    "stats": {},
+    "pills": [
+      "Bag Shuriken",
+      "Tier 0-5"
+    ],
+    "details": {}
+  }
+]

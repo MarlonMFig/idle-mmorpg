@@ -1,0 +1,124 @@
+{
+  "sakura-shippuden-walk": {
+    "image": "/sprites/player/sakura-shippuden/walk.png",
+    "frameWidth": 35,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.5052631578947369,
+    "residualGreen": 0,
+    "pureBlack": 1072
+  },
+  "sakura-shippuden-idle": {
+    "image": "/sprites/player/sakura-shippuden/idle.png",
+    "frameWidth": 33,
+    "frameHeight": 50,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.5052631578947369
+  },
+  "sakura-shippuden-combo1": {
+    "image": "/sprites/player/sakura-shippuden/combo1.png",
+    "frameWidth": 54,
+    "frameHeight": 52,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.4528301886792453,
+    "range": [
+      0,
+      4
+    ]
+  },
+  "sakura-shippuden-combo2": {
+    "image": "/sprites/player/sakura-shippuden/combo2.png",
+    "frameWidth": 54,
+    "frameHeight": 52,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.4528301886792453,
+    "range": [
+      4,
+      8
+    ]
+  },
+  "sakura-shippuden-combo3": {
+    "image": "/sprites/player/sakura-shippuden/combo3.png",
+    "frameWidth": 54,
+    "frameHeight": 52,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.4528301886792453,
+    "range": [
+      8,
+      13
+    ]
+  },
+  "sakura-shippuden-hurt": {
+    "image": "/sprites/player/sakura-shippuden/hurt.png",
+    "frameWidth": 51,
+    "frameHeight": 45,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "frameRate": 10,
+    "scale": 0.5052631578947369
+  },
+  "sakura-shippuden-death": {
+    "image": "/sprites/player/sakura-shippuden/death.png",
+    "frameWidth": 51,
+    "frameHeight": 45,
+    "frameCount": 3,
+    "contentHeight": 48,
+    "frameRate": 8,
+    "scale": 0.5052631578947369
+  },
+  "sakura-shippuden-chou-tsubo": {
+    "image": "/sprites/player/sakura-shippuden/chou-tsubo.png",
+    "frameWidth": 42,
+    "frameHeight": 87,
+    "frameCount": 22,
+    "contentHeight": 48,
+    "scale": 0.5052631578947369,
+    "frameRate": 12,
+    "durationMs": 1833,
+    "hitDelayMs": 1167,
+    "residualGreen": 0,
+    "pureBlack": 3788
+  },
+  "skill-chou-tsubo": {
+    "image": "/sprites/player/sakura-shippuden/chou-tsubo.png",
+    "frameWidth": 42,
+    "frameHeight": 87,
+    "frameCount": 22,
+    "contentHeight": 48,
+    "scale": 0.5052631578947369,
+    "frameRate": 12,
+    "durationMs": 1833,
+    "hitDelayMs": 1167,
+    "residualGreen": 0,
+    "pureBlack": 3788
+  },
+  "sakura-shippuden-chou-tsubo-fx": {
+    "image": "/sprites/player/sakura-shippuden/chou-tsubo-fx.png",
+    "frameWidth": 209,
+    "frameHeight": 59,
+    "frameCount": 13,
+    "contentHeight": 56,
+    "scale": 0.8235294117647058,
+    "frameRate": 12,
+    "durationMs": 1083,
+    "residualGreen": 0,
+    "source": "sakura-shippuden/jutsu-fx-source.png (13f ground slam 5+4+4)"
+  },
+  "skill-chou-tsubo-fx": {
+    "image": "/sprites/player/sakura-shippuden/chou-tsubo-fx.png",
+    "frameWidth": 209,
+    "frameHeight": 59,
+    "frameCount": 13,
+    "contentHeight": 56,
+    "scale": 0.8235294117647058,
+    "frameRate": 12,
+    "durationMs": 1083,
+    "residualGreen": 0,
+    "source": "sakura-shippuden/jutsu-fx-source.png (13f ground slam 5+4+4)"
+  }
+}

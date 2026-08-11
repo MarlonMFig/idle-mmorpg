@@ -25,7 +25,7 @@ export const STARTERS: readonly StarterDefinition[] = [
     name: 'Sasuke',
     epithet: 'Último Uchiha',
     accent: '#4a7dff',
-    blurb: 'Chidori e Chidori Nagashi. Alta pressão em sequência.',
+    blurb: 'Katon: Goukakyuu. Alta pressão ofensiva.',
     previewUrl: '/sprites/player/previews/sasuke.png',
   },
   {
@@ -33,7 +33,7 @@ export const STARTERS: readonly StarterDefinition[] = [
     name: 'Rock Lee',
     epithet: 'Gênio do esforço',
     accent: '#3ecf6a',
-    blurb: 'Konoha Senpu e Omote Renge. Taijutsu puro.',
+    blurb: 'Omote Renge. Taijutsu puro.',
     previewUrl: '/sprites/player/previews/rock-lee.png',
   },
 ] as const;

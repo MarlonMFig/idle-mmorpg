@@ -1,14 +1,11 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /**
- * Gera as caças idle e um atlas compacto com todos os personagens WONSR.
- *
- * Fontes:
- *   public/data/wonsr/{monsters,vocations,outfits,creature-sprites}.json
- *   assets-src/wonsr-sprites-png/{spriteId}.png
+ * Gera as caças idle só com packs laterais curados (personagens que você adicionou).
+ * Vocations e monros WONSR brutos NÃO entram no catálogo.
  *
  * Saídas:
  *   public/data/wonsr/hunts.json
- *   public/sprites/wonsr-hunts/characters.png
+ *   public/sprites/wonsr-hunts/characters.png  (vazio/placeholder)
  *   public/sprites/wonsr-hunts/characters.json
  */
 const fs = require('fs');
@@ -88,20 +85,48 @@ function normalizedStats(level, source) {
 }
 
 /**
- * Personagens curados (sprites laterais) sem vocation WONSR.
- * lookTypes sintéticos — preview/animação via packs client.
+ * Personagens curados (sprites laterais) — única fonte de caças/selamento.
+ * Sem vocations/monstros brutos do WONSR.
  */
 function buildCuratedExtraCharacters() {
   return [
+    {
+      id: 'wonsr-character-uzumaki-naruto',
+      sourceId: 'wonsr-character-uzumaki-naruto',
+      name: 'Uzumaki Naruto',
+      category: 'personagem',
+      source: 'curated/naruto',
+      lookType: 9011,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-uchiha-sasuke',
+      sourceId: 'wonsr-character-uchiha-sasuke',
+      name: 'Uchiha Sasuke',
+      category: 'personagem',
+      source: 'curated/sasuke',
+      lookType: 9012,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-rock-lee',
+      sourceId: 'wonsr-character-rock-lee',
+      name: 'Rock Lee',
+      category: 'personagem',
+      source: 'curated/rock-lee',
+      lookType: 9013,
+      hasSprite: false,
+      sourceMonster: null,
+    },
     {
       id: 'wonsr-character-naruto-sennin',
       sourceId: 'wonsr-character-naruto-sennin',
       name: 'Naruto Sennin',
       category: 'personagem',
       source: 'curated/naruto-sennin',
-      // Identidade client-only (character-packs NARUTO_SENNIN_LOOK_TYPE).
       lookType: 9001,
-      // false: sem tile no atlas DAT; UI usa /sprites/player/previews/naruto-sennin.png
       hasSprite: false,
       sourceMonster: null,
     },
@@ -111,9 +136,37 @@ function buildCuratedExtraCharacters() {
       name: 'Uchiha Itachi',
       category: 'personagem',
       source: 'curated/uchiha-itachi',
-      // Identidade client-only (character-packs UCHIHA_ITACHI_LOOK_TYPE).
       lookType: 9002,
-      // false: sem tile no atlas DAT; UI usa /sprites/player/previews/itachi.png
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-shikamaru-nara',
+      sourceId: 'wonsr-character-shikamaru-nara',
+      name: 'Shikamaru Nara',
+      category: 'personagem',
+      source: 'curated/shikamaru',
+      lookType: 1426,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-sakura-haruno',
+      sourceId: 'wonsr-character-sakura-haruno',
+      name: 'Sakura Haruno',
+      category: 'personagem',
+      source: 'curated/sakura',
+      lookType: 1423,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-gaara',
+      sourceId: 'wonsr-character-gaara',
+      name: 'Gaara',
+      category: 'personagem',
+      source: 'curated/gaara',
+      lookType: 1395,
       hasSprite: false,
       sourceMonster: null,
     },
@@ -123,9 +176,7 @@ function buildCuratedExtraCharacters() {
       name: 'Neji Hyuga',
       category: 'personagem',
       source: 'curated/neji',
-      // Identidade client-only (character-packs NEJI_CURATED_LOOK_TYPE).
       lookType: 9003,
-      // false: sem tile no atlas DAT; UI usa /sprites/player/previews/neji.png
       hasSprite: false,
       sourceMonster: null,
     },
@@ -135,9 +186,7 @@ function buildCuratedExtraCharacters() {
       name: 'Chouji Akimichi',
       category: 'personagem',
       source: 'curated/chouji',
-      // Identidade client-only (character-packs CHOUJI_CURATED_LOOK_TYPE).
       lookType: 9004,
-      // false: sem tile no atlas DAT; UI usa /sprites/player/previews/chouji.png
       hasSprite: false,
       sourceMonster: null,
     },
@@ -147,16 +196,228 @@ function buildCuratedExtraCharacters() {
       name: 'Hinata Hyuga',
       category: 'personagem',
       source: 'curated/hinata',
-      // Identidade client-only (character-packs HINATA_CURATED_LOOK_TYPE).
       lookType: 9005,
-      // false: sem tile no atlas DAT; UI usa /sprites/player/previews/hinata.png
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-might-guy',
+      sourceId: 'wonsr-character-might-guy',
+      name: 'Might Guy',
+      category: 'personagem',
+      source: 'curated/guy',
+      lookType: 9006,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-ino-yamanaka',
+      sourceId: 'wonsr-character-ino-yamanaka',
+      name: 'Ino Yamanaka',
+      category: 'personagem',
+      source: 'curated/ino',
+      lookType: 9007,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-hatake-kakashi',
+      sourceId: 'wonsr-character-hatake-kakashi',
+      name: 'Hatake Kakashi',
+      category: 'personagem',
+      source: 'curated/kakashi',
+      lookType: 9008,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-jiraiya',
+      sourceId: 'wonsr-character-jiraiya',
+      name: 'Jiraya',
+      category: 'personagem',
+      source: 'curated/jiraiya',
+      lookType: 9009,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-jirobo',
+      sourceId: 'wonsr-character-jirobo',
+      name: 'Jiroubou',
+      category: 'personagem',
+      source: 'curated/jirobo',
+      lookType: 9010,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-yakushi-kabuto',
+      sourceId: 'wonsr-character-yakushi-kabuto',
+      name: 'Yakushi Kabuto',
+      category: 'personagem',
+      source: 'curated/kabuto',
+      lookType: 9014,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-tsunade',
+      sourceId: 'wonsr-character-tsunade',
+      name: 'Tsunade',
+      category: 'personagem',
+      source: 'curated/tsunade',
+      lookType: 9015,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-kiba-inuzuka',
+      sourceId: 'wonsr-character-kiba-inuzuka',
+      name: 'Kiba Inuzuka',
+      category: 'personagem',
+      source: 'curated/kiba',
+      lookType: 9016,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-kimimaro',
+      sourceId: 'wonsr-character-kimimaro',
+      name: 'Kimimaro',
+      category: 'personagem',
+      source: 'curated/kimimaro',
+      lookType: 9017,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-sasuke-cursed',
+      sourceId: 'wonsr-character-sasuke-cursed',
+      name: 'Sasuke Cursed',
+      category: 'personagem',
+      source: 'curated/sasuke-cursed',
+      lookType: 9018,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-orochimaru',
+      sourceId: 'wonsr-character-orochimaru',
+      name: 'Orochimaru',
+      category: 'personagem',
+      source: 'curated/orochimaru',
+      lookType: 9019,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-naruto-kyubi',
+      sourceId: 'wonsr-character-naruto-kyubi',
+      name: 'Naruto Kyubi',
+      category: 'personagem',
+      source: 'curated/naruto-kyubi',
+      lookType: 9020,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-kisame',
+      sourceId: 'wonsr-character-kisame',
+      name: 'Kisame Hoshigaki',
+      category: 'personagem',
+      source: 'curated/kisame',
+      lookType: 9021,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-deidara',
+      sourceId: 'wonsr-character-deidara',
+      name: 'Deidara',
+      category: 'personagem',
+      source: 'curated/deidara',
+      lookType: 9022,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-sakura-shippuden',
+      sourceId: 'wonsr-character-sakura-shippuden',
+      name: 'Sakura Shippuden',
+      category: 'personagem',
+      source: 'curated/sakura-shippuden',
+      lookType: 9023,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-tenten',
+      sourceId: 'wonsr-character-tenten',
+      name: 'Tenten',
+      category: 'personagem',
+      source: 'curated/tenten',
+      lookType: 9024,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-temari',
+      sourceId: 'wonsr-character-temari',
+      name: 'Temari',
+      category: 'personagem',
+      source: 'curated/temari',
+      lookType: 9025,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-tayuya',
+      sourceId: 'wonsr-character-tayuya',
+      name: 'Tayuya',
+      category: 'personagem',
+      source: 'curated/tayuya',
+      lookType: 9026,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-shino',
+      sourceId: 'wonsr-character-shino',
+      name: 'Shino Aburame',
+      category: 'personagem',
+      source: 'curated/shino',
+      lookType: 9027,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-momo-hinamori',
+      sourceId: 'wonsr-character-momo-hinamori',
+      name: 'Momo Hinamori',
+      category: 'personagem',
+      source: 'curated/momo-hinamori',
+      lookType: 9028,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'wonsr-character-hitsugaya',
+      sourceId: 'wonsr-character-hitsugaya',
+      name: 'Toshiro Hitsugaya',
+      category: 'personagem',
+      source: 'curated/hitsugaya',
+      lookType: 9029,
       hasSprite: false,
       sourceMonster: null,
     },
   ];
 }
 
-function buildBaseCharacters(vocations, outfits, creatureIndex) {
+/**
+ * Lista final de caças = só packs laterais aditionados ao cliente.
+ * Vocations.xml / monsters.xml WONSR não entram no catálogo.
+ */
+function buildBaseCharacters() {
   const preferredFirst = [
     'Uzumaki Naruto',
     'Naruto Sennin',
@@ -166,53 +427,33 @@ function buildBaseCharacters(vocations, outfits, creatureIndex) {
     'Shikamaru Nara',
     'Gaara',
     'Uchiha Sasuke',
-    'Mitsashi Tenten',
     'Uchiha Itachi',
     'Neji Hyuga',
     'Chouji Akimichi',
-    'Killer Bee',
+    'Ino Yamanaka',
+    'Might Guy',
+    'Hatake Kakashi',
+    'Jiraya',
+    'Jiroubou',
+    'Yakushi Kabuto',
+    'Tsunade',
+    'Kiba Inuzuka',
+    'Kimimaro',
+    'Sasuke Cursed',
+    'Orochimaru',
+    'Naruto Kyubi',
+    'Kisame Hoshigaki',
+    'Deidara',
+    'Sakura Shippuden',
+    'Tenten',
+    'Temari',
+    'Tayuya',
+    'Shino Aburame',
+    'Momo Hinamori',
+    'Toshiro Hitsugaya',
   ];
   const order = new Map(preferredFirst.map((name, index) => [name, index]));
-  const seenNames = new Set();
-
-  const fromVocations = vocations
-    .filter((vocation) => vocation.id > 0)
-    .sort((a, b) => {
-      const aOrder = order.get(cleanName(a.name)) ?? 1000 + a.id;
-      const bOrder = order.get(cleanName(b.name)) ?? 1000 + b.id;
-      return aOrder - bOrder;
-    })
-    .flatMap((vocation) => {
-      const name = cleanName(vocation.name);
-      if (seenNames.has(name)) return [];
-      seenNames.add(name);
-
-      const outfit = outfits
-        .filter((entry) => entry.vocationId === vocation.id)
-        .sort((a, b) => a.level - b.level)[0];
-      if (!outfit) return [];
-
-      return [
-        {
-          id: `wonsr-character-${slug(name)}-${vocation.id}`,
-          sourceId: `wonsr-vocation-${vocation.id}`,
-          name,
-          category: 'personagem',
-          source: 'vocations.xml/outfits.xml',
-          lookType: outfit.lookType,
-          hasSprite: Boolean(creatureIndex[outfit.lookType]),
-          sourceMonster: null,
-        },
-      ];
-    });
-
-  // Curated wins on name collision (ex.: Uchiha Itachi vocation → pack lateral 9002).
-  const curatedList = buildCuratedExtraCharacters();
-  const curatedNames = new Set(curatedList.map((entry) => entry.name));
-  const fromVocationsKept = fromVocations.filter((entry) => !curatedNames.has(entry.name));
-  for (const entry of curatedList) seenNames.add(entry.name);
-
-  return [...fromVocationsKept, ...curatedList].sort((a, b) => {
+  return buildCuratedExtraCharacters().sort((a, b) => {
     const aOrder = order.get(cleanName(a.name)) ?? 1000;
     const bOrder = order.get(cleanName(b.name)) ?? 1000;
     if (aOrder !== bOrder) return aOrder - bOrder;
@@ -220,20 +461,9 @@ function buildBaseCharacters(vocations, outfits, creatureIndex) {
   });
 }
 
-function buildMonsterCharacters(monsters, creatureIndex) {
-  return monsters
-    .filter((monster) => monster.hostile)
-    .sort((a, b) => sourcePower(a) - sourcePower(b) || cleanName(a.name).localeCompare(cleanName(b.name)))
-    .map((monster) => ({
-      id: monster.id,
-      sourceId: monster.id,
-      name: cleanName(monster.name) || `Personagem ${monster.lookType}`,
-      category: monster.category,
-      source: monster.source,
-      lookType: monster.lookType,
-      hasSprite: monster.lookType > 0 && Boolean(creatureIndex[monster.lookType]),
-      sourceMonster: monster,
-    }));
+function buildMonsterCharacters() {
+  // Monstros WONSR desativados no catálogo de caças.
+  return [];
 }
 
 function huntLevel(index) {
@@ -280,6 +510,42 @@ function buildHunts(characters) {
 
 async function buildAtlas(lookTypes, creatureIndex) {
   fs.mkdirSync(ATLAS_DIR, { recursive: true });
+  // Packs laterais usam hasSprite=false — atlas vazio (UI usa previews curados).
+  if (!lookTypes.length) {
+    const emptyW = CELL_SIZE;
+    const emptyH = CELL_SIZE;
+    await sharp({
+      create: {
+        width: emptyW,
+        height: emptyH,
+        channels: 4,
+        background: { r: 0, g: 0, b: 0, alpha: 0 },
+      },
+    })
+      .png()
+      .toFile(ATLAS_IMAGE);
+    fs.writeFileSync(
+      ATLAS_JSON,
+      JSON.stringify(
+        {
+          frames: {},
+          meta: {
+            app: 'idle-mmorpg generate-wonsr-hunts',
+            version: '1.0',
+            image: 'characters.png',
+            format: 'RGBA8888',
+            size: { w: emptyW, h: emptyH },
+            scale: '1',
+            note: 'curated-only: no WONSR outfit atlas tiles',
+          },
+        },
+        null,
+        2,
+      ),
+    );
+    return { width: emptyW, height: emptyH, frames: 0, missing: [] };
+  }
+
   const rows = Math.ceil(lookTypes.length / ATLAS_COLUMNS);
   const width = ATLAS_COLUMNS * CELL_SIZE;
   const height = rows * CELL_SIZE;
@@ -379,13 +645,10 @@ async function buildAtlas(lookTypes, creatureIndex) {
 }
 
 async function main() {
-  const monsters = readJson(path.join(DATA_DIR, 'monsters.json'));
-  const vocations = readJson(path.join(DATA_DIR, 'vocations.json'));
-  const outfits = readJson(path.join(DATA_DIR, 'outfits.json'));
   const creatureIndex = readJson(path.join(DATA_DIR, 'creature-sprites.json'));
 
-  const baseCharacters = buildBaseCharacters(vocations, outfits, creatureIndex);
-  const monsterCharacters = buildMonsterCharacters(monsters, creatureIndex);
+  const baseCharacters = buildBaseCharacters();
+  const monsterCharacters = buildMonsterCharacters();
   const characters = [...baseCharacters, ...monsterCharacters];
   const hunts = buildHunts(characters);
   const lookTypes = [
@@ -398,7 +661,7 @@ async function main() {
   const atlas = await buildAtlas(lookTypes, creatureIndex);
 
   const output = {
-    source: 'WONSR / OTX 8.60',
+    source: 'curated character packs only (no WONSR vocations/monsters)',
     generatedAt: new Date().toISOString(),
     progression: {
       targetsPerHunt: TARGETS_PER_HUNT,
@@ -423,7 +686,11 @@ async function main() {
   };
 
   fs.writeFileSync(HUNTS_FILE, JSON.stringify(output, null, 2));
-  console.log('Caças WONSR geradas:', output.counts);
+  console.log('Caças geradas (só packs curados):', output.counts);
+  console.log(
+    'Personagens:',
+    characters.map((c) => `${c.name} (${c.lookType})`).join(', '),
+  );
   console.log('Atlas:', atlas);
   console.log('Saída:', path.relative(ROOT, HUNTS_FILE));
 }

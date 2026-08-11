@@ -17,7 +17,7 @@ export interface HubInteractableDef {
 
 /**
  * Ícones clicáveis no mundo (hub Folha 1024×576 + retorno do combate).
- * Posições alinhadas à arte: praça, ramen, área de treino.
+ * Posições na praça / treino / ramen — tiles caminháveis do leaf-village-hub.
  */
 export const HUB_INTERACTABLES: readonly HubInteractableDef[] = [
   {
@@ -25,7 +25,8 @@ export const HUB_INTERACTABLES: readonly HubInteractableDef[] = [
     label: 'Mapa',
     action: 'map',
     color: 0x3ecf6a,
-    position: { x: 860, y: 300 },
+    // Path leste junto à área de treino.
+    position: { x: 720, y: 240 },
     mode: 'hub',
     mapKey: MAP_KEYS.leafVillage,
   },
@@ -34,7 +35,8 @@ export const HUB_INTERACTABLES: readonly HubInteractableDef[] = [
     label: 'Bag',
     action: 'bag',
     color: 0xf0c14a,
-    position: { x: 720, y: 430 },
+    // Próximo aos edifícios / telhado roxo (SE da praça).
+    position: { x: 688, y: 368 },
     mode: 'hub',
     mapKey: MAP_KEYS.leafVillage,
   },
@@ -43,7 +45,8 @@ export const HUB_INTERACTABLES: readonly HubInteractableDef[] = [
     label: 'Curar',
     action: 'heal',
     color: 0x5eb0ff,
-    position: { x: 200, y: 430 },
+    // Perto do ramen (SW, entrada da ponte).
+    position: { x: 272, y: 400 },
     mode: 'hub',
     mapKey: MAP_KEYS.leafVillage,
   },

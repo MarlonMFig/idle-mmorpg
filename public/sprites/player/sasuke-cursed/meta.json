@@ -1,0 +1,100 @@
+{
+  "sasuke-cursed-walk": {
+    "image": "/sprites/player/sasuke-cursed/walk.png",
+    "frameWidth": 36,
+    "frameHeight": 52,
+    "frameCount": 8,
+    "contentHeight": 48,
+    "scale": 0.48484848484848486,
+    "residualGreen": 0,
+    "pureBlack": 2704
+  },
+  "sasuke-cursed-idle": {
+    "image": "/sprites/player/sasuke-cursed/idle.png",
+    "frameWidth": 36,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.48484848484848486
+  },
+  "sasuke-cursed-combo1": {
+    "image": "/sprites/player/sasuke-cursed/combo1.png",
+    "frameWidth": 55,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.4752475247524752,
+    "range": [
+      0,
+      6
+    ]
+  },
+  "sasuke-cursed-combo2": {
+    "image": "/sprites/player/sasuke-cursed/combo2.png",
+    "frameWidth": 55,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.4752475247524752,
+    "range": [
+      6,
+      12
+    ]
+  },
+  "sasuke-cursed-combo3": {
+    "image": "/sprites/player/sasuke-cursed/combo3.png",
+    "frameWidth": 55,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.4752475247524752,
+    "range": [
+      12,
+      18
+    ]
+  },
+  "sasuke-cursed-hurt": {
+    "image": "/sprites/player/sasuke-cursed/hurt.png",
+    "frameWidth": 44,
+    "frameHeight": 51,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "frameRate": 10,
+    "scale": 0.48484848484848486
+  },
+  "sasuke-cursed-death": {
+    "image": "/sprites/player/sasuke-cursed/death.png",
+    "frameWidth": 44,
+    "frameHeight": 51,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "frameRate": 8,
+    "scale": 0.48484848484848486
+  },
+  "sasuke-cursed-chidori-nagashi": {
+    "image": "/sprites/player/sasuke-cursed/chidori-nagashi.png",
+    "frameWidth": 75,
+    "frameHeight": 59,
+    "frameCount": 38,
+    "contentHeight": 48,
+    "scale": 0.48484848484848486,
+    "frameRate": 12,
+    "durationMs": 3167,
+    "hitDelayMs": 2083,
+    "residualGreen": 0,
+    "pureBlack": 12242
+  },
+  "skill-chidori-nagashi": {
+    "image": "/sprites/player/sasuke-cursed/chidori-nagashi.png",
+    "frameWidth": 75,
+    "frameHeight": 59,
+    "frameCount": 38,
+    "contentHeight": 48,
+    "scale": 0.48484848484848486,
+    "frameRate": 12,
+    "durationMs": 3167,
+    "hitDelayMs": 2083,
+    "residualGreen": 0,
+    "pureBlack": 12242
+  }
+}

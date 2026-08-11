@@ -1,0 +1,410 @@
+[
+  {
+    "slug": "bandit-dungeon",
+    "name": "Bandit Dungeon",
+    "tone": "Dungeon",
+    "levelRequirement": "Nivel 60+",
+    "lead": "Entre na dungeon e derrote o chefe.",
+    "image": "images/wiki/dungeons/2139.png",
+    "url": "https://ninjaworldonline.com.br/wiki-dungeon-bandit-dungeon.html",
+    "stats": {
+      "energy": "20 Azul",
+      "duration": "10 min",
+      "party": "Ate 4 jogadores",
+      "boss": "Bandit Boss",
+      "mobCount": 3,
+      "dropCount": 6,
+      "raw": {
+        "Energia": "20 Azul",
+        "Duracao": "10 min",
+        "Grupo": "Ate 4 jogadores",
+        "Boss": "Bandit Boss",
+        "Mobs": "3",
+        "Drops": "6"
+      }
+    },
+    "pills": [
+      "precisa estar na sala final / minimo de 10% do dano no boss",
+      "54 encontros",
+      "Sem objetivos extras"
+    ],
+    "flow": {
+      "Entrada": "Você entrou na dungeon. Você tem 10 minutos para concluir.",
+      "Progresso": "Todos os mobs foram derrotados. O boss apareceu!",
+      "Conclusao": "Boss derrotado! Dungeon concluida.",
+      "Recompensas": "Possiveis drops com faixas de raridade diferentes."
+    },
+    "encounters": [
+      {
+        "name": "Bandit Boss",
+        "kind": "boss",
+        "note": "Boss final / 1 na dungeon",
+        "count": 1,
+        "looktype": 2139,
+        "image": "images/wiki/dungeons/2139.png"
+      },
+      {
+        "name": "Bandit",
+        "kind": "mob",
+        "note": "Mob / 18 na dungeon",
+        "count": 18,
+        "looktype": 707,
+        "image": "images/wiki/dungeons/707.png"
+      },
+      {
+        "name": "Bandit Sword",
+        "kind": "mob",
+        "note": "Mob / 18 na dungeon",
+        "count": 18,
+        "looktype": 643,
+        "image": "images/wiki/dungeons/643.png"
+      },
+      {
+        "name": "Bandit Shinobi",
+        "kind": "mob",
+        "note": "Mob / 18 na dungeon",
+        "count": 18,
+        "looktype": 655,
+        "image": "images/wiki/dungeons/655.png"
+      }
+    ],
+    "drops": [
+      {
+        "id": 11540,
+        "name": "Bandit Shinobi Dagger",
+        "amount": 10,
+        "amountText": "x10",
+        "rarity": "Comum",
+        "image": "images/wiki/items/11540.png"
+      },
+      {
+        "id": 11551,
+        "name": "Piece of cloth",
+        "amount": 10,
+        "amountText": "x10",
+        "rarity": "Comum",
+        "image": "images/wiki/items/11551.png"
+      },
+      {
+        "id": 11533,
+        "name": "Bandit Medallion",
+        "amount": 1,
+        "amountText": "x1",
+        "rarity": "Comum",
+        "image": "images/wiki/items/11533.png"
+      },
+      {
+        "id": 14511,
+        "name": "Iron club",
+        "amount": 1,
+        "amountText": "x1",
+        "rarity": "Muito raro",
+        "image": "images/wiki/items/14511.png"
+      },
+      {
+        "id": 14516,
+        "name": "Silver glove",
+        "amount": 1,
+        "amountText": "x1",
+        "rarity": "Raro",
+        "image": "images/wiki/items/14516.png"
+      },
+      {
+        "id": 14515,
+        "name": "Legendary silver glove",
+        "amount": 1,
+        "amountText": "x1",
+        "rarity": "Muito raro",
+        "image": "images/wiki/items/14515.png"
+      }
+    ]
+  },
+  {
+    "slug": "easter-dungeon",
+    "name": "Easter Dungeon",
+    "tone": "Dungeon",
+    "levelRequirement": "Nivel 100+",
+    "lead": "Entre na dungeon e derrote o Usagi no Tsuki.",
+    "image": "images/wiki/dungeons/2195.png",
+    "url": "https://ninjaworldonline.com.br/wiki-dungeon-easter-dungeon.html",
+    "stats": {
+      "energy": "10 Azul",
+      "duration": "15 min",
+      "party": "Ate 5 jogadores",
+      "boss": "Usagi No Tsuki",
+      "mobCount": 1,
+      "dropCount": 16,
+      "raw": {
+        "Energia": "10 Azul",
+        "Duracao": "15 min",
+        "Grupo": "Ate 5 jogadores",
+        "Boss": "Usagi No Tsuki",
+        "Mobs": "1",
+        "Drops": "16"
+      }
+    },
+    "pills": [
+      "reward liberado mesmo fora da sala final / minimo de 5% do dano no boss",
+      "37 encontros",
+      "8 objetivos"
+    ],
+    "flow": {
+      "Entrada": "Você entrou na dungeon. Você tem 15 minutos para concluir.",
+      "Progresso": "Todos os ovos foram derrotados. O Usagi no Tsuki foi montado com sucesso!",
+      "Conclusao": "Boss derrotado! Dungeon concluida.",
+      "Recompensas": "Recompensa especial ao final."
+    },
+    "encounters": [
+      {
+        "name": "Usagi No Tsuki",
+        "kind": "boss",
+        "note": "Boss final / 1 na dungeon",
+        "count": 1,
+        "looktype": 2195,
+        "image": "images/wiki/dungeons/2195.png"
+      },
+      {
+        "name": "Capanga Coelho",
+        "kind": "mob",
+        "note": "Mob / 37 na dungeon",
+        "count": 37,
+        "looktype": 2197,
+        "image": "images/wiki/dungeons/2197.png"
+      }
+    ],
+    "drops": [
+      {
+        "id": 25056,
+        "name": "Easter Backpack",
+        "amount": 1,
+        "amountText": "x1",
+        "rarity": "Raro",
+        "image": "images/wiki/items/25056.png"
+      },
+      {
+        "id": 11121,
+        "name": "Rabbit Aura Package",
+        "amount": 1,
+        "amountText": "x1",
+        "rarity": "Muito raro",
+        "image": "images/wiki/items/11121.png"
+      },
+      {
+        "id": 25033,
+        "name": "Easter Dummy Package",
+        "amount": 1,
+        "amountText": "x1",
+        "rarity": "Muito raro",
+        "image": "images/wiki/items/25033.png"
+      },
+      {
+        "id": 25052,
+        "name": "Easter Toy",
+        "amount": 1,
+        "amountText": "x1",
+        "rarity": "Raro",
+        "image": "images/wiki/items/25052.png"
+      },
+      {
+        "id": 11123,
+        "name": "Easter BathTub Package",
+        "amount": 1,
+        "amountText": "x1",
+        "rarity": "Raro",
+        "image": "images/wiki/items/11123.png"
+      },
+      {
+        "id": 25040,
+        "name": "Mini Eggs",
+        "amount": 40,
+        "amountText": "x40",
+        "rarity": "Raro",
+        "image": "images/wiki/items/25040.png"
+      },
+      {
+        "id": 25040,
+        "name": "Mini Eggs",
+        "amount": 40,
+        "amountText": "x40",
+        "rarity": "Raro",
+        "image": "images/wiki/items/25040.png"
+      },
+      {
+        "id": 25040,
+        "name": "Mini Eggs",
+        "amount": 40,
+        "amountText": "x40",
+        "rarity": "Raro",
+        "image": "images/wiki/items/25040.png"
+      },
+      {
+        "id": 25040,
+        "name": "Mini Eggs",
+        "amount": 40,
+        "amountText": "x40",
+        "rarity": "Raro",
+        "image": "images/wiki/items/25040.png"
+      },
+      {
+        "id": 25040,
+        "name": "Mini Eggs",
+        "amount": 40,
+        "amountText": "x40",
+        "rarity": "Raro",
+        "image": "images/wiki/items/25040.png"
+      },
+      {
+        "id": 2160,
+        "name": "Hyo Hundred Dollar",
+        "amount": 8,
+        "amountText": "x8",
+        "rarity": "Comum",
+        "image": "images/wiki/items/2160.png"
+      },
+      {
+        "id": 25040,
+        "name": "Mini Eggs",
+        "amount": 10,
+        "amountText": "x10",
+        "rarity": "Comum",
+        "image": "images/wiki/items/25040.png"
+      },
+      {
+        "id": 25040,
+        "name": "Mini Eggs",
+        "amount": 10,
+        "amountText": "x10",
+        "rarity": "Comum",
+        "image": "images/wiki/items/25040.png"
+      },
+      {
+        "id": 25040,
+        "name": "Mini Eggs",
+        "amount": 10,
+        "amountText": "x10",
+        "rarity": "Comum",
+        "image": "images/wiki/items/25040.png"
+      },
+      {
+        "id": 25040,
+        "name": "Mini Eggs",
+        "amount": 10,
+        "amountText": "x10",
+        "rarity": "Comum",
+        "image": "images/wiki/items/25040.png"
+      },
+      {
+        "id": 25040,
+        "name": "Mini Eggs",
+        "amount": 10,
+        "amountText": "x10",
+        "rarity": "Comum",
+        "image": "images/wiki/items/25040.png"
+      }
+    ]
+  },
+  {
+    "slug": "suna-dungeon",
+    "name": "Suna Dungeon",
+    "tone": "Dungeon",
+    "levelRequirement": "Nivel 100+",
+    "lead": "Entre na dungeon e derrote o chefe.",
+    "image": "images/wiki/dungeons/2134.png",
+    "url": "https://ninjaworldonline.com.br/wiki-dungeon-suna-dungeon.html",
+    "stats": {
+      "energy": "20 Azul",
+      "duration": "15 min",
+      "party": "Ate 4 jogadores",
+      "boss": "Puppet Chief",
+      "mobCount": 2,
+      "dropCount": 5,
+      "raw": {
+        "Energia": "20 Azul",
+        "Duracao": "15 min",
+        "Grupo": "Ate 4 jogadores",
+        "Boss": "Puppet Chief",
+        "Mobs": "2",
+        "Drops": "5"
+      }
+    },
+    "pills": [
+      "precisa estar na sala final / minimo de 10% do dano no boss",
+      "66 encontros",
+      "Sem objetivos extras"
+    ],
+    "flow": {
+      "Entrada": "Você entrou na dungeon. Você tem 15 minutos para concluir.",
+      "Progresso": "Todos os mobs foram derrotados. O boss apareceu!",
+      "Conclusao": "Boss derrotado! Dungeon concluida.",
+      "Recompensas": "Recompensa especial ao final."
+    },
+    "encounters": [
+      {
+        "name": "Puppet Chief",
+        "kind": "boss",
+        "note": "Boss final / 1 na dungeon",
+        "count": 1,
+        "looktype": 2134,
+        "image": "images/wiki/dungeons/2134.png"
+      },
+      {
+        "name": "Cursed Puppet",
+        "kind": "mob",
+        "note": "Mob / 50 na dungeon",
+        "count": 50,
+        "looktype": 2120,
+        "image": "images/wiki/dungeons/2120.png"
+      },
+      {
+        "name": "Karasu",
+        "kind": "mob",
+        "note": "Mob / 16 na dungeon",
+        "count": 16,
+        "looktype": 2191,
+        "image": "images/wiki/dungeons/2191.png"
+      }
+    ],
+    "drops": [
+      {
+        "id": 11572,
+        "name": "Black cloth",
+        "amount": 1,
+        "amountText": "x1",
+        "rarity": "Muito raro",
+        "image": "images/wiki/items/11572.png"
+      },
+      {
+        "id": 11580,
+        "name": "Sand heart",
+        "amount": 1,
+        "amountText": "x1",
+        "rarity": "Raro",
+        "image": "images/wiki/items/11580.png"
+      },
+      {
+        "id": 14482,
+        "name": "Puppet Core",
+        "amount": 1,
+        "amountText": "x1",
+        "rarity": "Muito raro",
+        "image": "images/wiki/items/14482.png"
+      },
+      {
+        "id": 14483,
+        "name": "Chakra strings",
+        "amount": 20,
+        "amountText": "x20",
+        "rarity": "Comum",
+        "image": "images/wiki/items/14483.png"
+      },
+      {
+        "id": 24265,
+        "name": "Ronin Shuriken",
+        "amount": 20,
+        "amountText": "x20",
+        "rarity": "Comum",
+        "image": "images/wiki/items/24265.png"
+      }
+    ]
+  }
+]

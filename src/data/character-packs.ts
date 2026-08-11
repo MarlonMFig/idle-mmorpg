@@ -2707,9 +2707,9 @@ const TAYUYA_PACK: CharacterPack = {
 export const SHINO_CURATED_LOOK_TYPE = 9027;
 const SHINO_WALK: SpriteSheetDef = { key: 'shino-walk', url: '/sprites/player/shino/walk.png', frameWidth: 25, frameHeight: 52, frameCount: 6, contentHeight: 48 };
 const SHINO_IDLE: SpriteSheetDef = { key: 'shino-idle', url: '/sprites/player/shino/idle.png', frameWidth: 25, frameHeight: 51, frameCount: 7, contentHeight: 48 };
-const SHINO_COMBO_1: SpriteSheetDef = { key: 'shino-combo1', url: '/sprites/player/shino/combo1.png', frameWidth: 34, frameHeight: 33, frameCount: 5, contentHeight: 48 };
-const SHINO_COMBO_2: SpriteSheetDef = { key: 'shino-combo2', url: '/sprites/player/shino/combo2.png', frameWidth: 34, frameHeight: 33, frameCount: 5, contentHeight: 48 };
-const SHINO_COMBO_3: SpriteSheetDef = { key: 'shino-combo3', url: '/sprites/player/shino/combo3.png', frameWidth: 34, frameHeight: 33, frameCount: 6, contentHeight: 48 };
+const SHINO_COMBO_1: SpriteSheetDef = { key: 'shino-combo1', url: '/sprites/player/shino/combo1.png', frameWidth: 56, frameHeight: 54, frameCount: 5, contentHeight: 48 };
+const SHINO_COMBO_2: SpriteSheetDef = { key: 'shino-combo2', url: '/sprites/player/shino/combo2.png', frameWidth: 56, frameHeight: 54, frameCount: 5, contentHeight: 48 };
+const SHINO_COMBO_3: SpriteSheetDef = { key: 'shino-combo3', url: '/sprites/player/shino/combo3.png', frameWidth: 56, frameHeight: 54, frameCount: 6, contentHeight: 48 };
 const SHINO_ATTACK_CHAIN = [SHINO_COMBO_1, SHINO_COMBO_2, SHINO_COMBO_3] as const;
 const SHINO_HURT: CharacterReactionAnimDef = { key: 'shino-hurt', url: '/sprites/player/shino/hurt.png', frameWidth: 51, frameHeight: 49, frameCount: 2, contentHeight: 48, frameRate: 10 };
 const SHINO_DEATH: CharacterReactionAnimDef = { key: 'shino-death', url: '/sprites/player/shino/death.png', frameWidth: 51, frameHeight: 49, frameCount: 3, contentHeight: 48, frameRate: 8 };
@@ -2717,8 +2717,8 @@ const SHINO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-kikaichu': {
     key: 'shino-kikaichu',
     url: '/sprites/player/shino/kikaichu.png',
-    frameWidth: 34,
-    frameHeight: 32,
+    frameWidth: 57,
+    frameHeight: 52,
     frameCount: 13,
     contentHeight: 48,
     frameRate: 12,

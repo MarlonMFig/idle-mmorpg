@@ -1,0 +1,68 @@
+{
+  "rules": [
+    "Fusiona 2 itens iguais no mesmo tier.",
+    "A copia usada na tentativa some no processo.",
+    "Residuo cai de mobs influenciados e converte em Fragmentos de chakra / Esfera."
+  ],
+  "tiers": [
+    {
+      "step": "+0 para +1",
+      "successRate": "70%",
+      "cost": "25k Hyo"
+    },
+    {
+      "step": "+1 para +2",
+      "successRate": "60%",
+      "cost": "50k Hyo"
+    },
+    {
+      "step": "+2 para +3",
+      "successRate": "40%",
+      "cost": "100k Hyo"
+    },
+    {
+      "step": "+3 para +4",
+      "successRate": "25%",
+      "cost": "250k Hyo"
+    },
+    {
+      "step": "+4 para +5",
+      "successRate": "12%",
+      "cost": "1kk Hyo"
+    }
+  ],
+  "boosts": [
+    {
+      "name": "Esfera de sucesso",
+      "effect": "+15%"
+    },
+    {
+      "name": "Esfera de protecao",
+      "effect": "-25% perda"
+    }
+  ],
+  "conversionNotes": [
+    {
+      "label": "Residuo",
+      "text": "cai de mobs influenciados."
+    },
+    {
+      "label": "Fragmentos de chakra",
+      "text": "nascem da conversao de residuo dentro da propria tela."
+    },
+    {
+      "label": "Limite",
+      "text": "100 base, 325 free e 500 premium."
+    },
+    {
+      "label": "Upgrade do limite",
+      "text": "25 residuos por ponto."
+    }
+  ],
+  "exampleMetrics": {
+    "success": "25%",
+    "fail": "75%",
+    "residue": "100",
+    "hyoBase": "250k"
+  }
+}

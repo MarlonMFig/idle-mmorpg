@@ -5,6 +5,7 @@ import { PhaserGame } from '@/components/phaser-game';
 import { NewGameScreen } from '@/ui/new-game';
 import { GameHud } from '@/ui/hud';
 import { DialogueWindow } from '@/ui/dialogue';
+import { accountStore } from '@/stores/account-store';
 import { villageStore } from '@/stores/village-store';
 import { locationStore } from '@/stores/location-store';
 import { huntStore } from '@/stores/hunt-store';
@@ -42,6 +43,7 @@ export function NewGameGate() {
     locationStore.reset();
     huntStore.reset();
     villageStore.reset();
+    accountStore.reset();
     inventoryStore.reset();
     skillsStore.reset(player.starterCharacterId);
     teamStore.reset(player.starterCharacterId);

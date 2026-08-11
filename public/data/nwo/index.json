@@ -1,0 +1,268 @@
+{
+  "source": "https://ninjaworldonline.com.br/wiki",
+  "scrapedAt": "2026-07-29T22:47:25.594Z",
+  "counts": {
+    "characters": 23,
+    "skillImages": 183,
+    "missingSkillImages": 1,
+    "dungeons": 3,
+    "itemCards": 45,
+    "builderItems": 45,
+    "builderPresets": 6,
+    "craftRoutes": 3,
+    "craftRecipes": 22,
+    "mapMonsters": 44,
+    "mapNpcs": 24,
+    "mapMarkers": 268,
+    "fusionTiers": 5
+  },
+  "files": [
+    "characters.json",
+    "dungeons.json",
+    "items-catalog.json",
+    "item-builder.json",
+    "craft.json",
+    "fusion.json",
+    "world-map.json",
+    "world-map-markers.json",
+    "world-map-raw.json",
+    "index.json"
+  ],
+  "missingSkillImages": [
+    {
+      "character": "rock-lee",
+      "skill": "E4",
+      "sourceIcon": "https://ninjaworldonline.com.br/images/wiki/spells/rock-lee-e4.png",
+      "error": "HTTP 404 for https://ninjaworldonline.com.br/images/wiki/spells/rock-lee-e4.png"
+    }
+  ],
+  "characters": [
+    {
+      "slug": "naruto",
+      "name": "Naruto",
+      "role": "Assassino",
+      "combatStyle": "Melee",
+      "unlock": "Roster inicial",
+      "skillCount": 8,
+      "skinCount": 4
+    },
+    {
+      "slug": "sasuke",
+      "name": "Sasuke",
+      "role": "Assassino",
+      "combatStyle": "Melee",
+      "unlock": "Roster inicial",
+      "skillCount": 8,
+      "skinCount": 4
+    },
+    {
+      "slug": "sakura",
+      "name": "Sakura",
+      "role": "Buffer",
+      "combatStyle": "Melee",
+      "unlock": "Roster inicial",
+      "skillCount": 8,
+      "skinCount": 5
+    },
+    {
+      "slug": "ino",
+      "name": "Ino",
+      "role": "Buffer",
+      "combatStyle": "Ranged",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 4
+    },
+    {
+      "slug": "shikamaru",
+      "name": "Shikamaru",
+      "role": "Controller",
+      "combatStyle": "Ranged",
+      "unlock": "Roster inicial",
+      "skillCount": 8,
+      "skinCount": 4
+    },
+    {
+      "slug": "choji",
+      "name": "Choji",
+      "role": "Tanque",
+      "combatStyle": "Melee",
+      "unlock": "Roster inicial",
+      "skillCount": 8,
+      "skinCount": 4
+    },
+    {
+      "slug": "tenten",
+      "name": "Tenten",
+      "role": "Shooter",
+      "combatStyle": "Ranged",
+      "unlock": "Roster inicial",
+      "skillCount": 8,
+      "skinCount": 4
+    },
+    {
+      "slug": "rock-lee",
+      "name": "Rock Lee",
+      "role": "Assassino",
+      "combatStyle": "Melee",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 4
+    },
+    {
+      "slug": "neji",
+      "name": "Neji",
+      "role": "Tanque",
+      "combatStyle": "Melee",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 4
+    },
+    {
+      "slug": "guren",
+      "name": "Guren",
+      "role": "Shooter",
+      "combatStyle": "Ranged",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 5
+    },
+    {
+      "slug": "kurenai",
+      "name": "Kurenai",
+      "role": "Controller",
+      "combatStyle": "Ranged",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 5
+    },
+    {
+      "slug": "haku",
+      "name": "Haku",
+      "role": "Controller",
+      "combatStyle": "Ranged",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 4
+    },
+    {
+      "slug": "gaara",
+      "name": "Gaara",
+      "role": "Shooter",
+      "combatStyle": "Ranged",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 5
+    },
+    {
+      "slug": "temari",
+      "name": "Temari",
+      "role": "Shooter",
+      "combatStyle": "Ranged",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 5
+    },
+    {
+      "slug": "deidara",
+      "name": "Deidara",
+      "role": "Shooter",
+      "combatStyle": "Ranged",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 5
+    },
+    {
+      "slug": "kisame",
+      "name": "Kisame",
+      "role": "Assassino",
+      "combatStyle": "Melee",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 5
+    },
+    {
+      "slug": "madara",
+      "name": "Madara",
+      "role": "Assassino",
+      "combatStyle": "Melee",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 6
+    },
+    {
+      "slug": "tobirama",
+      "name": "Tobirama",
+      "role": "Assassino",
+      "combatStyle": "Melee",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 5
+    },
+    {
+      "slug": "hashirama",
+      "name": "Hashirama",
+      "role": "Controller",
+      "combatStyle": "Melee",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 5
+    },
+    {
+      "slug": "hidan",
+      "name": "Hidan",
+      "role": "Tanque",
+      "combatStyle": "Melee",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 5
+    },
+    {
+      "slug": "shizune",
+      "name": "Shizune",
+      "role": "Buffer",
+      "combatStyle": "Melee",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 4
+    },
+    {
+      "slug": "tsunade",
+      "name": "Tsunade",
+      "role": "Tanque",
+      "combatStyle": "Melee",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 5
+    },
+    {
+      "slug": "zabuza",
+      "name": "Zabuza",
+      "role": "Assassino",
+      "combatStyle": "Melee",
+      "unlock": "Desbloqueio",
+      "skillCount": 8,
+      "skinCount": 4
+    }
+  ],
+  "dungeons": [
+    {
+      "slug": "bandit-dungeon",
+      "name": "Bandit Dungeon",
+      "levelRequirement": "Nivel 60+",
+      "boss": "Bandit Boss"
+    },
+    {
+      "slug": "easter-dungeon",
+      "name": "Easter Dungeon",
+      "levelRequirement": "Nivel 100+",
+      "boss": "Usagi No Tsuki"
+    },
+    {
+      "slug": "suna-dungeon",
+      "name": "Suna Dungeon",
+      "levelRequirement": "Nivel 100+",
+      "boss": "Puppet Chief"
+    }
+  ]
+}

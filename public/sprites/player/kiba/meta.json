@@ -1,0 +1,100 @@
+{
+  "kiba-idle": {
+    "image": "/sprites/player/kiba/idle.png",
+    "frameWidth": 39,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.2891566265060241
+  },
+  "kiba-walk": {
+    "image": "/sprites/player/kiba/walk.png",
+    "frameWidth": 40,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.5517241379310345,
+    "residualGreen": 0,
+    "pureBlack": 2010
+  },
+  "kiba-combo1": {
+    "image": "/sprites/player/kiba/combo1.png",
+    "frameWidth": 52,
+    "frameHeight": 51,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.5517241379310345,
+    "range": [
+      0,
+      4
+    ]
+  },
+  "kiba-combo2": {
+    "image": "/sprites/player/kiba/combo2.png",
+    "frameWidth": 52,
+    "frameHeight": 51,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.5517241379310345,
+    "range": [
+      4,
+      8
+    ]
+  },
+  "kiba-combo3": {
+    "image": "/sprites/player/kiba/combo3.png",
+    "frameWidth": 52,
+    "frameHeight": 51,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.5517241379310345,
+    "range": [
+      8,
+      13
+    ]
+  },
+  "kiba-hurt": {
+    "image": "/sprites/player/kiba/hurt.png",
+    "frameWidth": 59,
+    "frameHeight": 51,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "frameRate": 10,
+    "scale": 0.5517241379310345
+  },
+  "kiba-death": {
+    "image": "/sprites/player/kiba/death.png",
+    "frameWidth": 59,
+    "frameHeight": 51,
+    "frameCount": 3,
+    "contentHeight": 48,
+    "frameRate": 8,
+    "scale": 0.5517241379310345
+  },
+  "kiba-gatsuuga": {
+    "image": "/sprites/player/kiba/gatsuuga.png",
+    "frameWidth": 218,
+    "frameHeight": 128,
+    "frameCount": 32,
+    "contentHeight": 48,
+    "scale": 0.5517241379310345,
+    "frameRate": 12,
+    "durationMs": 2667,
+    "hitDelayMs": 1750,
+    "residualGreen": 0,
+    "pureBlack": 5119
+  },
+  "skill-gatsuuga": {
+    "image": "/sprites/player/kiba/gatsuuga.png",
+    "frameWidth": 218,
+    "frameHeight": 128,
+    "frameCount": 32,
+    "contentHeight": 48,
+    "scale": 0.5517241379310345,
+    "frameRate": 12,
+    "durationMs": 2667,
+    "hitDelayMs": 1750,
+    "residualGreen": 0,
+    "pureBlack": 5119
+  }
+}

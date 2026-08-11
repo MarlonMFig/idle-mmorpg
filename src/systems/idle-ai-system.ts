@@ -1,5 +1,8 @@
 import * as Phaser from 'phaser';
-import { IDLE_AGGRO_RANGE, PLAYER_ATTACK_RANGE } from '@/constants/combat';
+import {
+  IDLE_AGGRO_RANGE,
+  PLAYER_ATTACK_RANGE,
+} from '@/constants/combat';
 import type { Player } from '@/entities/player';
 import { dialogueStore } from '@/stores/dialogue-store';
 import type { EnemyManager } from '@/systems/enemy-manager';

@@ -53,6 +53,28 @@ export interface SkillDefinition {
   animation: SkillAnimationDef;
   /** Alcance em pixels (default no constants). */
   range?: number;
+  /**
+   * Avança o caster até o alvo durante o cast (lunge/dash de contato).
+   * O dano deve ocorrer no fim do dash (use hitDelay perto do impulso).
+   */
+  dashToTarget?: boolean;
+  /**
+   * Distância de parada do dash (px). Default ~alcance de ataque básico.
+   * Só usado com `dashToTarget`.
+   */
+  contactRange?: number;
+  /**
+   * Momento (ms do cast) em que o deslocamento começa.
+   * Sem valor: lunge curto no final (estilo Raikiri).
+   * Com valor: investida prolongada até o hitDelay (corrida / Chidori / Kyūbi).
+   */
+  dashStartMs?: number;
+  /**
+   * Duração do deslocamento (ms). Default:
+   * - com `dashStartMs`: hitDelay − dashStartMs
+   * - sem: ~16% do hitDelay (clamp 160–360)
+   */
+  dashDurationMs?: number;
   /** Raio do dano em área; ausente significa alvo único. */
   areaRadius?: number;
   description?: string;

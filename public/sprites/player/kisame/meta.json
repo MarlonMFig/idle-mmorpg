@@ -1,0 +1,100 @@
+{
+  "kisame-walk": {
+    "image": "/sprites/player/kisame/walk.png",
+    "frameWidth": 28,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.43636363636363634,
+    "residualGreen": 0,
+    "pureBlack": 1291
+  },
+  "kisame-idle": {
+    "image": "/sprites/player/kisame/idle.png",
+    "frameWidth": 39,
+    "frameHeight": 52,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.43636363636363634
+  },
+  "kisame-combo1": {
+    "image": "/sprites/player/kisame/combo1.png",
+    "frameWidth": 74,
+    "frameHeight": 52,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.3779527559055118,
+    "range": [
+      0,
+      4
+    ]
+  },
+  "kisame-combo2": {
+    "image": "/sprites/player/kisame/combo2.png",
+    "frameWidth": 74,
+    "frameHeight": 52,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.3779527559055118,
+    "range": [
+      4,
+      8
+    ]
+  },
+  "kisame-combo3": {
+    "image": "/sprites/player/kisame/combo3.png",
+    "frameWidth": 74,
+    "frameHeight": 52,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.3779527559055118,
+    "range": [
+      8,
+      13
+    ]
+  },
+  "kisame-hurt": {
+    "image": "/sprites/player/kisame/hurt.png",
+    "frameWidth": 56,
+    "frameHeight": 52,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "frameRate": 10,
+    "scale": 0.43636363636363634
+  },
+  "kisame-death": {
+    "image": "/sprites/player/kisame/death.png",
+    "frameWidth": 56,
+    "frameHeight": 52,
+    "frameCount": 3,
+    "contentHeight": 48,
+    "frameRate": 8,
+    "scale": 0.43636363636363634
+  },
+  "kisame-suiryudan": {
+    "image": "/sprites/player/kisame/suiryudan.png",
+    "frameWidth": 68,
+    "frameHeight": 110,
+    "frameCount": 19,
+    "contentHeight": 48,
+    "scale": 0.43636363636363634,
+    "frameRate": 12,
+    "durationMs": 1583,
+    "hitDelayMs": 1000,
+    "residualGreen": 0,
+    "pureBlack": 4562
+  },
+  "skill-suiton-suiryudan": {
+    "image": "/sprites/player/kisame/suiryudan.png",
+    "frameWidth": 68,
+    "frameHeight": 110,
+    "frameCount": 19,
+    "contentHeight": 48,
+    "scale": 0.43636363636363634,
+    "frameRate": 12,
+    "durationMs": 1583,
+    "hitDelayMs": 1000,
+    "residualGreen": 0,
+    "pureBlack": 4562
+  }
+}

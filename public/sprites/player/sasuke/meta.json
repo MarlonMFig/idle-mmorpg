@@ -708,21 +708,21 @@
   },
   "sasuke-walk": {
     "image": "/sprites/player/sasuke/walk.png",
-    "frameWidth": 42,
+    "frameWidth": 45,
     "frameHeight": 52,
     "frameCount": 6,
     "contentHeight": 48,
-    "source": "sasuke-walk-sheet.png",
-    "frameRate": 8
+    "scale": 0.4948453608247423,
+    "residualGreen": 0,
+    "pureBlack": 2254
   },
   "sasuke-idle": {
     "image": "/sprites/player/sasuke/idle.png",
-    "frameWidth": 33,
-    "frameHeight": 50,
+    "frameWidth": 39,
+    "frameHeight": 52,
     "frameCount": 6,
     "contentHeight": 48,
-    "source": "sasuke-idle-sheet.png",
-    "frameRate": 7
+    "scale": 0.43243243243243246
   },
   "sasuke-attack": {
     "image": "attack.png",
@@ -738,85 +738,105 @@
     "note": "full combo strip"
   },
   "sasuke-combo1": {
-    "image": "combo1.png",
-    "frameWidth": 67,
-    "frameHeight": 55,
-    "frameCount": 5,
+    "image": "/sprites/player/sasuke/combo1.png",
+    "frameWidth": 61,
+    "frameHeight": 52,
+    "frameCount": 4,
     "contentHeight": 48,
-    "scale": 0.8571428571428571,
-    "frameRate": 14,
-    "sheetCols": 5,
-    "sheetRows": 1,
-    "source": "assets-src/sasuke-combo (frame_001…017)",
+    "scale": 0.42857142857142855,
     "range": [
       0,
-      5
+      4
     ]
   },
   "sasuke-combo2": {
-    "image": "combo2.png",
-    "frameWidth": 67,
-    "frameHeight": 55,
-    "frameCount": 6,
+    "image": "/sprites/player/sasuke/combo2.png",
+    "frameWidth": 61,
+    "frameHeight": 52,
+    "frameCount": 4,
     "contentHeight": 48,
-    "scale": 0.8571428571428571,
-    "frameRate": 14,
-    "sheetCols": 6,
-    "sheetRows": 1,
-    "source": "assets-src/sasuke-combo (frame_001…017)",
+    "scale": 0.42857142857142855,
     "range": [
-      5,
-      11
+      4,
+      8
     ]
   },
   "sasuke-combo3": {
-    "image": "combo3.png",
-    "frameWidth": 67,
-    "frameHeight": 55,
-    "frameCount": 6,
+    "image": "/sprites/player/sasuke/combo3.png",
+    "frameWidth": 61,
+    "frameHeight": 52,
+    "frameCount": 5,
     "contentHeight": 48,
-    "scale": 0.8571428571428571,
-    "frameRate": 14,
-    "sheetCols": 6,
-    "sheetRows": 1,
-    "source": "assets-src/sasuke-combo (frame_001…017)",
+    "scale": 0.42857142857142855,
     "range": [
-      11,
-      17
+      8,
+      13
     ]
   },
   "sasuke-gokakyu": {
     "image": "/sprites/player/sasuke/sasuke-gokakyu.png",
-    "frameWidth": 53,
-    "frameHeight": 51,
-    "frameCount": 11,
+    "frameWidth": 55,
+    "frameHeight": 52,
+    "frameCount": 17,
     "contentHeight": 48,
-    "frameRate": 10,
-    "note": "body/cast only — fire is separate FX"
+    "scale": 0.4247787610619469,
+    "frameRate": 12,
+    "durationMs": 1417,
+    "hitDelayMs": 917,
+    "residualGreen": 0,
+    "pureBlack": 5760
   },
   "skill-katon-gokakyu": {
-    "image": "sasuke-gokakyu.png",
-    "frameWidth": 67,
-    "frameHeight": 49,
-    "frameCount": 29,
+    "image": "/sprites/player/sasuke/sasuke-gokakyu.png",
+    "frameWidth": 55,
+    "frameHeight": 52,
+    "frameCount": 17,
     "contentHeight": 48,
-    "scale": 0.1016949152542373,
+    "scale": 0.4247787610619469,
     "frameRate": 12,
-    "durationMs": 2417,
-    "hitDelayMs": 1209,
-    "sheetCols": 29,
-    "sheetRows": 1,
-    "source": "assets-src/sasuke-skill2",
-    "slot": 2,
-    "note": "2ª skill Sasuke"
+    "durationMs": 1417,
+    "hitDelayMs": 917,
+    "residualGreen": 0,
+    "pureBlack": 5760
   },
   "sasuke-gokakyu-fx": {
     "image": "/sprites/player/sasuke/sasuke-gokakyu-fx.png",
-    "frameWidth": 96,
-    "frameHeight": 60,
-    "frameCount": 6,
-    "contentHeight": 60,
-    "frameRate": 12,
-    "note": "fire VFX only"
+    "frameWidth": 76,
+    "frameHeight": 49,
+    "frameCount": 12,
+    "contentHeight": 45,
+    "scale": 0.6050420168067226,
+    "flightFrameCount": 7,
+    "residualGreen": 0,
+    "source": "gokakyu-fx-source.png (main fireball strip)"
+  },
+  "sasuke-hurt": {
+    "image": "/sprites/player/sasuke/hurt.png",
+    "frameWidth": 57,
+    "frameHeight": 52,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "frameRate": 10,
+    "scale": 0.4948453608247423
+  },
+  "sasuke-death": {
+    "image": "/sprites/player/sasuke/death.png",
+    "frameWidth": 57,
+    "frameHeight": 52,
+    "frameCount": 3,
+    "contentHeight": 48,
+    "frameRate": 8,
+    "scale": 0.4948453608247423
+  },
+  "skill-katon-gokakyu-fx": {
+    "image": "/sprites/player/sasuke/sasuke-gokakyu-fx.png",
+    "frameWidth": 76,
+    "frameHeight": 49,
+    "frameCount": 12,
+    "contentHeight": 45,
+    "scale": 0.6050420168067226,
+    "flightFrameCount": 7,
+    "residualGreen": 0,
+    "source": "gokakyu-fx-source.png (main fireball strip)"
   }
 }

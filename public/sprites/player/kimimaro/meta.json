@@ -1,0 +1,124 @@
+{
+  "kimimaro-walk": {
+    "image": "/sprites/player/kimimaro/walk.png",
+    "frameWidth": 25,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.4528301886792453,
+    "residualGreen": 0,
+    "pureBlack": 1161
+  },
+  "kimimaro-idle": {
+    "image": "/sprites/player/kimimaro/idle.png",
+    "frameWidth": 27,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.4528301886792453
+  },
+  "kimimaro-combo1": {
+    "image": "/sprites/player/kimimaro/combo1.png",
+    "frameWidth": 60,
+    "frameHeight": 52,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.4528301886792453,
+    "range": [
+      0,
+      4
+    ]
+  },
+  "kimimaro-combo2": {
+    "image": "/sprites/player/kimimaro/combo2.png",
+    "frameWidth": 60,
+    "frameHeight": 52,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.4528301886792453,
+    "range": [
+      4,
+      8
+    ]
+  },
+  "kimimaro-combo3": {
+    "image": "/sprites/player/kimimaro/combo3.png",
+    "frameWidth": 60,
+    "frameHeight": 52,
+    "frameCount": 3,
+    "contentHeight": 48,
+    "scale": 0.4528301886792453,
+    "range": [
+      8,
+      11
+    ]
+  },
+  "kimimaro-hurt": {
+    "image": "/sprites/player/kimimaro/hurt.png",
+    "frameWidth": 58,
+    "frameHeight": 47,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "frameRate": 10,
+    "scale": 0.4528301886792453
+  },
+  "kimimaro-death": {
+    "image": "/sprites/player/kimimaro/death.png",
+    "frameWidth": 58,
+    "frameHeight": 47,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "frameRate": 8,
+    "scale": 0.4528301886792453
+  },
+  "kimimaro-tessenka-no-mai": {
+    "image": "/sprites/player/kimimaro/tessenka-no-mai.png",
+    "frameWidth": 134,
+    "frameHeight": 52,
+    "frameCount": 17,
+    "contentHeight": 48,
+    "scale": 0.4,
+    "frameRate": 12,
+    "durationMs": 1417,
+    "hitDelayMs": 917,
+    "residualGreen": 0,
+    "pureBlack": 0
+  },
+  "skill-tessenka-no-mai": {
+    "image": "/sprites/player/kimimaro/tessenka-no-mai.png",
+    "frameWidth": 134,
+    "frameHeight": 52,
+    "frameCount": 17,
+    "contentHeight": 48,
+    "scale": 0.4,
+    "frameRate": 12,
+    "durationMs": 1417,
+    "hitDelayMs": 917,
+    "residualGreen": 0,
+    "pureBlack": 0
+  },
+  "kimimaro-tessenka-no-mai-fx": {
+    "image": "/sprites/player/kimimaro/tessenka-no-mai-fx.png",
+    "frameWidth": 46,
+    "frameHeight": 60,
+    "frameCount": 6,
+    "contentHeight": 56,
+    "scale": 0.2962962962962963,
+    "frameRate": 12,
+    "durationMs": 500,
+    "residualGreen": 0,
+    "source": "kimimaro/jutsu-vfx (vfx.zip, 6f bone impact)"
+  },
+  "skill-tessenka-no-mai-fx": {
+    "image": "/sprites/player/kimimaro/tessenka-no-mai-fx.png",
+    "frameWidth": 46,
+    "frameHeight": 60,
+    "frameCount": 6,
+    "contentHeight": 56,
+    "scale": 0.2962962962962963,
+    "frameRate": 12,
+    "durationMs": 500,
+    "residualGreen": 0,
+    "source": "kimimaro/jutsu-vfx (vfx.zip, 6f bone impact)"
+  }
+}

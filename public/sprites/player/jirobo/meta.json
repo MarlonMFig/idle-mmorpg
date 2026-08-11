@@ -1,0 +1,251 @@
+{
+  "jirobo-walk": {
+    "image": "/sprites/player/jirobo/walk.png",
+    "frameWidth": 33,
+    "frameHeight": 49,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.36363636363636365,
+    "maxContentH": 132,
+    "frameRate": 10,
+    "residualGreen": 0,
+    "contentHeights": [
+      47,
+      48,
+      48,
+      47,
+      47,
+      48
+    ],
+    "bodyLock": {
+      "destBodyCx": 43,
+      "destFeetY": 133
+    },
+    "source": "assets/naruto-source/nu/jirobo/walk/frame_*.png",
+    "note": "6f walk; alpha-only; body-lock; nearest max→48"
+  },
+  "jirobo-idle": {
+    "image": "/sprites/player/jirobo/idle.png",
+    "frameWidth": 39,
+    "frameHeight": 50,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.36363636363636365,
+    "frameRate": 7,
+    "residualGreen": 0,
+    "contentHeights": [
+      46,
+      47,
+      48,
+      48,
+      48,
+      47
+    ],
+    "bodyLock": {
+      "destBodyCx": 54,
+      "destFeetY": 135
+    },
+    "source": "assets/naruto-source/nu/jirobo/idle/frame_*.png",
+    "note": "6f idle; alpha-only; walk-matched scale; body-lock"
+  },
+  "jirobo-combo1": {
+    "image": "/sprites/player/jirobo/combo1.png",
+    "frameWidth": 56,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.36363636363636365,
+    "frameRate": 12,
+    "residualGreen": 0,
+    "range": [
+      0,
+      6
+    ],
+    "contentHeights": [
+      50,
+      52,
+      49,
+      49,
+      49,
+      47
+    ],
+    "source": "assets/naruto-source/nu/jirobo/combo/frame_001..016.png",
+    "note": "prep + strikes (6f); alpha-only; body-lock; lanczos3→48"
+  },
+  "jirobo-combo2": {
+    "image": "/sprites/player/jirobo/combo2.png",
+    "frameWidth": 56,
+    "frameHeight": 52,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.36363636363636365,
+    "frameRate": 12,
+    "residualGreen": 0,
+    "range": [
+      6,
+      11
+    ],
+    "contentHeights": [
+      45,
+      43,
+      42,
+      45,
+      50
+    ],
+    "source": "assets/naruto-source/nu/jirobo/combo/frame_001..016.png",
+    "note": "mid combo (5f); alpha-only; body-lock; lanczos3→48"
+  },
+  "jirobo-combo3": {
+    "image": "/sprites/player/jirobo/combo3.png",
+    "frameWidth": 56,
+    "frameHeight": 52,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.36363636363636365,
+    "frameRate": 12,
+    "residualGreen": 0,
+    "range": [
+      11,
+      16
+    ],
+    "contentHeights": [
+      52,
+      42,
+      42,
+      42,
+      48
+    ],
+    "source": "assets/naruto-source/nu/jirobo/combo/frame_001..016.png",
+    "note": "finisher (5f); alpha-only; body-lock; lanczos3→48"
+  },
+  "jirobo-attack": {
+    "image": "/sprites/player/jirobo/attack.png",
+    "frameWidth": 56,
+    "frameHeight": 52,
+    "frameCount": 16,
+    "contentHeight": 48,
+    "scale": 0.36363636363636365,
+    "residualGreen": 0,
+    "contentHeights": [
+      50,
+      52,
+      49,
+      49,
+      49,
+      47,
+      45,
+      43,
+      42,
+      45,
+      50,
+      52,
+      42,
+      42,
+      42,
+      48
+    ],
+    "phaseSplit": [
+      6,
+      5,
+      5
+    ],
+    "absoluteScaleSource": "walk-matched",
+    "note": "16f combo 6+5+5"
+  },
+  "jirobo-hurt": {
+    "image": "/sprites/player/jirobo/hurt.png",
+    "frameWidth": 65,
+    "frameHeight": 52,
+    "frameCount": 3,
+    "contentHeight": 48,
+    "scale": 0.3902439024390244,
+    "frameRate": 9,
+    "residualGreen": 0,
+    "source": "assets/naruto-source/nu/jirobo/damage/frame_001..006.png",
+    "note": "frames 1–3 hit reaction"
+  },
+  "jirobo-death": {
+    "image": "/sprites/player/jirobo/death.png",
+    "frameWidth": 65,
+    "frameHeight": 52,
+    "frameCount": 3,
+    "contentHeight": 48,
+    "scale": 0.3902439024390244,
+    "frameRate": 8,
+    "residualGreen": 0,
+    "source": "assets/naruto-source/nu/jirobo/damage/frame_001..006.png",
+    "note": "frames 4–6 death collapse"
+  },
+  "jirobo-doryuheki": {
+    "image": "/sprites/player/jirobo/doryuheki.png",
+    "frameWidth": 90,
+    "frameHeight": 75,
+    "frameCount": 11,
+    "contentHeight": 48,
+    "scale": 0.36363636363636365,
+    "frameRate": 12,
+    "residualGreen": 0,
+    "durationMs": 917,
+    "hitDelayMs": 583,
+    "peakFrame": 8,
+    "source": "assets/naruto-source/nu/jirobo/jutsu/frame_*.png",
+    "bodyLock": {
+      "destBodyCx": 125,
+      "destFeetY": 203
+    },
+    "absoluteScaleSource": "walk-matched",
+    "standingBodyH": 122,
+    "note": "Doton Doryūheki 11f; alpha body-lock; peak f8"
+  },
+  "skill-doryuheki": {
+    "image": "/sprites/player/jirobo/doryuheki.png",
+    "frameWidth": 90,
+    "frameHeight": 75,
+    "frameCount": 11,
+    "contentHeight": 48,
+    "scale": 0.36363636363636365,
+    "frameRate": 12,
+    "residualGreen": 0,
+    "durationMs": 917,
+    "hitDelayMs": 583,
+    "peakFrame": 8,
+    "source": "assets/naruto-source/nu/jirobo/jutsu/frame_*.png",
+    "bodyLock": {
+      "destBodyCx": 125,
+      "destFeetY": 203
+    },
+    "absoluteScaleSource": "walk-matched",
+    "standingBodyH": 122,
+    "note": "skill-doryuheki — Doton: Doryūheki (earth wall cast)"
+  },
+  "jirobo-doryuheki-fx": {
+    "image": "/sprites/player/jirobo/doryuheki-fx.png",
+    "frameWidth": 48,
+    "frameHeight": 34,
+    "frameCount": 12,
+    "contentHeight": 34,
+    "scale": 0.2711864406779661,
+    "frameRate": 12,
+    "durationMs": 1000,
+    "flightFrameCount": 2,
+    "residualGreen": 0,
+    "brown": 1354,
+    "source": "assets/naruto-source/nu/jirobo/jutsu-fx-source.png",
+    "note": "12f rock throw FX; f0–f1 flight loop, f2+ impact; green exterior only"
+  },
+  "skill-doryuheki-fx": {
+    "image": "/sprites/player/jirobo/doryuheki-fx.png",
+    "frameWidth": 48,
+    "frameHeight": 34,
+    "frameCount": 12,
+    "contentHeight": 34,
+    "scale": 0.2711864406779661,
+    "frameRate": 12,
+    "durationMs": 1000,
+    "flightFrameCount": 2,
+    "residualGreen": 0,
+    "brown": 1354,
+    "source": "assets/naruto-source/nu/jirobo/jutsu-fx-source.png",
+    "note": "skill-doryuheki FX — pedra arremessada (flight 2f + impact)"
+  }
+}

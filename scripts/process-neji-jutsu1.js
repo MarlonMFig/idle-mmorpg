@@ -1,554 +1,545 @@
 /**
- * Neji Jutsu 1 — Hakkeshou Kaiten (yellow energy dome sheet).
- * Cyan/teal + dark magenta exterior key; preserve yellow dome.
+ * Hyuga Neji — Hakkeshou Kaiten (yellow rotation dome, 20f).
+ * Alpha-only PNG sequence. Body-lock while dome expands (sticky torso X +
+ * feetY on strong body frames). contentH 48.
+ *
+ * Clean transparent: NO black key. Peak dome frames may fully cover black
+ * hair (expected); residualGreen must stay 0.
  *
  * npm run neji:jutsu1
- * Fonte: assets/naruto-source/nu/neji-kaiten-sheet.png
- * Saída: public/sprites/player/neji/kaiten.png
- *
- * Layout (auto-detect):
- *  crouch startup · spin start · multiple dome loop rows · recovery · final stance
+ * Input:  assets/naruto-source/nu/neji/jutsu/frame_*.png
+ * Output: public/sprites/player/neji/kaiten.png
  */
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const {
-  keyExteriorChroma,
-  isContent,
-  isYellowEnergy,
-  isCyanTealBg,
-  isMagentaBg,
-  fillInteriorHoles,
-} = require('./lib/neji-chroma');
+  ALPHA_KEEP,
+  loadAlphaFrames,
+  scaleFrames,
+  stitch,
+  writeFrameCrops,
+  updateMeta,
+  writePng,
+  isChromaGreen,
+  bbox,
+  countOpaque,
+} = require('./lib/alpha-frame-pack');
 
 const ROOT = path.resolve(__dirname, '..');
-const INPUT = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'neji-kaiten-sheet.png');
+const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'neji', 'jutsu');
+const WALK_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'neji', 'walk');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'neji');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
+const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'neji');
 const TARGET_BODY_H = 48;
 const FRAME_RATE = 12;
-const MAX_SHEET_W = 4096;
+const PAD = 2;
+const EXPECTED = 20;
+/** Dome spin window (0-based) for body-lock drift QA. */
+const DOME_LOCK_FROM = 3;
+const DOME_LOCK_TO = 14;
+const BODY_CX_VAR_MAX = 2.5;
 
-function rowContentCount(data, w, y) {
+function isBlackInk(r, g, b) {
+  return Math.max(r, g, b) <= 42 && Math.max(r, g, b) - Math.min(r, g, b) <= 22;
+}
+
+function isYellowEnergy(r, g, b) {
+  if (r >= 130 && g >= 85 && b <= 130 && r + g > b * 2) return true;
+  if (r >= 160 && g >= 120 && b <= 100) return true;
+  if (r >= 100 && g >= 60 && b <= 55 && r > b && g > b) return true;
+  if (r >= 200 && g >= 180 && b >= 120 && r >= g - 10 && g > b) return true;
+  return false;
+}
+
+function isSkin(r, g, b) {
+  if (isYellowEnergy(r, g, b)) return false;
+  if (r >= 180 && g >= 130 && b >= 100 && r >= g && g >= b - 10 && r - b >= 20) return true;
+  if (r >= 210 && g >= 170 && b >= 140 && r >= g - 5) return true;
+  if (r >= 160 && g >= 100 && b >= 70 && r > g && g > b && r - b >= 30) return true;
+  return false;
+}
+
+function isRobe(r, g, b) {
+  if (isYellowEnergy(r, g, b)) return false;
+  if (r >= 150 && g >= 110 && b >= 70 && r >= g - 10 && g >= b - 15 && r - b >= 15) return true;
+  if (r >= 180 && g >= 150 && b >= 90 && r >= g && Math.abs(r - g) <= 50) return true;
+  return false;
+}
+
+function isBodyPixel(r, g, b) {
+  if (isYellowEnergy(r, g, b)) return false;
+  if (isBlackInk(r, g, b)) return true;
+  if (isSkin(r, g, b) || isRobe(r, g, b)) return true;
+  if (Math.max(r, g, b) <= 20) return true;
+  if (!isYellowEnergy(r, g, b) && Math.max(r, g, b) - Math.min(r, g, b) < 40) {
+    if (Math.max(r, g, b) <= 100) return true;
+  }
+  return false;
+}
+
+function bodyAnchor(frame, w, h) {
+  let minX = w;
+  let maxX = -1;
+  let minY = h;
+  let maxY = -1;
   let n = 0;
-  for (let x = 0; x < w; x += 1) {
-    if (isContent(data, (y * w + x) * 4)) n += 1;
-  }
-  return n;
-}
+  let sumX = 0;
 
-function findBands(data, w, h, minDy = 18, minH = 28) {
-  const dy = new Array(h).fill(0);
-  for (let y = 0; y < h; y += 1) dy[y] = rowContentCount(data, w, y);
-  const bands = [];
-  let on = false;
-  let start = 0;
-  for (let y = 0; y <= h; y += 1) {
-    const filled = y < h && dy[y] > minDy;
-    if (filled && !on) {
-      on = true;
-      start = y;
-    }
-    if (!filled && on) {
-      if (y - start >= minH) bands.push({ t: start, b: y });
-      on = false;
-    }
-  }
-  return bands;
-}
-
-/** Split tall multi-dome band using yellow-energy row density valleys. */
-function splitDomeSubrows(data, w, band) {
-  const ye = new Array(band.b - band.t).fill(0);
-  for (let y = band.t; y < band.b; y += 1) {
-    let n = 0;
+  for (let y = 0; y < h; y += 1) {
     for (let x = 0; x < w; x += 1) {
       const i = (y * w + x) * 4;
-      if (data[i + 3] < 16) continue;
-      if (isYellowEnergy(data[i], data[i + 1], data[i + 2])) n += 1;
-    }
-    ye[y - band.t] = n;
-  }
-  const thr = 15;
-  const subs = [];
-  let on = false;
-  let start = 0;
-  for (let i = 0; i <= ye.length; i += 1) {
-    const filled = i < ye.length && ye[i] > thr;
-    if (filled && !on) {
-      on = true;
-      start = i;
-    }
-    if (!filled && on) {
-      if (i - start >= 40) subs.push({ t: band.t + start, b: band.t + i });
-      on = false;
-    }
-  }
-  return subs.length >= 2 ? subs : [band];
-}
-
-function cellsInBand(data, w, band, minW = 18, expected = 0) {
-  const dens = new Array(w).fill(0);
-  const h = band.b - band.t;
-  for (let x = 0; x < w; x += 1) {
-    for (let y = band.t; y < band.b; y += 1) {
-      if (isContent(data, (y * w + x) * 4)) dens[x] += 1;
-    }
-  }
-  // Prefer yellow energy density for dome rows (cleaner gaps between orbs)
-  const densY = new Array(w).fill(0);
-  let yellowPx = 0;
-  for (let x = 0; x < w; x += 1) {
-    for (let y = band.t; y < band.b; y += 1) {
-      const i = (y * w + x) * 4;
-      if (data[i + 3] < 16) continue;
-      if (isYellowEnergy(data[i], data[i + 1], data[i + 2])) {
-        densY[x] += 1;
-        yellowPx += 1;
-      }
-    }
-  }
-  // Dome rows: prefer yellow density (gaps between orbs). Mixed/recovery: full content.
-  const contentPx = dens.reduce((s, v) => s + v, 0);
-  const useDens = yellowPx > h * 40 && yellowPx > contentPx * 0.45 ? densY : dens;
-  const thr = Math.max(3, Math.floor(h * (useDens === densY ? 0.08 : 0.05)));
-  const raw = [];
-  let xs = -1;
-  for (let x = 0; x <= w; x += 1) {
-    const filled = x < w && useDens[x] > thr;
-    if (filled && xs < 0) xs = x;
-    if (!filled && xs >= 0) {
-      if (x - xs >= minW) raw.push({ l: xs, r: x, t: band.t, b: band.b });
-      xs = -1;
-    }
-  }
-  const merged = [];
-  for (const c of raw) {
-    const prev = merged[merged.length - 1];
-    if (prev && c.l - prev.r <= 5) prev.r = c.r;
-    else merged.push({ ...c });
-  }
-
-  let out = merged.filter((c) => c.r - c.l >= minW);
-
-  // Split overwide cells (multiple domes glued) using dens valleys
-  const splitWide = [];
-  const medW =
-    out.length > 0
-      ? out.map((c) => c.r - c.l).sort((a, b) => a - b)[Math.floor(out.length / 2)]
-      : 95;
-  for (const c of out) {
-    const cw = c.r - c.l;
-    if (cw <= medW * 1.55 && cw <= 140) {
-      splitWide.push(c);
-      continue;
-    }
-    const local = useDens.slice(c.l, c.r);
-    const maxD = Math.max(...local, 1);
-    const cutThr = maxD * 0.22;
-    const sm = local.map((_, i) => {
-      let s = 0;
-      let n = 0;
-      for (let k = -2; k <= 2; k += 1) {
-        if (local[i + k] != null) {
-          s += local[i + k];
-          n += 1;
-        }
-      }
-      return s / n;
-    });
-    let x0 = 0;
-    const subs = [];
-    for (let i = 1; i < sm.length; i += 1) {
-      if (sm[i] < cutThr && i - x0 >= 55) {
-        subs.push({ l: c.l + x0, r: c.l + i, t: c.t, b: c.b });
-        x0 = i;
-      }
-    }
-    if (sm.length - x0 >= 40) subs.push({ l: c.l + x0, r: c.r, t: c.t, b: c.b });
-    if (subs.length >= 2) {
-      splitWide.push(...subs);
-    } else {
-      const n = Math.max(2, Math.round(cw / Math.max(70, medW)));
-      for (let i = 0; i < n; i += 1) {
-        splitWide.push({
-          l: Math.round(c.l + (i * cw) / n),
-          r: Math.round(c.l + ((i + 1) * cw) / n),
-          t: c.t,
-          b: c.b,
-        });
-      }
-    }
-  }
-  out = splitWide.filter((c) => c.r - c.l >= minW);
-
-  // Forced equal split if one mega-blob
-  if (out.length === 1 && out[0].r - out[0].l > 160) {
-    const span = out[0].r - out[0].l;
-    const n = expected > 0 ? expected : Math.max(2, Math.round(span / 95));
-    const L = out[0].l;
-    const forced = [];
-    for (let i = 0; i < n; i += 1) {
-      forced.push({
-        l: Math.round(L + (i * span) / n),
-        r: Math.round(L + ((i + 1) * span) / n),
-        t: band.t,
-        b: band.b,
-      });
-    }
-    out = forced;
-  }
-
-  if (expected > 0 && out.length > 0 && out.length !== expected) {
-    const L = out[0].l;
-    const R = out[out.length - 1].r;
-    const span = R - L;
-    const avg = span / expected;
-    const bad =
-      out.length !== expected ||
-      out.some((c) => c.r - c.l > avg * 1.7 || c.r - c.l < avg * 0.35);
-    if (bad && avg >= 28) {
-      const forced = [];
-      for (let i = 0; i < expected; i += 1) {
-        forced.push({
-          l: Math.round(L + (i * span) / expected),
-          r: Math.round(L + ((i + 1) * span) / expected),
-          t: band.t,
-          b: band.b,
-        });
-      }
-      out = forced;
-    }
-  }
-
-  return out;
-}
-
-function stripFringeLines(frame, fw, fh) {
-  // Kill thin cyan/magenta scanlines left from sheet grid dividers.
-  for (let y = 0; y < fh; y += 1) {
-    let fringe = 0;
-    let op = 0;
-    for (let x = 0; x < fw; x += 1) {
-      const i = (y * fw + x) * 4;
-      if (frame[i + 3] < 16) continue;
-      op += 1;
-      const r = frame[i];
-      const g = frame[i + 1];
-      const b = frame[i + 2];
-      if (isYellowEnergy(r, g, b)) continue;
-      if (isCyanTealBg(r, g, b) || isMagentaBg(r, g, b)) fringe += 1;
-      else if (r <= 80 && g >= 100 && b >= 100 && Math.min(g, b) > r + 20) fringe += 1;
-    }
-    if (op > 0 && fringe >= op * 0.55 && fringe >= 3) {
-      for (let x = 0; x < fw; x += 1) frame[(y * fw + x) * 4 + 3] = 0;
-    }
-  }
-  // Edge despill pass (outer ring).
-  for (let y = 0; y < fh; y += 1) {
-    for (let x = 0; x < fw; x += 1) {
-      const i = (y * fw + x) * 4;
-      if (frame[i + 3] < 16) continue;
-      const r = frame[i];
-      const g = frame[i + 1];
-      const b = frame[i + 2];
-      if (isYellowEnergy(r, g, b)) continue;
-      if (!(isCyanTealBg(r, g, b) || isMagentaBg(r, g, b))) {
-        // light mauve/red fringe only near empty
-        const magish = r >= 80 && g <= 100 && b >= 50 && r > g + 20 && !isYellowEnergy(r, g, b);
-        const tealish = g > r + 15 && b > r + 10 && g >= 90;
-        if (!magish && !tealish) continue;
-      }
-      let nearEmpty = false;
-      for (const [dx, dy] of [
-        [1, 0],
-        [-1, 0],
-        [0, 1],
-        [0, -1],
-      ]) {
-        const nx = x + dx;
-        const ny = y + dy;
-        if (nx < 0 || ny < 0 || nx >= fw || ny >= fh) {
-          nearEmpty = true;
-          break;
-        }
-        if (frame[(ny * fw + nx) * 4 + 3] < 16) {
-          nearEmpty = true;
-          break;
-        }
-      }
-      if (nearEmpty) frame[i + 3] = 0;
-    }
-  }
-}
-
-function extractCell(data, w, cell) {
-  const fw = cell.r - cell.l;
-  const fh = cell.b - cell.t;
-  const frame = Buffer.alloc(fw * fh * 4);
-  for (let y = 0; y < fh; y += 1) {
-    for (let x = 0; x < fw; x += 1) {
-      const si = ((cell.t + y) * w + cell.l + x) * 4;
-      const di = (y * fw + x) * 4;
-      if (!isContent(data, si)) {
-        frame[di + 3] = 0;
-        continue;
-      }
-      frame[di] = data[si];
-      frame[di + 1] = data[si + 1];
-      frame[di + 2] = data[si + 2];
-      frame[di + 3] = 255;
-    }
-  }
-  stripFringeLines(frame, fw, fh);
-  let minX = fw;
-  let maxX = -1;
-  let minY = fh;
-  let maxY = -1;
-  for (let y = 0; y < fh; y += 1) {
-    for (let x = 0; x < fw; x += 1) {
-      if (frame[(y * fw + x) * 4 + 3] < 16) continue;
+      if (frame[i + 3] < ALPHA_KEEP) continue;
+      if (!isBodyPixel(frame[i], frame[i + 1], frame[i + 2])) continue;
+      n += 1;
+      sumX += x;
       if (x < minX) minX = x;
       if (x > maxX) maxX = x;
       if (y < minY) minY = y;
       if (y > maxY) maxY = y;
     }
   }
-  if (maxX < 0) {
-    return { frame, fw, fh, minX: 0, maxX: 0, minY: 0, maxY: 0, bw: 1, bh: 1 };
+
+  // Mid-dome: no body pixels → fall back to full alpha (will sticky-replace).
+  if (n < 40 || maxY - minY + 1 < 24) {
+    minX = w;
+    maxX = -1;
+    minY = h;
+    maxY = -1;
+    n = 0;
+    sumX = 0;
+    for (let y = 0; y < h; y += 1) {
+      for (let x = 0; x < w; x += 1) {
+        const i = (y * w + x) * 4;
+        if (frame[i + 3] < ALPHA_KEEP) continue;
+        n += 1;
+        sumX += x;
+        if (x < minX) minX = x;
+        if (x > maxX) maxX = x;
+        if (y < minY) minY = y;
+        if (y > maxY) maxY = y;
+      }
+    }
   }
+
+  if (maxX < 0) {
+    return {
+      bodyCx: w / 2,
+      feetY: h - 1,
+      bodyH: h,
+      mode: 'empty',
+      n: 0,
+    };
+  }
+
   return {
-    frame,
-    fw,
-    fh,
-    minX,
-    maxX,
-    minY,
-    maxY,
-    bw: maxX - minX + 1,
-    bh: maxY - minY + 1,
+    bodyCx: sumX / n,
+    feetY: maxY,
+    bodyH: maxY - minY + 1,
+    mode: n >= 80 ? 'core' : 'weak',
+    n,
   };
 }
 
-function normalize(cut, pad = 2) {
-  const cellW = Math.max(...cut.map((c) => c.bw)) + pad * 2;
-  const cellH = Math.max(...cut.map((c) => c.bh)) + pad * 2;
-  // Standing body from early crouch frames (not huge dome)
-  const standing = cut.slice(0, Math.min(5, cut.length));
-  const bodyHeights = standing.map((c) => c.bh).sort((a, b) => a - b);
-  // Use median of small frames for contentHeight anchor
-  const small = bodyHeights.filter((h) => h <= bodyHeights[0] + 30);
-  const contentH0 = Math.round(
-    (small.length ? small : bodyHeights).reduce((s, h) => s + h, 0) /
-      Math.max(1, small.length || bodyHeights.length),
-  );
-  const frames = cut.map((box) => {
-    const canvas = Buffer.alloc(cellW * cellH * 4);
-    const dx = Math.floor((cellW - box.bw) / 2);
-    const dy = cellH - box.bh - pad;
-    for (let y = 0; y < box.bh; y += 1) {
-      for (let x = 0; x < box.bw; x += 1) {
-        const si = ((box.minY + y) * box.fw + (box.minX + x)) * 4;
-        const di = ((dy + y) * cellW + dx + x) * 4;
-        canvas[di] = box.frame[si];
-        canvas[di + 1] = box.frame[si + 1];
-        canvas[di + 2] = box.frame[si + 2];
-        canvas[di + 3] = box.frame[si + 3];
+function normalizeBodyLock(frames, widths, heights, pad = PAD) {
+  const anchors = frames.map((f, i) => bodyAnchor(f, widths[i], heights[i]));
+  const filled = anchors.map((a) => ({ ...a }));
+
+  // Sticky bodyX/feetY through expanding dome using last/next strong body frames.
+  let lastStrong = null;
+  for (let i = 0; i < filled.length; i += 1) {
+    if (filled[i].n >= 200 && filled[i].bodyH >= 60 && filled[i].mode === 'core') {
+      lastStrong = { ...filled[i] };
+    } else if (lastStrong && filled[i].n < 400) {
+      filled[i] = {
+        ...filled[i],
+        bodyCx: lastStrong.bodyCx,
+        feetY: lastStrong.feetY,
+        bodyH: lastStrong.bodyH,
+        sticky: true,
+      };
+    }
+  }
+  let nextStrong = null;
+  for (let i = filled.length - 1; i >= 0; i -= 1) {
+    if (
+      filled[i].n >= 200 &&
+      filled[i].bodyH >= 60 &&
+      filled[i].mode === 'core' &&
+      !filled[i].sticky
+    ) {
+      nextStrong = { ...filled[i] };
+    } else if (filled[i].sticky === undefined && filled[i].n < 80 && nextStrong) {
+      filled[i] = {
+        ...filled[i],
+        bodyCx: nextStrong.bodyCx,
+        feetY: nextStrong.feetY,
+        bodyH: nextStrong.bodyH,
+        sticky: true,
+      };
+    }
+  }
+
+  let maxLeft = 0;
+  let maxRight = 0;
+  let maxUp = 0;
+  let maxDown = 0;
+  for (let i = 0; i < frames.length; i += 1) {
+    const a = filled[i];
+    const w = widths[i];
+    const h = heights[i];
+    for (let y = 0; y < h; y += 1) {
+      for (let x = 0; x < w; x += 1) {
+        if (frames[i][(y * w + x) * 4 + 3] < ALPHA_KEEP) continue;
+        maxLeft = Math.max(maxLeft, a.bodyCx - x);
+        maxRight = Math.max(maxRight, x - a.bodyCx);
+        maxUp = Math.max(maxUp, a.feetY - y);
+        maxDown = Math.max(maxDown, y - a.feetY);
+      }
+    }
+  }
+
+  const fw = Math.ceil(maxLeft + maxRight + 1) + pad * 2;
+  const fh = Math.ceil(maxUp + maxDown + 1) + pad * 2;
+  const destBodyCx = pad + Math.ceil(maxLeft);
+  const destFeetY = pad + Math.ceil(maxUp);
+
+  const contentSrc =
+    filled.find((a) => !a.sticky && a.n >= 200 && a.bodyH >= 60) || filled[0];
+  const contentH = contentSrc.bodyH;
+
+  const out = frames.map((frame, index) => {
+    const a = filled[index];
+    const srcW = widths[index];
+    const srcH = heights[index];
+    const canvas = Buffer.alloc(fw * fh * 4);
+    const dx = Math.round(destBodyCx - a.bodyCx);
+    const dy = Math.round(destFeetY - a.feetY);
+    for (let y = 0; y < srcH; y += 1) {
+      for (let x = 0; x < srcW; x += 1) {
+        const si = (y * srcW + x) * 4;
+        if (frame[si + 3] < ALPHA_KEEP) continue;
+        const tx = x + dx;
+        const ty = y + dy;
+        if (tx < 0 || ty < 0 || tx >= fw || ty >= fh) continue;
+        const di = (ty * fw + tx) * 4;
+        canvas[di] = frame[si];
+        canvas[di + 1] = frame[si + 1];
+        canvas[di + 2] = frame[si + 2];
+        canvas[di + 3] = 255;
       }
     }
     return canvas;
   });
-  return { frames, cellW, cellH, contentHeight: contentH0 || cut[0].bh };
+
+  return {
+    frames: out,
+    frameWidth: fw,
+    frameHeight: fh,
+    contentHeight: contentH,
+    anchors: filled,
+    destBodyCx,
+    destFeetY,
+  };
 }
 
-async function scaleFrames(frames, cellW, cellH, contentHeight) {
-  // Fit standing body to TARGET_BODY_H; dome keeps relative size in the cell.
-  // Only cap height (not width) so Phaser sheets stay practical.
-  let scale = TARGET_BODY_H / Math.max(1, contentHeight);
-  const maxH = 120;
-  if (cellH * scale > maxH) scale = maxH / cellH;
-  const outW = Math.max(1, Math.round(cellW * scale));
-  const outH = Math.max(1, Math.round(cellH * scale));
-  const outContent = Math.max(1, Math.round(contentHeight * scale));
-  const out = [];
-  for (const frame of frames) {
-    const { data: d } = await sharp(frame, {
-      raw: { width: cellW, height: cellH, channels: 4 },
-    })
-      .resize(outW, outH, { kernel: sharp.kernel.nearest })
-      .ensureAlpha()
-      .raw()
-      .toBuffer({ resolveWithObject: true });
-    fillInteriorHoles(d, outW, outH, Math.max(64, Math.floor(outW * outH * 0.04)));
-    out.push(d);
+function countPalette(sheetData) {
+  let residualGreen = 0;
+  let black = 0;
+  let opaque = 0;
+  let yellow = 0;
+  for (let i = 0; i < sheetData.length; i += 4) {
+    if (sheetData[i + 3] < ALPHA_KEEP) continue;
+    opaque += 1;
+    const r = sheetData[i];
+    const g = sheetData[i + 1];
+    const b = sheetData[i + 2];
+    if (isChromaGreen(r, g, b)) residualGreen += 1;
+    if (r <= 12 && g <= 12 && b <= 12) black += 1;
+    if (isYellowEnergy(r, g, b)) yellow += 1;
   }
-  return { frames: out, frameWidth: outW, frameHeight: outH, contentHeight: outContent, scale };
+  return { residualGreen, black, opaque, yellow };
 }
 
-function stitch(frames, fw, fh) {
-  const cols =
-    fw * frames.length <= MAX_SHEET_W
-      ? frames.length
-      : Math.max(1, Math.floor(MAX_SHEET_W / fw));
-  const rows = Math.ceil(frames.length / cols);
-  const outW = cols * fw;
-  const outH = rows * fh;
-  const out = Buffer.alloc(outW * outH * 4);
-  frames.forEach((frame, index) => {
-    const col = index % cols;
-    const row = Math.floor(index / cols);
+function measureLockedCenters(frames, fw, fh, anchors) {
+  return frames.map((frame, fi) => {
+    // Prefer body pixels; mid-dome uses sticky anchor metrics for QA only.
+    let sumX = 0;
+    let n = 0;
+    let maxY = -1;
     for (let y = 0; y < fh; y += 1) {
-      frame.copy(out, ((row * fh + y) * outW + col * fw) * 4, y * fw * 4, (y + 1) * fw * 4);
+      for (let x = 0; x < fw; x += 1) {
+        const i = (y * fw + x) * 4;
+        if (frame[i + 3] < ALPHA_KEEP) continue;
+        if (y > maxY) maxY = y;
+        if (!isBodyPixel(frame[i], frame[i + 1], frame[i + 2])) continue;
+        sumX += x;
+        n += 1;
+      }
     }
+    if (n < 40 && anchors[fi] && anchors[fi].sticky) {
+      return {
+        bodyCx: anchors[fi].bodyCx,
+        feetY: anchors[fi].feetY,
+        n: anchors[fi].n,
+        sticky: true,
+      };
+    }
+    return {
+      bodyCx: n ? sumX / n : fw / 2,
+      feetY: maxY,
+      n,
+      sticky: false,
+    };
   });
-  return { data: out, width: outW, height: outH, cols, rows };
+}
+
+function variance(vals) {
+  if (!vals.length) return { mean: 0, variance: 0, std: 0, min: 0, max: 0 };
+  const mean = vals.reduce((s, v) => s + v, 0) / vals.length;
+  const v = vals.reduce((s, x) => s + (x - mean) * (x - mean), 0) / vals.length;
+  return { mean, variance: v, std: Math.sqrt(v), min: Math.min(...vals), max: Math.max(...vals) };
+}
+
+function resolveWalkScale() {
+  if (fs.existsSync(META_JSON)) {
+    try {
+      const meta = JSON.parse(fs.readFileSync(META_JSON, 'utf8'));
+      const w = meta['neji-walk'];
+      if (w && typeof w.scale === 'number' && w.scale > 0) {
+        return { scale: w.scale, source: 'meta.json neji-walk' };
+      }
+    } catch {
+      /* fall through */
+    }
+  }
+  return null;
+}
+
+async function measureWalkSourceScale() {
+  const walkKeyed = await loadAlphaFrames(WALK_DIR, 6);
+  const maxH = Math.max(...walkKeyed.map((k) => k.box.height));
+  return {
+    scale: TARGET_BODY_H / Math.max(1, maxH),
+    source: 'walk source max contentH',
+  };
 }
 
 async function main() {
-  if (!fs.existsSync(INPUT)) throw new Error(`Sheet não encontrada: ${INPUT}`);
-  const { data: raw, info } = await sharp(INPUT).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  console.log(`kaiten source ${info.width}x${info.height}`);
+  const keyed = await loadAlphaFrames(INPUT_DIR, EXPECTED);
+  console.log(`loaded ${keyed.length} alpha frames from ${path.relative(ROOT, INPUT_DIR)}`);
 
-  const data = keyExteriorChroma(raw, info.width, info.height, { magenta: true, maxHole: 220 });
-
-  let bands = findBands(data, info.width, info.height, 16, 30);
-  // Expand tall bands into dome sub-rows
-  const expanded = [];
-  for (const band of bands) {
-    if (band.b - band.t > 120) {
-      const subs = splitDomeSubrows(data, info.width, band);
-      expanded.push(...subs);
-    } else {
-      expanded.push(band);
-    }
+  let walkScaleInfo = resolveWalkScale();
+  if (!walkScaleInfo) {
+    walkScaleInfo = await measureWalkSourceScale();
   }
-  // Pad short crouch bands so hair is not clipped
-  bands = expanded
-    .filter((b) => b.b - b.t >= 40)
-    .map((b) => ({
-      t: Math.max(0, b.t - 6),
-      b: Math.min(info.height, b.b + 2),
-    }));
   console.log(
-    'bands',
-    bands.map((b) => `${b.t}-${b.b}(h${b.b - b.t})`).join(' | '),
+    `walk-matched absoluteScale=${walkScaleInfo.scale.toFixed(6)} (${walkScaleInfo.source})`,
   );
 
-  const cells = [];
-  for (const band of bands) {
-    let rowCells = cellsInBand(data, info.width, band, 16, 0);
-    // Recovery strip: ensure small end-stance cells aren't dropped / over-merged
-    if (band.t >= 780 && band.b - band.t >= 70) {
-      const dens = new Array(info.width).fill(0);
-      for (let x = 0; x < info.width; x += 1) {
-        for (let y = band.t; y < band.b; y += 1) {
-          if (isContent(data, (y * info.width + x) * 4)) dens[x] += 1;
-        }
-      }
-      const thr = 2;
-      const raw = [];
-      let xs = -1;
-      for (let x = 0; x <= info.width; x += 1) {
-        const filled = x < info.width && dens[x] > thr;
-        if (filled && xs < 0) xs = x;
-        if (!filled && xs >= 0) {
-          if (x - xs >= 10) raw.push({ l: xs, r: x, t: band.t, b: band.b });
-          xs = -1;
-        }
-      }
-      // Merge only ultra-narrow crumbs into neighbors (< 10 already filtered)
-      const merged = [];
-      for (const c of raw) {
-        const prev = merged[merged.length - 1];
-        if (prev && c.l - prev.r <= 3 && c.r - c.l < 12) prev.r = c.r;
-        else if (prev && c.l - prev.r <= 3 && prev.r - prev.l < 12) prev.r = c.r;
-        else merged.push({ ...c });
-      }
-      if (merged.length >= 5) {
-        rowCells = merged;
-        console.log('  recovery dens cells', merged.length, merged.map((c) => c.r - c.l).join(','));
-      }
-    }
-    // Filter junk: edge-clipped fragments, empty cells, incomplete heads
-    const cuts = rowCells.map((c) => ({ cell: c, cut: extractCell(data, info.width, c) }));
-    const heights = cuts.map((x) => x.cut.bh).filter((h) => h >= 20).sort((a, b) => a - b);
-    const medH = heights.length ? heights[Math.floor(heights.length / 2)] : 40;
-    const isCrouchish = band.b - band.t < 75 && band.t < 200;
-    const isRecovery = band.t >= 780;
-    const good = cuts
-      .filter(({ cell, cut }) => {
-        if (cut.bw < 10 || cut.bh < 16) return false;
-        // First cell glued to sheet left edge: partial crouch without head
-        if (isCrouchish && cell.l <= 4) return false;
-        if (!isRecovery && cuts.length >= 3 && cut.bh < medH * 0.55) return false;
-        let op = 0;
-        for (let i = 3; i < cut.frame.length; i += 4) if (cut.frame[i] >= 16) op += 1;
-        if (isRecovery) return op >= 30;
-        if (op < 50) return false;
-        return true;
-      })
-      .map((x) => x.cell);
+  const rawFrames = keyed.map((k) => k.frame);
+  const widths = keyed.map((k) => k.width);
+  const heights = keyed.map((k) => k.height);
+
+  for (let i = 0; i < keyed.length; i += 1) {
+    const a = bodyAnchor(rawFrames[i], widths[i], heights[i]);
     console.log(
-      `  row ${band.t}-${band.b}: n=${good.length}`,
-      good.map((c) => `${c.r - c.l}x${band.b - band.t}`).join(','),
+      `anchor ${keyed[i].file} mode=${a.mode} n=${a.n} bodyCx=${a.bodyCx.toFixed(1)} feetY=${a.feetY} bodyH=${a.bodyH}`,
     );
-    cells.push(...good);
   }
 
-  console.log(`total frames ${cells.length}`);
-  if (cells.length < 12) throw new Error(`Poucos frames Kaiten: ${cells.length}`);
-
-  const cut = cells.map((c) => extractCell(data, info.width, c));
-  // Drop near-empty after final fringe strip
-  const filtered = cut.filter((c) => {
-    let n = 0;
-    for (let i = 3; i < c.frame.length; i += 4) if (c.frame[i] >= 16) n += 1;
-    return n >= 40;
-  });
-  if (filtered.length < 12) throw new Error(`Muitos frames vazios após chroma: ${cut.length - filtered.length}`);
-
-  const norm = normalize(filtered);
+  const norm = normalizeBodyLock(rawFrames, widths, heights, PAD);
   console.log(
-    `normalized cell ${norm.cellW}x${norm.cellH} bodyH≈${norm.contentHeight} maxBh=${Math.max(...cut.map((c) => c.bh))}`,
+    `body-lock pack fw=${norm.frameWidth} fh=${norm.frameHeight} contentH=${norm.contentHeight} destBodyCx=${norm.destBodyCx} destFeetY=${norm.destFeetY}`,
   );
-  const scaled = await scaleFrames(norm.frames, norm.cellW, norm.cellH, norm.contentHeight);
-  const sheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
+  for (let i = 0; i < norm.anchors.length; i += 1) {
+    const a = norm.anchors[i];
+    if (a.sticky) {
+      console.log(
+        `  sticky f${i + 1} bodyCx=${a.bodyCx.toFixed(1)} feetY=${a.feetY} bodyH=${a.bodyH}`,
+      );
+    }
+  }
+
+  // Scale standing body to TARGET_BODY_H (dome grows relatively).
+  // Prefer walk-matched density only if it doesn't crush the dome below readable.
+  let scale = TARGET_BODY_H / Math.max(1, norm.contentHeight);
+  const maxHCap = 130;
+  if (norm.frameHeight * scale > maxHCap) {
+    scale = maxHCap / norm.frameHeight;
+  }
+  // Snap to walk scale when body scale is close (keeps character density consistent)
+  const walkScale = walkScaleInfo.scale;
+  if (Math.abs(scale - walkScale) / walkScale < 0.15) {
+    scale = walkScale;
+  }
+  console.log(`scale=${scale.toFixed(6)} (walk=${walkScale.toFixed(6)})`);
+
+  const scaled = await scaleFrames(
+    norm.frames,
+    norm.frameWidth,
+    norm.frameHeight,
+    norm.contentHeight,
+    TARGET_BODY_H,
+  );
+  // Override if scaleFrames used bodyH→48 but we want the capped scale above.
+  // scaleFrames always uses contentHeight→target; re-scale if needed.
+  let finalFrames = scaled.frames;
+  let finalFw = scaled.frameWidth;
+  let finalFh = scaled.frameHeight;
+  let finalContent = scaled.contentHeight;
+  let finalScale = scaled.scale;
+
+  if (Math.abs(scaled.scale - scale) > 0.001) {
+    const outW = Math.max(1, Math.round(norm.frameWidth * scale));
+    const outH = Math.max(1, Math.round(norm.frameHeight * scale));
+    const out = [];
+    for (const frame of norm.frames) {
+      const { data } = await sharp(frame, {
+        raw: { width: norm.frameWidth, height: norm.frameHeight, channels: 4 },
+      })
+        .resize(outW, outH, { kernel: sharp.kernel.nearest })
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      for (let i = 0; i < data.length; i += 4) {
+        if (data[i + 3] < 128) {
+          data[i] = 0;
+          data[i + 1] = 0;
+          data[i + 2] = 0;
+          data[i + 3] = 0;
+        } else {
+          data[i + 3] = 255;
+          if (isChromaGreen(data[i], data[i + 1], data[i + 2])) {
+            data[i] = 0;
+            data[i + 1] = 0;
+            data[i + 2] = 0;
+            data[i + 3] = 0;
+          }
+        }
+      }
+      out.push(data);
+    }
+    finalFrames = out;
+    finalFw = outW;
+    finalFh = outH;
+    finalContent = Math.max(1, Math.round(norm.contentHeight * scale));
+    finalScale = scale;
+  }
+
+  const sheet = stitch(finalFrames, finalFw, finalFh);
+  const pal = countPalette(sheet.data);
+
+  // Map sticky anchors into scaled cell for QA.
+  const scaledAnchors = norm.anchors.map((a) => ({
+    ...a,
+    bodyCx: a.bodyCx * finalScale + (finalFw - norm.frameWidth * finalScale) / 2,
+    feetY: a.feetY * finalScale + (finalFh - norm.frameHeight * finalScale) / 2,
+  }));
+  const centers = measureLockedCenters(finalFrames, finalFw, finalFh, scaledAnchors);
+  const lockFrom = Math.min(DOME_LOCK_FROM, centers.length - 1);
+  const lockTo = Math.min(DOME_LOCK_TO, centers.length - 1);
+  const lockSlice = centers.slice(lockFrom, lockTo + 1);
+  // Sticky anchors report identical bodyCx — good. Use non-sticky+sticky dest.
+  const cxVals = lockSlice.map((c) => c.bodyCx);
+  const cxStats = variance(cxVals);
+  const feetStats = variance(lockSlice.map((c) => c.feetY).filter((y) => y >= 0));
+
+  console.log(
+    `QA residualGreen=${pal.residualGreen} opaque=${pal.opaque} pureBlack=${pal.black} yellow=${pal.yellow}`,
+  );
+  console.log(
+    `QA body-lock f${lockFrom + 1}–${lockTo + 1} bodyCx mean=${cxStats.mean.toFixed(2)} std=${cxStats.std.toFixed(3)} range=[${cxStats.min.toFixed(2)},${cxStats.max.toFixed(2)}]`,
+  );
+  console.log(
+    `QA body-lock feetY mean=${feetStats.mean.toFixed(2)} std=${feetStats.std.toFixed(3)} range=[${feetStats.min},${feetStats.max}]`,
+  );
+
+  // Per-frame opacity QA (dome frames must stay dense)
+  for (let i = 0; i < finalFrames.length; i += 1) {
+    const op = countOpaque(finalFrames[i]);
+    if (op < 80) throw new Error(`Frame ${i} too empty after pack (op=${op})`);
+  }
+
+  if (pal.residualGreen > 0) {
+    throw new Error(`QA fail: residual green = ${pal.residualGreen}`);
+  }
+  // Startup/recovery frames carry hair black; mid-dome may hide it.
+  if (pal.black < 100) {
+    throw new Error(`QA fail: pure black too low on whole sheet (${pal.black})`);
+  }
+  if (pal.yellow < 500) {
+    throw new Error(`QA fail: yellow dome nearly gone (${pal.yellow})`);
+  }
+  if (cxStats.std > BODY_CX_VAR_MAX) {
+    throw new Error(
+      `QA fail body-lock: bodyCx std=${cxStats.std.toFixed(3)}px > ${BODY_CX_VAR_MAX}px`,
+    );
+  }
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
-  await sharp(sheet.data, {
-    raw: { width: sheet.width, height: sheet.height, channels: 4 },
-  })
-    .png()
-    .toFile(path.join(OUT_DIR, 'kaiten.png'));
+  await writePng(path.join(OUT_DIR, 'kaiten.png'), sheet.data, sheet.width, sheet.height);
+  await writeFrameCrops(
+    sheet,
+    { frames: finalFrames, frameWidth: finalFw, frameHeight: finalFh },
+    QA_DIR,
+    'kaiten',
+    3,
+  );
 
-  const durationMs = Math.round((scaled.frames.length / FRAME_RATE) * 1000);
-  const entry = {
-    image: '/sprites/player/neji/kaiten.png',
-    frameWidth: scaled.frameWidth,
-    frameHeight: scaled.frameHeight,
-    frameCount: scaled.frames.length,
-    sheetCols: sheet.cols,
-    sheetRows: sheet.rows,
-    contentHeight: scaled.contentHeight,
-    scale: scaled.scale,
-    source: 'neji-kaiten-sheet.png',
-    frameRate: FRAME_RATE,
-    durationMs,
-    hitDelayMs: Math.round(durationMs * 0.45),
-    note: 'Hakkeshou Kaiten full sequence; yellow dome preserved; cyan+magenta exterior key',
-  };
-
-  let meta = {};
-  if (fs.existsSync(META_JSON)) {
-    try {
-      meta = JSON.parse(fs.readFileSync(META_JSON, 'utf8'));
-    } catch {
-      meta = {};
+  // Remove obsolete dual-jutsu outputs if present.
+  for (const obsolete of ['hakke-kusho.png', 'rokujuyon-sho.png']) {
+    const p = path.join(OUT_DIR, obsolete);
+    if (fs.existsSync(p)) {
+      fs.unlinkSync(p);
+      console.log(`removed obsolete ${obsolete}`);
     }
   }
-  meta['neji-kaiten'] = entry;
-  meta['skill-hakke-kaiten'] = entry;
-  fs.writeFileSync(META_JSON, `${JSON.stringify(meta, null, 2)}\n`);
+
+  const durationMs = Math.round((finalFrames.length / FRAME_RATE) * 1000);
+  const hitDelayMs = Math.round(durationMs * 0.45);
+  // Report body bar as 48 so display scale matches walk (CHARACTER_DISPLAY_HEIGHT / 48).
+  const reportContentH = TARGET_BODY_H;
+
+  const entry = {
+    image: '/sprites/player/neji/kaiten.png',
+    frameWidth: finalFw,
+    frameHeight: finalFh,
+    frameCount: finalFrames.length,
+    contentHeight: reportContentH,
+    scale: finalScale,
+    frameRate: FRAME_RATE,
+    durationMs,
+    hitDelayMs,
+    source: 'assets/naruto-source/nu/neji/jutsu/frame_001..020.png',
+    residualGreen: pal.residualGreen,
+    pureBlack: pal.black,
+    yellow: pal.yellow,
+    bodyLock: {
+      destBodyCx: norm.destBodyCx,
+      destFeetY: norm.destFeetY,
+      bodyCxStd: +cxStats.std.toFixed(3),
+      domeLock: [lockFrom, lockTo],
+    },
+    note: 'Hakkeshou Kaiten 20f; alpha-only; body-lock sticky through expanding yellow dome',
+  };
+  updateMeta(META_JSON, 'neji-kaiten', entry);
+  updateMeta(META_JSON, 'skill-hakke-kaiten', entry);
+
+  // Drop obsolete meta entries
+  if (fs.existsSync(META_JSON)) {
+    try {
+      const meta = JSON.parse(fs.readFileSync(META_JSON, 'utf8'));
+      delete meta['neji-hakke-kusho'];
+      delete meta['neji-rokujuyon-sho'];
+      delete meta['skill-hakke-kusho'];
+      delete meta['skill-rokujuyon-sho'];
+      fs.writeFileSync(META_JSON, `${JSON.stringify(meta, null, 2)}\n`);
+    } catch {
+      /* ignore */
+    }
+  }
 
   console.log(
     `-> kaiten.png ${sheet.width}x${sheet.height} fw=${entry.frameWidth} fh=${entry.frameHeight} n=${entry.frameCount} contentH=${entry.contentHeight} durationMs=${durationMs}`,
@@ -562,7 +553,7 @@ async function main() {
       frameCount: entry.frameCount,
       contentHeight: entry.contentHeight,
       durationMs,
-      hitDelayMs: entry.hitDelayMs,
+      hitDelayMs,
     }),
   );
 }
