@@ -2,6 +2,8 @@ import * as Phaser from 'phaser';
 import { applyForcedHuntLevels } from '@/constants/combat';
 import { ENEMY_SPRITE_URL, ENEMY_TEXTURE_KEY } from '@/constants/enemy';
 import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
+import { resolveAnimeId } from '@/data/anime';
+import { buildAnimeHuntLoot } from '@/data/anime-loot';
 import { getCuratedMapPack } from '@/data/curated-map-sprites';
 import { getEnemiesForMap } from '@/data/enemies';
 import { getWonsrRenderedMap } from '@/data/wonsr-rendered-maps';
@@ -143,28 +145,18 @@ export class EnemyManager {
       const curated = this.resolveCurated(target.lookType);
       const outfit = curated ?? this.resolveOutfit(spriteIndex, target.lookType);
       const stats = { level: target.level, hp: target.hp, xp: target.xp };
+      const animeId = resolveAnimeId({
+        lookType: target.lookType,
+        source: target.source,
+        sourceId: target.sourceId,
+      });
       return {
         id: `${hunt.id}-${target.id}-${index}`,
         name: target.name,
         hp: stats.hp,
         level: stats.level,
         xp: stats.xp,
-        loot: [
-          {
-            itemId: 'item-copper-coin',
-            chance: 0.65,
-            quantityMin: 1,
-            quantityMax: Math.max(2, Math.min(25, Math.ceil(stats.level / 3))),
-            rarity: 'common',
-          },
-          {
-            itemId: 'item-chakra-shard',
-            chance: Math.min(0.3, 0.04 + stats.level * 0.002),
-            quantityMin: 1,
-            quantityMax: 1,
-            rarity: 'rare',
-          },
-        ],
+        loot: buildAnimeHuntLoot(animeId, stats.level),
         spawn,
         speed: target.speed,
         chaseRadius: Math.max(80, Math.min(180, target.targetDistance * 45)),

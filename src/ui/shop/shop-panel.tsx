@@ -40,6 +40,15 @@ export function ShopPanel() {
       onClose={() => shopStore.setOpen(false)}
     >
       <p className="hud-shop__balance">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className="hud-shop__balance-icon"
+          src="/ui/items/copper-coin.png"
+          alt=""
+          width={22}
+          height={22}
+          draggable={false}
+        />
         Saldo: <strong>{copper}</strong> Moedas de Cobre
       </p>
 
@@ -49,16 +58,29 @@ export function ShopPanel() {
           return (
             <li key={offer.id} className="hud-shop__offer">
               <div className="hud-shop__offer-info">
-                <p
-                  className="hud-shop__offer-name"
-                  style={def ? { color: RARITY_CSS[def.rarity] } : undefined}
-                >
-                  {offer.name}
-                </p>
-                <p className="hud-shop__offer-desc">{offer.description}</p>
-                <p className="hud-shop__offer-price">
-                  {offer.price} {getItem(offer.currencyItemId)?.name ?? 'moedas'}
-                </p>
+                {def?.iconSrc ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    className="hud-shop__offer-icon"
+                    src={def.iconSrc}
+                    alt=""
+                    width={40}
+                    height={40}
+                    draggable={false}
+                  />
+                ) : null}
+                <div className="hud-shop__offer-text">
+                  <p
+                    className="hud-shop__offer-name"
+                    style={def ? { color: RARITY_CSS[def.rarity] } : undefined}
+                  >
+                    {offer.name}
+                  </p>
+                  <p className="hud-shop__offer-desc">{offer.description}</p>
+                  <p className="hud-shop__offer-price">
+                    {offer.price} {getItem(offer.currencyItemId)?.name ?? 'moedas'}
+                  </p>
+                </div>
               </div>
               <button
                 type="button"

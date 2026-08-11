@@ -129,14 +129,8 @@ const SEEDS: readonly WonsrEquipSeed[] = [
 
 export const WONSR_EQUIP_ITEMS: readonly ItemDefinition[] = SEEDS.map(toItem);
 
-/** Kit inicial shinobi (Folha) a partir do subset WONSR. */
+/** Kit inicial: moedas + pergaminhos (sem equipamentos). */
 export const WONSR_STARTER_LOADOUT: readonly { itemId: string; quantity: number }[] = [
-  { itemId: 'wonsr-item-12295', quantity: 1 }, // Elite Kunai
-  { itemId: 'wonsr-item-2480', quantity: 1 }, // Konoha ForeHead
-  { itemId: 'wonsr-item-2485', quantity: 1 }, // Gennin Shirt
-  { itemId: 'wonsr-item-10411', quantity: 1 }, // Gennin Boots
-  { itemId: 'item-shinobi-gloves', quantity: 1 }, // local (WONSR sem gloves)
-  { itemId: 'item-lucky-charm', quantity: 1 }, // local accessory
-  { itemId: 'wonsr-item-2148', quantity: 10 }, // Coin
-  { itemId: 'item-copper-coin', quantity: 999999 }, // Moeda de Cobre (loja)
+  { itemId: 'item-copper-coin', quantity: 250 }, // Moeda de Cobre (loja / caça)
+  { itemId: 'item-sealing-scroll', quantity: 20 },
 ] as const;

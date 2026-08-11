@@ -19,13 +19,6 @@ export const ENEMY_DEFINITIONS: readonly EnemyDefinition[] = [
         rarity: 'common',
       },
       {
-        itemId: 'item-copper-coin',
-        chance: 0.45,
-        quantityMin: 1,
-        quantityMax: 3,
-        rarity: 'common',
-      },
-      {
         itemId: 'item-lucky-charm',
         chance: 0.08,
         quantityMin: 1,
@@ -80,13 +73,6 @@ export const ENEMY_DEFINITIONS: readonly EnemyDefinition[] = [
         quantityMin: 1,
         quantityMax: 1,
         rarity: 'uncommon',
-      },
-      {
-        itemId: 'item-copper-coin',
-        chance: 0.6,
-        quantityMin: 2,
-        quantityMax: 5,
-        rarity: 'common',
       },
     ],
     spawn: { x: 420, y: 180 },

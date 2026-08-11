@@ -1,5 +1,6 @@
 import type { EquipSlot, ItemDefinition, ItemRarity } from '@/types/loot';
 import { formatModifierLine } from '@/utils/attributes';
+import { ANIME_LOOT_ITEMS } from '@/data/anime-items';
 import { WONSR_EQUIP_ITEMS } from '@/data/wonsr-equip-subset';
 
 export const ITEMS: Record<string, ItemDefinition> = {
@@ -14,6 +15,7 @@ export const ITEMS: Record<string, ItemDefinition> = {
     name: 'Moeda de Cobre',
     rarity: 'common',
     stackMax: 999999,
+    iconSrc: '/ui/items/copper-coin.png',
   },
   'item-wolf-fang': {
     id: 'item-wolf-fang',
@@ -84,9 +86,32 @@ export const ITEMS: Record<string, ItemDefinition> = {
   'item-sealing-scroll': {
     id: 'item-sealing-scroll',
     name: 'Pergaminho de Selamento',
-    rarity: 'uncommon',
+    rarity: 'common',
     stackMax: 999,
+    iconSrc: '/ui/items/sealing-scrolls/common.png',
   },
+  'item-sealing-scroll-rare': {
+    id: 'item-sealing-scroll-rare',
+    name: 'Pergaminho de Selamento (Raro)',
+    rarity: 'rare',
+    stackMax: 999,
+    iconSrc: '/ui/items/sealing-scrolls/rare.png',
+  },
+  'item-sealing-scroll-epic': {
+    id: 'item-sealing-scroll-epic',
+    name: 'Pergaminho de Selamento (Épico)',
+    rarity: 'epic',
+    stackMax: 999,
+    iconSrc: '/ui/items/sealing-scrolls/epic.png',
+  },
+  'item-sealing-scroll-legendary': {
+    id: 'item-sealing-scroll-legendary',
+    name: 'Pergaminho de Selamento (Lendário)',
+    rarity: 'legendary',
+    stackMax: 999,
+    iconSrc: '/ui/items/sealing-scrolls/legendary.png',
+  },
+  ...ANIME_LOOT_ITEMS,
   ...Object.fromEntries(WONSR_EQUIP_ITEMS.map((item) => [item.id, item])),
 };
 
@@ -104,6 +129,9 @@ export type ItemId =
   | 'item-shinobi-boots'
   | 'item-lucky-charm'
   | 'item-sealing-scroll'
+  | 'item-sealing-scroll-rare'
+  | 'item-sealing-scroll-epic'
+  | 'item-sealing-scroll-legendary'
   | `wonsr-item-${number}`;
 
 export const RARITY_COLOR: Record<ItemRarity, number> = {
@@ -111,6 +139,8 @@ export const RARITY_COLOR: Record<ItemRarity, number> = {
   uncommon: 0x3ecf5a,
   rare: 0x3d8bfd,
   epic: 0xc45cff,
+  legendary: 0xffb020,
+  mythic: 0xff4d6d,
 };
 
 export const RARITY_CSS: Record<ItemRarity, string> = {
@@ -118,6 +148,8 @@ export const RARITY_CSS: Record<ItemRarity, string> = {
   uncommon: '#3ecf5a',
   rare: '#3d8bfd',
   epic: '#c45cff',
+  legendary: '#ffb020',
+  mythic: '#ff4d6d',
 };
 
 export function getItem(itemId: string): ItemDefinition | undefined {

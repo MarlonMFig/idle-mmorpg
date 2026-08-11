@@ -1,33 +1,78 @@
-import { TEAM_SLOT_COUNT } from '@/constants/sealing';
+import { clampStars } from '@/constants/character-progression';
 import { STARTERS } from '@/data/starters';
 import {
   CHOUJI_CURATED_LOOK_TYPE,
   getCharacterPack,
+  GUY_CURATED_LOOK_TYPE,
   HINATA_CURATED_LOOK_TYPE,
+  INO_CURATED_LOOK_TYPE,
+  JIRAIYA_LOOK_TYPES,
+  JIROBO_LOOK_TYPES,
+  KAKASHI_CURATED_LOOK_TYPE,
+  NARUTO_CLASSIC_LOOK_TYPE,
   NARUTO_SENNIN_LOOK_TYPE,
   NEJI_CURATED_LOOK_TYPE,
+  ROCK_LEE_LOOK_TYPE,
+  SASUKE_CLASSIC_LOOK_TYPE,
   UCHIHA_ITACHI_LOOK_TYPE,
+  KABUTO_CURATED_LOOK_TYPE,
+  TSUNADE_CURATED_LOOK_TYPE,
+  KIBA_CURATED_LOOK_TYPE,
+  KIMIMARO_CURATED_LOOK_TYPE,
+  SASUKE_CURSED_CURATED_LOOK_TYPE,
+  OROCHIMARU_CURATED_LOOK_TYPE,
+  NARUTO_KYUBI_CURATED_LOOK_TYPE,
+  KISAME_CURATED_LOOK_TYPE,
+  DEIDARA_CURATED_LOOK_TYPE,
+  SAKURA_SHIPPUDEN_CURATED_LOOK_TYPE,
+  TENTEN_CURATED_LOOK_TYPE,
+  TEMARI_CURATED_LOOK_TYPE,
+  TAYUYA_CURATED_LOOK_TYPE,
+  SHINO_CURATED_LOOK_TYPE,
+  MOMO_HINAMORI_CURATED_LOOK_TYPE,
+  HITSUGAYA_CURATED_LOOK_TYPE,
 } from '@/data/character-packs';
 import { emitSystemMessage } from '@/lib/system-log';
+import { planForgeStar } from '@/systems/forge';
 import { createStore } from '@/stores/create-store';
+import { TEAM_SLOT_COUNT } from '@/constants/sealing';
 import type { StarterCharacterId } from '@/types/player-creation';
 import type { SealedCharacter, TeamState } from '@/types/team';
+import {
+  buildSealedCharacter,
+  normalizeSealedCharacter,
+} from '@/utils/character-identity';
 
 function starterMember(starterId: StarterCharacterId): SealedCharacter {
   const starter = STARTERS.find((entry) => entry.id === starterId);
   const pack = getCharacterPack(starterId);
-  return {
+  const lookType =
+    starterId === 'naruto-classic'
+      ? NARUTO_CLASSIC_LOOK_TYPE
+      : starterId === 'sasuke-classic'
+        ? SASUKE_CLASSIC_LOOK_TYPE
+        : starterId === 'rock-lee'
+          ? ROCK_LEE_LOOK_TYPE
+          : (pack.outfit?.lookType ?? 0);
+  const built = buildSealedCharacter({
+    // Primeira instância do starter: id estável legível (migrate de saves antigos).
     id: starterId,
     name: starter?.name ?? starterId,
-    lookType: pack.outfit?.lookType ?? 0,
+    lookType,
     sourceId: null,
     starterId,
-    previewUrl: starter?.previewUrl ?? `/sprites/wonsr/outfits/${pack.outfit?.lookType ?? 0}.png`,
+    previewUrl: starter?.previewUrl ?? `/sprites/player/previews/${starterId}.png`,
+  });
+  return {
+    ...built,
+    previewUrl: built.previewUrl ?? previewForLookType(lookType),
   };
 }
 
 function previewForLookType(lookType: number): string {
-  // Packs laterais curados (substituem outfit 4-dir no avatar).
+  if (lookType === NARUTO_CLASSIC_LOOK_TYPE) return '/sprites/player/previews/naruto.png';
+  if (lookType === SASUKE_CLASSIC_LOOK_TYPE) return '/sprites/player/previews/sasuke.png';
+  if (lookType === ROCK_LEE_LOOK_TYPE) return '/sprites/player/previews/rock-lee.png';
   if (lookType === 1426) return '/sprites/player/previews/shikamaru.png';
   if (
     lookType === 489 ||
@@ -49,11 +94,74 @@ function previewForLookType(lookType: number): string {
   if (lookType === HINATA_CURATED_LOOK_TYPE) {
     return '/sprites/player/previews/hinata.png';
   }
+  if (lookType === GUY_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/guy.png';
+  }
+  if (lookType === INO_CURATED_LOOK_TYPE || lookType === 1169) {
+    return '/sprites/player/previews/ino.png';
+  }
+  if (lookType === KAKASHI_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/kakashi.png';
+  }
   if (lookType === NARUTO_SENNIN_LOOK_TYPE) {
     return '/sprites/player/previews/naruto-sennin.png';
   }
   if (lookType === UCHIHA_ITACHI_LOOK_TYPE) {
     return '/sprites/player/previews/itachi.png';
+  }
+  if ((JIRAIYA_LOOK_TYPES as readonly number[]).includes(lookType)) {
+    return '/sprites/player/previews/jiraiya.png';
+  }
+  if ((JIROBO_LOOK_TYPES as readonly number[]).includes(lookType)) {
+    return '/sprites/player/previews/jirobo.png';
+  }
+  if (lookType === KABUTO_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/kabuto.png';
+  }
+  if (lookType === TSUNADE_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/tsunade.png';
+  }
+  if (lookType === KIBA_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/kiba.png';
+  }
+  if (lookType === KIMIMARO_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/kimimaro.png';
+  }
+  if (lookType === SASUKE_CURSED_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/sasuke-cursed.png';
+  }
+  if (lookType === OROCHIMARU_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/orochimaru.png';
+  }
+  if (lookType === NARUTO_KYUBI_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/naruto-kyubi.png';
+  }
+  if (lookType === KISAME_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/kisame.png';
+  }
+  if (lookType === DEIDARA_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/deidara.png';
+  }
+  if (lookType === SAKURA_SHIPPUDEN_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/sakura-shippuden.png';
+  }
+  if (lookType === TENTEN_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/tenten.png';
+  }
+  if (lookType === TEMARI_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/temari.png';
+  }
+  if (lookType === TAYUYA_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/tayuya.png';
+  }
+  if (lookType === SHINO_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/shino.png';
+  }
+  if (lookType === MOMO_HINAMORI_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/momo-hinamori.png';
+  }
+  if (lookType === HITSUGAYA_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/hitsugaya.png';
   }
   return `/sprites/wonsr/outfits/${lookType}.png`;
 }
@@ -63,19 +171,16 @@ const store = createStore<TeamState>({
   teamIds: [],
   activeId: null,
   inventoryTab: 'items',
+  isOpen: false,
 });
 
 function commit(next: TeamState): void {
   store.setState(next);
 }
 
-function ownsLookType(collection: SealedCharacter[], lookType: number): boolean {
-  return collection.some((entry) => entry.lookType === lookType);
-}
-
 /**
  * Coleção de personagens selados + equipe de até 3.
- * Snapshots em `idle-mmorpg:session-v1` via session-persist.
+ * Duplicatas permitidas (forja). Snapshots via session-persist.
  */
 export const teamStore = {
   subscribe: store.subscribe,
@@ -88,21 +193,22 @@ export const teamStore = {
       teamIds: [member.id],
       activeId: member.id,
       inventoryTab: 'items',
+      isOpen: false,
     });
   },
 
-  /**
-   * Restaura coleção/equipe. Retorna false se dados inválidos
-   * (coleção vazia ou active/team fora da coleção).
-   */
   hydrate(partial: {
     collection: SealedCharacter[];
     teamIds: string[];
     activeId: string | null;
   }): boolean {
-    const collection = partial.collection.filter(
-      (entry) => entry && typeof entry.id === 'string' && typeof entry.lookType === 'number',
-    );
+    const collection = partial.collection
+      .map((entry) => normalizeSealedCharacter(entry))
+      .filter((entry): entry is SealedCharacter => entry != null)
+      .map((entry) => ({
+        ...entry,
+        previewUrl: entry.previewUrl || previewForLookType(entry.lookType),
+      }));
     if (collection.length === 0) return false;
 
     const ids = new Set(collection.map((entry) => entry.id));
@@ -117,7 +223,10 @@ export const teamStore = {
       activeId = teamIds[0] ?? collection[0].id;
     }
     if (!teamIds.includes(activeId)) {
-      teamIds = [activeId, ...teamIds.filter((id) => id !== activeId)].slice(0, TEAM_SLOT_COUNT);
+      teamIds = [activeId, ...teamIds.filter((id) => id !== activeId)].slice(
+        0,
+        TEAM_SLOT_COUNT,
+      );
     }
 
     commit({
@@ -125,6 +234,7 @@ export const teamStore = {
       teamIds,
       activeId,
       inventoryTab: 'items',
+      isOpen: false,
     });
     return true;
   },
@@ -133,37 +243,96 @@ export const teamStore = {
     commit({ ...store.getSnapshot(), inventoryTab: tab });
   },
 
+  toggleOpen(): void {
+    const state = store.getSnapshot();
+    commit({ ...state, isOpen: !state.isOpen });
+  },
+
+  setOpen(isOpen: boolean): void {
+    commit({ ...store.getSnapshot(), isOpen });
+  },
+
   getActive(): SealedCharacter | null {
     const state = store.getSnapshot();
     if (!state.activeId) return null;
     return state.collection.find((entry) => entry.id === state.activeId) ?? null;
   },
 
-  hasCharacter(characterId: string): boolean {
-    return store.getSnapshot().collection.some((entry) => entry.id === characterId);
+  /** Contagem de instâncias com o mesmo characterKey. */
+  countByCharacterKey(characterKey: string): number {
+    return store
+      .getSnapshot()
+      .collection.filter((entry) => entry.characterKey === characterKey).length;
   },
 
-  hasLookType(lookType: number): boolean {
-    return ownsLookType(store.getSnapshot().collection, lookType);
+  hasInstance(instanceId: string): boolean {
+    return store.getSnapshot().collection.some((entry) => entry.id === instanceId);
   },
 
   /**
-   * Registra captura. Não duplica por id nem por lookType.
-   * @returns false se já possuído.
+   * Adiciona instância à coleção. Duplicatas do mesmo lookType/characterKey ok.
+   * Rejeita só se o `id` de instância já existir.
    */
-  addToCollection(member: Omit<SealedCharacter, 'previewUrl'> & { previewUrl?: string }): boolean {
+  addToCollection(
+    member: Partial<SealedCharacter> &
+      Pick<SealedCharacter, 'id' | 'name' | 'lookType'> & {
+        sourceId?: string | null;
+        starterId?: StarterCharacterId | null;
+        previewUrl?: string;
+      },
+  ): boolean {
     const state = store.getSnapshot();
     if (state.collection.some((entry) => entry.id === member.id)) return false;
-    if (ownsLookType(state.collection, member.lookType)) return false;
+
+    const built = buildSealedCharacter({
+      id: member.id,
+      name: member.name,
+      lookType: member.lookType,
+      sourceId: member.sourceId ?? null,
+      starterId: member.starterId ?? null,
+      previewUrl: member.previewUrl,
+      characterKey: member.characterKey,
+      quality: member.quality,
+      stars: member.stars,
+      clanId: member.clanId,
+      isFavorite: member.isFavorite,
+      isLocked: member.isLocked,
+    });
 
     const sealed: SealedCharacter = {
-      ...member,
-      previewUrl: member.previewUrl ?? previewForLookType(member.lookType),
+      ...built,
+      previewUrl: built.previewUrl ?? previewForLookType(member.lookType),
     };
     commit({
       ...state,
       collection: [...state.collection, sealed],
     });
+    return true;
+  },
+
+  setFavorite(instanceId: string, isFavorite: boolean): boolean {
+    const state = store.getSnapshot();
+    let found = false;
+    const collection = state.collection.map((entry) => {
+      if (entry.id !== instanceId) return entry;
+      found = true;
+      return { ...entry, isFavorite };
+    });
+    if (!found) return false;
+    commit({ ...state, collection });
+    return true;
+  },
+
+  setLocked(instanceId: string, isLocked: boolean): boolean {
+    const state = store.getSnapshot();
+    let found = false;
+    const collection = state.collection.map((entry) => {
+      if (entry.id !== instanceId) return entry;
+      found = true;
+      return { ...entry, isLocked };
+    });
+    if (!found) return false;
+    commit({ ...state, collection });
     return true;
   },
 
@@ -205,10 +374,6 @@ export const teamStore = {
     return true;
   },
 
-  /**
-   * Define o lutador ativo. Só membros da equipe.
-   * @returns true se trocou (chamador deve reiniciar a cena).
-   */
   setActive(characterId: string): boolean {
     const state = store.getSnapshot();
     if (!state.teamIds.includes(characterId)) {
@@ -221,4 +386,77 @@ export const teamStore = {
     emitSystemMessage(`Agora lutando com ${member?.name ?? 'personagem'}.`);
     return true;
   },
+
+  /**
+   * Forja +1 estrela no alvo consumindo materiais confirmados.
+   * UI deve listar `plan.materialIds` antes de chamar.
+   */
+  forgeStar(targetId: string, confirmedMaterialIds: readonly string[]): boolean {
+    const state = store.getSnapshot();
+    const plan = planForgeStar({
+      targetId,
+      collection: state.collection,
+      teamIds: state.teamIds,
+      preferredMaterialIds: confirmedMaterialIds,
+    });
+
+    if (plan.reason === 'target-missing') {
+      emitSystemMessage('Alvo da forja não encontrado.');
+      return false;
+    }
+    if (plan.reason === 'quality-not-configured') {
+      emitSystemMessage('Forja para este rank ainda não está disponível.');
+      return false;
+    }
+    if (plan.reason === 'max-stars') {
+      emitSystemMessage('Este personagem já está no máximo de estrelas.');
+      return false;
+    }
+    if (plan.reason !== 'ok' || !plan.target) {
+      emitSystemMessage(
+        `Materiais insuficientes (precisa de ${plan.cost} cópias iguais elegíveis).`,
+      );
+      return false;
+    }
+
+    // Confirmar que o conjunto bate exatamente com o planejado.
+    if (
+      confirmedMaterialIds.length !== plan.materialIds.length ||
+      !plan.materialIds.every((id) => confirmedMaterialIds.includes(id))
+    ) {
+      emitSystemMessage('Lista de materiais inválida. Confirme novamente.');
+      return false;
+    }
+
+    const removeSet = new Set(plan.materialIds);
+    if (removeSet.has(targetId)) {
+      emitSystemMessage('O alvo não pode ser consumido como material.');
+      return false;
+    }
+
+    const collection = state.collection
+      .filter((entry) => !removeSet.has(entry.id))
+      .map((entry) => {
+        if (entry.id !== targetId) return entry;
+        return { ...entry, stars: clampStars(entry.stars + 1) };
+      });
+
+    if (collection.length !== state.collection.length - plan.cost) {
+      emitSystemMessage('Falha ao consumir materiais.');
+      return false;
+    }
+
+    // Materiais não deveriam estar na equipe (elegibilidade), mas limpa por segurança.
+    const teamIds = state.teamIds.filter((id) => !removeSet.has(id));
+    commit({ ...state, collection, teamIds });
+
+    const next = collection.find((entry) => entry.id === targetId);
+    emitSystemMessage(
+      `Forja concluída: ${next?.name ?? 'personagem'} agora com ${next?.stars ?? '?'}★.`,
+    );
+    return true;
+  },
 };
+
+// re-export preview helper for tests/tools if needed
+export { previewForLookType };

@@ -2,7 +2,13 @@ import type { EquipSlot, ItemBonuses } from '@/types/attributes';
 
 export type { EquipSlot } from '@/types/attributes';
 
-export type ItemRarity = 'common' | 'uncommon' | 'rare' | 'epic';
+export type ItemRarity =
+  | 'common'
+  | 'uncommon'
+  | 'rare'
+  | 'epic'
+  | 'legendary'
+  | 'mythic';
 
 export interface ItemDefinition {
   id: string;
@@ -10,6 +16,8 @@ export interface ItemDefinition {
   rarity: ItemRarity;
   /** Máximo por stack no inventário. */
   stackMax: number;
+  /** Ícone em /public (png ou svg). */
+  iconSrc?: string;
   /** Se definido, o item pode ser equipado nesse slot. */
   equipSlot?: EquipSlot;
   /** Bônus aplicados ao equipar. */

@@ -1,5 +1,6 @@
 export { GameHud } from '@/ui/hud/game-hud';
 export type { GameHudProps } from '@/ui/hud/game-hud';
+export { HubTopMenu } from '@/ui/hud/hub-top-menu';
 export { ResourceBar } from '@/ui/hud/resource-bar';
 export { MinimapPlaceholder } from '@/ui/hud/minimap-placeholder';
 export { ChatPlaceholder } from '@/ui/hud/chat-placeholder';

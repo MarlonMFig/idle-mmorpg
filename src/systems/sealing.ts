@@ -1,19 +1,37 @@
-import { SEAL_SUCCESS_CHANCE, SEALING_SCROLL_ITEM_ID } from '@/constants/sealing';
+import {
+  getSealingScrollTiersHighFirst,
+  type SealingScrollTier,
+} from '@/constants/sealing';
+import { DEFAULT_OBTAIN_QUALITY } from '@/constants/character-progression';
+import { resolveCharacterClan } from '@/data/character-clans';
 import { emitSystemMessage } from '@/lib/system-log';
 import { inventoryStore } from '@/stores/inventory-store';
 import { teamStore } from '@/stores/team-store';
 import type { EnemyDefinition } from '@/types/enemy';
+import {
+  buildSealedCharacter,
+  createCharacterInstanceId,
+} from '@/utils/character-identity';
 
 export type SealAttemptResult =
-  | { kind: 'skipped'; reason: 'not-sealable' | 'already-owned' | 'no-scroll' }
+  | { kind: 'skipped'; reason: 'not-sealable' | 'no-scroll' }
   | { kind: 'failed' }
-  | { kind: 'success'; characterId: string; name: string };
+  | { kind: 'success'; characterId: string; name: string; scrollId: string };
 
 export type SealRng = () => number;
 
+/** Escolhe o pergaminho de maior tier disponível (Lendário → Comum). */
+export function pickSealingScroll(): SealingScrollTier | null {
+  for (const tier of getSealingScrollTiersHighFirst()) {
+    if (inventoryStore.countItem(tier.itemId) >= 1) return tier;
+  }
+  return null;
+}
+
 /**
- * Tenta selar o inimigo morto: 1 pergaminho por tentativa elegível, 10% de chance.
- * Sem pergaminho ou personagem já obtido → sem tentativa nem consumo.
+ * Tenta selar o inimigo morto: 1 pergaminho por tentativa.
+ * Prioriza pergaminho de maior raridade (melhor chance).
+ * Duplicatas do mesmo personagem são permitidas (forja de estrelas).
  */
 export function trySealEnemy(
   definition: EnemyDefinition,
@@ -22,37 +40,46 @@ export function trySealEnemy(
   const seal = definition.sealable;
   if (!seal) return { kind: 'skipped', reason: 'not-sealable' };
 
-  if (teamStore.hasCharacter(seal.characterId) || teamStore.hasLookType(seal.lookType)) {
-    return { kind: 'skipped', reason: 'already-owned' };
-  }
-
-  if (inventoryStore.countItem(SEALING_SCROLL_ITEM_ID) < 1) {
+  const scroll = pickSealingScroll();
+  if (!scroll) {
     return { kind: 'skipped', reason: 'no-scroll' };
   }
 
-  if (!inventoryStore.removeItem(SEALING_SCROLL_ITEM_ID, 1)) {
+  if (!inventoryStore.removeItem(scroll.itemId, 1)) {
     return { kind: 'skipped', reason: 'no-scroll' };
   }
 
-  if (rng() >= SEAL_SUCCESS_CHANCE) {
-    emitSystemMessage(`Selamento falhou: ${seal.name} escapou.`);
+  if (rng() >= scroll.successChance) {
+    emitSystemMessage(`Selamento falhou: ${seal.name} escapou (${scroll.label}).`);
     return { kind: 'failed' };
   }
 
-  const added = teamStore.addToCollection({
-    id: seal.characterId,
+  const instance = buildSealedCharacter({
+    id: createCharacterInstanceId(),
     name: seal.name,
     lookType: seal.lookType,
     sourceId: seal.sourceId,
     starterId: null,
+    quality: DEFAULT_OBTAIN_QUALITY,
+    stars: 0,
+    clanId: resolveCharacterClan({ lookType: seal.lookType }),
   });
 
+  const added = teamStore.addToCollection(instance);
+
   if (!added) {
-    // Race defensiva: devolve o pergaminho se a coleção já tinha o personagem.
-    inventoryStore.addItem(SEALING_SCROLL_ITEM_ID, 1);
-    return { kind: 'skipped', reason: 'already-owned' };
+    inventoryStore.addItem(scroll.itemId, 1);
+    emitSystemMessage('Selamento falhou: não foi possível adicionar à coleção.');
+    return { kind: 'failed' };
   }
 
-  emitSystemMessage(`Selamento bem-sucedido! ${seal.name} entrou na coleção.`);
-  return { kind: 'success', characterId: seal.characterId, name: seal.name };
+  emitSystemMessage(
+    `Selamento bem-sucedido! ${seal.name} entrou na coleção (${scroll.label}).`,
+  );
+  return {
+    kind: 'success',
+    characterId: instance.id,
+    name: seal.name,
+    scrollId: scroll.itemId,
+  };
 }
