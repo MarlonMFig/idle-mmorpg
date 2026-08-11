@@ -30,7 +30,7 @@ const WONSR_HUNT_ATLAS_JSON = '/sprites/wonsr-hunts/characters.json';
  * Cópias por ponto de spawn. 3 × offset 32px amontoava labels/sprites
  * (efeito “shatter”); 2 com passo maior segue o espaçamento do vídeo.
  */
-const ENEMIES_PER_SPAWN = 2;
+const ENEMIES_PER_SPAWN = 1;
 /** Distância mínima entre clones no mesmo cluster (px mundo). */
 const SPAWN_CLUSTER_STEP = 64;
 const SPAWN_MIN_SEPARATION = 52;
@@ -221,7 +221,7 @@ export class EnemyManager {
         start: 0,
         end: idleEnd,
       }),
-      frameRate: 8,
+      frameRate: idle.frameRate ?? 8,
       repeat: -1,
     });
     this.scene.anims.create({
@@ -230,7 +230,7 @@ export class EnemyManager {
         start: 0,
         end: pack.walk.frameCount - 1,
       }),
-      frameRate: 12,
+      frameRate: pack.walk.frameRate ?? 12,
       repeat: -1,
     });
 
@@ -262,7 +262,9 @@ export class EnemyManager {
     }
 
     const contentH = idle.contentHeight ?? pack.walk.contentHeight ?? pack.walk.frameHeight;
-    const scale = contentH > 0 ? CHARACTER_DISPLAY_HEIGHT / contentH : 1;
+    const scaleY =
+      (contentH > 0 ? CHARACTER_DISPLAY_HEIGHT / contentH : 1) * (pack.displayScale ?? 1);
+    const scaleX = scaleY * (pack.displayScaleX ?? 1);
     const walkAnims: Partial<Record<WonsrDirection, string>> = {};
     const idleFrames: Partial<Record<WonsrDirection, number>> = {};
     for (const direction of MAP_DIRECTIONS) {
@@ -287,7 +289,7 @@ export class EnemyManager {
         deathTextureKey,
         deathAnimKey: deathTextureKey ? deathAnimKey : undefined,
       },
-      fit: { scale, originX: 0.5, originY: 1 },
+      fit: { scale: scaleY, scaleX, originX: 0.5, originY: 1 },
     };
   }
 

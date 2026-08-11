@@ -1,0 +1,128 @@
+{
+  "hitsugaya-walk": {
+    "image": "/sprites/player/hitsugaya/walk.png",
+    "frameWidth": 98,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.37209302325581395,
+    "residualGreen": 0,
+    "pureBlack": 0
+  },
+  "hitsugaya-idle": {
+    "image": "/sprites/player/hitsugaya/idle.png",
+    "frameWidth": 60,
+    "frameHeight": 52,
+    "frameCount": 6,
+    "contentHeight": 48,
+    "scale": 0.3157894736842105
+  },
+  "hitsugaya-combo1": {
+    "image": "/sprites/player/hitsugaya/combo1.png",
+    "frameWidth": 107,
+    "frameHeight": 94,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.37209302325581395,
+    "range": [
+      0,
+      5
+    ]
+  },
+  "hitsugaya-combo2": {
+    "image": "/sprites/player/hitsugaya/combo2.png",
+    "frameWidth": 107,
+    "frameHeight": 94,
+    "frameCount": 5,
+    "contentHeight": 48,
+    "scale": 0.37209302325581395,
+    "range": [
+      5,
+      10
+    ]
+  },
+  "hitsugaya-combo3": {
+    "image": "/sprites/player/hitsugaya/combo3.png",
+    "frameWidth": 107,
+    "frameHeight": 94,
+    "frameCount": 4,
+    "contentHeight": 48,
+    "scale": 0.37209302325581395,
+    "range": [
+      10,
+      14
+    ]
+  },
+  "hitsugaya-hurt": {
+    "image": "/sprites/player/hitsugaya/hurt.png",
+    "frameWidth": 101,
+    "frameHeight": 67,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "frameRate": 10,
+    "scale": 0.37209302325581395
+  },
+  "hitsugaya-death": {
+    "image": "/sprites/player/hitsugaya/death.png",
+    "frameWidth": 101,
+    "frameHeight": 67,
+    "frameCount": 2,
+    "contentHeight": 48,
+    "frameRate": 8,
+    "scale": 0.37209302325581395
+  },
+  "hitsugaya-daiguren-hyorinmaru": {
+    "image": "/sprites/player/hitsugaya/daiguren-hyorinmaru.png",
+    "frameWidth": 100,
+    "frameHeight": 104,
+    "frameCount": 7,
+    "contentHeight": 48,
+    "scale": 0.37209302325581395,
+    "frameRate": 12,
+    "durationMs": 583,
+    "hitDelayMs": 333,
+    "residualGreen": 0,
+    "pureBlack": 0,
+    "source": "hitsugaya/jutsu especial shared-crop body-lock; sash preserved"
+  },
+  "skill-daiguren-hyorinmaru": {
+    "image": "/sprites/player/hitsugaya/daiguren-hyorinmaru.png",
+    "frameWidth": 100,
+    "frameHeight": 104,
+    "frameCount": 7,
+    "contentHeight": 48,
+    "scale": 0.37209302325581395,
+    "frameRate": 12,
+    "durationMs": 583,
+    "hitDelayMs": 333,
+    "residualGreen": 0,
+    "pureBlack": 0,
+    "source": "hitsugaya/jutsu especial shared-crop body-lock; sash preserved"
+  },
+  "hitsugaya-daiguren-hyorinmaru-fx": {
+    "image": "/sprites/player/hitsugaya/daiguren-hyorinmaru-fx.png",
+    "frameWidth": 38,
+    "frameHeight": 68,
+    "frameCount": 5,
+    "contentHeight": 64,
+    "scale": 0.26337448559670784,
+    "frameRate": 12,
+    "durationMs": 417,
+    "residualGreen": 0,
+    "icePixels": 5246,
+    "source": "hitsugaya/especial-vfx (vfx especial.zip, 5f ice fan)"
+  },
+  "skill-daiguren-hyorinmaru-fx": {
+    "image": "/sprites/player/hitsugaya/daiguren-hyorinmaru-fx.png",
+    "frameWidth": 38,
+    "frameHeight": 68,
+    "frameCount": 5,
+    "contentHeight": 64,
+    "scale": 0.26337448559670784,
+    "frameRate": 12,
+    "durationMs": 417,
+    "residualGreen": 0,
+    "icePixels": 5246,
+    "source": "hitsugaya/especial-vfx (vfx especial.zip, 5f ice fan)"
+  }
+}

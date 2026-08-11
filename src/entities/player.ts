@@ -12,7 +12,7 @@ import {
   CHARACTER_DISPLAY_HEIGHT,
 } from '@/constants/sprites';
 import {
-  characterBaseScale,
+  characterDisplayScale,
   packDeathAnimKey,
   packHurtAnimKey,
   type CharacterPack,
@@ -42,7 +42,8 @@ export class Player {
   private busyUntil = 0;
   /** Índice do próximo hit da cadeia de combos (1→2→3→1…). */
   private comboStep = 0;
-  private readonly baseScale: number;
+  private readonly scaleX: number;
+  private readonly scaleY: number;
   private readonly skillAnimKeys: Set<string>;
   private readonly attackAnimKeys: Set<string>;
   private readonly hurtAnimKey: string | null;
@@ -54,8 +55,10 @@ export class Player {
     options: PlayerSpawnOptions,
   ) {
     this.pack = options.pack;
-    // Escala única (walk → jutsus) — nunca recalcula por frameHeight do skill.
-    this.baseScale = characterBaseScale(options.pack);
+    // Escala do pack (walk → jutsus); X pode ser mais estreito que Y.
+    const display = characterDisplayScale(options.pack);
+    this.scaleX = display.x;
+    this.scaleY = display.y;
     this.skillAnimKeys = new Set(
       Object.values(options.pack.skillAnims).map((anim) => `skill-${anim.key}`),
     );
@@ -88,14 +91,14 @@ export class Player {
     } else {
       this.sprite.setOrigin(0.5, 1);
     }
-    this.sprite.setScale(this.baseScale);
+    this.applyBaseScale();
     this.sprite.setCollideWorldBounds(true);
     this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
 
     // Mesma pegada no chão dos monstros e NPCs, em px de textura (o Phaser
     // multiplica tamanho e offset do corpo pela escala do sprite).
-    const bodyW = CHARACTER_BODY_WIDTH / this.baseScale;
-    const bodyH = CHARACTER_BODY_HEIGHT / this.baseScale;
+    const bodyW = CHARACTER_BODY_WIDTH / this.scaleX;
+    const bodyH = CHARACTER_BODY_HEIGHT / this.scaleY;
     this.sprite.body!.setSize(bodyW, bodyH, false);
     this.sprite.body!.setOffset(
       this.sprite.displayOriginX - bodyW / 2,
@@ -125,7 +128,7 @@ export class Player {
         return;
       }
       this.busyUntil = 0;
-      this.sprite.setScale(this.baseScale);
+      this.applyBaseScale();
       this.sprite.setTexture(this.pack.walk.key, this.idleFrame());
       this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       this.applyFacingFlip();
@@ -236,7 +239,7 @@ export class Player {
       this.busyUntil = this.scene.time.now + durationMs;
       this.sprite.setVelocity(0, 0);
       this.applyFacingFlip();
-      this.sprite.setScale(this.baseScale);
+      this.applyBaseScale();
       this.sprite.anims.play(animKey, true);
       return Math.floor(durationMs * 0.55);
     }
@@ -248,15 +251,15 @@ export class Player {
     const animKey = chainAttackAnimKey(this.pack, sheet);
     if (!this.scene.anims.exists(animKey)) return 0;
 
-    const durationMs = Math.max(280, Math.floor((sheet.frameCount / 12) * 1000));
+    const attackFps = sheet.frameRate ?? 12;
+    const durationMs = Math.max(280, Math.floor((sheet.frameCount / attackFps) * 1000));
     this.busyUntil = this.scene.time.now + durationMs;
     this.sprite.setVelocity(0, 0);
     this.applyFacingFlip();
-    const contentH = sheet.contentHeight;
-    this.sprite.setScale(
-      contentH && contentH > 0 ? CHARACTER_DISPLAY_HEIGHT / contentH : this.baseScale,
-    );
+    // Escala global do pack (walk) — nunca recalcular por frame do combo.
+    this.applyBaseScale();
     this.sprite.setTexture(sheet.key, 0);
+    this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.sprite.anims.play(animKey, true);
     return Math.floor(durationMs * 0.55);
   }
@@ -276,11 +279,9 @@ export class Player {
     this.sprite.setVelocity(0, 0);
     // As folhas de jutsu são de lado, sempre voltadas para a direita.
     this.sprite.setFlipX(directionFacesLeft(this.facing));
-    // Escala pela altura do personagem na folha, e não pela moldura: os quadros
-    // grandes (Rasengan, Kurama) crescem na tela sem esticar o Naruto.
-    this.sprite.setScale(
-      def.contentHeight ? CHARACTER_DISPLAY_HEIGHT / def.contentHeight : this.baseScale,
-    );
+    // Escala única do pack (mesma do walk): contentHeight nas folhas normaliza
+    // o desenho na moldura; não reescalar por sheet (evita shrink/grow).
+    this.applyBaseScale();
     this.sprite.anims.play(animKey, true);
     return def.hitDelayMs;
   }
@@ -307,9 +308,7 @@ export class Player {
     this.busyUntil = this.scene.time.now + durationMs;
     this.sprite.setVelocity(0, 0);
     this.applyFacingFlip();
-    this.sprite.setScale(
-      def.contentHeight ? CHARACTER_DISPLAY_HEIGHT / def.contentHeight : this.baseScale,
-    );
+    this.applyBaseScale();
     this.sprite.setTexture(def.key, 0);
     this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.sprite.anims.play(this.hurtAnimKey, false);
@@ -332,9 +331,7 @@ export class Player {
     }
 
     this.applyFacingFlip();
-    this.sprite.setScale(
-      def.contentHeight ? CHARACTER_DISPLAY_HEIGHT / def.contentHeight : this.baseScale,
-    );
+    this.applyBaseScale();
     this.sprite.setTexture(def.key, 0);
     this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     this.sprite.anims.play(this.deathAnimKey, false);
@@ -345,7 +342,7 @@ export class Player {
   clearDeath(): void {
     this.dead = false;
     this.busyUntil = 0;
-    this.sprite.setScale(this.baseScale);
+    this.applyBaseScale();
     this.sprite.clearTint();
     this.sprite.setAlpha(1);
     this.playIdle();
@@ -384,10 +381,7 @@ export class Player {
       return;
     }
     const animKey = legacyAnimKey(this.pack, 'idle');
-    const contentH = this.pack.idle?.contentHeight ?? this.pack.walk.contentHeight;
-    this.sprite.setScale(
-      contentH && contentH > 0 ? CHARACTER_DISPLAY_HEIGHT / contentH : this.baseScale,
-    );
+    this.applyBaseScale();
     if (this.sprite.anims.currentAnim?.key !== animKey) {
       this.sprite.anims.play(animKey, true);
     }
@@ -398,13 +392,14 @@ export class Player {
     const animKey = this.pack.outfit
       ? outfitAnimKey(this.pack, 'walk', this.outfitDirection())
       : legacyAnimKey(this.pack, 'walk');
-    const contentH = this.pack.walk.contentHeight;
-    this.sprite.setScale(
-      contentH && contentH > 0 ? CHARACTER_DISPLAY_HEIGHT / contentH : this.baseScale,
-    );
+    this.applyBaseScale();
     if (this.sprite.anims.currentAnim?.key !== animKey) {
       this.sprite.anims.play(animKey, true);
     }
+  }
+
+  private applyBaseScale(): void {
+    this.sprite.setScale(this.scaleX, this.scaleY);
   }
 
   private idleFrame(): number {
@@ -460,7 +455,7 @@ export class Player {
             end: pack.idle.frameCount - 1,
           }),
           // Idle um pouco mais vivo (ref. pixel-art fighting / idle MMO).
-          frameRate: 8,
+          frameRate: pack.idle.frameRate ?? 8,
           repeat: -1,
         });
       } else if (scene.textures.exists(pack.walk.key)) {
@@ -484,7 +479,7 @@ export class Player {
           start: 0,
           end: pack.walk.frameCount - 1,
         }),
-        frameRate: 12,
+        frameRate: pack.walk.frameRate ?? 12,
         repeat: -1,
       });
     }
@@ -499,7 +494,7 @@ export class Player {
             start: 0,
             end: sheet.frameCount - 1,
           }),
-          frameRate: 12,
+          frameRate: sheet.frameRate ?? 12,
           repeat: 0,
         });
       }
@@ -526,6 +521,48 @@ export class Player {
             end: def.fx.frameCount - 1,
           }),
           frameRate: 12,
+          repeat: 0,
+        });
+        const flightN = def.fxFlightFrameCount ?? 0;
+        if (flightN > 0) {
+          const flightKey = `fx-${def.fx.key}-flight`;
+          const impactKey = `fx-${def.fx.key}-impact`;
+          if (!scene.anims.exists(flightKey)) {
+            scene.anims.create({
+              key: flightKey,
+              frames: scene.anims.generateFrameNumbers(def.fx.key, {
+                start: 0,
+                end: Math.min(flightN, def.fx.frameCount) - 1,
+              }),
+              frameRate: 10,
+              repeat: -1,
+            });
+          }
+          if (!scene.anims.exists(impactKey) && flightN < def.fx.frameCount) {
+            scene.anims.create({
+              key: impactKey,
+              frames: scene.anims.generateFrameNumbers(def.fx.key, {
+                start: flightN,
+                end: def.fx.frameCount - 1,
+              }),
+              frameRate: 12,
+              repeat: 0,
+            });
+          }
+        }
+      }
+      if (
+        def.fxSecondary &&
+        scene.textures.exists(def.fxSecondary.key) &&
+        !scene.anims.exists(`fx-${def.fxSecondary.key}`)
+      ) {
+        scene.anims.create({
+          key: `fx-${def.fxSecondary.key}`,
+          frames: scene.anims.generateFrameNumbers(def.fxSecondary.key, {
+            start: 0,
+            end: def.fxSecondary.frameCount - 1,
+          }),
+          frameRate: def.fxSecondaryFrameRate ?? 12,
           repeat: 0,
         });
       }
