@@ -13,13 +13,18 @@ const {
   isLabelPixel,
   fillInteriorHoles,
 } = require('./lib/chroma-green-bg');
+const {
+  resolveHqScale,
+  resolvePackContentHeight,
+  NATIVE_PIXELS,
+} = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const SRC = path.join(ROOT, 'assets', 'naruto-source', 'nu');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'sakura');
 const PREVIEW = path.join(ROOT, 'public', 'sprites', 'player', 'previews', 'sakura.png');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
-const TARGET_BODY_H = 48;
+
 const FRAME_RATE = 12;
 
 async function loadKeyed(fileName) {
@@ -201,11 +206,14 @@ function normalize(cut, standingN = 2, pad = 2) {
   return { frames, cellW, cellH, contentHeight: contentH0 || cut[0].bh };
 }
 
-async function scaleFrames(frames, cellW, cellH, contentHeight) {
-  const scale = Math.min(1, TARGET_BODY_H / Math.max(1, contentHeight));
+async function scaleFrames(frames, cellW, cellH, contentHeight, scaleOpts = { mode: 'match', metaPath: META_JSON, idleKey: 'sakura-idle' }) {
+  const scale = resolveHqScale(contentHeight, scaleOpts);
   const outW = Math.max(1, Math.round(cellW * scale));
   const outH = Math.max(1, Math.round(cellH * scale));
-  const outContent = Math.max(1, Math.round(contentHeight * scale));
+  const outContent = resolvePackContentHeight(contentHeight, scale, scaleOpts);
+  if (NATIVE_PIXELS) {
+    console.log(`HQ scale=${scale.toFixed(4)} contentH=${outContent} cell ${cellW}x${cellH} → ${outW}x${outH}`);
+  }
   const out = [];
   for (const frame of frames) {
     const { data: d } = await sharp(frame, {

@@ -52,6 +52,14 @@ export class PreloadScene extends Phaser.Scene {
       .queue(MAP_KEYS.leafVillageHub)
       .queue(MAP_KEYS.forest)
       .queue(MAP_KEYS.huntForestClearing)
+      .queue(MAP_KEYS.huntArenaExameChunnin)
+      .queue(MAP_KEYS.huntCampoTreinamento)
+      .queue(MAP_KEYS.huntEsconderijoAkatsuki)
+      .queue(MAP_KEYS.huntKonohaDestruida)
+      .queue(MAP_KEYS.huntLabOrochimaru)
+      .queue(MAP_KEYS.huntPaisDoVento)
+      .queue(MAP_KEYS.huntPontePaisOnda)
+      .queue(MAP_KEYS.huntValeDoFim)
       .queue(MAP_KEYS.academy)
       .preload();
   }

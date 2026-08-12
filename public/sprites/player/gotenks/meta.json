@@ -1,0 +1,128 @@
+{
+  "gotenks-walk": {
+    "image": "/sprites/player/gotenks/walk.png",
+    "frameWidth": 206,
+    "frameHeight": 139,
+    "frameCount": 4,
+    "contentHeight": 135,
+    "scale": 1.5,
+    "residualGreen": 0,
+    "pureBlack": 13138
+  },
+  "gotenks-idle": {
+    "image": "/sprites/player/gotenks/idle.png",
+    "frameWidth": 65,
+    "frameHeight": 139,
+    "frameCount": 4,
+    "contentHeight": 135,
+    "scale": 1
+  },
+  "gotenks-combo1": {
+    "image": "/sprites/player/gotenks/combo1.png",
+    "frameWidth": 137,
+    "frameHeight": 132,
+    "frameCount": 7,
+    "contentHeight": 135,
+    "scale": 1,
+    "range": [
+      0,
+      7
+    ]
+  },
+  "gotenks-combo2": {
+    "image": "/sprites/player/gotenks/combo2.png",
+    "frameWidth": 137,
+    "frameHeight": 132,
+    "frameCount": 7,
+    "contentHeight": 135,
+    "scale": 1,
+    "range": [
+      7,
+      14
+    ]
+  },
+  "gotenks-combo3": {
+    "image": "/sprites/player/gotenks/combo3.png",
+    "frameWidth": 137,
+    "frameHeight": 132,
+    "frameCount": 6,
+    "contentHeight": 135,
+    "scale": 1,
+    "range": [
+      14,
+      20
+    ]
+  },
+  "gotenks-hurt": {
+    "image": "/sprites/player/gotenks/hurt.png",
+    "frameWidth": 229,
+    "frameHeight": 139,
+    "frameCount": 2,
+    "contentHeight": 135,
+    "frameRate": 10,
+    "scale": 1.2616822429906542
+  },
+  "gotenks-death": {
+    "image": "/sprites/player/gotenks/death.png",
+    "frameWidth": 229,
+    "frameHeight": 139,
+    "frameCount": 2,
+    "contentHeight": 135,
+    "frameRate": 8,
+    "scale": 1.2616822429906542
+  },
+  "gotenks-especial": {
+    "image": "/sprites/player/gotenks/especial.png",
+    "frameWidth": 156,
+    "frameHeight": 167,
+    "frameCount": 16,
+    "contentHeight": 135,
+    "scale": 1.2857142857142858,
+    "frameRate": 10,
+    "durationMs": 1600,
+    "hitDelayMs": 1300,
+    "residualGreen": 0,
+    "pureBlack": 9719,
+    "originX": 0.41025641025641024
+  },
+  "skill-especial": {
+    "image": "/sprites/player/gotenks/especial.png",
+    "frameWidth": 156,
+    "frameHeight": 167,
+    "frameCount": 16,
+    "contentHeight": 135,
+    "scale": 1.2857142857142858,
+    "frameRate": 10,
+    "durationMs": 1600,
+    "hitDelayMs": 1300,
+    "residualGreen": 0,
+    "pureBlack": 9719,
+    "originX": 0.41025641025641024
+  },
+  "skill-gotenks-especial": {
+    "image": "/sprites/player/gotenks/especial.png",
+    "frameWidth": 156,
+    "frameHeight": 167,
+    "frameCount": 16,
+    "contentHeight": 135,
+    "scale": 1.2857142857142858,
+    "frameRate": 10,
+    "durationMs": 1600,
+    "hitDelayMs": 1300,
+    "residualGreen": 0,
+    "pureBlack": 9719,
+    "originX": 0.41025641025641024
+  },
+  "gotenks-ghost-fx": {
+    "image": "/sprites/player/gotenks/ghost-fx.png",
+    "frameWidth": 242,
+    "frameHeight": 242,
+    "frameCount": 7,
+    "contentHeight": 242,
+    "frameRate": 10,
+    "flightFrameCount": 2,
+    "durationMs": 700,
+    "residualGreen": 0,
+    "note": "2f ghost flight + 5f kamikaze burst"
+  }
+}

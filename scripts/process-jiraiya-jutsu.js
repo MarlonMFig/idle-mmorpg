@@ -21,13 +21,14 @@ const {
   writePng,
   isChromaGreen,
 } = require('./lib/alpha-frame-pack');
+const { hqLinearScale } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'jiraiya', 'jutsu');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'jiraiya');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'jiraiya');
-const TARGET_BODY_H = 48;
+const HQ = { hq: { mode: 'match', metaPath: META_JSON, idleKey: 'jiraiya-idle' } };
 const FRAME_RATE = 12;
 const PAD = 2;
 /** Fire burst window (0-based; frames 18–23 of sequence expand hard). */
@@ -519,8 +520,9 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     norm.contentHeight,
-    TARGET_BODY_H,
+    HQ,
   );
+  const lin = hqLinearScale(scaled.contentHeight);
   const cleaned = scaled.frames.map((f) =>
     scrubFrame(f, scaled.frameWidth, scaled.frameHeight),
   );
@@ -561,12 +563,12 @@ async function main() {
   if (pal.black < 80) {
     throw new Error(`QA fail: pure black outline nearly gone (${pal.black})`);
   }
-  if (cxStats.std > BODY_CX_VAR_MAX + 0.5) {
+  if (cxStats.std > BODY_CX_VAR_MAX + 0.5 * lin) {
     console.warn(
-      `WARN body-lock: bodyCx std=${cxStats.std.toFixed(3)}px > ${BODY_CX_VAR_MAX}px (VFX may pull mass)`,
+      `WARN body-lock: bodyCx std=${cxStats.std.toFixed(3)}px > ${(BODY_CX_VAR_MAX + 0.5 * lin).toFixed(2)}px (VFX may pull mass)`,
     );
   }
-  if (maxDriftVsRef > BODY_CX_VAR_MAX + 2) {
+  if (maxDriftVsRef > BODY_CX_VAR_MAX + 2 * lin) {
     console.warn(
       `WARN body-lock: max bodyCx drift = ${maxDriftVsRef.toFixed(2)}px`,
     );

@@ -29,6 +29,12 @@ export interface EnemyWalkAnimation {
   /** Death (play once, hold last frame). */
   deathTextureKey?: string;
   deathAnimKey?: string;
+  /**
+   * Combo / ataque lateral (play once). Cicla `attackAnimKeys` a cada golpe.
+   * Texturas em paralelo com o mesmo índice.
+   */
+  attackAnimKeys?: string[];
+  attackTextureKeys?: string[];
 }
 
 /** @deprecated use LootDropEntry — mantido como alias. */

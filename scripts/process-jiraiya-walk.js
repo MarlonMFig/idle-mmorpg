@@ -22,6 +22,12 @@ const {
   bbox,
   isChromaGreen,
 } = require('./lib/alpha-frame-pack');
+const {
+  resolveHqScale,
+  resolvePackContentHeight,
+  hqLinearScale,
+  hqAreaScale,
+} = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'jiraiya', 'walk');
@@ -29,7 +35,8 @@ const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'jiraiya');
 const PREVIEW = path.join(ROOT, 'public', 'sprites', 'player', 'previews', 'jiraiya.png');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'jiraiya');
-const TARGET_BODY_H = 48;
+/** Walk is Jiraiya's body ruler: native pixels here, every other anim matches it. */
+const HQ = { mode: 'idle' };
 const FRAME_RATE = 10;
 const EXPECTED = 6;
 const PAD = 2;
@@ -215,7 +222,7 @@ function normalizeBodyLock(frames, widths, heights, pad = PAD) {
   };
 }
 
-async function scaleLockedCells(frames, fw, fh, absoluteScale) {
+async function scaleLockedCells(frames, fw, fh, absoluteScale, bodyH) {
   const outW = Math.max(1, Math.round(fw * absoluteScale));
   const outH = Math.max(1, Math.round(fh * absoluteScale));
   const out = [];
@@ -250,7 +257,7 @@ async function scaleLockedCells(frames, fw, fh, absoluteScale) {
     frames: out,
     frameWidth: outW,
     frameHeight: outH,
-    contentHeight: TARGET_BODY_H,
+    contentHeight: bodyH,
     scale: absoluteScale,
   };
 }
@@ -304,9 +311,12 @@ async function main() {
       `(min=${Math.min(...beforeH)} max=${maxContentH} Δ=${maxContentH - Math.min(...beforeH)})`,
   );
 
-  const absoluteScale = TARGET_BODY_H / Math.max(1, maxContentH);
+  const absoluteScale = resolveHqScale(maxContentH, HQ);
+  const bodyH = resolvePackContentHeight(maxContentH, absoluteScale, HQ);
+  const linear = hqLinearScale(bodyH);
+  const areaScale = hqAreaScale(bodyH);
   console.log(
-    `absoluteScale=${absoluteScale.toFixed(6)} = ${TARGET_BODY_H}/maxContentH=${maxContentH} (nearest once)`,
+    `absoluteScale=${absoluteScale.toFixed(6)} bodyH=${bodyH} from maxContentH=${maxContentH} (nearest once)`,
   );
 
   const rawFrames = keyed.map((k) => k.frame);
@@ -331,6 +341,7 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     absoluteScale,
+    bodyH,
   );
 
   const afterH = scaled.frames.map((f) => bbox(f, scaled.frameWidth, scaled.frameHeight).height);
@@ -348,6 +359,7 @@ async function main() {
       minOlivePerFrame: 0,
       minBluePerFrame: 0,
       minOpaquePerFrame: 100,
+      areaScale,
     },
   );
   const whiteHair = countWhiteHair(sheet.data);
@@ -383,19 +395,22 @@ async function main() {
   if (qa.pureBlack < 120) {
     throw new Error(`QA fail: pure black outline nearly gone (${qa.pureBlack})`);
   }
-  if (cxStats.std > BODY_CX_VAR_MAX) {
+  const cxVarMax = BODY_CX_VAR_MAX * linear;
+  const cxRangeMax = BODY_CX_RANGE_MAX * linear;
+  const feetDeltaMax = Math.round(1 * linear);
+  if (cxStats.std > cxVarMax) {
     throw new Error(
-      `QA fail body-lock: bodyCx std=${cxStats.std.toFixed(3)}px > ${BODY_CX_VAR_MAX}px`,
+      `QA fail body-lock: bodyCx std=${cxStats.std.toFixed(3)}px > ${cxVarMax.toFixed(2)}px`,
     );
   }
-  if (cxStats.max - cxStats.min > BODY_CX_RANGE_MAX) {
+  if (cxStats.max - cxStats.min > cxRangeMax) {
     throw new Error(
-      `QA fail body-lock: bodyCx range Δ=${(cxStats.max - cxStats.min).toFixed(2)}px > ${BODY_CX_RANGE_MAX}px`,
+      `QA fail body-lock: bodyCx range Δ=${(cxStats.max - cxStats.min).toFixed(2)}px > ${cxRangeMax.toFixed(2)}px`,
     );
   }
-  if (feetStats.max - feetStats.min > 1) {
+  if (feetStats.max - feetStats.min > feetDeltaMax) {
     throw new Error(
-      `QA fail body-lock: feetY Δ=${feetStats.max - feetStats.min}px (need ≤ 1)`,
+      `QA fail body-lock: feetY Δ=${feetStats.max - feetStats.min}px (need ≤ ${feetDeltaMax})`,
     );
   }
 

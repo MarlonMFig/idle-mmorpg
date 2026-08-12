@@ -1,5 +1,10 @@
 import type { AnimeId } from '@/types/anime';
 import type { ItemDefinition, ItemRarity } from '@/types/loot';
+import {
+  listNarutoTierCharacterIds,
+  NARUTO_CHARACTER_LABEL,
+  narutoFragmentItemId,
+} from '@/data/naruto-loot-tiers';
 
 const STACK_BY_RARITY: Record<ItemRarity, number> = {
   common: 99,
@@ -226,6 +231,18 @@ export const ANIME_LOOT_ITEMS: Record<string, ItemDefinition> = {
     'fragmento_personagem.svg',
   ),
 
+  // Fragmentos por personagem (tier define %; personagem define o item)
+  ...Object.fromEntries(
+    listNarutoTierCharacterIds().map((characterId) => {
+      const id = narutoFragmentItemId(characterId);
+      const label = NARUTO_CHARACTER_LABEL[characterId] ?? characterId;
+      return [
+        id,
+        animeItem(id, `Fragmento de ${label}`, 'mythic', 'fragmento_personagem.svg'),
+      ];
+    }),
+  ),
+
   // —— Bleach ——
   'item-anime-bleach-soul-candy': {
     id: 'item-anime-bleach-soul-candy',
@@ -327,7 +344,7 @@ export const ANIME_LOOT_ITEMS: Record<string, ItemDefinition> = {
   },
 };
 
-/** Pools de loot Naruto por raridade (ids do catálogo). */
+/** Pools legadas / UI — a caça Naruto rola em `rollNarutoCharacterLoot`. */
 export const NARUTO_LOOT_POOLS: Record<ItemRarity, readonly string[]> = {
   common: [
     'item-anime-naruto-essencia-chakra',
@@ -369,13 +386,14 @@ export const NARUTO_LOOT_POOLS: Record<ItemRarity, readonly string[]> = {
   ],
   mythic: [
     'item-anime-naruto-pergaminho-proibido',
+    // fragmentos por personagem vivem em ANIME_LOOT_ITEMS; genérico = fallback
     'item-anime-naruto-fragmento-personagem',
   ],
 };
 
 /**
  * Trio legado (outros animes): 1 material por raridade comum/incomum/raro.
- * Naruto usa `NARUTO_LOOT_POOLS` + `buildNarutoHuntLoot`.
+ * Naruto na caça: `rollNarutoCharacterLoot` (raridade + assinatura).
  */
 export const ANIME_MATERIAL_TRIO: Record<
   AnimeId,

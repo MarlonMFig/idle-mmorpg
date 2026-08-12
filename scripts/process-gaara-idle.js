@@ -29,7 +29,7 @@ const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'gaara');
 const PREVIEW = path.join(ROOT, 'public', 'sprites', 'player', 'previews', 'gaara.png');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'gaara');
-const TARGET_BODY_H = 48;
+const HQ = { hq: { mode: 'idle' } };
 const FRAME_RATE = 7;
 const EXPECTED = 4;
 
@@ -73,7 +73,7 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     norm.contentHeight,
-    TARGET_BODY_H,
+    HQ,
   );
   const sheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
   const qa = qaSheet(

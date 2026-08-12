@@ -1,0 +1,49 @@
+{
+  "mapKey": "huntArenaExameChunnin",
+  "slug": "hunt-arena-exame-chunnin",
+  "label": "Arena Exame Chunin",
+  "image": "/maps/hunt-arena-exame-chunnin.png",
+  "tmx": "/maps/hunt-arena-exame-chunnin.tmx",
+  "width": 1024,
+  "height": 576,
+  "cols": 32,
+  "rows": 18,
+  "spawn": {
+    "x": 528,
+    "y": 388
+  },
+  "enemySpawns": [
+    {
+      "x": 528,
+      "y": 241
+    },
+    {
+      "x": 354,
+      "y": 333
+    },
+    {
+      "x": 702,
+      "y": 333
+    },
+    {
+      "x": 406,
+      "y": 278
+    },
+    {
+      "x": 650,
+      "y": 278
+    },
+    {
+      "x": 389,
+      "y": 370
+    },
+    {
+      "x": 667,
+      "y": 370
+    },
+    {
+      "x": 528,
+      "y": 342
+    }
+  ]
+}

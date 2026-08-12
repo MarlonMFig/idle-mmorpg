@@ -1,0 +1,397 @@
+{
+  "generatedAt": "2026-08-12T13:57:59.297Z",
+  "arenas": [
+    {
+      "mapKey": "huntArenaExameChunnin",
+      "slug": "hunt-arena-exame-chunnin",
+      "label": "Arena Exame Chunin",
+      "image": "/maps/hunt-arena-exame-chunnin.png",
+      "tmx": "/maps/hunt-arena-exame-chunnin.tmx",
+      "width": 1024,
+      "height": 576,
+      "cols": 32,
+      "rows": 18,
+      "spawn": {
+        "x": 528,
+        "y": 388
+      },
+      "enemySpawns": [
+        {
+          "x": 528,
+          "y": 241
+        },
+        {
+          "x": 354,
+          "y": 333
+        },
+        {
+          "x": 702,
+          "y": 333
+        },
+        {
+          "x": 406,
+          "y": 278
+        },
+        {
+          "x": 650,
+          "y": 278
+        },
+        {
+          "x": 389,
+          "y": 370
+        },
+        {
+          "x": 667,
+          "y": 370
+        },
+        {
+          "x": 528,
+          "y": 342
+        }
+      ]
+    },
+    {
+      "mapKey": "huntCampoTreinamento",
+      "slug": "hunt-campo-treinamento",
+      "label": "Campo de Treinamento",
+      "image": "/maps/hunt-campo-treinamento.png",
+      "tmx": "/maps/hunt-campo-treinamento.tmx",
+      "width": 1024,
+      "height": 576,
+      "cols": 32,
+      "rows": 18,
+      "spawn": {
+        "x": 528,
+        "y": 388
+      },
+      "enemySpawns": [
+        {
+          "x": 528,
+          "y": 241
+        },
+        {
+          "x": 354,
+          "y": 333
+        },
+        {
+          "x": 702,
+          "y": 333
+        },
+        {
+          "x": 406,
+          "y": 278
+        },
+        {
+          "x": 650,
+          "y": 278
+        },
+        {
+          "x": 389,
+          "y": 370
+        },
+        {
+          "x": 667,
+          "y": 370
+        },
+        {
+          "x": 528,
+          "y": 342
+        }
+      ]
+    },
+    {
+      "mapKey": "huntEsconderijoAkatsuki",
+      "slug": "hunt-esconderijo-akatsuki",
+      "label": "Esconderijo Akatsuki",
+      "image": "/maps/hunt-esconderijo-akatsuki.png",
+      "tmx": "/maps/hunt-esconderijo-akatsuki.tmx",
+      "width": 1024,
+      "height": 576,
+      "cols": 32,
+      "rows": 18,
+      "spawn": {
+        "x": 528,
+        "y": 388
+      },
+      "enemySpawns": [
+        {
+          "x": 528,
+          "y": 241
+        },
+        {
+          "x": 354,
+          "y": 333
+        },
+        {
+          "x": 702,
+          "y": 333
+        },
+        {
+          "x": 406,
+          "y": 278
+        },
+        {
+          "x": 650,
+          "y": 278
+        },
+        {
+          "x": 389,
+          "y": 370
+        },
+        {
+          "x": 667,
+          "y": 370
+        },
+        {
+          "x": 528,
+          "y": 342
+        }
+      ]
+    },
+    {
+      "mapKey": "huntKonohaDestruida",
+      "slug": "hunt-konoha-destruida",
+      "label": "Konoha Destruída",
+      "image": "/maps/hunt-konoha-destruida.png",
+      "tmx": "/maps/hunt-konoha-destruida.tmx",
+      "width": 1024,
+      "height": 576,
+      "cols": 32,
+      "rows": 18,
+      "spawn": {
+        "x": 528,
+        "y": 388
+      },
+      "enemySpawns": [
+        {
+          "x": 528,
+          "y": 241
+        },
+        {
+          "x": 354,
+          "y": 333
+        },
+        {
+          "x": 702,
+          "y": 333
+        },
+        {
+          "x": 406,
+          "y": 278
+        },
+        {
+          "x": 650,
+          "y": 278
+        },
+        {
+          "x": 389,
+          "y": 370
+        },
+        {
+          "x": 667,
+          "y": 370
+        },
+        {
+          "x": 528,
+          "y": 342
+        }
+      ]
+    },
+    {
+      "mapKey": "huntLabOrochimaru",
+      "slug": "hunt-lab-orochimaru",
+      "label": "Laboratório Orochimaru",
+      "image": "/maps/hunt-lab-orochimaru.png",
+      "tmx": "/maps/hunt-lab-orochimaru.tmx",
+      "width": 1024,
+      "height": 576,
+      "cols": 32,
+      "rows": 18,
+      "spawn": {
+        "x": 528,
+        "y": 388
+      },
+      "enemySpawns": [
+        {
+          "x": 528,
+          "y": 241
+        },
+        {
+          "x": 354,
+          "y": 333
+        },
+        {
+          "x": 702,
+          "y": 333
+        },
+        {
+          "x": 406,
+          "y": 278
+        },
+        {
+          "x": 650,
+          "y": 278
+        },
+        {
+          "x": 389,
+          "y": 370
+        },
+        {
+          "x": 667,
+          "y": 370
+        },
+        {
+          "x": 528,
+          "y": 342
+        }
+      ]
+    },
+    {
+      "mapKey": "huntPaisDoVento",
+      "slug": "hunt-pais-do-vento",
+      "label": "País do Vento",
+      "image": "/maps/hunt-pais-do-vento.png",
+      "tmx": "/maps/hunt-pais-do-vento.tmx",
+      "width": 1024,
+      "height": 576,
+      "cols": 32,
+      "rows": 18,
+      "spawn": {
+        "x": 528,
+        "y": 388
+      },
+      "enemySpawns": [
+        {
+          "x": 528,
+          "y": 241
+        },
+        {
+          "x": 354,
+          "y": 333
+        },
+        {
+          "x": 702,
+          "y": 333
+        },
+        {
+          "x": 406,
+          "y": 278
+        },
+        {
+          "x": 650,
+          "y": 278
+        },
+        {
+          "x": 389,
+          "y": 370
+        },
+        {
+          "x": 667,
+          "y": 370
+        },
+        {
+          "x": 528,
+          "y": 342
+        }
+      ]
+    },
+    {
+      "mapKey": "huntPontePaisOnda",
+      "slug": "hunt-ponte-pais-onda",
+      "label": "Ponte do País da Onda",
+      "image": "/maps/hunt-ponte-pais-onda.png",
+      "tmx": "/maps/hunt-ponte-pais-onda.tmx",
+      "width": 1024,
+      "height": 576,
+      "cols": 32,
+      "rows": 18,
+      "spawn": {
+        "x": 528,
+        "y": 388
+      },
+      "enemySpawns": [
+        {
+          "x": 528,
+          "y": 241
+        },
+        {
+          "x": 354,
+          "y": 333
+        },
+        {
+          "x": 702,
+          "y": 333
+        },
+        {
+          "x": 406,
+          "y": 278
+        },
+        {
+          "x": 650,
+          "y": 278
+        },
+        {
+          "x": 389,
+          "y": 370
+        },
+        {
+          "x": 667,
+          "y": 370
+        },
+        {
+          "x": 528,
+          "y": 342
+        }
+      ]
+    },
+    {
+      "mapKey": "huntValeDoFim",
+      "slug": "hunt-vale-do-fim",
+      "label": "Vale do Fim",
+      "image": "/maps/hunt-vale-do-fim.png",
+      "tmx": "/maps/hunt-vale-do-fim.tmx",
+      "width": 1024,
+      "height": 576,
+      "cols": 32,
+      "rows": 18,
+      "spawn": {
+        "x": 528,
+        "y": 388
+      },
+      "enemySpawns": [
+        {
+          "x": 528,
+          "y": 241
+        },
+        {
+          "x": 354,
+          "y": 333
+        },
+        {
+          "x": 702,
+          "y": 333
+        },
+        {
+          "x": 406,
+          "y": 278
+        },
+        {
+          "x": 650,
+          "y": 278
+        },
+        {
+          "x": 389,
+          "y": 370
+        },
+        {
+          "x": 667,
+          "y": 370
+        },
+        {
+          "x": 528,
+          "y": 342
+        }
+      ]
+    }
+  ]
+}

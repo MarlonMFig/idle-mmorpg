@@ -33,7 +33,7 @@ export class IdleAiSystem {
       return;
     }
 
-    if (this.player.isBusy()) {
+    if (this.player.isBusy() || this.player.isDead()) {
       this.player.sprite.setVelocity(0, 0);
       return;
     }

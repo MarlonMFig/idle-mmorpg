@@ -23,8 +23,39 @@ export interface WonsrRenderedMap {
   enemySpawns: readonly { x: number; y: number }[];
 }
 
+/** Spawns das arenas art (1024×576, npm run maps:hunt-arenas). */
+const ART_ARENA_1024 = {
+  width: 1024,
+  height: 576,
+  spawn: { x: 528, y: 388 },
+  enemySpawns: [
+    { x: 528, y: 241 },
+    { x: 354, y: 333 },
+    { x: 702, y: 333 },
+    { x: 406, y: 278 },
+    { x: 650, y: 278 },
+    { x: 389, y: 370 },
+    { x: 667, y: 370 },
+    { x: 528, y: 342 },
+  ],
+} as const;
+
+function artArena(
+  mapKey: MapKey,
+  slug: string,
+): WonsrRenderedMap {
+  return {
+    mapKey,
+    imageKey: `map-${slug}`,
+    imageUrl: `/maps/${slug}.png`,
+    width: ART_ARENA_1024.width,
+    height: ART_ARENA_1024.height,
+    spawn: { ...ART_ARENA_1024.spawn },
+    enemySpawns: ART_ARENA_1024.enemySpawns,
+  };
+}
+
 export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
-  // Floresta a oeste de Konoha (bounds x=1808 y=1904 z=7, 56×56 tiles).
   [MAP_KEYS.forest]: {
     mapKey: MAP_KEYS.forest,
     imageKey: 'map-wonsr-forest',
@@ -32,7 +63,6 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
     width: 1792,
     height: 1792,
     spawn: { x: 752, y: 880 },
-    // Spawns originais de monstros do WONSR dentro do recorte.
     enemySpawns: [
       { x: 1296, y: 48 },
       { x: 272, y: 240 },
@@ -47,7 +77,6 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
       { x: 1744, y: 1648 },
     ],
   },
-  // Arena de clareira (arte full-image) — todas as caças por enquanto.
   [MAP_KEYS.huntForestClearing]: {
     mapKey: MAP_KEYS.huntForestClearing,
     imageKey: 'map-hunt-forest-clearing',
@@ -66,6 +95,26 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
       { x: 528, y: 324 },
     ],
   },
+  [MAP_KEYS.huntArenaExameChunnin]: artArena(
+    MAP_KEYS.huntArenaExameChunnin,
+    'hunt-arena-exame-chunnin',
+  ),
+  [MAP_KEYS.huntCampoTreinamento]: artArena(
+    MAP_KEYS.huntCampoTreinamento,
+    'hunt-campo-treinamento',
+  ),
+  [MAP_KEYS.huntEsconderijoAkatsuki]: artArena(
+    MAP_KEYS.huntEsconderijoAkatsuki,
+    'hunt-esconderijo-akatsuki',
+  ),
+  [MAP_KEYS.huntKonohaDestruida]: artArena(
+    MAP_KEYS.huntKonohaDestruida,
+    'hunt-konoha-destruida',
+  ),
+  [MAP_KEYS.huntLabOrochimaru]: artArena(MAP_KEYS.huntLabOrochimaru, 'hunt-lab-orochimaru'),
+  [MAP_KEYS.huntPaisDoVento]: artArena(MAP_KEYS.huntPaisDoVento, 'hunt-pais-do-vento'),
+  [MAP_KEYS.huntPontePaisOnda]: artArena(MAP_KEYS.huntPontePaisOnda, 'hunt-ponte-pais-onda'),
+  [MAP_KEYS.huntValeDoFim]: artArena(MAP_KEYS.huntValeDoFim, 'hunt-vale-do-fim'),
 };
 
 export function getWonsrRenderedMap(mapKey: MapKey): WonsrRenderedMap | undefined {

@@ -1,29 +1,29 @@
 {
   "sasuke-cursed-walk": {
     "image": "/sprites/player/sasuke-cursed/walk.png",
-    "frameWidth": 36,
-    "frameHeight": 52,
+    "frameWidth": 71,
+    "frameHeight": 103,
     "frameCount": 8,
-    "contentHeight": 48,
-    "scale": 0.48484848484848486,
+    "contentHeight": 98,
+    "scale": 1,
     "residualGreen": 0,
-    "pureBlack": 2704
+    "pureBlack": 11247
   },
   "sasuke-cursed-idle": {
     "image": "/sprites/player/sasuke-cursed/idle.png",
-    "frameWidth": 36,
-    "frameHeight": 52,
+    "frameWidth": 73,
+    "frameHeight": 102,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.48484848484848486
+    "contentHeight": 98,
+    "scale": 1
   },
   "sasuke-cursed-combo1": {
     "image": "/sprites/player/sasuke-cursed/combo1.png",
-    "frameWidth": 55,
-    "frameHeight": 52,
+    "frameWidth": 111,
+    "frameHeight": 105,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.4752475247524752,
+    "contentHeight": 98,
+    "scale": 1,
     "range": [
       0,
       6
@@ -31,11 +31,11 @@
   },
   "sasuke-cursed-combo2": {
     "image": "/sprites/player/sasuke-cursed/combo2.png",
-    "frameWidth": 55,
-    "frameHeight": 52,
+    "frameWidth": 111,
+    "frameHeight": 105,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.4752475247524752,
+    "contentHeight": 98,
+    "scale": 1,
     "range": [
       6,
       12
@@ -43,11 +43,11 @@
   },
   "sasuke-cursed-combo3": {
     "image": "/sprites/player/sasuke-cursed/combo3.png",
-    "frameWidth": 55,
-    "frameHeight": 52,
+    "frameWidth": 111,
+    "frameHeight": 105,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.4752475247524752,
+    "contentHeight": 98,
+    "scale": 1,
     "range": [
       12,
       18
@@ -55,46 +55,48 @@
   },
   "sasuke-cursed-hurt": {
     "image": "/sprites/player/sasuke-cursed/hurt.png",
-    "frameWidth": 44,
-    "frameHeight": 51,
+    "frameWidth": 100,
+    "frameHeight": 101,
     "frameCount": 2,
-    "contentHeight": 48,
+    "contentHeight": 98,
     "frameRate": 10,
-    "scale": 0.48484848484848486
+    "scale": 1
   },
   "sasuke-cursed-death": {
     "image": "/sprites/player/sasuke-cursed/death.png",
-    "frameWidth": 44,
-    "frameHeight": 51,
+    "frameWidth": 100,
+    "frameHeight": 101,
     "frameCount": 4,
-    "contentHeight": 48,
+    "contentHeight": 98,
     "frameRate": 8,
-    "scale": 0.48484848484848486
+    "scale": 1
   },
   "sasuke-cursed-chidori-nagashi": {
     "image": "/sprites/player/sasuke-cursed/chidori-nagashi.png",
-    "frameWidth": 75,
-    "frameHeight": 59,
+    "frameWidth": 223,
+    "frameHeight": 125,
     "frameCount": 38,
-    "contentHeight": 48,
-    "scale": 0.48484848484848486,
+    "contentHeight": 98,
+    "scale": 1.065217391304348,
     "frameRate": 12,
     "durationMs": 3167,
     "hitDelayMs": 2083,
     "residualGreen": 0,
-    "pureBlack": 12242
+    "pureBlack": 59777,
+    "originX": 0.39461883408071746
   },
   "skill-chidori-nagashi": {
     "image": "/sprites/player/sasuke-cursed/chidori-nagashi.png",
-    "frameWidth": 75,
-    "frameHeight": 59,
+    "frameWidth": 223,
+    "frameHeight": 125,
     "frameCount": 38,
-    "contentHeight": 48,
-    "scale": 0.48484848484848486,
+    "contentHeight": 98,
+    "scale": 1.065217391304348,
     "frameRate": 12,
     "durationMs": 3167,
     "hitDelayMs": 2083,
     "residualGreen": 0,
-    "pureBlack": 12242
+    "pureBlack": 59777,
+    "originX": 0.39461883408071746
   }
 }

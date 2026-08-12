@@ -29,6 +29,7 @@ const {
   updateMeta,
   writePng,
 } = require('./lib/alpha-frame-pack');
+const { resolveHqFxTargetMaxSide } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const LOCAL_SRC_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'jirobo');
@@ -46,7 +47,7 @@ const FRAME_RATE = 12;
 /** Flight frames (loop while rock is mid-air). */
 const FLIGHT_FRAME_COUNT = 2;
 const EXPECTED = 12;
-const TARGET_MAX_SIDE = 48;
+const LEGACY_FX_MAX_SIDE = 48;
 const PAD = 2;
 
 function resolveSource() {
@@ -323,7 +324,9 @@ async function main() {
     placeCentered(crop, bw, bh, cellW, cellH),
   );
 
-  const scale = Math.min(1, TARGET_MAX_SIDE / Math.max(cellW, cellH));
+  const TARGET_MAX_SIDE = resolveHqFxTargetMaxSide(META_JSON, 'jirobo-idle', LEGACY_FX_MAX_SIDE);
+  console.log(`HQ FX targetMaxSide=${TARGET_MAX_SIDE} (legacy ${LEGACY_FX_MAX_SIDE})`);
+  const scale = TARGET_MAX_SIDE / Math.max(1, cellW, cellH);
   const outW = Math.max(1, Math.round(cellW * scale));
   const outH = Math.max(1, Math.round(cellH * scale));
 

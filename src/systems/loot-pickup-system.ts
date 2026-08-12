@@ -1,4 +1,5 @@
 import { inventoryStore } from '@/stores/inventory-store';
+import { huntAnalyzerStore } from '@/stores/hunt-analyzer-store';
 import type { LootManager } from '@/systems/loot-manager';
 
 /**
@@ -13,6 +14,11 @@ export class LootPickupSystem {
       const before = drop.data.quantity;
       const leftover = inventoryStore.addItem(drop.data.itemId, before);
       if (leftover >= before) continue;
+
+      const gained = before - leftover;
+      if (gained > 0) {
+        huntAnalyzerStore.recordLootItems(drop.data.itemId, gained);
+      }
 
       if (leftover > 0) {
         drop.setQuantity(leftover);

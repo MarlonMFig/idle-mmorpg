@@ -1,0 +1,102 @@
+{
+  "goku-walk": {
+    "image": "/sprites/player/goku/walk.png",
+    "frameWidth": 213,
+    "frameHeight": 129,
+    "frameCount": 4,
+    "contentHeight": 125,
+    "scale": 1.5060240963855422,
+    "residualGreen": 0,
+    "pureBlack": 7648
+  },
+  "goku-idle": {
+    "image": "/sprites/player/goku/idle.png",
+    "frameWidth": 76,
+    "frameHeight": 129,
+    "frameCount": 4,
+    "contentHeight": 125,
+    "scale": 1
+  },
+  "goku-combo1": {
+    "image": "/sprites/player/goku/combo1.png",
+    "frameWidth": 147,
+    "frameHeight": 129,
+    "frameCount": 11,
+    "contentHeight": 125,
+    "scale": 1.1904761904761905,
+    "range": [
+      0,
+      11
+    ]
+  },
+  "goku-combo2": {
+    "image": "/sprites/player/goku/combo2.png",
+    "frameWidth": 147,
+    "frameHeight": 129,
+    "frameCount": 11,
+    "contentHeight": 125,
+    "scale": 1.1904761904761905,
+    "range": [
+      11,
+      22
+    ]
+  },
+  "goku-combo3": {
+    "image": "/sprites/player/goku/combo3.png",
+    "frameWidth": 147,
+    "frameHeight": 129,
+    "frameCount": 10,
+    "contentHeight": 125,
+    "scale": 1.1904761904761905,
+    "range": [
+      22,
+      32
+    ]
+  },
+  "goku-hurt": {
+    "image": "/sprites/player/goku/hurt.png",
+    "frameWidth": 205,
+    "frameHeight": 129,
+    "frameCount": 2,
+    "contentHeight": 125,
+    "frameRate": 10,
+    "scale": 1.2755102040816326
+  },
+  "goku-death": {
+    "image": "/sprites/player/goku/death.png",
+    "frameWidth": 205,
+    "frameHeight": 129,
+    "frameCount": 3,
+    "contentHeight": 125,
+    "frameRate": 8,
+    "scale": 1.2755102040816326
+  },
+  "goku-kamehameha": {
+    "image": "/sprites/player/goku/kamehameha.png",
+    "frameWidth": 366,
+    "frameHeight": 132,
+    "frameCount": 18,
+    "contentHeight": 125,
+    "scale": 1.3888888888888888,
+    "frameRate": 12,
+    "durationMs": 1500,
+    "hitDelayMs": 1083,
+    "residualGreen": 0,
+    "pureBlack": 9695,
+    "originX": 0.1092896174863388
+  },
+  "skill-kamehameha": {
+    "image": "/sprites/player/goku/kamehameha.png",
+    "frameWidth": 366,
+    "frameHeight": 132,
+    "frameCount": 18,
+    "contentHeight": 125,
+    "scale": 1.3888888888888888,
+    "frameRate": 12,
+    "durationMs": 1500,
+    "hitDelayMs": 1083,
+    "residualGreen": 0,
+    "pureBlack": 9695,
+    "originX": 0.1092896174863388
+  }
+}

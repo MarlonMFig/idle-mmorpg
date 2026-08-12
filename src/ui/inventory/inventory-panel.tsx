@@ -14,7 +14,6 @@ import {
   MAX_CHARACTER_STARS,
 } from '@/constants/character-progression';
 import { INVENTORY_COLUMNS, INVENTORY_SLOT_COUNT } from '@/constants/inventory';
-import { TEAM_SLOT_COUNT } from '@/constants/sealing';
 import { getItem, RARITY_CSS } from '@/data/items';
 import { useStore } from '@/hooks/use-store';
 import { switchActiveCharacter } from '@/lib/active-character';
@@ -27,7 +26,6 @@ import { vitalsStore } from '@/stores/vitals-store';
 import type { InventorySlot } from '@/types/inventory';
 import type { SealedCharacter } from '@/types/team';
 import { characterMetaLine, formatStars } from '@/utils/character-display';
-import { computePlayerAttributes } from '@/utils/attributes';
 import { HudPanel, HudPanelCollapsed } from '@/ui/hud/hud-panel';
 
 function slotLabel(slot: InventorySlot): string {
@@ -47,27 +45,6 @@ function itemMonogram(itemId: string, name: string): string {
   return (clean.slice(0, 2) || '??').toUpperCase();
 }
 
-/** Compacto estilo 2.15M / 249K. */
-function formatCompact(value: number): string {
-  const n = Math.max(0, value);
-  if (n >= 1_000_000) {
-    const v = n / 1_000_000;
-    const text = v >= 10 ? v.toFixed(1) : v.toFixed(2);
-    return `${text.replace(/\.0+$/, '').replace(/(\.\d)0$/, '$1')}M`;
-  }
-  if (n >= 1_000) {
-    const v = n / 1_000;
-    const text = v >= 100 ? String(Math.round(v)) : v >= 10 ? v.toFixed(1) : v.toFixed(2);
-    return `${text.replace(/\.0+$/, '')}K`;
-  }
-  return String(Math.round(n));
-}
-
-function estimateHpMax(stars: number, level: number): number {
-  const attrs = computePlayerAttributes({ level, stars });
-  return Math.max(1, Math.round(attrs.totals.hp));
-}
-
 function StarRow({ stars, max = MAX_CHARACTER_STARS }: { stars: number; max?: number }) {
   const n = Math.max(0, Math.min(max, Math.floor(stars)));
   return (
@@ -76,94 +53,6 @@ function StarRow({ stars, max = MAX_CHARACTER_STARS }: { stars: number; max?: nu
         <span key={i} className={`char-stars__dot${i < n ? ' is-on' : ''}`} />
       ))}
     </span>
-  );
-}
-
-function TeamMemberCard({
-  member,
-  isActive,
-  selected,
-  accountLevel,
-  hp,
-  hpMax,
-  expPct,
-  onSelect,
-}: {
-  member: SealedCharacter;
-  isActive: boolean;
-  selected: boolean;
-  accountLevel: number;
-  hp: number;
-  hpMax: number;
-  expPct: number;
-  onSelect: () => void;
-}) {
-  const qualityColor = CHARACTER_QUALITY_COLORS[member.quality];
-  const hpSafe = Math.max(1, hpMax);
-  const hpPct = Math.max(0, Math.min(100, (hp / hpSafe) * 100));
-  const expSafe = Math.max(0, Math.min(100, expPct));
-
-  return (
-    <button
-      type="button"
-      className={`team-card${isActive ? ' is-active' : ''}${selected ? ' is-selected' : ''}`}
-      onClick={onSelect}
-      aria-pressed={selected}
-      title={member.name}
-    >
-      {isActive ? <span className="team-card__ribbon">ATIVO</span> : null}
-
-      <div className="team-card__avatar" style={{ ['--q' as string]: qualityColor }}>
-        <span className="team-card__halo" aria-hidden />
-        <Image
-          className="team-card__sprite"
-          src={member.previewUrl}
-          alt=""
-          width={52}
-          height={52}
-          unoptimized
-        />
-        <span className="team-card__rank" style={{ background: qualityColor }}>
-          {member.quality}
-        </span>
-      </div>
-
-      <div className="team-card__body">
-        <div className="team-card__title-row">
-          <span className="team-card__name">{member.name}</span>
-          <span className="team-card__lv">Lv.{accountLevel}</span>
-        </div>
-        <div className="team-card__bar team-card__bar--hp">
-          <span className="team-card__bar-fill" style={{ width: `${hpPct}%` }} />
-          <span className="team-card__bar-label">
-            {formatCompact(hp)}/{formatCompact(hpMax)}
-          </span>
-        </div>
-        <div className="team-card__bar team-card__bar--exp">
-          <span className="team-card__bar-fill" style={{ width: `${expSafe}%` }} />
-          <span className="team-card__bar-label">EXP {Math.round(expSafe)}%</span>
-        </div>
-        <div className="team-card__meta">
-          <StarRow stars={member.stars} />
-          {member.isFavorite ? <span className="team-card__tag">★</span> : null}
-          {member.isLocked ? <span className="team-card__tag">#</span> : null}
-        </div>
-      </div>
-    </button>
-  );
-}
-
-function TeamEmptySlot({ index }: { index: number }) {
-  return (
-    <div className="team-card team-card--empty" aria-label={`Slot de equipe ${index + 1} vazio`}>
-      <div className="team-card__avatar team-card__avatar--empty">
-        <span>+</span>
-      </div>
-      <div className="team-card__body">
-        <p className="team-card__empty-label">Slot vazio</p>
-        <p className="team-card__empty-hint">Adicione da coleção</p>
-      </div>
-    </div>
   );
 }
 
@@ -399,12 +288,7 @@ function CharactersTab() {
   const collection = useStore(teamStore, (s) => s.collection);
   const teamIds = useStore(teamStore, (s) => s.teamIds);
   const activeId = useStore(teamStore, (s) => s.activeId);
-  const vitals = useStore(vitalsStore, (s) => s);
   const [selectedId, setSelectedId] = useState<string | null>(activeId);
-
-  const teamMembers = teamIds
-    .map((id) => collection.find((entry) => entry.id === id))
-    .filter((entry): entry is SealedCharacter => entry != null);
 
   const selected =
     collection.find((entry) => entry.id === selectedId) ??
@@ -412,53 +296,8 @@ function CharactersTab() {
     collection[0] ??
     null;
 
-  const expPct = vitals.xpMax > 0 ? (vitals.xp / vitals.xpMax) * 100 : 0;
-
   return (
     <div className="char-panel">
-      <section className="team-window" aria-label="Equipe">
-        <header className="team-window__head">
-          <div>
-            <h3 className="team-window__title">Equipe</h3>
-            <p className="team-window__sub">
-              Conta · Nível {vitals.level} · {teamMembers.length}/{TEAM_SLOT_COUNT}
-            </p>
-          </div>
-        </header>
-
-        <ul className="team-window__list">
-          {Array.from({ length: TEAM_SLOT_COUNT }, (_, index) => {
-            const member = teamMembers[index] ?? null;
-            if (!member) {
-              return (
-                <li key={`empty-${index}`}>
-                  <TeamEmptySlot index={index} />
-                </li>
-              );
-            }
-            const isActive = member.id === activeId;
-            const hpMax = isActive
-              ? Math.max(1, vitals.hpMax)
-              : estimateHpMax(member.stars, vitals.level);
-            const hp = isActive ? vitals.hp : hpMax;
-            return (
-              <li key={member.id}>
-                <TeamMemberCard
-                  member={member}
-                  isActive={isActive}
-                  selected={selected?.id === member.id}
-                  accountLevel={vitals.level}
-                  hp={hp}
-                  hpMax={hpMax}
-                  expPct={expPct}
-                  onSelect={() => setSelectedId(member.id)}
-                />
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-
       <section className="char-panel__section" aria-label="Coleção">
         <header className="char-panel__head">
           <h3 className="char-panel__title">Coleção</h3>

@@ -232,11 +232,16 @@ function normalizeBodyLock(frames, widths, heights, pad = PAD) {
   };
 }
 
-async function scaleLockedCells(frames, fw, fh, absoluteScale) {
-  const outW = Math.max(1, Math.round(fw * absoluteScale));
-  const outH = Math.max(1, Math.round(fh * absoluteScale));
+async function scaleLockedCells(frames, fw, fh, absoluteScale, contentHeight = TARGET_BODY_H) {
+  const skipResize = Math.abs(absoluteScale - 1) < 1e-6;
+  const outW = skipResize ? fw : Math.max(1, Math.round(fw * absoluteScale));
+  const outH = skipResize ? fh : Math.max(1, Math.round(fh * absoluteScale));
   const out = [];
   for (const frame of frames) {
+    if (skipResize) {
+      out.push(Buffer.from(frame));
+      continue;
+    }
     const { data } = await sharp(frame, {
       raw: { width: fw, height: fh, channels: 4 },
     })
@@ -267,7 +272,7 @@ async function scaleLockedCells(frames, fw, fh, absoluteScale) {
     frames: out,
     frameWidth: outW,
     frameHeight: outH,
-    contentHeight: TARGET_BODY_H,
+    contentHeight: Math.max(1, Math.round(contentHeight * absoluteScale)),
     scale: absoluteScale,
   };
 }
@@ -320,7 +325,8 @@ function resolveWalkScale() {
         return {
           scale: w.scale,
           source: 'meta.json kakashi-walk',
-          walkMaxContentH: w.maxContentH ?? null,
+          walkMaxContentH: w.maxContentH ?? w.contentHeight ?? null,
+          contentHeight: w.contentHeight ?? null,
         };
       }
     } catch {
@@ -335,9 +341,10 @@ async function measureWalkSourceScale() {
   const heights = walkKeyed.map((k) => k.box.height);
   const maxH = Math.max(...heights);
   return {
-    scale: TARGET_BODY_H / Math.max(1, maxH),
-    source: 'walk source max contentH',
+    scale: 1,
+    source: 'hq-native walk source',
     walkMaxContentH: maxH,
+    contentHeight: maxH,
   };
 }
 
@@ -380,11 +387,13 @@ async function main() {
       `destBodyCx=${norm.destBodyCx} destFeetY=${norm.destFeetY}`,
   );
 
+  const rulerH = walkScaleInfo.contentHeight || walkScaleInfo.walkMaxContentH || TARGET_BODY_H;
   const scaled = await scaleLockedCells(
     norm.frames,
     norm.frameWidth,
     norm.frameHeight,
     absoluteScale,
+    rulerH,
   );
 
   const afterH = scaled.frames.map((f) => bbox(f, scaled.frameWidth, scaled.frameHeight).height);
@@ -397,7 +406,8 @@ async function main() {
     scaled.frames.length,
     {
       requireSingleComponent: true,
-      maxMinorComponent: 6,
+      // HQ native flecks are a few px larger than the old 48px pack.
+      maxMinorComponent: 24,
       minBlackPerFrame: 40,
       minOlivePerFrame: 0,
       minBluePerFrame: 0,

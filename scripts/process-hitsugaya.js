@@ -460,29 +460,22 @@ async function main() {
   fs.mkdirSync(QA, { recursive: true });
   fs.mkdirSync(path.dirname(PREVIEW), { recursive: true });
 
-  // --- walk ---
-  const walk = await packSequenceLabel('hitsugaya-walk', path.join(SRC, 'walk'), 6, {
-    alignX: 'feet',
-  });
-  await writeSheet('walk.png', walk, 'walk');
-  updateMeta(META, `${ID}-walk`, {
-    image: `/sprites/player/${ID}/walk.png`,
-    frameWidth: walk.frameWidth,
-    frameHeight: walk.frameHeight,
-    frameCount: walk.frameCount,
-    contentHeight: 48,
-    scale: walk.scale,
-    residualGreen: 0,
-    pureBlack: walk.pureBlack,
-  });
-
-  // --- idle (feet lock: haori + arcs) ---
-  // Idle export is ~18% taller in source than walk (152 vs 129). Do NOT reuse
-  // walk.absoluteScale — that made idle body ~57px while contentHeight stayed 48
-  // (scale from walk), so he read oversized on screen. Fit full bbox → 48 like walk.
+  // --- idle first (HQ native ruler) ---
   const idle = await packSequenceLabel('hitsugaya-idle', path.join(SRC, 'idle'), 6, {
     alignX: 'feet',
+    absoluteScale: 1,
+    allowOversizedFrames: true,
   });
+  // Honest body height from packed idle (not legacy 48).
+  let contentHeight = 0;
+  for (const frame of idle.frames) {
+    const b = bbox(frame, idle.frameWidth, idle.frameHeight);
+    contentHeight = Math.max(contentHeight, b.height);
+  }
+  contentHeight = Math.max(1, contentHeight);
+  idle.contentHeight = contentHeight;
+  console.log(`hitsugaya HQ contentHeight=${contentHeight} (idle native)`);
+
   await writeSheet('idle.png', idle, 'idle');
   await sharp(idle.frames[0], {
     raw: { width: idle.frameWidth, height: idle.frameHeight, channels: 4 },
@@ -494,13 +487,32 @@ async function main() {
     frameWidth: idle.frameWidth,
     frameHeight: idle.frameHeight,
     frameCount: idle.frameCount,
-    contentHeight: 48,
+    contentHeight,
     scale: idle.scale,
+  });
+
+  // --- walk ---
+  const walk = await packSequenceLabel('hitsugaya-walk', path.join(SRC, 'walk'), 6, {
+    alignX: 'feet',
+    absoluteScale: 1,
+    allowOversizedFrames: true,
+  });
+  walk.contentHeight = contentHeight;
+  await writeSheet('walk.png', walk, 'walk');
+  updateMeta(META, `${ID}-walk`, {
+    image: `/sprites/player/${ID}/walk.png`,
+    frameWidth: walk.frameWidth,
+    frameHeight: walk.frameHeight,
+    frameCount: walk.frameCount,
+    contentHeight,
+    scale: walk.scale,
+    residualGreen: 0,
+    pureBlack: walk.pureBlack,
   });
 
   // --- combo 14 → 5+5+4 ---
   const combo = await packSequenceLabel('hitsugaya-combo', path.join(SRC, 'combo'), 14, {
-    absoluteScale: walk.scale,
+    absoluteScale: 1,
     allowOversizedFrames: true,
     alignX: 'feet',
   });
@@ -527,7 +539,7 @@ async function main() {
       frameWidth: combo.frameWidth,
       frameHeight: combo.frameHeight,
       frameCount: n,
-      contentHeight: 48,
+      contentHeight,
     });
     updateMeta(META, `${ID}-combo${s + 1}`, {
       image: `/sprites/player/${ID}/${name}`,
@@ -542,7 +554,7 @@ async function main() {
 
   // --- damage 4 → hurt 2 + death 2 ---
   const damage = await packSequenceLabel('hitsugaya-damage', path.join(SRC, 'damage'), 4, {
-    absoluteScale: walk.scale,
+    absoluteScale: 1,
     allowOversizedFrames: true,
     alignX: 'feet',
   });
@@ -556,7 +568,7 @@ async function main() {
     frameWidth: damage.frameWidth,
     frameHeight: damage.frameHeight,
     frameCount: 2,
-    contentHeight: 48,
+    contentHeight,
     frameRate: 10,
     scale: damage.scale,
   };
@@ -564,7 +576,7 @@ async function main() {
     frameWidth: damage.frameWidth,
     frameHeight: damage.frameHeight,
     frameCount: deathFrames.length,
-    contentHeight: 48,
+    contentHeight,
     frameRate: 8,
     scale: damage.scale,
   };
@@ -584,7 +596,7 @@ async function main() {
     frameWidth: especial.frameWidth,
     frameHeight: especial.frameHeight,
     frameCount: especial.frameCount,
-    contentHeight: 48,
+    contentHeight,
     scale: especial.scale,
     frameRate: fr,
     durationMs: Math.round((especial.frameCount / fr) * 1000),
@@ -621,14 +633,14 @@ async function main() {
       frameWidth: walk.frameWidth,
       frameHeight: walk.frameHeight,
       frameCount: walk.frameCount,
-      contentHeight: 48,
+      contentHeight,
       scale: walk.scale,
     },
     idle: {
       frameWidth: idle.frameWidth,
       frameHeight: idle.frameHeight,
       frameCount: idle.frameCount,
-      contentHeight: 48,
+      contentHeight,
     },
     combo: comboParts,
     hurt,

@@ -1,29 +1,29 @@
 {
   "tenten-walk": {
     "image": "/sprites/player/tenten/walk.png",
-    "frameWidth": 30,
-    "frameHeight": 52,
+    "frameWidth": 50,
+    "frameHeight": 89,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.5647058823529412,
+    "contentHeight": 80,
+    "scale": 1,
     "residualGreen": 0,
-    "pureBlack": 1440
+    "pureBlack": 4546
   },
   "tenten-idle": {
     "image": "/sprites/player/tenten/idle.png",
-    "frameWidth": 38,
-    "frameHeight": 49,
+    "frameWidth": 61,
+    "frameHeight": 84,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.5647058823529412
+    "contentHeight": 80,
+    "scale": 1
   },
   "tenten-combo1": {
     "image": "/sprites/player/tenten/combo1.png",
-    "frameWidth": 49,
-    "frameHeight": 52,
+    "frameWidth": 78,
+    "frameHeight": 84,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.4948453608247423,
+    "contentHeight": 80,
+    "scale": 0.8247422680412371,
     "range": [
       0,
       5
@@ -31,11 +31,11 @@
   },
   "tenten-combo2": {
     "image": "/sprites/player/tenten/combo2.png",
-    "frameWidth": 49,
-    "frameHeight": 52,
+    "frameWidth": 78,
+    "frameHeight": 84,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.4948453608247423,
+    "contentHeight": 80,
+    "scale": 0.8247422680412371,
     "range": [
       5,
       10
@@ -43,11 +43,11 @@
   },
   "tenten-combo3": {
     "image": "/sprites/player/tenten/combo3.png",
-    "frameWidth": 49,
-    "frameHeight": 52,
+    "frameWidth": 78,
+    "frameHeight": 84,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.4948453608247423,
+    "contentHeight": 80,
+    "scale": 0.8247422680412371,
     "range": [
       10,
       16
@@ -55,55 +55,57 @@
   },
   "tenten-hurt": {
     "image": "/sprites/player/tenten/hurt.png",
-    "frameWidth": 54,
-    "frameHeight": 48,
+    "frameWidth": 116,
+    "frameHeight": 82,
     "frameCount": 2,
-    "contentHeight": 48,
+    "contentHeight": 80,
     "frameRate": 10,
-    "scale": 0.5647058823529412
+    "scale": 1
   },
   "tenten-death": {
     "image": "/sprites/player/tenten/death.png",
-    "frameWidth": 54,
-    "frameHeight": 48,
+    "frameWidth": 116,
+    "frameHeight": 82,
     "frameCount": 4,
-    "contentHeight": 48,
+    "contentHeight": 80,
     "frameRate": 8,
-    "scale": 0.5647058823529412
+    "scale": 1
   },
   "tenten-soushuriken": {
     "image": "/sprites/player/tenten/soushuriken.png",
-    "frameWidth": 107,
-    "frameHeight": 206,
+    "frameWidth": 223,
+    "frameHeight": 290,
     "frameCount": 31,
-    "contentHeight": 48,
-    "scale": 0.5647058823529412,
+    "contentHeight": 80,
+    "scale": 0.8,
     "frameRate": 12,
     "durationMs": 2583,
     "hitDelayMs": 1583,
     "residualGreen": 0,
-    "pureBlack": 30927
+    "pureBlack": 61957,
+    "originX": 0.5336322869955157
   },
   "skill-soushuriken": {
     "image": "/sprites/player/tenten/soushuriken.png",
-    "frameWidth": 107,
-    "frameHeight": 206,
+    "frameWidth": 223,
+    "frameHeight": 290,
     "frameCount": 31,
-    "contentHeight": 48,
-    "scale": 0.5647058823529412,
+    "contentHeight": 80,
+    "scale": 0.8,
     "frameRate": 12,
     "durationMs": 2583,
     "hitDelayMs": 1583,
     "residualGreen": 0,
-    "pureBlack": 30927
+    "pureBlack": 61957,
+    "originX": 0.5336322869955157
   },
   "tenten-soushuriken-fx": {
     "image": "/sprites/player/tenten/soushuriken-fx.png",
-    "frameWidth": 35,
-    "frameHeight": 42,
+    "frameWidth": 59,
+    "frameHeight": 71,
     "frameCount": 21,
-    "contentHeight": 40,
-    "scale": 0.5263157894736842,
+    "contentHeight": 67,
+    "scale": 0.881578947368421,
     "frameRate": 14,
     "durationMs": 1500,
     "residualCyan": 0,
@@ -111,11 +113,11 @@
   },
   "skill-soushuriken-fx": {
     "image": "/sprites/player/tenten/soushuriken-fx.png",
-    "frameWidth": 35,
-    "frameHeight": 42,
+    "frameWidth": 59,
+    "frameHeight": 71,
     "frameCount": 21,
-    "contentHeight": 40,
-    "scale": 0.5263157894736842,
+    "contentHeight": 67,
+    "scale": 0.881578947368421,
     "frameRate": 14,
     "durationMs": 1500,
     "residualCyan": 0,

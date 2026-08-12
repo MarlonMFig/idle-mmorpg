@@ -33,7 +33,7 @@ const SOURCE_HINTS: Array<{ anime: AnimeId; tokens: readonly string[] }> = [
   },
   {
     anime: 'dragon-ball',
-    tokens: ['dragon-ball', 'dragonball', 'goku', 'vegeta', 'gohan', 'piccolo'],
+    tokens: ['dragon-ball', 'dragonball', 'goku', 'vegeta', 'gohan', 'piccolo', 'freeza', 'frieza'],
   },
   {
     anime: 'naruto',
@@ -43,6 +43,7 @@ const SOURCE_HINTS: Array<{ anime: AnimeId; tokens: readonly string[] }> = [
       'sakura',
       'kakashi',
       'itachi',
+      'shisui',
       'gaara',
       'hinata',
       'neji',

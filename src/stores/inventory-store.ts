@@ -271,4 +271,24 @@ export const inventoryStore = {
     }
     return 'ok';
   },
+
+  /**
+   * Venda transacional: remove o item e credita moeda.
+   */
+  sellItem(params: {
+    itemId: string;
+    quantity: number;
+    unitPrice: number;
+    currencyItemId: string;
+  }): 'ok' | 'invalid' | 'no-stock' {
+    const { itemId, quantity, unitPrice, currencyItemId } = params;
+    const def = getItem(itemId);
+    if (!def || quantity <= 0 || unitPrice < 0 || itemId === currencyItemId) {
+      return 'invalid';
+    }
+    if (this.countItem(itemId) < quantity) return 'no-stock';
+    if (!this.removeItem(itemId, quantity)) return 'no-stock';
+    this.addItem(currencyItemId, unitPrice * quantity);
+    return 'ok';
+  },
 };

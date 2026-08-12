@@ -1,6 +1,11 @@
 import * as Phaser from 'phaser';
 import {
+  ENEMY_ATTACK_COOLDOWN_MS,
+  ENEMY_ATTACK_RANGE,
+  ENEMY_CHASE_SPEED_FACTOR,
   ENEMY_CORPSE_MS,
+  ENEMY_HP_BAR_BORDER,
+  ENEMY_HP_BAR_GLOSS_H,
   ENEMY_HP_BAR_HEIGHT,
   ENEMY_HP_BAR_WIDTH,
   ENEMY_RESPAWN_MS,
@@ -16,6 +21,33 @@ import {
 import type { WonsrDirection } from '@/data/wonsr-sprites';
 import type { EnemyDefinition, EnemyRuntimeStats } from '@/types/enemy';
 
+/** Cor da vida: verde → âmbar → carmim conforme a vida cai. */
+function enemyHpFillColor(ratio: number): number {
+  const t = Phaser.Math.Clamp(ratio, 0, 1);
+  if (t > 0.5) {
+    // 50–100%: âmbar → verde-folha
+    const u = (t - 0.5) * 2;
+    return lerpColor(0xd4a84b, 0x4ecf70, u);
+  }
+  // 0–50%: carmim → âmbar
+  const u = t * 2;
+  return lerpColor(0xc93c3c, 0xd4a84b, u);
+}
+
+function lerpColor(from: number, to: number, t: number): number {
+  const u = Phaser.Math.Clamp(t, 0, 1);
+  const fr = (from >> 16) & 0xff;
+  const fg = (from >> 8) & 0xff;
+  const fb = from & 0xff;
+  const tr = (to >> 16) & 0xff;
+  const tg = (to >> 8) & 0xff;
+  const tb = to & 0xff;
+  const r = Math.round(fr + (tr - fr) * u);
+  const g = Math.round(fg + (tg - fg) * u);
+  const b = Math.round(fb + (tb - fb) * u);
+  return (r << 16) | (g << 8) | b;
+}
+
 /**
  * Monstro com HP, barra, morte e respawn (combate).
  */
@@ -24,8 +56,14 @@ export class Enemy {
   readonly definition: EnemyDefinition;
   readonly stats: EnemyRuntimeStats;
 
+  /** Contorno da barra (anel escuro). */
+  private readonly hpBarBorder: Phaser.GameObjects.Rectangle;
+  /** Trilha vazia. */
   private readonly hpBarBg: Phaser.GameObjects.Rectangle;
+  /** Faixa de vida. */
   private readonly hpBarFill: Phaser.GameObjects.Rectangle;
+  /** Brilho superior na vida (pixel highlight). */
+  private readonly hpBarGloss: Phaser.GameObjects.Rectangle;
   private readonly nameLabel: Phaser.GameObjects.Text;
   private alive = true;
   private respawnAt = 0;
@@ -37,6 +75,15 @@ export class Enemy {
   private reactingUntil = 0;
   private deathHold = false;
   private reactionEpoch = 0;
+  /** Último golpe no jogador (ms scene). */
+  private lastAttackAt = 0;
+  /** Índice do próximo hit da cadeia de combos. */
+  private comboStep = 0;
+  /** Golpe agendado no meio da animação de combo. */
+  private pendingHit: { damage: number; at: number; range: number } | null = null;
+  private lastPlayerPos: { x: number; y: number } | null = null;
+  /** Altura do topo do sprite relativo a `sprite.y` (inclui hover de voo). */
+  private readonly spriteTopLift: number;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -65,6 +112,9 @@ export class Enemy {
         originX: 0.5,
         originY: 1,
       };
+    this.spriteTopLift =
+      CHARACTER_DISPLAY_HEIGHT +
+      Math.max(0, (fit.originY - 1) * CHARACTER_DISPLAY_HEIGHT);
     this.sprite.setOrigin(fit.originX, fit.originY);
     this.sprite.setScale(fit.scaleX ?? fit.scale, fit.scale);
     this.sprite.setCollideWorldBounds(true);
@@ -90,15 +140,25 @@ export class Enemy {
       : null;
     this.nextPatrolAt = scene.time.now + Phaser.Math.Between(250, 1200);
 
-    // Nameplate: [barra fina] acima do [nome branco] — sem “Nv. X” no mapa.
+    // Nameplate: [barra em camadas] acima do [nome]
     this.nameLabel = scene.add
       .text(definition.spawn.x, definition.spawn.y, definition.name, NAMEPLATE_STYLE)
       .setOrigin(0.5, 1);
+
+    const borderW = ENEMY_HP_BAR_WIDTH + ENEMY_HP_BAR_BORDER * 2;
+    const borderH = ENEMY_HP_BAR_HEIGHT + ENEMY_HP_BAR_BORDER * 2;
+    this.hpBarBorder = scene.add
+      .rectangle(0, 0, borderW, borderH, 0x1a1510, 0.95)
+      .setOrigin(0.5)
+      .setStrokeStyle(1, 0x3a3228, 0.85);
     this.hpBarBg = scene.add
-      .rectangle(0, 0, ENEMY_HP_BAR_WIDTH, ENEMY_HP_BAR_HEIGHT, 0x101010, 0.9)
+      .rectangle(0, 0, ENEMY_HP_BAR_WIDTH, ENEMY_HP_BAR_HEIGHT, 0x0c0c0e, 0.92)
       .setOrigin(0.5);
     this.hpBarFill = scene.add
-      .rectangle(0, 0, ENEMY_HP_BAR_WIDTH, ENEMY_HP_BAR_HEIGHT, 0xe05050)
+      .rectangle(0, 0, ENEMY_HP_BAR_WIDTH, ENEMY_HP_BAR_HEIGHT, 0x4ecf70, 1)
+      .setOrigin(0, 0.5);
+    this.hpBarGloss = scene.add
+      .rectangle(0, 0, ENEMY_HP_BAR_WIDTH, ENEMY_HP_BAR_GLOSS_H, 0xffffff, 0.28)
       .setOrigin(0, 0.5);
 
     this.refreshHpBar();
@@ -151,7 +211,7 @@ export class Enemy {
     if (!this.alive || amount <= 0) return false;
 
     this.stats.hp = Math.max(0, this.stats.hp - amount);
-    this.refreshHpBar();
+    this.refreshHpBar({ pulse: true });
     this.showDamage(amount);
 
     if (this.stats.hp <= 0) {
@@ -163,37 +223,200 @@ export class Enemy {
     return false;
   }
 
-  /** Atualiza barra / respawn. */
-  update(time: number): void {
+  /** Atualiza IA / barra / respawn. Com posição do jogador: persegue e ataca. */
+  update(time: number, playerX?: number, playerY?: number): number | null {
     if (!this.alive) {
       if (time >= this.respawnAt) {
         this.respawn();
       }
-      return;
+      return null;
     }
-    this.updatePatrol(time);
+
+    if (playerX != null && playerY != null) {
+      this.lastPlayerPos = { x: playerX, y: playerY };
+    }
+
+    let hitDamage: number | null = null;
+    if (this.pendingHit && time >= this.pendingHit.at) {
+      const pending = this.pendingHit;
+      this.pendingHit = null;
+      if (this.lastPlayerPos && this.alive) {
+        const dist = Math.hypot(
+          this.lastPlayerPos.x - this.sprite.x,
+          this.lastPlayerPos.y - this.sprite.y,
+        );
+        // Folga: o jogador pode ter recuado um pouco durante o wind-up.
+        if (dist <= pending.range * 1.4) {
+          hitDamage = pending.damage;
+        }
+      }
+    }
+
+    if (
+      playerX != null &&
+      playerY != null &&
+      this.definition.chaseRadius > 0
+    ) {
+      const started = this.updateCombatAi(time, playerX, playerY);
+      if (hitDamage == null) hitDamage = started;
+    } else if (time >= this.reactingUntil) {
+      this.updatePatrol(time);
+    } else {
+      this.sprite.setVelocity(0, 0);
+    }
     this.syncOverlays();
+    return hitDamage;
+  }
+
+  /**
+   * Persegue o jogador dentro de `chaseRadius`; golpeia em `ENEMY_ATTACK_RANGE`.
+   * @returns dano bruto imediato (sem sheet de combo), ou null se o hit é adiado.
+   */
+  private updateCombatAi(time: number, playerX: number, playerY: number): number | null {
+    if (time < this.reactingUntil) {
+      this.sprite.setVelocity(0, 0);
+      return null;
+    }
+
+    const dx = playerX - this.sprite.x;
+    const dy = playerY - this.sprite.y;
+    const dist = Math.hypot(dx, dy);
+    const chase = this.definition.chaseRadius;
+
+    if (dist > chase) {
+      this.updatePatrol(time);
+      return null;
+    }
+
+    // Em alcance de golpe: para, olha pro jogador e ataca.
+    if (dist <= ENEMY_ATTACK_RANGE) {
+      this.sprite.setVelocity(0, 0);
+      this.patrolTarget = null;
+      if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
+        this.facing = velocityToDirection(dx, dy);
+        if (this.definition.walk?.lateral && Math.abs(dx) > 0.5) {
+          this.sprite.setFlipX(dx < 0);
+        }
+      }
+      if (time - this.lastAttackAt < ENEMY_ATTACK_COOLDOWN_MS) {
+        this.playIdleAnim();
+        return null;
+      }
+      this.lastAttackAt = time;
+      return this.beginAttack(time);
+    }
+
+    // Persegue até o alcance.
+    this.patrolTarget = null;
+    const speed = Phaser.Math.Clamp(
+      this.definition.speed * ENEMY_CHASE_SPEED_FACTOR,
+      40,
+      110,
+    );
+    const len = dist || 1;
+    this.sprite.setVelocity((dx / len) * speed, (dy / len) * speed);
+    this.playWalkAnim(dx, dy);
+    return null;
+  }
+
+  /**
+   * Toca combo/ataque se existir; agenda o hit no meio da animação.
+   * Sem sheet: dano imediato (fallback atlas).
+   */
+  private beginAttack(time: number): number | null {
+    const damage = this.attackDamage();
+    const played = this.playAttackAnim();
+    if (!played) {
+      this.playIdleAnim();
+      return damage;
+    }
+
+    const walk = this.definition.walk;
+    const keys = walk?.attackAnimKeys;
+    const idx = keys && keys.length > 0
+      ? (this.comboStep - 1 + keys.length) % keys.length
+      : 0;
+    const animKey = keys?.[idx];
+    const anim = animKey ? this.scene.anims.get(animKey) : null;
+    const durationMs = anim
+      ? Math.max(280, Math.ceil((anim.frames.length / (anim.frameRate || 12)) * 1000))
+      : 400;
+    const hitDelay = Math.floor(durationMs * 0.55);
+    const unlockAt = time + durationMs;
+    this.reactingUntil = unlockAt;
+    this.pendingHit = {
+      damage,
+      at: time + hitDelay,
+      range: ENEMY_ATTACK_RANGE,
+    };
+
+    const epoch = this.reactionEpoch;
+    this.scene.time.delayedCall(durationMs, () => {
+      if (this.reactionEpoch !== epoch || !this.alive || this.deathHold) return;
+      if (this.reactingUntil !== unlockAt) return;
+      this.reactingUntil = 0;
+      this.playIdleAnim();
+    });
+    return null;
+  }
+
+  /** Dano bruto antes da defesa do jogador. */
+  private attackDamage(): number {
+    const level = Math.max(1, this.stats.level);
+    return Math.max(2, Math.floor(5 + level * 1.65));
+  }
+
+  /** Toca o próximo hit da cadeia de combo. @returns false se não há sheet. */
+  private playAttackAnim(): boolean {
+    const walk = this.definition.walk;
+    const keys = walk?.attackAnimKeys;
+    const textures = walk?.attackTextureKeys;
+    if (!keys || keys.length === 0 || !textures || textures.length === 0) {
+      return false;
+    }
+
+    const index = this.comboStep % keys.length;
+    this.comboStep = (this.comboStep + 1) % keys.length;
+    const animKey = keys[index];
+    const textureKey = textures[index] ?? textures[0];
+    if (!this.scene.anims.exists(animKey)) return false;
+
+    this.sprite.setVelocity(0, 0);
+    this.patrolTarget = null;
+    this.reactionEpoch += 1;
+    if (this.sprite.texture.key !== textureKey) {
+      this.sprite.setTexture(textureKey, 0);
+      this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    }
+    // Lateral: flip já aplicado em updateCombatAi.
+    this.sprite.anims.play(animKey, false);
+    return true;
   }
 
   destroy(): void {
     this.mapCollider?.destroy();
     this.sprite.destroy();
     this.nameLabel.destroy();
+    this.hpBarBorder.destroy();
     this.hpBarBg.destroy();
     this.hpBarFill.destroy();
+    this.hpBarGloss.destroy();
   }
 
   private die(): void {
     this.alive = false;
     this.patrolTarget = null;
     this.reactingUntil = 0;
+    this.pendingHit = null;
     this.scene.tweens.killTweensOf(this.sprite);
+    this.scene.tweens.killTweensOf(this.hpBarFill);
+    this.scene.tweens.killTweensOf(this.hpBarGloss);
+    this.scene.tweens.killTweensOf(this.hpBarBorder);
     this.sprite.clearTint();
     this.sprite.setVelocity(0, 0);
     this.sprite.body!.enable = false;
+    this.setHpBarVisible(false);
     this.nameLabel.setVisible(false);
-    this.hpBarBg.setVisible(false);
-    this.hpBarFill.setVisible(false);
     this.respawnAt = this.scene.time.now + ENEMY_RESPAWN_MS;
 
     const playedDeath = this.playDeathAnim();
@@ -220,6 +443,8 @@ export class Enemy {
     this.alive = true;
     this.deathHold = false;
     this.reactingUntil = 0;
+    this.pendingHit = null;
+    this.comboStep = 0;
     this.stats.hp = this.stats.hpMax;
     this.scene.tweens.killTweensOf(this.sprite);
     this.sprite.clearTint();
@@ -234,8 +459,7 @@ export class Enemy {
     );
     this.sprite.setVelocity(0, 0);
     this.nameLabel.setVisible(true);
-    this.hpBarBg.setVisible(true);
-    this.hpBarFill.setVisible(true);
+    this.setHpBarVisible(true);
     this.nextPatrolAt = this.scene.time.now + Phaser.Math.Between(250, 900);
     this.playIdleAnim();
     this.refreshHpBar();
@@ -406,16 +630,43 @@ export class Enemy {
     this.nextPatrolAt = time + 600;
   }
 
-  private refreshHpBar(): void {
+  private setHpBarVisible(visible: boolean): void {
+    this.hpBarBorder.setVisible(visible);
+    this.hpBarBg.setVisible(visible);
+    this.hpBarFill.setVisible(visible);
+    this.hpBarGloss.setVisible(visible);
+  }
+
+  private refreshHpBar(opts?: { pulse?: boolean }): void {
     const ratio = this.stats.hpMax > 0 ? this.stats.hp / this.stats.hpMax : 0;
-    this.hpBarFill.width = Math.max(0, ENEMY_HP_BAR_WIDTH * ratio);
-    // Verde cheio → vermelho baixo (ler legível como no ref.).
-    this.hpBarFill.setFillStyle(ratio > 0.35 ? 0x4cdd6e : 0xe05050);
+    const width = Math.max(0, ENEMY_HP_BAR_WIDTH * ratio);
+    const color = enemyHpFillColor(ratio);
+
+    this.hpBarFill.width = width;
+    this.hpBarFill.setFillStyle(color, 1);
+    this.hpBarGloss.width = Math.max(0, width - 1);
+    this.hpBarGloss.setVisible(width > 1 && this.alive);
+    this.hpBarGloss.setFillStyle(0xffffff, ratio > 0.35 ? 0.32 : 0.2);
+
+    if (opts?.pulse && width > 0 && this.alive) {
+      this.scene.tweens.killTweensOf(this.hpBarBorder);
+      this.hpBarBorder.setStrokeStyle(1, 0xf0e0b0, 0.95);
+      this.scene.tweens.add({
+        targets: this.hpBarBorder,
+        alpha: { from: 1, to: 0.95 },
+        duration: 120,
+        onComplete: () => {
+          if (!this.hpBarBorder.active) return;
+          this.hpBarBorder.setAlpha(1);
+          this.hpBarBorder.setStrokeStyle(1, 0x3a3228, 0.85);
+        },
+      });
+    }
   }
 
   /**
    * Pilha do nameplate no topo do sprite:
-   *   [barra HP]
+   *   [barra HP em camadas]
    *   [nome]
    *   personagem
    */
@@ -423,16 +674,24 @@ export class Enemy {
     const depth = worldDepthForY(this.sprite.y, 8);
     this.sprite.setDepth(depth);
 
-    const headY = this.sprite.y - CHARACTER_DISPLAY_HEIGHT;
+    const headY = this.sprite.y - this.spriteTopLift;
     const nameBottom = headY - NAMEPLATE_GAP_PX;
     this.nameLabel.setPosition(this.sprite.x, nameBottom);
-    this.nameLabel.setDepth(depth + 3);
+    this.nameLabel.setDepth(depth + 5);
 
-    const barY = nameBottom - this.nameLabel.height - NAMEPLATE_BAR_GAP_PX - ENEMY_HP_BAR_HEIGHT / 2;
+    const barY =
+      nameBottom - this.nameLabel.height - NAMEPLATE_BAR_GAP_PX - ENEMY_HP_BAR_HEIGHT / 2;
+    const left = this.sprite.x - ENEMY_HP_BAR_WIDTH / 2;
+    const glossY = barY - ENEMY_HP_BAR_HEIGHT / 2 + ENEMY_HP_BAR_GLOSS_H;
+
+    this.hpBarBorder.setPosition(this.sprite.x, barY);
+    this.hpBarBorder.setDepth(depth + 1);
     this.hpBarBg.setPosition(this.sprite.x, barY);
-    this.hpBarBg.setDepth(depth + 1);
-    this.hpBarFill.setPosition(this.sprite.x - ENEMY_HP_BAR_WIDTH / 2, barY);
-    this.hpBarFill.setDepth(depth + 2);
+    this.hpBarBg.setDepth(depth + 2);
+    this.hpBarFill.setPosition(left, barY);
+    this.hpBarFill.setDepth(depth + 3);
+    this.hpBarGloss.setPosition(left + 0.5, glossY);
+    this.hpBarGloss.setDepth(depth + 4);
   }
 
   private flashHit(): void {
@@ -448,7 +707,7 @@ export class Enemy {
 
   private showDamage(amount: number): void {
     const floater = this.scene.add
-      .text(this.sprite.x, this.sprite.y - CHARACTER_DISPLAY_HEIGHT * 0.55, `-${Math.round(amount)}`, {
+      .text(this.sprite.x, this.sprite.y - this.spriteTopLift * 0.55, `-${Math.round(amount)}`, {
         fontFamily: 'Tahoma, "Segoe UI", sans-serif',
         fontSize: '12px',
         fontStyle: 'bold',

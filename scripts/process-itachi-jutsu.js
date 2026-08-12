@@ -33,7 +33,7 @@ const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'itachi', 'ju
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'itachi');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'itachi');
-const TARGET_BODY_H = 48;
+const HQ = { mode: 'match', metaPath: META_JSON, idleKey: 'itachi-idle' };
 const FRAME_RATE = 12;
 const PAD = 2;
 /** Burst / peak window across cast (0-based). */
@@ -493,7 +493,10 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     norm.contentHeight,
-    TARGET_BODY_H,
+    { hq: HQ },
+  );
+  console.log(
+    `HQ jutsu scale=${scaled.scale.toFixed(4)} bodyH=${norm.contentHeight} → idle contentH=${scaled.contentHeight}`,
   );
   const cleaned = scaled.frames.map((f) =>
     scrubFrame(f, scaled.frameWidth, scaled.frameHeight),

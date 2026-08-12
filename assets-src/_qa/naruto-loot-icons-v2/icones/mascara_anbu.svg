@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 68 68" width="64" height="64"><defs>
+<linearGradient id="steel" x1="0" y1="0" x2=".7" y2="1">
+ <stop offset="0" stop-color="#f2f7fc"/><stop offset=".45" stop-color="#c2cddb"/><stop offset="1" stop-color="#78879a"/></linearGradient>
+<linearGradient id="gold" x1="0" y1="0" x2=".6" y2="1">
+ <stop offset="0" stop-color="#ffeeb0"/><stop offset=".5" stop-color="#f0b429"/><stop offset="1" stop-color="#a1691a"/></linearGradient>
+<linearGradient id="wood" x1="0" y1="0" x2=".7" y2="1">
+ <stop offset="0" stop-color="#b07f4f"/><stop offset=".6" stop-color="#7a4f2c"/><stop offset="1" stop-color="#4a2d16"/></linearGradient>
+<linearGradient id="paper" x1="0" y1="0" x2=".4" y2="1">
+ <stop offset="0" stop-color="#fdf6e2"/><stop offset=".6" stop-color="#eddcb4"/><stop offset="1" stop-color="#cfb888"/></linearGradient>
+<linearGradient id="leather" x1="0" y1="0" x2=".6" y2="1">
+ <stop offset="0" stop-color="#946a43"/><stop offset="1" stop-color="#52341c"/></linearGradient>
+<linearGradient id="cloth" x1="0" y1="0" x2=".6" y2="1">
+ <stop offset="0" stop-color="#456aa6"/><stop offset="1" stop-color="#1f3252"/></linearGradient>
+<linearGradient id="poison" x1="0" y1="0" x2=".5" y2="1">
+ <stop offset="0" stop-color="#c98ceb"/><stop offset=".6" stop-color="#8e44ad"/><stop offset="1" stop-color="#471a5f"/></linearGradient>
+<linearGradient id="sand" x1="0" y1="0" x2=".6" y2="1">
+ <stop offset="0" stop-color="#f3dcaa"/><stop offset=".55" stop-color="#c9975a"/><stop offset="1" stop-color="#7e5527"/></linearGradient>
+<linearGradient id="bone" x1="0" y1="0" x2=".5" y2="1">
+ <stop offset="0" stop-color="#fffbf2"/><stop offset=".6" stop-color="#e8dfc9"/><stop offset="1" stop-color="#b8ac8e"/></linearGradient>
+<linearGradient id="jade" x1="0" y1="0" x2=".6" y2="1">
+ <stop offset="0" stop-color="#cdf0a8"/><stop offset=".6" stop-color="#6bbb56"/><stop offset="1" stop-color="#2d6b30"/></linearGradient>
+<linearGradient id="fire" x1=".2" y1="0" x2=".8" y2="1">
+ <stop offset="0" stop-color="#ffe08a"/><stop offset=".45" stop-color="#f0932b"/><stop offset="1" stop-color="#b52f1f"/></linearGradient>
+<radialGradient id="chakra" cx="38%" cy="32%" r="72%">
+ <stop offset="0" stop-color="#eafcff"/><stop offset=".45" stop-color="#4fc3f7"/><stop offset="1" stop-color="#1257a8"/></radialGradient>
+<radialGradient id="glowC" cx="50%" cy="50%" r="50%">
+ <stop offset="0" stop-color="#7fd4ff" stop-opacity=".85"/><stop offset="1" stop-color="#7fd4ff" stop-opacity="0"/></radialGradient>
+<radialGradient id="glowF" cx="50%" cy="50%" r="50%">
+ <stop offset="0" stop-color="#ffb347" stop-opacity=".85"/><stop offset="1" stop-color="#ffb347" stop-opacity="0"/></radialGradient>
+<radialGradient id="glowG" cx="50%" cy="50%" r="50%">
+ <stop offset="0" stop-color="#ffd76a" stop-opacity=".85"/><stop offset="1" stop-color="#ffd76a" stop-opacity="0"/></radialGradient>
+<radialGradient id="glowR" cx="50%" cy="50%" r="50%">
+ <stop offset="0" stop-color="#ff7a6a" stop-opacity=".8"/><stop offset="1" stop-color="#ff7a6a" stop-opacity="0"/></radialGradient>
+</defs><g fill="none" stroke-linejoin="round" stroke-linecap="round"><path d="M32 6 c15 0 21 9 21 21 0 18 -11 30 -21 30 S11 45 11 27 C11 15 17 6 32 6 Z" fill="#f9f5ea" stroke="#14121c" stroke-width="2"/>
+<path d="M32 6 c15 0 21 9 21 21 0 18 -11 30 -21 30 Z" fill="#14121c" opacity=".09"/>
+<path d="M17 26 q7 -7 14 0 q-7 7 -14 0 Z" fill="#231f2e"/>
+<path d="M33 26 q7 -7 14 0 q-7 7 -14 0 Z" fill="#231f2e"/>
+<path d="M21 42 q11 6 22 0" stroke="#c0392b" stroke-width="3.4" fill="none"/>
+<path d="M16 14 q8 4 2 10M48 14 q-8 4 -2 10" stroke="#c0392b" stroke-width="2.8" fill="none"/>
+<path d="M20 17 q-3 8 -2 13" stroke="#fff" opacity=".85" stroke-width="3" fill="none"/></g></svg>

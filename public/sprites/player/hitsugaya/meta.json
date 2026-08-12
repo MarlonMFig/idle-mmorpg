@@ -1,29 +1,29 @@
 {
   "hitsugaya-walk": {
     "image": "/sprites/player/hitsugaya/walk.png",
-    "frameWidth": 98,
-    "frameHeight": 52,
+    "frameWidth": 276,
+    "frameHeight": 133,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.37209302325581395,
+    "contentHeight": 152,
+    "scale": 1,
     "residualGreen": 0,
     "pureBlack": 0
   },
   "hitsugaya-idle": {
     "image": "/sprites/player/hitsugaya/idle.png",
-    "frameWidth": 60,
-    "frameHeight": 52,
+    "frameWidth": 176,
+    "frameHeight": 156,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.3157894736842105
+    "contentHeight": 152,
+    "scale": 1
   },
   "hitsugaya-combo1": {
     "image": "/sprites/player/hitsugaya/combo1.png",
-    "frameWidth": 107,
-    "frameHeight": 94,
+    "frameWidth": 320,
+    "frameHeight": 245,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.37209302325581395,
+    "contentHeight": 152,
+    "scale": 1,
     "range": [
       0,
       5
@@ -31,11 +31,11 @@
   },
   "hitsugaya-combo2": {
     "image": "/sprites/player/hitsugaya/combo2.png",
-    "frameWidth": 107,
-    "frameHeight": 94,
+    "frameWidth": 320,
+    "frameHeight": 245,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.37209302325581395,
+    "contentHeight": 152,
+    "scale": 1,
     "range": [
       5,
       10
@@ -43,11 +43,11 @@
   },
   "hitsugaya-combo3": {
     "image": "/sprites/player/hitsugaya/combo3.png",
-    "frameWidth": 107,
-    "frameHeight": 94,
+    "frameWidth": 320,
+    "frameHeight": 245,
     "frameCount": 4,
-    "contentHeight": 48,
-    "scale": 0.37209302325581395,
+    "contentHeight": 152,
+    "scale": 1,
     "range": [
       10,
       14
@@ -55,29 +55,29 @@
   },
   "hitsugaya-hurt": {
     "image": "/sprites/player/hitsugaya/hurt.png",
-    "frameWidth": 101,
-    "frameHeight": 67,
+    "frameWidth": 293,
+    "frameHeight": 173,
     "frameCount": 2,
-    "contentHeight": 48,
+    "contentHeight": 152,
     "frameRate": 10,
-    "scale": 0.37209302325581395
+    "scale": 1
   },
   "hitsugaya-death": {
     "image": "/sprites/player/hitsugaya/death.png",
-    "frameWidth": 101,
-    "frameHeight": 67,
+    "frameWidth": 293,
+    "frameHeight": 173,
     "frameCount": 2,
-    "contentHeight": 48,
+    "contentHeight": 152,
     "frameRate": 8,
-    "scale": 0.37209302325581395
+    "scale": 1
   },
   "hitsugaya-daiguren-hyorinmaru": {
     "image": "/sprites/player/hitsugaya/daiguren-hyorinmaru.png",
-    "frameWidth": 100,
-    "frameHeight": 104,
+    "frameWidth": 262,
+    "frameHeight": 273,
     "frameCount": 7,
-    "contentHeight": 48,
-    "scale": 0.37209302325581395,
+    "contentHeight": 152,
+    "scale": 1,
     "frameRate": 12,
     "durationMs": 583,
     "hitDelayMs": 333,
@@ -87,11 +87,11 @@
   },
   "skill-daiguren-hyorinmaru": {
     "image": "/sprites/player/hitsugaya/daiguren-hyorinmaru.png",
-    "frameWidth": 100,
-    "frameHeight": 104,
+    "frameWidth": 262,
+    "frameHeight": 273,
     "frameCount": 7,
-    "contentHeight": 48,
-    "scale": 0.37209302325581395,
+    "contentHeight": 152,
+    "scale": 1,
     "frameRate": 12,
     "durationMs": 583,
     "hitDelayMs": 333,
@@ -101,28 +101,28 @@
   },
   "hitsugaya-daiguren-hyorinmaru-fx": {
     "image": "/sprites/player/hitsugaya/daiguren-hyorinmaru-fx.png",
-    "frameWidth": 38,
-    "frameHeight": 68,
+    "frameWidth": 112,
+    "frameHeight": 207,
     "frameCount": 5,
-    "contentHeight": 64,
-    "scale": 0.26337448559670784,
+    "contentHeight": 203,
+    "scale": 0.8353909465020576,
     "frameRate": 12,
     "durationMs": 417,
     "residualGreen": 0,
-    "icePixels": 5246,
+    "icePixels": 53089,
     "source": "hitsugaya/especial-vfx (vfx especial.zip, 5f ice fan)"
   },
   "skill-daiguren-hyorinmaru-fx": {
     "image": "/sprites/player/hitsugaya/daiguren-hyorinmaru-fx.png",
-    "frameWidth": 38,
-    "frameHeight": 68,
+    "frameWidth": 112,
+    "frameHeight": 207,
     "frameCount": 5,
-    "contentHeight": 64,
-    "scale": 0.26337448559670784,
+    "contentHeight": 203,
+    "scale": 0.8353909465020576,
     "frameRate": 12,
     "durationMs": 417,
     "residualGreen": 0,
-    "icePixels": 5246,
+    "icePixels": 53089,
     "source": "hitsugaya/especial-vfx (vfx especial.zip, 5f ice fan)"
   }
 }

@@ -1,9 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import { useMemo } from 'react';
+import { useEffect, useMemo, type RefObject } from 'react';
 import { CHARACTER_QUALITY_COLORS } from '@/constants/character-progression';
 import { TEAM_SLOT_COUNT } from '@/constants/sealing';
+import { useDraggablePanel } from '@/hooks/use-draggable-panel';
 import { useStore } from '@/hooks/use-store';
 import { switchActiveCharacter } from '@/lib/active-character';
 import { teamStore } from '@/stores/team-store';
@@ -118,13 +119,21 @@ export interface TeamCombatStripProps {
 }
 
 /**
- * Janela Equipe Ativa no topo esquerdo do mapa de caça (referência Monarca).
+ * Janela Equipe Ativa no mapa de caça — arrastável pelo cabeçalho.
  */
 export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
   const collection = useStore(teamStore, (s) => s.collection);
   const teamIds = useStore(teamStore, (s) => s.teamIds);
   const activeId = useStore(teamStore, (s) => s.activeId);
+
+  useEffect(() => {
+    teamStore.refreshPreviews();
+  }, []);
   const vitals = useStore(vitalsStore, (s) => s);
+  const { panelRef, style, isDragging, handleProps } = useDraggablePanel('active-team', {
+    zIndex: 32,
+    dragZIndex: 95,
+  });
 
   const teamMembers = useMemo(
     () =>
@@ -143,8 +152,17 @@ export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
     vitals.xpMax > 0 ? Math.max(0, Math.min(100, (vitals.xp / vitals.xpMax) * 100)) : 0;
 
   return (
-    <aside className="active-team" aria-label="Equipe ativa">
-      <header className="active-team__head">
+    <aside
+      ref={panelRef as RefObject<HTMLElement>}
+      className={`active-team${isDragging ? ' is-dragging' : ''}`}
+      style={style}
+      aria-label="Equipe ativa"
+    >
+      <header
+        className="active-team__head active-team__head--drag"
+        title="Arrastar para mover"
+        {...handleProps}
+      >
         <p className="active-team__brand">Equipe</p>
         <h2 className="active-team__player">{nickname || 'Shinobi'}</h2>
         <p className="active-team__sub">

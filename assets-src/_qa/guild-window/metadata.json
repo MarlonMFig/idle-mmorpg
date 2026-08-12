@@ -1,0 +1,6 @@
+{
+  "name": "Anime World Idle - Janela de Guilda",
+  "description": "Layout interativo completo da Janela de Guilda para Anime World Idle com suporte a Membros, Ranking, Chat, Boss Raid, Habilidades e Loja.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

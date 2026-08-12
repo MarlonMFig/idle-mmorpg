@@ -9,6 +9,7 @@
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const { resolveHqScale, resolvePackContentHeight, NATIVE_PIXELS } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'guy', '_src', 'idle');
@@ -16,7 +17,6 @@ const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'guy');
 const PREVIEW = path.join(ROOT, 'public', 'sprites', 'player', 'previews', 'guy.png');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'guy');
-const TARGET_BODY_H = 48;
 const FRAME_RATE = 7;
 const HINT_EXPECTED = 6;
 const PAD = 2;
@@ -174,13 +174,13 @@ function normalize(frames, widths, heights) {
 
 async function scaleFrames(frames, fw, fh, contentHeight) {
   // Prefer nearest single downscale toward contentH 48; never upscale junk.
-  const scale = Math.min(1, TARGET_BODY_H / Math.max(1, contentHeight));
+  const scale = resolveHqScale(contentHeight, { mode: 'idle' });
   if (scale >= 0.995) {
     return { frames, frameWidth: fw, frameHeight: fh, contentHeight, scale: 1 };
   }
   const outW = Math.max(1, Math.round(fw * scale));
   const outH = Math.max(1, Math.round(fh * scale));
-  const outContent = Math.max(1, Math.round(contentHeight * scale));
+  const outContent = resolvePackContentHeight(contentHeight, scale, { mode: 'idle' });
   const out = [];
   for (const frame of frames) {
     const { data } = await sharp(frame, {

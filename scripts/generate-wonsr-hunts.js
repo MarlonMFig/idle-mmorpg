@@ -141,6 +141,76 @@ function buildCuratedExtraCharacters() {
       sourceMonster: null,
     },
     {
+      id: 'curated-character-shisui',
+      sourceId: 'curated-character-shisui',
+      name: 'Uchiha Shisui',
+      category: 'personagem',
+      source: 'curated/shisui',
+      lookType: 9030,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'curated-character-naruto-shippuden',
+      sourceId: 'curated-character-naruto-shippuden',
+      name: 'Naruto Shippuden',
+      category: 'personagem',
+      source: 'curated/naruto-shippuden',
+      lookType: 9031,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'curated-character-goku',
+      sourceId: 'curated-character-goku',
+      name: 'Son Goku',
+      category: 'personagem',
+      source: 'curated/goku',
+      lookType: 9032,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'curated-character-freeza',
+      sourceId: 'curated-character-freeza',
+      name: 'Freeza',
+      category: 'personagem',
+      source: 'curated/freeza',
+      lookType: 9033,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'curated-character-gotenks',
+      sourceId: 'curated-character-gotenks',
+      name: 'Gotenks',
+      category: 'personagem',
+      source: 'curated/gotenks',
+      lookType: 9034,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'curated-character-majin-boo',
+      sourceId: 'curated-character-majin-boo',
+      name: 'Majin Boo',
+      category: 'personagem',
+      source: 'curated/majin-boo',
+      lookType: 9035,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'curated-character-piccolo',
+      sourceId: 'curated-character-piccolo',
+      name: 'Piccolo',
+      category: 'personagem',
+      source: 'curated/piccolo',
+      lookType: 9036,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
       id: 'wonsr-character-shikamaru-nara',
       sourceId: 'wonsr-character-shikamaru-nara',
       name: 'Shikamaru Nara',
@@ -428,6 +498,7 @@ function buildBaseCharacters() {
     'Gaara',
     'Uchiha Sasuke',
     'Uchiha Itachi',
+    'Uchiha Shisui',
     'Neji Hyuga',
     'Chouji Akimichi',
     'Ino Yamanaka',
@@ -476,6 +547,42 @@ function huntName(index, targets) {
   return `Mapa de ${targetName}`;
 }
 
+/** Arenas art importadas de SPRITES JOGO/MAPAS (npm run maps:hunt-arenas). */
+const HUNT_ARENA_KEYS = [
+  'huntCampoTreinamento',
+  'huntArenaExameChunnin',
+  'huntPontePaisOnda',
+  'huntValeDoFim',
+  'huntPaisDoVento',
+  'huntEsconderijoAkatsuki',
+  'huntLabOrochimaru',
+  'huntKonohaDestruida',
+];
+
+/**
+ * Escolhe arena tematica pelo alvo; fallback rotativo nas 8 arenas novas.
+ */
+function pickHuntMapKey(index, targets) {
+  const id = `${targets[0]?.id || ''} ${targets[0]?.name || ''}`.toLowerCase();
+  if (/gaara|vento|temari|kankuro/.test(id)) return 'huntPaisDoVento';
+  if (/zabuza|onda|haku|ponte/.test(id)) return 'huntPontePaisOnda';
+  if (/pain|pein|konan|nagato/.test(id)) return 'huntKonohaDestruida';
+  if (/orochimaru|kabuto|lab/.test(id)) return 'huntLabOrochimaru';
+  if (/itachi|kisame|deidara|sasori|hidan|kakuzu|akatsuki/.test(id)) {
+    return 'huntEsconderijoAkatsuki';
+  }
+  if (/sasuke|naruto|vale|madara|hashirama/.test(id)) return 'huntValeDoFim';
+  if (/neji|rock.?lee|guy|chouji|ino|shikamaru|exame|chunin|chunnin/.test(id)) {
+    return 'huntArenaExameChunnin';
+  }
+  if (/sakura|hinata|kakashi|iruka|treino|konohamaru/.test(id)) {
+    return 'huntCampoTreinamento';
+  }
+  if (/freeza|frieza|goku|vegeta|majin|boo|buu|piccolo/.test(id)) return 'huntValeDoFim';
+  if (/gotenks/.test(id)) return 'huntArenaExameChunnin';
+  return HUNT_ARENA_KEYS[index % HUNT_ARENA_KEYS.length];
+}
+
 function buildHunts(characters) {
   const hunts = [];
   for (let offset = 0; offset < characters.length; offset += TARGETS_PER_HUNT) {
@@ -499,8 +606,7 @@ function buildHunts(characters) {
       id: `wonsr-hunt-${String(index + 1).padStart(3, '0')}`,
       name: huntName(index, targets),
       requiredLevel: level,
-      // For now: todas as caças usam a arena de clareira (huntForestClearing).
-      mapKey: 'huntForestClearing',
+      mapKey: pickHuntMapKey(index, targets),
       description: `Caça automática de ${targets[0]?.name || 'personagem'} para níveis ${level}+.`,
       targets,
     });

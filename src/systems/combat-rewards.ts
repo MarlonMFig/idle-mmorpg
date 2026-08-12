@@ -23,7 +23,7 @@ export function handleEnemyKill(
   villageStore.onEnemyKilled();
   const xpGranted = grantPlayerXp(enemy.xp);
 
-  // Cobre garantido (não depende de roll de chão / chance).
+  // Cobre (Ryo tabela 100%) — sempre ao matar; quantidade escala com nível.
   const copper = copperRewardForKill(enemy.level);
   if (copper > 0) {
     inventoryStore.addItem(SHOP_CURRENCY_ITEM_ID, copper);
@@ -33,8 +33,8 @@ export function handleEnemyKill(
 
   lootManager.spawnFromEnemyAt(enemy, dropX, dropY);
   const seal = trySealEnemy(enemy.definition);
-  if (seal.kind !== 'skipped') {
-    huntAnalyzerStore.recordSealAttempt(true);
+  if (seal.kind === 'failed' || seal.kind === 'success') {
+    huntAnalyzerStore.recordSealAttempt({ scrollId: seal.scrollId });
   }
   if (seal.kind === 'success') {
     huntAnalyzerStore.recordSealSuccess(seal.name);

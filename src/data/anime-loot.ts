@@ -1,13 +1,20 @@
+import { ANIME_MATERIAL_TRIO } from '@/data/anime-items';
+import { getCuratedPackByLookType } from '@/data/character-packs';
+import { getItem } from '@/data/items';
 import {
-  ANIME_MATERIAL_TRIO,
-  NARUTO_LOOT_POOLS,
-} from '@/data/anime-items';
+  getNarutoCharacterTier,
+  getNarutoFragmentChance,
+  narutoFragmentItemId,
+  pickNarutoMaterialItem,
+  rollNarutoMaterialRarity,
+  type NarutoLootTier,
+} from '@/data/naruto-loot-tiers';
+import { resolveAnimeId } from '@/data/anime';
 import type { AnimeId } from '@/types/anime';
-import type { ItemRarity, LootDropEntry } from '@/types/loot';
+import type { ItemRarity, LootDropEntry, RolledLoot } from '@/types/loot';
 
 /**
- * Quantidade de Moeda de Cobre garantida ao matar (nível do alvo).
- * Separada da tabela de materiais — vai direto pro inventário.
+ * Quantidade de cobre (Ryo 100%) garantida ao matar.
  */
 export function copperRewardForKill(level: number): number {
   const safeLevel = Math.max(1, Math.floor(level) || 1);
@@ -15,61 +22,119 @@ export function copperRewardForKill(level: number): number {
   return 1 + Math.floor(Math.random() * coinMax);
 }
 
-/** Chance por item tal que P(≥1 drop na pool) ≈ tierChance. */
-function perItemChance(poolSize: number, tierChance: number): number {
-  if (poolSize <= 0) return 0;
-  const p = 1 - Math.pow(1 - Math.min(0.95, tierChance), 1 / poolSize);
-  return Math.min(0.55, Math.max(0.01, p));
+export interface NarutoLootContext {
+  lookType?: number | null;
+  characterId?: string | null;
 }
 
-function poolToEntries(
-  itemIds: readonly string[],
-  rarity: ItemRarity,
-  tierChance: number,
-  quantityMax: number,
-): LootDropEntry[] {
-  const chance = perItemChance(itemIds.length, tierChance);
-  return itemIds.map((itemId) => ({
+function resolveCharacterId(ctx: NarutoLootContext): string | null {
+  if (ctx.characterId) return ctx.characterId;
+  if (ctx.lookType != null) {
+    return getCuratedPackByLookType(ctx.lookType)?.id ?? null;
+  }
+  return null;
+}
+
+function itemRarityOf(itemId: string): ItemRarity | undefined {
+  return getItem(itemId)?.rarity;
+}
+
+function toRolled(itemId: string, quantity = 1): RolledLoot | null {
+  const item = getItem(itemId);
+  if (!item) return null;
+  return {
     itemId,
-    chance,
-    quantityMin: 1,
-    quantityMax,
-    rarity,
-  }));
-}
-
-/** Tabela de caça Naruto: pool completa por raridade. */
-export function buildNarutoHuntLoot(level: number): LootDropEntry[] {
-  const commonMax = Math.max(1, Math.min(4, Math.ceil(level / 20)));
-  const uncommonMax = Math.max(1, Math.min(2, Math.ceil(level / 40)));
-  const uncommonChance = Math.min(0.42, 0.18 + level * 0.002);
-  const rareChance = Math.min(0.28, 0.06 + level * 0.0018);
-  const epicChance = Math.min(0.12, 0.02 + level * 0.001);
-  const legendaryChance = Math.min(0.05, 0.006 + level * 0.0004);
-  const mythicChance = Math.min(0.02, 0.002 + level * 0.00015);
-
-  return [
-    ...poolToEntries(NARUTO_LOOT_POOLS.common, 'common', 0.72, commonMax),
-    ...poolToEntries(
-      NARUTO_LOOT_POOLS.uncommon,
-      'uncommon',
-      uncommonChance,
-      uncommonMax,
-    ),
-    ...poolToEntries(NARUTO_LOOT_POOLS.rare, 'rare', rareChance, 1),
-    ...poolToEntries(NARUTO_LOOT_POOLS.epic, 'epic', epicChance, 1),
-    ...poolToEntries(NARUTO_LOOT_POOLS.legendary, 'legendary', legendaryChance, 1),
-    ...poolToEntries(NARUTO_LOOT_POOLS.mythic, 'mythic', mythicChance, 1),
-  ];
+    name: item.name,
+    quantity,
+    rarity: item.rarity,
+  };
 }
 
 /**
- * Tabela de drop de caça por anime + nível do alvo (materiais da franquia).
- * Cobre é concedido em `handleEnemyKill` via `copperRewardForKill`.
+ * 1 kill Naruto:
+ * - fragmento (chance por tier; T1≈1/625, T5≈1/5000)
+ * - exatamente 0|1 material via raridade → assinatura/tier
  */
-export function buildAnimeHuntLoot(animeId: AnimeId, level: number): LootDropEntry[] {
+export function rollNarutoCharacterLoot(
+  ctx: NarutoLootContext = {},
+  rng: () => number = Math.random,
+): RolledLoot[] {
+  const characterId = resolveCharacterId(ctx);
+  const tier: NarutoLootTier = getNarutoCharacterTier(characterId) ?? 1;
+  const drops: RolledLoot[] = [];
+
+  // Fragmento do personagem (mais raro nos fortes).
+  if (characterId && getNarutoCharacterTier(characterId) != null) {
+    if (rng() < getNarutoFragmentChance(tier)) {
+      const frag = toRolled(narutoFragmentItemId(characterId));
+      if (frag) drops.push(frag);
+    }
+  } else if (rng() < getNarutoFragmentChance(1)) {
+    const frag = toRolled('item-anime-naruto-fragmento-personagem');
+    if (frag) drops.push(frag);
+  }
+
+  // Uma rolagem de raridade → um item.
+  const rarity = rollNarutoMaterialRarity(tier, rng);
+  if (rarity) {
+    const itemId = pickNarutoMaterialItem(
+      characterId,
+      tier,
+      rarity,
+      itemRarityOf,
+      rng,
+    );
+    if (itemId) {
+      const material = toRolled(itemId);
+      if (material) drops.push(material);
+    }
+  }
+
+  return drops;
+}
+
+/**
+ * true se este monstro usa o pipeline Naruto (raridade + assinatura).
+ * Caças de outros animes caem na tabela genérica.
+ */
+export function isNarutoLootTarget(ctx: {
+  lookType?: number | null;
+  sourceId?: string | null;
+  source?: string | null;
+}): boolean {
+  return (
+    resolveAnimeId({
+      lookType: ctx.lookType,
+      sourceId: ctx.sourceId,
+      source: ctx.source,
+    }) === 'naruto'
+  );
+}
+
+/**
+ * Tabela estática só para previews/legacy — o kill real usa `rollNarutoCharacterLoot`.
+ * Mantém chance aproximada de “algum material” para ferramentas de debug.
+ */
+export function buildNarutoCharacterLoot(_ctx: NarutoLootContext = {}): LootDropEntry[] {
+  return [];
+}
+
+/** @deprecated */
+export function buildNarutoHuntLoot(_level: number): LootDropEntry[] {
+  return [];
+}
+
+/**
+ * Outros animes: tabela clássica independente.
+ * Naruto: lista vazia — rolagem em `rollNarutoCharacterLoot` na hora do kill.
+ */
+export function buildAnimeHuntLoot(
+  animeId: AnimeId,
+  level: number,
+  _ctx: NarutoLootContext = {},
+): LootDropEntry[] {
   if (animeId === 'naruto') {
-    return buildNarutoHuntLoot(level);
+    return [];
   }
 
   const mats = ANIME_MATERIAL_TRIO[animeId];

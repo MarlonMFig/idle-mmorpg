@@ -47,7 +47,7 @@ const LOCAL_SRC = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'gaara', 'dam
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'gaara');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'gaara');
-const TARGET_BODY_H = 48;
+const HQ = { hq: { mode: 'match', metaPath: META_JSON, idleKey: 'gaara-idle' } };
 const EXPECTED = 5;
 const HURT_FRAME_RATE = 9;
 const DEATH_FRAME_RATE = 8;
@@ -222,7 +222,7 @@ async function packSlice(name, frames, widths, heights, contentFromN, frameRate)
     norm.frameWidth,
     norm.frameHeight,
     norm.contentHeight,
-    TARGET_BODY_H,
+    HQ,
   );
   const cleaned = await scrubResidualGreen(
     scaled.frames,
@@ -262,12 +262,6 @@ async function packSlice(name, frames, widths, heights, contentFromN, frameRate)
   if (pal.red < 20) {
     throw new Error(`QA fail ${name}: red hair nearly gone (${pal.red})`);
   }
-  if (Math.abs(scaled.contentHeight - TARGET_BODY_H) > 2) {
-    console.warn(
-      `WARN ${name} contentH=${scaled.contentHeight} (want ~${TARGET_BODY_H})`,
-    );
-  }
-
   fs.mkdirSync(OUT_DIR, { recursive: true });
   const outFile = path.join(OUT_DIR, `${name}.png`);
   await writePng(outFile, sheet.data, sheet.width, sheet.height);
@@ -358,7 +352,7 @@ async function main() {
     pre.frameWidth,
     pre.frameHeight,
     pre.contentHeight,
-    TARGET_BODY_H,
+    HQ,
   );
   const cleaned = await scrubResidualGreen(
     scaled.frames,

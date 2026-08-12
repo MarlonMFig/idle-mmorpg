@@ -23,6 +23,12 @@ const {
   isChromaGreen,
   bbox,
 } = require('./lib/alpha-frame-pack');
+const {
+  resolveHqScale,
+  resolvePackContentHeight,
+  hqLinearScale,
+  hqAreaScale,
+} = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'neji', 'idle');
@@ -31,7 +37,6 @@ const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'neji');
 const PREVIEW = path.join(ROOT, 'public', 'sprites', 'player', 'previews', 'neji.png');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'neji');
-const TARGET_BODY_H = 48;
 const FRAME_RATE = 7;
 const EXPECTED = 6;
 const PAD = 2;
@@ -203,7 +208,7 @@ function normalizeBodyLock(frames, widths, heights, pad = PAD) {
   };
 }
 
-async function scaleLockedCells(frames, fw, fh, absoluteScale) {
+async function scaleLockedCells(frames, fw, fh, absoluteScale, bodyH) {
   const outW = Math.max(1, Math.round(fw * absoluteScale));
   const outH = Math.max(1, Math.round(fh * absoluteScale));
   const out = [];
@@ -238,7 +243,7 @@ async function scaleLockedCells(frames, fw, fh, absoluteScale) {
     frames: out,
     frameWidth: outW,
     frameHeight: outH,
-    contentHeight: TARGET_BODY_H,
+    contentHeight: bodyH,
     scale: absoluteScale,
   };
 }
@@ -295,13 +300,12 @@ function resolveWalkScale() {
     try {
       const meta = JSON.parse(fs.readFileSync(META_JSON, 'utf8'));
       const w = meta['neji-walk'];
-      if (w && typeof w.scale === 'number' && w.scale > 0) {
+      if (w && typeof w.scale === 'number' && w.scale > 0 && w.contentHeight > 0) {
         return {
           scale: w.scale,
+          bodyH: w.contentHeight,
           source: 'meta.json neji-walk',
-          walkMaxContentH:
-            w.maxContentH ??
-            (w.scale > 0 ? Math.round(TARGET_BODY_H / w.scale) : null),
+          walkMaxContentH: w.maxContentH ?? Math.round(w.contentHeight / w.scale),
         };
       }
     } catch {
@@ -315,8 +319,11 @@ async function measureWalkSourceScale() {
   const walkKeyed = await loadAlphaFrames(WALK_DIR, 6);
   const heights = walkKeyed.map((k) => k.box.height);
   const maxH = Math.max(...heights);
+  // Mirror what neji-walk itself does when it is the body ruler.
+  const scale = resolveHqScale(maxH, { mode: 'idle' });
   return {
-    scale: TARGET_BODY_H / Math.max(1, maxH),
+    scale,
+    bodyH: resolvePackContentHeight(maxH, scale, { mode: 'idle' }),
     source: 'walk source max contentH',
     walkMaxContentH: maxH,
   };
@@ -336,8 +343,11 @@ async function main() {
     walkScaleInfo = await measureWalkSourceScale();
   }
   const absoluteScale = walkScaleInfo.scale;
+  const bodyH = walkScaleInfo.bodyH;
+  const linear = hqLinearScale(bodyH);
+  const areaScale = hqAreaScale(bodyH);
   console.log(
-    `walk-matched absoluteScale=${absoluteScale.toFixed(6)} (${walkScaleInfo.source}` +
+    `walk-matched absoluteScale=${absoluteScale.toFixed(6)} bodyH=${bodyH} (${walkScaleInfo.source}` +
       (walkScaleInfo.walkMaxContentH != null
         ? `, walkMaxContentH≈${walkScaleInfo.walkMaxContentH}`
         : '') +
@@ -366,6 +376,7 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     absoluteScale,
+    bodyH,
   );
 
   const sheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
@@ -382,6 +393,7 @@ async function main() {
       minOlivePerFrame: 0,
       minBluePerFrame: 0,
       minOpaquePerFrame: 100,
+      areaScale,
     },
   );
 
@@ -419,22 +431,25 @@ async function main() {
   if (qa.pureBlack < 150) {
     throw new Error(`QA fail: pure black hair/outline nearly gone (${qa.pureBlack})`);
   }
-  if (qa.footSpread > 2) {
+  const cxVarMax = BODY_CX_VAR_MAX * linear;
+  const cxRangeMax = BODY_CX_RANGE_MAX * linear;
+  const feetDeltaMax = Math.round(1 * linear);
+  if (qa.footSpread > Math.round(2 * linear)) {
     console.warn(`WARN footSpread=${qa.footSpread}`);
   }
-  if (cxStats.std > BODY_CX_VAR_MAX) {
+  if (cxStats.std > cxVarMax) {
     throw new Error(
-      `QA fail body-lock: bodyCx std=${cxStats.std.toFixed(3)}px > ${BODY_CX_VAR_MAX}px`,
+      `QA fail body-lock: bodyCx std=${cxStats.std.toFixed(3)}px > ${cxVarMax.toFixed(2)}px`,
     );
   }
-  if (cxStats.max - cxStats.min > BODY_CX_RANGE_MAX) {
+  if (cxStats.max - cxStats.min > cxRangeMax) {
     throw new Error(
-      `QA fail body-lock: bodyCx range Δ=${(cxStats.max - cxStats.min).toFixed(2)}px > ${BODY_CX_RANGE_MAX}px`,
+      `QA fail body-lock: bodyCx range Δ=${(cxStats.max - cxStats.min).toFixed(2)}px > ${cxRangeMax.toFixed(2)}px`,
     );
   }
-  if (feetStats.max - feetStats.min > 1) {
+  if (feetStats.max - feetStats.min > feetDeltaMax) {
     throw new Error(
-      `QA fail body-lock: feetY Δ=${feetStats.max - feetStats.min}px (need ≤ 1)`,
+      `QA fail body-lock: feetY Δ=${feetStats.max - feetStats.min}px (need ≤ ${feetDeltaMax})`,
     );
   }
 

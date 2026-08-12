@@ -3,9 +3,10 @@ import { NAMEPLATE_GAP_PX } from '@/constants/combat';
 import { MULTIPLAYER_INTERPOLATION } from '@/constants/multiplayer';
 import { REMOTE_NAMEPLATE_STYLE, worldDepthForY } from '@/constants/nameplate';
 import { directionFacesLeft, type PlayerDirection } from '@/constants/player';
-import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
 import {
   characterDisplayScale,
+  characterLateralOrigin,
+  characterNameplateLift,
   getCharacterPack,
   type CharacterPack,
 } from '@/data/character-packs';
@@ -43,7 +44,8 @@ export class RemotePlayer {
     this.anim = state.anim;
 
     this.sprite = scene.add.sprite(state.x, state.y, pack.walk.key, 0);
-    this.sprite.setOrigin(0.5, 1);
+    const origin = characterLateralOrigin(pack, pack.idle ?? pack.walk);
+    this.sprite.setOrigin(origin.x, origin.y);
     const scale = characterDisplayScale(pack);
     this.sprite.setScale(scale.x, scale.y);
     this.sprite.setTint(0xb8d4ff);
@@ -51,7 +53,12 @@ export class RemotePlayer {
     this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
 
     this.nameLabel = scene.add
-      .text(state.x, state.y - CHARACTER_DISPLAY_HEIGHT - NAMEPLATE_GAP_PX, state.nickname, REMOTE_NAMEPLATE_STYLE)
+      .text(
+        state.x,
+        state.y - characterNameplateLift(pack) - NAMEPLATE_GAP_PX,
+        state.nickname,
+        REMOTE_NAMEPLATE_STYLE,
+      )
       .setOrigin(0.5, 1);
 
     this.applyAnimation();
@@ -82,7 +89,7 @@ export class RemotePlayer {
     this.sprite.setDepth(depth);
     this.nameLabel.setPosition(
       this.sprite.x,
-      this.sprite.y - CHARACTER_DISPLAY_HEIGHT - NAMEPLATE_GAP_PX,
+      this.sprite.y - characterNameplateLift(this.pack) - NAMEPLATE_GAP_PX,
     );
     this.nameLabel.setDepth(depth + 3);
   }
@@ -99,9 +106,14 @@ export class RemotePlayer {
       if (this.sprite.anims.currentAnim?.key !== animKey) {
         this.sprite.anims.play(animKey, true);
       }
-    } else {
+    } else if (this.pack.outfit) {
       this.sprite.anims.stop();
       this.sprite.setTexture(this.pack.walk.key, playerIdleFrame(this.pack, this.direction));
+    } else {
+      const idleKey = `${this.pack.id}-idle`;
+      if (this.sprite.anims.currentAnim?.key !== idleKey) {
+        this.sprite.anims.play(idleKey, true);
+      }
     }
   }
 }

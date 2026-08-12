@@ -1,29 +1,56 @@
+import { SEALING_SCROLL_PRICE, SHOP_CURRENCY_ITEM_ID } from '@/constants/sealing';
+import { getNpcSellPrice } from '@/data/shop';
 import { createStore } from '@/stores/create-store';
+
+export interface HuntDropEntry {
+  itemId: string;
+  quantity: number;
+  /** Valor NPC unitário (1 para cobre). */
+  unitValue: number;
+  /** unitValue × quantity. */
+  totalValue: number;
+}
 
 export interface HuntAnalyzerState {
   isOpen: boolean;
-  /** Timestamp do início da sessão de contagem (primeiro kill / track). */
+  /** Caça associada à sessão atual (zerada ao trocar). */
+  huntId: string | null;
+  /** Timestamp do início da sessão de contagem. */
   sessionStartedAt: number | null;
   kills: number;
   sealed: number;
   xpGained: number;
   lootCopper: number;
   lootItems: number;
-  /** Pergaminhos consumidos em tentativas de selamento. */
+  /** Custo estimado em cobre dos pergaminhos consumidos. */
+  supplyCopper: number;
   scrollsUsed: number;
+  /** itemId → quantidade nesta sessão. */
+  drops: Record<string, number>;
   sealLogs: string[];
 }
 
-const MAX_SEAL_LOGS = 40;
+const MAX_SEAL_LOGS = 48;
+
+/** Preço de reposição estimado por tier de pergaminho (loja). */
+const SCROLL_COST: Record<string, number> = {
+  'item-sealing-scroll': SEALING_SCROLL_PRICE,
+  'item-sealing-scroll-rare': SEALING_SCROLL_PRICE * 3,
+  'item-sealing-scroll-epic': SEALING_SCROLL_PRICE * 8,
+  'item-sealing-scroll-legendary': SEALING_SCROLL_PRICE * 20,
+};
 
 const emptySession = (): Omit<HuntAnalyzerState, 'isOpen'> => ({
+  huntId: null,
   sessionStartedAt: null,
   kills: 0,
   sealed: 0,
   xpGained: 0,
   lootCopper: 0,
   lootItems: 0,
+  supplyCopper: 0,
   scrollsUsed: 0,
+  drops: {},
   sealLogs: [],
 });
 
@@ -49,9 +76,25 @@ function perHour(value: number, ms: number): number {
   return Math.round((value / ms) * 3_600_000);
 }
 
+/** Valor unitário em cobre (NPC). Cobre = 1. */
+export function huntItemNpcValue(itemId: string): number {
+  if (itemId === SHOP_CURRENCY_ITEM_ID) return 1;
+  return getNpcSellPrice(itemId);
+}
+
+/** Valor total dos drops da sessão (cobre + materiais na tabela de venda). */
+export function sumLootNpcValue(drops: Record<string, number>): number {
+  let total = 0;
+  for (const [itemId, quantity] of Object.entries(drops)) {
+    if (quantity <= 0) continue;
+    total += huntItemNpcValue(itemId) * quantity;
+  }
+  return total;
+}
+
 /**
  * Estatísticas da sessão de caça (estilo Hunt Analyzer).
- * Reinicia com `resetSession`; não é persistido entre reloads.
+ * Zera ao trocar de caça (`onHuntChanged`) ou via `resetSession`.
  */
 export const huntAnalyzerStore = {
   subscribe: store.subscribe,
@@ -75,39 +118,67 @@ export const huntAnalyzerStore = {
   },
 
   resetSession(): void {
-    const { isOpen } = store.getSnapshot();
-    store.setState({ isOpen, ...emptySession() });
+    const { isOpen, huntId } = store.getSnapshot();
+    store.setState({ isOpen, ...emptySession(), huntId });
+  },
+
+  /**
+   * Troca de caça / entra em combate: zera contadores se o id mudou.
+   * Mantém o painel aberto.
+   */
+  onHuntChanged(huntId: string | null): void {
+    const state = store.getSnapshot();
+    // Mesma caça (incl. ambos null): mantém a sessão.
+    if (state.huntId === huntId) return;
+    store.setState({
+      isOpen: state.isOpen,
+      ...emptySession(),
+      huntId,
+    });
   },
 
   recordKill(params: { xp: number; copper: number }): void {
     ensureSession();
     const state = store.getSnapshot();
+    const copper = Math.max(0, params.copper);
+    const drops = { ...state.drops };
+    if (copper > 0) {
+      drops[SHOP_CURRENCY_ITEM_ID] = (drops[SHOP_CURRENCY_ITEM_ID] ?? 0) + copper;
+    }
     store.setState({
       ...state,
       kills: state.kills + 1,
       xpGained: state.xpGained + Math.max(0, params.xp),
-      lootCopper: state.lootCopper + Math.max(0, params.copper),
+      lootCopper: state.lootCopper + copper,
+      drops,
     });
   },
 
   /** Materiais / itens de drop (exceto moedas já contadas em recordKill). */
-  recordLootItems(quantity: number): void {
-    if (quantity <= 0) return;
-    if (store.getSnapshot().sessionStartedAt == null) return;
+  recordLootItems(itemId: string, quantity: number): void {
+    if (quantity <= 0 || !itemId) return;
+    if (itemId === SHOP_CURRENCY_ITEM_ID) return;
+    ensureSession();
     const state = store.getSnapshot();
+    const drops = {
+      ...state.drops,
+      [itemId]: (state.drops[itemId] ?? 0) + quantity,
+    };
     store.setState({
       ...state,
       lootItems: state.lootItems + quantity,
+      drops,
     });
   },
 
-  recordSealAttempt(usedScroll: boolean): void {
-    if (!usedScroll) return;
+  recordSealAttempt(params: { scrollId: string }): void {
     ensureSession();
+    const cost = SCROLL_COST[params.scrollId] ?? SEALING_SCROLL_PRICE;
     const state = store.getSnapshot();
     store.setState({
       ...state,
       scrollsUsed: state.scrollsUsed + 1,
+      supplyCopper: state.supplyCopper + cost,
     });
   },
 
@@ -122,17 +193,46 @@ export const huntAnalyzerStore = {
     });
   },
 
+  /** Drops da sessão com valor NPC (ordenados por valor total, depois qty). */
+  listDrops(): HuntDropEntry[] {
+    const { drops } = store.getSnapshot();
+    return Object.entries(drops)
+      .map(([itemId, quantity]) => {
+        const unitValue = huntItemNpcValue(itemId);
+        return {
+          itemId,
+          quantity,
+          unitValue,
+          totalValue: unitValue * quantity,
+        };
+      })
+      .filter((entry) => entry.quantity > 0)
+      .sort(
+        (a, b) =>
+          b.totalValue - a.totalValue ||
+          b.quantity - a.quantity ||
+          a.itemId.localeCompare(b.itemId),
+      );
+  },
+
   /** Métricas derivadas para a UI (tick a cada segundo). */
   getRates(now = Date.now()) {
     const state = store.getSnapshot();
     const ms = elapsedMs(state, now);
-    const balance = state.lootCopper; // supply monstruário em cobre não existe ainda
+    const lootValue = sumLootNpcValue(state.drops);
+    const materialValue = Math.max(0, lootValue - state.lootCopper);
+    const balance = lootValue - state.supplyCopper;
     return {
       elapsedMs: ms,
+      lootValue,
+      materialValue,
       copperPerHour: perHour(state.lootCopper, ms),
+      lootPerHour: perHour(lootValue, ms),
+      balancePerHour: perHour(balance, ms),
       xpPerHour: perHour(state.xpGained, ms),
       killsPerHour: perHour(state.kills, ms),
       balance,
+      supplyCopper: state.supplyCopper,
     };
   },
 };
@@ -145,4 +245,8 @@ export function formatHuntDuration(ms: number): string {
   if (h > 0) return `${h}h ${m}m ${s}s`;
   if (m > 0) return `${m}m ${s}s`;
   return `${s}s`;
+}
+
+export function formatCopper(value: number): string {
+  return value.toLocaleString('pt-BR');
 }

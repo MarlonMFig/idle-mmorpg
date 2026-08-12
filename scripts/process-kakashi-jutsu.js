@@ -24,6 +24,11 @@ const {
   writePng,
   isChromaGreen,
 } = require('./lib/alpha-frame-pack');
+const {
+  preferNativeScale,
+  readIdleContentHeight,
+  hqLinearScale,
+} = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'kakashi', 'jutsu');
@@ -460,12 +465,15 @@ function variance(vals) {
   return { mean, variance: v, std: Math.sqrt(v), min: Math.min(...vals), max: Math.max(...vals) };
 }
 
-/** Soft HQ downscale (lanczos3). Never nearest — keeps soft test-art quality. */
-async function scaleLockedCells(frames, fw, fh, contentHeight, absoluteScale) {
+/** Soft HQ scale (lanczos3). Pack contentHeight = idle ruler when HQ. */
+async function scaleLockedCells(frames, fw, fh, contentHeight, absoluteScale, rulerContentH = null) {
   const skipResize = Math.abs(absoluteScale - 1) < 1e-6;
   const outW = skipResize ? fw : Math.max(1, Math.round(fw * absoluteScale));
   const outH = skipResize ? fh : Math.max(1, Math.round(fh * absoluteScale));
-  const outContent = Math.max(1, Math.round(contentHeight * absoluteScale));
+  const outContent =
+    rulerContentH != null
+      ? rulerContentH
+      : Math.max(1, Math.round(contentHeight * absoluteScale));
   const out = [];
   for (const frame of frames) {
     let data;
@@ -504,8 +512,12 @@ async function scaleLockedCells(frames, fw, fh, contentHeight, absoluteScale) {
     frames: out,
     frameWidth: outW,
     frameHeight: outH,
-    // Pack body bar matches walk baseScale path (contentH = 48 after body-match).
-    contentHeight: Math.abs(outContent - TARGET_BODY_H) <= 2 ? TARGET_BODY_H : outContent,
+    contentHeight:
+      rulerContentH != null
+        ? rulerContentH
+        : Math.abs(outContent - TARGET_BODY_H) <= 2
+          ? TARGET_BODY_H
+          : outContent,
     scale: absoluteScale,
   };
 }
@@ -547,9 +559,7 @@ async function main() {
   const scrubbed = norm.frames.map((f) => scrubFrame(f, norm.frameWidth, norm.frameHeight));
 
   // Prefer walk absoluteScale first so on-screen body size matches idle/walk
-  // (HQ path: body-lock expands cell for VFX; soft lanczos3 downscale).
-  // Fall back to body-match→48 only when walk meta is missing or projection
-  // is wildly off walk height (>8px after scale).
+  const idleH = readIdleContentHeight(META_JSON, 'kakashi-idle') || TARGET_BODY_H;
   let walkScale = null;
   if (fs.existsSync(META_JSON)) {
     try {
@@ -560,26 +570,22 @@ async function main() {
       /* ignore */
     }
   }
-  const bodyMatch = TARGET_BODY_H / Math.max(1, norm.contentHeight);
-  let absoluteScale = bodyMatch;
-  let scaleSource = `body-match-lanczos3→${TARGET_BODY_H}`;
-  if (walkScale != null) {
+  const rawMatch = idleH / Math.max(1, norm.contentHeight);
+  let absoluteScale = preferNativeScale(rawMatch);
+  let scaleSource = `hq-match-idle→${idleH}`;
+  // Legacy path only when walk itself is still on the 48px pack.
+  if (walkScale != null && Math.abs(walkScale - 1) > 1e-6) {
     const projected = norm.contentHeight * walkScale;
     if (Math.abs(projected - TARGET_BODY_H) <= 8) {
       absoluteScale = walkScale;
       scaleSource = `walk-matched scale=${walkScale}`;
-      console.log(
-        `walk absoluteScale=${walkScale.toFixed(6)} → standing body≈${projected.toFixed(1)}px (target ${TARGET_BODY_H})`,
-      );
     } else {
-      console.log(
-        `NOTE: walk scale ${walkScale.toFixed(6)} → body≈${projected.toFixed(1)}px ` +
-          `(need ~${TARGET_BODY_H}); using body-match ${bodyMatch.toFixed(6)}`,
-      );
+      absoluteScale = TARGET_BODY_H / Math.max(1, norm.contentHeight);
+      scaleSource = `body-match-lanczos3→${TARGET_BODY_H}`;
     }
   }
   console.log(
-    `scale=lanczos3 ${absoluteScale.toFixed(6)} (${scaleSource}) contentH ${norm.contentHeight}→~${Math.round(norm.contentHeight * absoluteScale)}` +
+    `scale=lanczos3 ${absoluteScale.toFixed(6)} (${scaleSource}) contentH ${norm.contentHeight}→ruler ${idleH}` +
       (Math.abs(absoluteScale - 1) < 1e-6 ? ' (1:1 no-scale)' : ''),
   );
 
@@ -589,6 +595,7 @@ async function main() {
     norm.frameHeight,
     norm.contentHeight,
     absoluteScale,
+    idleH,
   );
   const cleaned = scaled.frames.map((f) =>
     scrubFrame(f, scaled.frameWidth, scaled.frameHeight),

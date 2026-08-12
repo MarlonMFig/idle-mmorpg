@@ -19,6 +19,7 @@ const {
   countOpaque,
   isChromaGreen,
 } = require('./lib/alpha-frame-pack');
+const { resolveHqFxTargetMaxSide } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const SRC_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'shino', 'jutsu-vfx');
@@ -27,7 +28,7 @@ const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'shino');
 const EXPECTED = 18;
 /** Swarm max side ≈ display size (characters use contentH 48). */
-const TARGET_BODY_H = 56;
+const LEGACY_FX_BODY_H = 56;
 const PAD = 2;
 const FRAME_RATE = 12;
 
@@ -64,6 +65,8 @@ function countGreen(data) {
 }
 
 async function main() {
+  const TARGET_BODY_H = resolveHqFxTargetMaxSide(META_JSON, 'shino-idle', LEGACY_FX_BODY_H);
+  console.log('HQ FX targetBodyH=' + TARGET_BODY_H + ' (legacy ' + LEGACY_FX_BODY_H + ')');
   if (!fs.existsSync(SRC_DIR)) {
     throw new Error(`Missing VFX source dir: ${SRC_DIR}`);
   }

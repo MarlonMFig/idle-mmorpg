@@ -2,8 +2,10 @@
  * Chouji combo attack — horizontal punch(3) + kick(4) + multi-size fist finisher.
  * Green chroma exterior only; keep white scarf / arm bandages (stripLabels: false).
  *
+ * HQ: scale so comboMaxH → idle contentHeight (attacks don't look shrunk).
+ *
  * Cells: density-island detection (do NOT force equal cols — fist frames are wider).
- * Export combo1/2/3 + full attack strip; same TARGET_BODY_H=48 bar as idle.
+ * Export combo1/2/3 + full attack strip.
  *
  * npm run chouji:combo
  * Fonte: assets/naruto-source/nu/chouji-combo-sheet.png
@@ -17,13 +19,13 @@ const {
   isGreenBg,
   fillInteriorHoles,
 } = require('./lib/chroma-green-bg');
+const { resolveHqScale, resolvePackContentHeight, NATIVE_PIXELS } = require('./lib/chouji-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'chouji-combo-sheet.png');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'chouji');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'chouji');
-const TARGET_BODY_H = 48;
 const FRAME_RATE = 12;
 /** Soft segments — punch / kick / finisher; finisher absorbs remainder. */
 const SEG_HINT = [3, 4];
@@ -213,11 +215,16 @@ function normalize(cut, pad = 2) {
   return { frames, cellW, cellH, contentHeight: contentH0 || cut[0].bh };
 }
 
-async function scaleFrames(frames, cellW, cellH, contentHeight) {
-  const scale = TARGET_BODY_H / Math.max(1, contentHeight);
+async function scaleFrames(frames, cellW, cellH, contentHeight, scaleOpts = {}) {
+  const scale = resolveHqScale(contentHeight, scaleOpts);
   const outW = Math.max(1, Math.round(cellW * scale));
   const outH = Math.max(1, Math.round(cellH * scale));
-  const outContent = Math.max(1, Math.round(contentHeight * scale));
+  const outContent = resolvePackContentHeight(contentHeight, scale, scaleOpts);
+  if (NATIVE_PIXELS) {
+    console.log(
+      `HQ combo scale=${scale.toFixed(4)} (comboMaxH → idle contentH) contentH=${outContent} cell ${cellW}x${cellH} → ${outW}x${outH}`,
+    );
+  }
   const out = [];
   for (const frame of frames) {
     const { data: d } = await sharp(frame, {
@@ -462,7 +469,11 @@ async function main() {
   }
 
   const norm = normalize(cut);
-  const scaled = await scaleFrames(norm.frames, norm.cellW, norm.cellH, norm.contentHeight);
+  const comboMaxH = Math.max(...cut.map((c) => c.bh));
+  const scaled = await scaleFrames(norm.frames, norm.cellW, norm.cellH, norm.contentHeight, {
+    metaPath: META_JSON,
+    matchMaxBodyH: comboMaxH,
+  });
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
   fs.mkdirSync(QA_DIR, { recursive: true });

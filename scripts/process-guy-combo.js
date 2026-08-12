@@ -9,13 +9,13 @@
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const { resolveHqScale, resolvePackContentHeight, NATIVE_PIXELS } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'guy', '_src', 'combo');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'guy');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'guy');
-const TARGET_BODY_H = 48;
 const FRAME_RATE = 12;
 const MAX_SHEET_W = 4096;
 const PAD = 2;
@@ -172,13 +172,13 @@ function normalize(frames, widths, heights) {
 }
 
 async function scaleFrames(frames, fw, fh, contentHeight) {
-  const scale = Math.min(1, TARGET_BODY_H / Math.max(1, contentHeight));
+  const scale = resolveHqScale(contentHeight, { mode: 'match', metaPath: META_JSON, idleKey: 'guy-idle' });
   if (scale >= 0.995) {
     return { frames, frameWidth: fw, frameHeight: fh, contentHeight, scale: 1 };
   }
   const outW = Math.max(1, Math.round(fw * scale));
   const outH = Math.max(1, Math.round(fh * scale));
-  const outContent = Math.max(1, Math.round(contentHeight * scale));
+  const outContent = resolvePackContentHeight(contentHeight, scale, { mode: 'match', metaPath: META_JSON, idleKey: 'guy-idle' });
   const out = [];
   for (const frame of frames) {
     const { data } = await sharp(frame, {

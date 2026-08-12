@@ -1,31 +1,29 @@
 {
   "naruto-kyubi-walk": {
     "image": "/sprites/player/naruto-kyubi/walk.png",
-    "frameWidth": 52,
-    "frameHeight": 52,
+    "frameWidth": 102,
+    "frameHeight": 102,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.4897959183673469,
+    "contentHeight": 103,
+    "scale": 1,
     "residualGreen": 0,
-    "pureBlack": 967
+    "pureBlack": 3938
   },
   "naruto-kyubi-idle": {
     "image": "/sprites/player/naruto-kyubi/idle.png",
-    "frameWidth": 56,
-    "frameHeight": 52,
+    "frameWidth": 115,
+    "frameHeight": 107,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.46601941747572817,
-    "alignX": "feet",
-    "feetDriftPx": 0.8131313131313149
+    "contentHeight": 103,
+    "scale": 1
   },
   "naruto-kyubi-combo1": {
     "image": "/sprites/player/naruto-kyubi/combo1.png",
-    "frameWidth": 67,
-    "frameHeight": 52,
+    "frameWidth": 148,
+    "frameHeight": 113,
     "frameCount": 4,
-    "contentHeight": 48,
-    "scale": 0.44036697247706424,
+    "contentHeight": 103,
+    "scale": 1,
     "range": [
       0,
       4
@@ -33,11 +31,11 @@
   },
   "naruto-kyubi-combo2": {
     "image": "/sprites/player/naruto-kyubi/combo2.png",
-    "frameWidth": 67,
-    "frameHeight": 52,
+    "frameWidth": 148,
+    "frameHeight": 113,
     "frameCount": 4,
-    "contentHeight": 48,
-    "scale": 0.44036697247706424,
+    "contentHeight": 103,
+    "scale": 1,
     "range": [
       4,
       8
@@ -45,11 +43,11 @@
   },
   "naruto-kyubi-combo3": {
     "image": "/sprites/player/naruto-kyubi/combo3.png",
-    "frameWidth": 67,
-    "frameHeight": 52,
+    "frameWidth": 148,
+    "frameHeight": 113,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.44036697247706424,
+    "contentHeight": 103,
+    "scale": 1,
     "range": [
       8,
       13
@@ -57,46 +55,48 @@
   },
   "naruto-kyubi-hurt": {
     "image": "/sprites/player/naruto-kyubi/hurt.png",
-    "frameWidth": 54,
-    "frameHeight": 52,
+    "frameWidth": 124,
+    "frameHeight": 107,
     "frameCount": 2,
-    "contentHeight": 48,
+    "contentHeight": 103,
     "frameRate": 10,
-    "scale": 0.46601941747572817
+    "scale": 1
   },
   "naruto-kyubi-death": {
     "image": "/sprites/player/naruto-kyubi/death.png",
-    "frameWidth": 54,
-    "frameHeight": 52,
+    "frameWidth": 124,
+    "frameHeight": 107,
     "frameCount": 5,
-    "contentHeight": 48,
+    "contentHeight": 103,
     "frameRate": 8,
-    "scale": 0.46601941747572817
+    "scale": 1
   },
   "naruto-kyubi-mode": {
     "image": "/sprites/player/naruto-kyubi/kyuubi.png",
-    "frameWidth": 161,
-    "frameHeight": 108,
+    "frameWidth": 307,
+    "frameHeight": 199,
     "frameCount": 36,
-    "contentHeight": 48,
-    "scale": 0.4897959183673469,
+    "contentHeight": 103,
+    "scale": 0.9196428571428571,
     "frameRate": 12,
     "durationMs": 3000,
     "hitDelayMs": 2000,
     "residualGreen": 0,
-    "pureBlack": 7600
+    "pureBlack": 26347,
+    "originX": 0.6254071661237784
   },
   "skill-kurama-mode": {
     "image": "/sprites/player/naruto-kyubi/kyuubi.png",
-    "frameWidth": 161,
-    "frameHeight": 108,
+    "frameWidth": 307,
+    "frameHeight": 199,
     "frameCount": 36,
-    "contentHeight": 48,
-    "scale": 0.4897959183673469,
+    "contentHeight": 103,
+    "scale": 0.9196428571428571,
     "frameRate": 12,
     "durationMs": 3000,
     "hitDelayMs": 2000,
     "residualGreen": 0,
-    "pureBlack": 7600
+    "pureBlack": 26347,
+    "originX": 0.6254071661237784
   }
 }

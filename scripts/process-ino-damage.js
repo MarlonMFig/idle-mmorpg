@@ -24,13 +24,14 @@ const {
   updateMeta,
   writePng,
 } = require('./lib/alpha-frame-pack');
+const { hqAreaScale } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'ino', 'damage');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'ino');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'ino');
-const TARGET_BODY_H = 48;
+const HQ = { hq: { mode: 'match', metaPath: META_JSON, idleKey: 'ino-idle' } };
 const EXPECTED = 5;
 const HURT_N = 2;
 const DEATH_N = 3;
@@ -71,6 +72,7 @@ async function writeSlice(name, frames, scaled, meta, frameRate, note) {
       minOlivePerFrame: 0,
       minBluePerFrame: 0,
       minOpaquePerFrame: 50,
+      areaScale: hqAreaScale(scaled.contentHeight),
     },
   );
   const purple = countPurple(sheet.data);
@@ -148,7 +150,7 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     norm.contentHeight,
-    TARGET_BODY_H,
+    HQ,
   );
 
   fs.mkdirSync(OUT_DIR, { recursive: true });

@@ -31,6 +31,20 @@ import {
   SHINO_CURATED_LOOK_TYPE,
   MOMO_HINAMORI_CURATED_LOOK_TYPE,
   HITSUGAYA_CURATED_LOOK_TYPE,
+  SHISUI_CURATED_LOOK_TYPE,
+  SHISUI_LOOK_TYPES,
+  NARUTO_SHIPPUDEN_CURATED_LOOK_TYPE,
+  NARUTO_SHIPPUDEN_LOOK_TYPES,
+  GOKU_CURATED_LOOK_TYPE,
+  GOKU_LOOK_TYPES,
+  FREEZA_CURATED_LOOK_TYPE,
+  FREEZA_LOOK_TYPES,
+  GOTENKS_CURATED_LOOK_TYPE,
+  GOTENKS_LOOK_TYPES,
+  MAJIN_BOO_CURATED_LOOK_TYPE,
+  MAJIN_BOO_LOOK_TYPES,
+  PICCOLO_CURATED_LOOK_TYPE,
+  PICCOLO_LOOK_TYPES,
 } from '@/data/character-packs';
 import { emitSystemMessage } from '@/lib/system-log';
 import { planForgeStar } from '@/systems/forge';
@@ -109,6 +123,48 @@ function previewForLookType(lookType: number): string {
   if (lookType === UCHIHA_ITACHI_LOOK_TYPE) {
     return '/sprites/player/previews/itachi.png';
   }
+  if (
+    lookType === SHISUI_CURATED_LOOK_TYPE ||
+    (SHISUI_LOOK_TYPES as readonly number[]).includes(lookType)
+  ) {
+    return '/sprites/player/previews/shisui.png';
+  }
+  if (
+    lookType === NARUTO_SHIPPUDEN_CURATED_LOOK_TYPE ||
+    (NARUTO_SHIPPUDEN_LOOK_TYPES as readonly number[]).includes(lookType)
+  ) {
+    return '/sprites/player/previews/naruto-shippuden.png';
+  }
+  if (
+    lookType === GOKU_CURATED_LOOK_TYPE ||
+    (GOKU_LOOK_TYPES as readonly number[]).includes(lookType)
+  ) {
+    return '/sprites/player/previews/goku.png';
+  }
+  if (
+    lookType === FREEZA_CURATED_LOOK_TYPE ||
+    (FREEZA_LOOK_TYPES as readonly number[]).includes(lookType)
+  ) {
+    return '/sprites/player/previews/freeza.png';
+  }
+  if (
+    lookType === GOTENKS_CURATED_LOOK_TYPE ||
+    (GOTENKS_LOOK_TYPES as readonly number[]).includes(lookType)
+  ) {
+    return '/sprites/player/previews/gotenks.png';
+  }
+  if (
+    lookType === MAJIN_BOO_CURATED_LOOK_TYPE ||
+    (MAJIN_BOO_LOOK_TYPES as readonly number[]).includes(lookType)
+  ) {
+    return '/sprites/player/previews/majin-boo.png';
+  }
+  if (
+    lookType === PICCOLO_CURATED_LOOK_TYPE ||
+    (PICCOLO_LOOK_TYPES as readonly number[]).includes(lookType)
+  ) {
+    return '/sprites/player/previews/piccolo.png';
+  }
   if ((JIRAIYA_LOOK_TYPES as readonly number[]).includes(lookType)) {
     return '/sprites/player/previews/jiraiya.png';
   }
@@ -166,6 +222,15 @@ function previewForLookType(lookType: number): string {
   return `/sprites/wonsr/outfits/${lookType}.png`;
 }
 
+/** Prefer preview curado (`/previews/`) sobre URL legada quebrada (outfit WONSR 90xx). */
+function resolvePreviewUrl(lookType: number, stored?: string | null): string {
+  const fromLook = previewForLookType(lookType);
+  if (fromLook.includes('/sprites/player/previews/')) return fromLook;
+  if (stored && stored.includes('/sprites/player/previews/')) return stored;
+  if (stored && stored.length > 0 && !stored.includes('/sprites/wonsr/outfits/')) return stored;
+  return fromLook;
+}
+
 const store = createStore<TeamState>({
   collection: [],
   teamIds: [],
@@ -207,7 +272,7 @@ export const teamStore = {
       .filter((entry): entry is SealedCharacter => entry != null)
       .map((entry) => ({
         ...entry,
-        previewUrl: entry.previewUrl || previewForLookType(entry.lookType),
+        previewUrl: resolvePreviewUrl(entry.lookType, entry.previewUrl),
       }));
     if (collection.length === 0) return false;
 
@@ -250,6 +315,19 @@ export const teamStore = {
 
   setOpen(isOpen: boolean): void {
     commit({ ...store.getSnapshot(), isOpen });
+  },
+
+  /** Reaplica previews curados (corrige saves com lookType 90xx → outfit WONSR inexistente). */
+  refreshPreviews(): void {
+    const state = store.getSnapshot();
+    let changed = false;
+    const collection = state.collection.map((entry) => {
+      const next = resolvePreviewUrl(entry.lookType, entry.previewUrl);
+      if (next === entry.previewUrl) return entry;
+      changed = true;
+      return { ...entry, previewUrl: next };
+    });
+    if (changed) commit({ ...state, collection });
   },
 
   getActive(): SealedCharacter | null {
@@ -301,7 +379,7 @@ export const teamStore = {
 
     const sealed: SealedCharacter = {
       ...built,
-      previewUrl: built.previewUrl ?? previewForLookType(member.lookType),
+      previewUrl: resolvePreviewUrl(member.lookType, built.previewUrl ?? member.previewUrl),
     };
     commit({
       ...state,

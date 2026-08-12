@@ -4,7 +4,7 @@
  *
  * Exterior green chroma only; stripLabels false (white scarf/bandages).
  * Content-island frame detect — never force wrong N.
- * Scale from standing body height → contentHeight 48; giant ball may use taller frames.
+ * HQ: scale standing body → idle contentHeight; giant ball may use taller frames.
  *
  * npm run chouji:jutsu
  * Fontes:
@@ -20,6 +20,7 @@ const {
   isGreenBg,
   fillInteriorHoles,
 } = require('./lib/chroma-green-bg');
+const { resolveHqScale, resolvePackContentHeight, NATIVE_PIXELS } = require('./lib/chouji-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const SEAL_INPUT = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'chouji-nikudan-seal-sheet.png');
@@ -28,8 +29,7 @@ const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'chouji');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'chouji');
 const OUT_NAME = 'nikudan-sensha.png';
-/** Standing body target height (pack-coherent). Big ball exceeds frame accordingly. */
-const TARGET_BODY_H = 48;
+/** Standing body matches idle contentHeight after HQ scale. Big ball exceeds frame. */
 const FRAME_RATE = 12;
 
 function greenness(r, g, b) {
@@ -298,11 +298,16 @@ function normalize(cut, pad = 2, standingH) {
   return { frames, cellW, cellH, contentHeight: contentH0 || cut[0].bh };
 }
 
-async function scaleFrames(frames, cellW, cellH, contentHeight) {
-  const scale = TARGET_BODY_H / Math.max(1, contentHeight);
+async function scaleFrames(frames, cellW, cellH, contentHeight, scaleOpts = {}) {
+  const scale = resolveHqScale(contentHeight, scaleOpts);
   const outW = Math.max(1, Math.round(cellW * scale));
   const outH = Math.max(1, Math.round(cellH * scale));
-  const outContent = Math.max(1, Math.round(contentHeight * scale));
+  const outContent = resolvePackContentHeight(contentHeight, scale, scaleOpts);
+  if (NATIVE_PIXELS) {
+    console.log(
+      `HQ jutsu scale=${scale.toFixed(4)} (standingH → idle contentH) contentH=${outContent} cell ${cellW}x${cellH} → ${outW}x${outH}`,
+    );
+  }
   const out = [];
   for (const frame of frames) {
     const { data: d } = await sharp(frame, {
@@ -537,7 +542,10 @@ async function main() {
 
   const allCut = [...seal.cut, ...spin.cut];
   const norm = normalize(allCut, 2, standingH);
-  const scaled = await scaleFrames(norm.frames, norm.cellW, norm.cellH, standingH);
+  const scaled = await scaleFrames(norm.frames, norm.cellW, norm.cellH, standingH, {
+    metaPath: META_JSON,
+    matchIdle: true,
+  });
   const sheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
   const qa = qaMetrics(
     sheet.data,
@@ -564,8 +572,11 @@ async function main() {
     .toFile(path.join(OUT_DIR, OUT_NAME));
 
   const durationMs = Math.round((scaled.frames.length / FRAME_RATE) * 1000);
-  // Hit roughly when ball is fully formed + spin starts (~ after seal frames)
-  const hitDelayMs = Math.round((seal.cellCount / FRAME_RATE) * 1000);
+  // Spin starts after seal; hit near end of roll so dashToTarget reaches the enemy.
+  const spinStartMs = Math.round((seal.cellCount / FRAME_RATE) * 1000);
+  const hitDelayMs = Math.round(
+    ((seal.cellCount + Math.max(1, spin.cellCount - 3)) / FRAME_RATE) * 1000,
+  );
 
   const entry = {
     image: `/sprites/player/chouji/${OUT_NAME}`,
@@ -578,7 +589,8 @@ async function main() {
     frameRate: FRAME_RATE,
     durationMs,
     hitDelayMs,
-    note: `${seal.cellCount}+${spin.cellCount}=${scaled.frames.length}f Nikudan Sensha (seal→expand→spin); green exterior; content-island`,
+    dashStartMs: spinStartMs,
+    note: `${seal.cellCount}+${spin.cellCount}=${scaled.frames.length}f Nikudan Sensha (seal→expand→spin); HQ matched idle contentH; dash from spin; hit near roll end`,
   };
 
   let meta = {};

@@ -1,16 +1,23 @@
 import type * as Phaser from 'phaser';
 
 /**
- * Tipografia de nameplate no mapa — um nome limpo, sem nível duplicado.
- * Espelha o estilo do vídeo de referência (branco + contorno fino).
+ * Tipografia de nameplate no mapa — nome limpo, contorno nítido sobre o pixel art.
  */
 export const NAMEPLATE_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {
   fontFamily: 'Tahoma, "Segoe UI", sans-serif',
   fontSize: '10px',
-  color: '#ffffff',
+  color: '#f4f1ea',
   align: 'center',
-  stroke: '#0a0a0a',
-  strokeThickness: 2,
+  stroke: '#0c0e10',
+  strokeThickness: 3,
+  shadow: {
+    offsetX: 0,
+    offsetY: 1,
+    color: '#000000',
+    blur: 0,
+    fill: true,
+    stroke: false,
+  },
 };
 
 export const PLAYER_NAMEPLATE_STYLE: Phaser.Types.GameObjects.Text.TextStyle = {

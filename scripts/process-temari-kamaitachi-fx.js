@@ -20,6 +20,7 @@ const {
   countOpaque,
   isChromaGreen,
 } = require('./lib/alpha-frame-pack');
+const { resolveHqFxTargetMaxSide } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const SRC_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'temari', 'jutsu-vfx');
@@ -28,7 +29,7 @@ const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'temari');
 /** First half of looped sequence (full zip has 26 ≈ 13×2). */
 const EXPECTED = 13;
-const TARGET_BODY_H = 48;
+const LEGACY_FX_BODY_H = 48;
 const PAD = 2;
 const FRAME_RATE = 14;
 
@@ -64,6 +65,8 @@ function countGreen(data) {
 }
 
 async function main() {
+  const TARGET_BODY_H = resolveHqFxTargetMaxSide(META_JSON, 'temari-idle', LEGACY_FX_BODY_H);
+  console.log('HQ FX targetBodyH=' + TARGET_BODY_H + ' (legacy ' + LEGACY_FX_BODY_H + ')');
   if (!fs.existsSync(SRC_DIR)) {
     throw new Error(`Missing VFX source dir: ${SRC_DIR}`);
   }

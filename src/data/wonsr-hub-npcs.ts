@@ -75,8 +75,8 @@ const HUB_SEEDS: readonly HubNpcSeed[] = [
     x: 784,
     y: 432,
     dialogue: [
-      'Hello, I buy and sell items, if you are interested in something or want to sell me something say {trade}.',
-      '(Troca ainda em breve — por enquanto só conversa.)',
+      'Olá shinobi. Compro e vendo itens — pergaminhos de selamento e o que sobrar da caça.',
+      'Aperte P ou fale comigo na praça quando precisar de cobre ou material.',
     ],
   },
   {

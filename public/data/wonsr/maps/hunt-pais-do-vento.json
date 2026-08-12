@@ -1,0 +1,49 @@
+{
+  "mapKey": "huntPaisDoVento",
+  "slug": "hunt-pais-do-vento",
+  "label": "País do Vento",
+  "image": "/maps/hunt-pais-do-vento.png",
+  "tmx": "/maps/hunt-pais-do-vento.tmx",
+  "width": 1024,
+  "height": 576,
+  "cols": 32,
+  "rows": 18,
+  "spawn": {
+    "x": 528,
+    "y": 388
+  },
+  "enemySpawns": [
+    {
+      "x": 528,
+      "y": 241
+    },
+    {
+      "x": 354,
+      "y": 333
+    },
+    {
+      "x": 702,
+      "y": 333
+    },
+    {
+      "x": 406,
+      "y": 278
+    },
+    {
+      "x": 650,
+      "y": 278
+    },
+    {
+      "x": 389,
+      "y": 370
+    },
+    {
+      "x": 667,
+      "y": 370
+    },
+    {
+      "x": 528,
+      "y": 342
+    }
+  ]
+}

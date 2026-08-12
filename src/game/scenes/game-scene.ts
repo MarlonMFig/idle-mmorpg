@@ -38,6 +38,7 @@ import { multiplayerStore } from '@/stores/multiplayer-store';
 import { questStore } from '@/stores/quest-store';
 import { skillsStore } from '@/stores/skills-store';
 import { teamStore } from '@/stores/team-store';
+import { autoHelperSystem } from '@/systems/auto-helper-system';
 import { vitalsStore } from '@/stores/vitals-store';
 
 interface GameSceneData {
@@ -77,9 +78,8 @@ export class GameScene extends Phaser.Scene {
   private worldReady = false;
   private worldW = 0;
   private worldH = 0;
-  /** Layout da câmera: cover = fundo hub estático; follow = tilemap/combate. */
-  private cameraLayout: 'cover' | 'follow' | 'follow-combat' = 'follow';
-  private combatUsesRenderedMap = false;
+  /** Layout da câmera: cover = hub; contain-combat = arena art (mapa inteiro); follow = tilemap. */
+  private cameraLayout: 'cover' | 'follow' | 'follow-combat' | 'contain-combat' = 'follow';
   private unsubLocation: (() => void) | null = null;
   private readonly multiplayer = createMultiplayerClient();
 
@@ -323,12 +323,13 @@ export class GameScene extends Phaser.Scene {
         combatCollisionLayer = collisionLayer;
       }
 
-      this.combatUsesRenderedMap = Boolean(rendered);
       this.worldW = worldW;
       this.worldH = worldH;
-      this.cameraLayout = 'follow-combat';
+      this.cameraLayout = rendered ? 'contain-combat' : 'follow-combat';
       this.applyCameraLayout();
-      this.cameras.main.startFollow(this.player.sprite, true, 1, 1);
+      if (!rendered) {
+        this.cameras.main.startFollow(this.player.sprite, true, 1, 1);
+      }
     }
 
     if (this.mode === 'hub') {
@@ -429,14 +430,18 @@ export class GameScene extends Phaser.Scene {
       return;
     }
 
-    if (this.cameraLayout === 'follow-combat') {
-      // Cover preenche o viewport (sem pilares pretos laterais). Mapas
-      // renderizados ainda exigem zoom ≥ 2.25 para legibilidade em combat.
-      const coverZoom = Math.max(w / this.worldW, h / this.worldH);
-      const zoom = this.combatUsesRenderedMap
-        ? Math.max(2.25, coverZoom)
-        : coverZoom;
+    if (this.cameraLayout === 'contain-combat') {
+      // Mapa inteiro sempre visível (letterbox se aspect ≠ viewport).
+      const zoom = Math.min(w / this.worldW, h / this.worldH);
+      cam.stopFollow();
       cam.setZoom(zoom);
+      cam.centerOn(this.worldW / 2, this.worldH / 2);
+      return;
+    }
+
+    if (this.cameraLayout === 'follow-combat') {
+      const coverZoom = Math.max(w / this.worldW, h / this.worldH);
+      cam.setZoom(coverZoom);
       return;
     }
 
@@ -450,6 +455,7 @@ export class GameScene extends Phaser.Scene {
     this.dialogueInteractor?.update();
     this.playerInput?.update();
     this.idleAi?.update();
+    autoHelperSystem.tick(time);
     this.combatSystem?.update(time);
     this.lootManager?.update(time);
     this.lootPickup?.update();

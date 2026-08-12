@@ -4,6 +4,7 @@ import { ENEMY_SPRITE_URL, ENEMY_TEXTURE_KEY } from '@/constants/enemy';
 import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
 import { resolveAnimeId } from '@/data/anime';
 import { buildAnimeHuntLoot } from '@/data/anime-loot';
+import { characterLateralOrigin } from '@/data/character-packs';
 import { getCuratedMapPack } from '@/data/curated-map-sprites';
 import { getEnemiesForMap } from '@/data/enemies';
 import { getWonsrRenderedMap } from '@/data/wonsr-rendered-maps';
@@ -72,10 +73,13 @@ export class EnemyManager {
     return this.list();
   }
 
-  update(time: number): void {
+  update(time: number, playerX?: number, playerY?: number): number[] {
+    const hits: number[] = [];
     for (const enemy of this.enemies.values()) {
-      enemy.update(time);
+      const damage = enemy.update(time, playerX, playerY);
+      if (damage != null && damage > 0) hits.push(damage);
     }
+    return hits;
   }
 
   get(id: string): Enemy | undefined {
@@ -156,7 +160,9 @@ export class EnemyManager {
         hp: stats.hp,
         level: stats.level,
         xp: stats.xp,
-        loot: buildAnimeHuntLoot(animeId, stats.level),
+        loot: buildAnimeHuntLoot(animeId, stats.level, {
+          lookType: target.lookType,
+        }),
         spawn,
         speed: target.speed,
         chaseRadius: Math.max(80, Math.min(180, target.targetDistance * 45)),
@@ -226,6 +232,32 @@ export class EnemyManager {
       repeat: -1,
     });
 
+    const attackSheets =
+      pack.attackChain && pack.attackChain.length > 0
+        ? [...pack.attackChain]
+        : pack.attack
+          ? [pack.attack]
+          : [];
+    const attackAnimKeys: string[] = [];
+    const attackTextureKeys: string[] = [];
+    for (let i = 0; i < attackSheets.length; i += 1) {
+      const sheet = attackSheets[i];
+      if (!this.scene.textures.exists(sheet.key)) continue;
+      const attackAnimKey = `curated-map-${lookType}-attack-${i}`;
+      if (this.scene.anims.exists(attackAnimKey)) this.scene.anims.remove(attackAnimKey);
+      this.scene.anims.create({
+        key: attackAnimKey,
+        frames: this.scene.anims.generateFrameNumbers(sheet.key, {
+          start: 0,
+          end: sheet.frameCount - 1,
+        }),
+        frameRate: sheet.frameRate ?? 12,
+        repeat: 0,
+      });
+      attackAnimKeys.push(attackAnimKey);
+      attackTextureKeys.push(sheet.key);
+    }
+
     let hurtTextureKey: string | undefined;
     let deathTextureKey: string | undefined;
     if (pack.hurt && this.scene.textures.exists(pack.hurt.key)) {
@@ -257,6 +289,7 @@ export class EnemyManager {
     const scaleY =
       (contentH > 0 ? CHARACTER_DISPLAY_HEIGHT / contentH : 1) * (pack.displayScale ?? 1);
     const scaleX = scaleY * (pack.displayScaleX ?? 1);
+    const origin = characterLateralOrigin(pack);
     const walkAnims: Partial<Record<WonsrDirection, string>> = {};
     const idleFrames: Partial<Record<WonsrDirection, number>> = {};
     for (const direction of MAP_DIRECTIONS) {
@@ -280,8 +313,15 @@ export class EnemyManager {
         hurtAnimKey: hurtTextureKey ? hurtAnimKey : undefined,
         deathTextureKey,
         deathAnimKey: deathTextureKey ? deathAnimKey : undefined,
+        attackAnimKeys: attackAnimKeys.length > 0 ? attackAnimKeys : undefined,
+        attackTextureKeys: attackTextureKeys.length > 0 ? attackTextureKeys : undefined,
       },
-      fit: { scale: scaleY, scaleX, originX: 0.5, originY: 1 },
+      fit: {
+        scale: scaleY,
+        scaleX,
+        originX: origin.x,
+        originY: origin.y,
+      },
     };
   }
 

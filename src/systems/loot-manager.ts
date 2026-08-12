@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import { LOOT_SCATTER_RADIUS, LOOT_SPRITE_URL, LOOT_TEXTURE_KEY } from '@/constants/loot';
+import { isNarutoLootTarget, rollNarutoCharacterLoot } from '@/data/anime-loot';
 import { GroundLoot, toGroundLootData } from '@/entities/ground-loot';
 import type { Enemy } from '@/entities/enemy';
 import { rollDropTable } from '@/systems/loot-table';
@@ -23,7 +24,7 @@ export class LootManager {
   }
 
   spawnFromEnemyAt(enemy: Enemy, x: number, y: number): GroundLoot[] {
-    const rolled = rollDropTable(enemy.loot);
+    const rolled = rollEnemyLoot(enemy);
     return this.spawnRolled(rolled, x, y);
   }
 
@@ -33,9 +34,9 @@ export class LootManager {
     rolled.forEach((drop, index) => {
       const angle = (Math.PI * 2 * index) / Math.max(1, rolled.length) + Math.random() * 0.4;
       const radius = 6 + Math.random() * LOOT_SCATTER_RADIUS;
-      const x = originX + Math.cos(angle) * radius;
-      const y = originY + Math.sin(angle) * radius;
-      const ground = new GroundLoot(this.scene, toGroundLootData(drop, x, y));
+      const lootX = originX + Math.cos(angle) * radius;
+      const lootY = originY + Math.sin(angle) * radius;
+      const ground = new GroundLoot(this.scene, toGroundLootData(drop, lootX, lootY));
       this.drops.set(ground.id, ground);
       created.push(ground);
     });
@@ -73,4 +74,16 @@ export class LootManager {
     }
     this.drops.clear();
   }
+}
+
+/** Naruto: raridade + assinatura em runtime; outros: tabela fixa. */
+function rollEnemyLoot(enemy: Enemy): RolledLoot[] {
+  const seal = enemy.definition.sealable;
+  if (
+    seal &&
+    isNarutoLootTarget({ lookType: seal.lookType, sourceId: seal.sourceId })
+  ) {
+    return rollNarutoCharacterLoot({ lookType: seal.lookType });
+  }
+  return rollDropTable(enemy.definition.loot);
 }

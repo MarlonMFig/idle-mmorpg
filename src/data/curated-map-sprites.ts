@@ -21,6 +21,13 @@ import {
   SHIKAMARU_LOOK_TYPE,
   TSUNADE_CURATED_LOOK_TYPE,
   UCHIHA_ITACHI_LOOK_TYPE,
+  SHISUI_LOOK_TYPES,
+  NARUTO_SHIPPUDEN_LOOK_TYPES,
+  GOKU_LOOK_TYPES,
+  FREEZA_LOOK_TYPES,
+  GOTENKS_LOOK_TYPES,
+  MAJIN_BOO_LOOK_TYPES,
+  PICCOLO_LOOK_TYPES,
   KABUTO_CURATED_LOOK_TYPE,
   KIBA_CURATED_LOOK_TYPE,
   KIMIMARO_CURATED_LOOK_TYPE,
@@ -56,6 +63,29 @@ const PREVIEW_BY_LOOK_TYPE: Record<number, string> = {
   [KAKASHI_CURATED_LOOK_TYPE]: '/sprites/player/previews/kakashi.png',
   [NARUTO_SENNIN_LOOK_TYPE]: '/sprites/player/previews/naruto-sennin.png',
   [UCHIHA_ITACHI_LOOK_TYPE]: '/sprites/player/previews/itachi.png',
+  ...Object.fromEntries(
+    SHISUI_LOOK_TYPES.map((look) => [look, '/sprites/player/previews/shisui.png']),
+  ),
+  ...Object.fromEntries(
+    NARUTO_SHIPPUDEN_LOOK_TYPES.map(
+      (look) => [look, '/sprites/player/previews/naruto-shippuden.png'],
+    ),
+  ),
+  ...Object.fromEntries(
+    GOKU_LOOK_TYPES.map((look) => [look, '/sprites/player/previews/goku.png']),
+  ),
+  ...Object.fromEntries(
+    FREEZA_LOOK_TYPES.map((look) => [look, '/sprites/player/previews/freeza.png']),
+  ),
+  ...Object.fromEntries(
+    GOTENKS_LOOK_TYPES.map((look) => [look, '/sprites/player/previews/gotenks.png']),
+  ),
+  ...Object.fromEntries(
+    MAJIN_BOO_LOOK_TYPES.map((look) => [look, '/sprites/player/previews/majin-boo.png']),
+  ),
+  ...Object.fromEntries(
+    PICCOLO_LOOK_TYPES.map((look) => [look, '/sprites/player/previews/piccolo.png']),
+  ),
   ...Object.fromEntries(
     JIRAIYA_LOOK_TYPES.map((look) => [look, '/sprites/player/previews/jiraiya.png']),
   ),

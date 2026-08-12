@@ -24,13 +24,14 @@ const {
   updateMeta,
   writePng,
 } = require('./lib/alpha-frame-pack');
+const { hqAreaScale } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'jiraiya', 'damage');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'jiraiya');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'jiraiya');
-const TARGET_BODY_H = 48;
+const HQ = { hq: { mode: 'match', metaPath: META_JSON, idleKey: 'jiraiya-walk' } };
 const EXPECTED = 7;
 const HURT_N = 3;
 const DEATH_N = 4;
@@ -74,6 +75,7 @@ async function writeSlice(name, frames, scaled, frameRate, note) {
       minOlivePerFrame: 0,
       minBluePerFrame: 0,
       minOpaquePerFrame: 50,
+      areaScale: (scaled.contentHeight / 48) ** 2,
     },
   );
   const white = countWhite(sheet.data);
@@ -145,8 +147,9 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     norm.contentHeight,
-    TARGET_BODY_H,
+    HQ,
   );
+  const areaScale = hqAreaScale(scaled.contentHeight);
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
 

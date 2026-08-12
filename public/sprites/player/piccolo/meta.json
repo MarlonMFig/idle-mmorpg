@@ -1,0 +1,73 @@
+{
+  "piccolo-idle": {
+    "image": "/sprites/player/piccolo/idle.png",
+    "frameWidth": 73,
+    "frameHeight": 67,
+    "frameCount": 4,
+    "contentHeight": 63,
+    "scale": 1,
+    "note": "native pixels; world size via contentHeight + displayScale"
+  },
+  "piccolo-walk": {
+    "image": "/sprites/player/piccolo/walk.png",
+    "frameWidth": 96,
+    "frameHeight": 55,
+    "frameCount": 4,
+    "contentHeight": 63,
+    "scale": 1
+  },
+  "piccolo-combo1": {
+    "image": "/sprites/player/piccolo/combo1.png",
+    "frameWidth": 151,
+    "frameHeight": 96,
+    "frameCount": 7,
+    "contentHeight": 63,
+    "scale": 1,
+    "range": [
+      0,
+      7
+    ]
+  },
+  "piccolo-combo2": {
+    "image": "/sprites/player/piccolo/combo2.png",
+    "frameWidth": 151,
+    "frameHeight": 96,
+    "frameCount": 7,
+    "contentHeight": 63,
+    "scale": 1,
+    "range": [
+      7,
+      14
+    ]
+  },
+  "piccolo-combo3": {
+    "image": "/sprites/player/piccolo/combo3.png",
+    "frameWidth": 151,
+    "frameHeight": 96,
+    "frameCount": 7,
+    "contentHeight": 63,
+    "scale": 1,
+    "range": [
+      14,
+      21
+    ]
+  },
+  "piccolo-hurt": {
+    "image": "/sprites/player/piccolo/hurt.png",
+    "frameWidth": 99,
+    "frameHeight": 67,
+    "frameCount": 1,
+    "contentHeight": 63,
+    "frameRate": 10,
+    "scale": 0.7777777777777778
+  },
+  "piccolo-death": {
+    "image": "/sprites/player/piccolo/death.png",
+    "frameWidth": 99,
+    "frameHeight": 67,
+    "frameCount": 3,
+    "contentHeight": 63,
+    "frameRate": 8,
+    "scale": 0.7777777777777778
+  }
+}

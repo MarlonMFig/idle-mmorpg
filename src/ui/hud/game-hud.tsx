@@ -6,26 +6,27 @@ import { inventoryStore } from '@/stores/inventory-store';
 import { locationStore } from '@/stores/location-store';
 import { questStore } from '@/stores/quest-store';
 import { shopStore } from '@/stores/shop-store';
-import { teamStore } from '@/stores/team-store';
 import { villageStore } from '@/stores/village-store';
 import type { HudPlayerInfo } from '@/types/hud';
 import { ChatPlaceholder } from '@/ui/hud/chat-placeholder';
 import { HubTopMenu } from '@/ui/hud/hub-top-menu';
 import { InventoryPanel } from '@/ui/inventory';
-import { TeamCombatStrip, TeamPanel } from '@/ui/team';
+import { TeamCombatStrip, TeamPanel, toggleTeamManager } from '@/ui/team';
 import { QuestLog } from '@/ui/quests';
 import { SkillHotbar } from '@/ui/skills';
-import { ShopPanel } from '@/ui/shop';
+import { ShopPanel, ShopLauncher } from '@/ui/shop';
 import { VillagePanel } from '@/ui/villages';
 import { ClanPanel } from '@/ui/clans';
+import { GuildPanel } from '@/ui/guild';
 import { HuntAnalyzerPanel } from '@/ui/hunt-analyzer';
+import { HelperPanel } from '@/ui/helper';
 
 export interface GameHudProps {
   player: HudPlayerInfo;
 }
 
 /**
- * HUD: menu superior no hub e na caça; strip de equipe na caça.
+ * HUD: menu superior + janela de equipe ativa no hub e na caça.
  */
 export function GameHud({ player }: GameHudProps) {
   const mode = useStore(locationStore, (s) => s.mode);
@@ -43,7 +44,7 @@ export function GameHud({ player }: GameHudProps) {
 
       if (event.code === 'KeyE') {
         event.preventDefault();
-        teamStore.toggleOpen();
+        toggleTeamManager();
         return;
       }
 
@@ -73,30 +74,29 @@ export function GameHud({ player }: GameHudProps) {
     <div className={`game-hud game-hud--${mode}`} aria-label="Interface do jogo">
       <HubTopMenu />
 
+      <div className="game-hud__team game-hud__team--strip">
+        <TeamCombatStrip nickname={player.nickname} />
+      </div>
+
       {mode === 'combat' ? (
-        <>
-          <div className="game-hud__team game-hud__team--strip">
-            <TeamCombatStrip nickname={player.nickname} />
-          </div>
-          <div className="game-hud__combat-panels">
-            <VillagePanel />
-            <QuestLog />
-          </div>
-          <TeamPanel variant="modal" />
-        </>
+        <div className="game-hud__combat-panels">
+          <VillagePanel />
+          <QuestLog />
+        </div>
       ) : (
-        <>
-          <div className="game-hud__top-right">
-            <ShopPanel />
-            <VillagePanel />
-            <QuestLog />
-          </div>
-          <TeamPanel variant="modal" />
-        </>
+        <div className="game-hud__top-right">
+          <ShopLauncher />
+          <VillagePanel />
+          <QuestLog />
+        </div>
       )}
 
+      <TeamPanel variant="modal" />
       <ClanPanel />
+      <GuildPanel />
+      <ShopPanel />
       <HuntAnalyzerPanel />
+      <HelperPanel />
 
       <div className="game-hud__bottom-center">
         <SkillHotbar />

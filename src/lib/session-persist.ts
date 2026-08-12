@@ -4,7 +4,7 @@
  * Storage key: `idle-mmorpg:session-v1`
  * Clear: `localStorage.removeItem('idle-mmorpg:session-v1')` or `clearPersistedSession()`.
  *
- * Restores nickname, starter pack, mode/map/hunt, team collection, vitals, clan.
+ * Restores nickname, starter pack, mode/map/hunt, team collection, vitals, clan, guild.
  */
 
 import { STARTERS } from '@/data/starters';
@@ -12,6 +12,7 @@ import { xpRequiredForLevel } from '@/data/xp-stages';
 import { MAP_KEYS, type MapKey } from '@/maps/map-registry';
 import { accountStore } from '@/stores/account-store';
 import { attributesStore } from '@/stores/attributes-store';
+import { guildStore } from '@/stores/guild-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { locationStore, type GameMode } from '@/stores/location-store';
 import { skillsStore } from '@/stores/skills-store';
@@ -26,9 +27,9 @@ import { isCharacterClanId, normalizeSealedCharacter } from '@/utils/character-i
 /** localStorage key — manter id estável; version interna migra schema. */
 export const SESSION_STORAGE_KEY = 'idle-mmorpg:session-v1';
 
-/** Schema atual (v2: quality/stars/clan + account clan). */
-const SESSION_VERSION = 2 as const;
-const LEGACY_SESSION_VERSIONS = new Set([1, 2]);
+/** Schema atual (v3: guild + playerId). */
+const SESSION_VERSION = 3 as const;
+const LEGACY_SESSION_VERSIONS = new Set([1, 2, 3]);
 const SAVE_DEBOUNCE_MS = 250;
 
 const STARTER_IDS = new Set<string>(STARTERS.map((entry) => entry.id));
@@ -55,6 +56,17 @@ export interface PersistedAccount {
   clanId: CharacterClanId | null;
 }
 
+export interface PersistedGuild {
+  playerId: string | null;
+  guildId: string | null;
+  guildCoins?: number;
+  lastCheckInDay?: string | null;
+  claimedMissions?: Record<string, boolean>;
+  missionProgress?: Record<string, number>;
+  bossDamage?: number;
+  bossAttacks?: number;
+}
+
 export interface PersistedSession {
   version: typeof SESSION_VERSION;
   player: PlayerCreation;
@@ -62,6 +74,7 @@ export interface PersistedSession {
   team: PersistedTeam;
   vitals: PersistedVitals;
   account: PersistedAccount;
+  guild: PersistedGuild;
 }
 
 let trackedPlayer: PlayerCreation | null = null;
@@ -149,6 +162,25 @@ export function parsePersistedSession(raw: unknown): PersistedSession | null {
   const clanId =
     accountRaw && isCharacterClanId(accountRaw.clanId) ? accountRaw.clanId : null;
 
+  const guildRaw = data.guild as Record<string, unknown> | undefined;
+  const playerId =
+    guildRaw && typeof guildRaw.playerId === 'string' && guildRaw.playerId.trim()
+      ? guildRaw.playerId.trim()
+      : null;
+  const guildId =
+    guildRaw && typeof guildRaw.guildId === 'string' && guildRaw.guildId.trim()
+      ? guildRaw.guildId.trim()
+      : null;
+
+  const claimedMissions =
+    guildRaw?.claimedMissions && typeof guildRaw.claimedMissions === 'object'
+      ? (guildRaw.claimedMissions as Record<string, boolean>)
+      : undefined;
+  const missionProgress =
+    guildRaw?.missionProgress && typeof guildRaw.missionProgress === 'object'
+      ? (guildRaw.missionProgress as Record<string, number>)
+      : undefined;
+
   return {
     version: SESSION_VERSION,
     player: {
@@ -160,6 +192,22 @@ export function parsePersistedSession(raw: unknown): PersistedSession | null {
     team: { collection, teamIds, activeId },
     vitals: { level, xp },
     account: { clanId },
+    guild: {
+      playerId,
+      guildId,
+      guildCoins:
+        typeof guildRaw?.guildCoins === 'number' ? guildRaw.guildCoins : undefined,
+      lastCheckInDay:
+        typeof guildRaw?.lastCheckInDay === 'string' || guildRaw?.lastCheckInDay === null
+          ? (guildRaw.lastCheckInDay as string | null)
+          : undefined,
+      claimedMissions,
+      missionProgress,
+      bossDamage:
+        typeof guildRaw?.bossDamage === 'number' ? guildRaw.bossDamage : undefined,
+      bossAttacks:
+        typeof guildRaw?.bossAttacks === 'number' ? guildRaw.bossAttacks : undefined,
+    },
   };
 }
 
@@ -192,6 +240,7 @@ function ensureAutoSave(): void {
     teamStore.subscribe(scheduleSessionSave),
     vitalsStore.subscribe(scheduleSessionSave),
     accountStore.subscribe(scheduleSessionSave),
+    guildStore.subscribe(scheduleSessionSave),
   ];
   unsubAutoSave = () => {
     for (const unsub of unsubs) unsub();
@@ -232,6 +281,20 @@ function snapshotAccount(): PersistedAccount {
   return { clanId: accountStore.getClanId() };
 }
 
+function snapshotGuild(): PersistedGuild {
+  const { playerId, guildId, progress } = guildStore.getSnapshot();
+  return {
+    playerId,
+    guildId,
+    guildCoins: progress.guildCoins,
+    lastCheckInDay: progress.lastCheckInDay,
+    claimedMissions: progress.claimedMissions,
+    missionProgress: progress.missionProgress,
+    bossDamage: progress.bossDamage,
+    bossAttacks: progress.bossAttacks,
+  };
+}
+
 export function savePersistedSession(): void {
   if (typeof window === 'undefined' || !trackedPlayer) return;
 
@@ -242,6 +305,7 @@ export function savePersistedSession(): void {
     team: snapshotTeam(),
     vitals: snapshotVitals(),
     account: snapshotAccount(),
+    guild: snapshotGuild(),
   };
 
   try {
@@ -266,6 +330,8 @@ export function trackSession(player: PlayerCreation): void {
     villageId: player.villageId,
     starterCharacterId: player.starterCharacterId,
   };
+  guildStore.ensurePlayerId();
+  guildStore.setNickname(trackedPlayer.nickname);
   ensureAutoSave();
   savePersistedSession();
 }
@@ -276,6 +342,21 @@ export function applyPersistedSession(session: PersistedSession): PlayerCreation
   villageStore.reset();
   villageStore.joinVillage(player.villageId, player.nickname);
   accountStore.hydrate(session.account ?? { clanId: null });
+  guildStore.hydrate({
+    playerId: session.guild?.playerId ?? null,
+    guildId: session.guild?.guildId ?? null,
+    nickname: player.nickname,
+    progress: session.guild
+      ? {
+          guildCoins: session.guild.guildCoins,
+          lastCheckInDay: session.guild.lastCheckInDay,
+          claimedMissions: session.guild.claimedMissions,
+          missionProgress: session.guild.missionProgress,
+          bossDamage: session.guild.bossDamage,
+          bossAttacks: session.guild.bossAttacks,
+        }
+      : null,
+  });
 
   const teamOk = teamStore.hydrate(session.team);
   if (!teamOk) {

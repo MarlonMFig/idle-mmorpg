@@ -19,6 +19,7 @@ const {
   updateMeta,
   writePng,
 } = require('./lib/alpha-frame-pack');
+const { resolveHqFxTargetMaxSide } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const SRC = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'tenten', 'jutsu-fx-source.png');
@@ -29,7 +30,7 @@ const FRAME_RATE = 14;
 const EXPECTED = 21;
 const ROW_COUNTS = [16, 5];
 /** Scale so peak weapon silhouette ~ body scale (contentH 48). */
-const TARGET_BODY_H = 40;
+const LEGACY_FX_BODY_H = 40;
 const PAD = 2;
 
 /** Pure / near cyan screen (#00FFFF family) + softer JPEG cyan bleed. */
@@ -246,6 +247,8 @@ function placeCenter(src, sw, sh, dw, dh) {
 }
 
 async function main() {
+  const TARGET_BODY_H = resolveHqFxTargetMaxSide(META_JSON, 'tenten-idle', LEGACY_FX_BODY_H);
+  console.log('HQ FX targetBodyH=' + TARGET_BODY_H + ' (legacy ' + LEGACY_FX_BODY_H + ')');
   if (!fs.existsSync(SRC)) throw new Error(`Missing source: ${SRC}`);
 
   const { data: raw, info } = await sharp(SRC).ensureAlpha().raw().toBuffer({ resolveWithObject: true });

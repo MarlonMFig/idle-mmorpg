@@ -21,6 +21,7 @@ const {
   updateMeta,
   writePng,
 } = require('./lib/alpha-frame-pack');
+const { resolveHqFxTargetMaxSide } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const SRC = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'sakura-shippuden', 'jutsu-fx-source.png');
@@ -30,7 +31,7 @@ const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'sakura-shippuden');
 const FRAME_RATE = 12;
 const EXPECTED = 13;
 const ROW_COUNTS = [5, 4, 4];
-const TARGET_BODY_H = 56;
+const LEGACY_FX_BODY_H = 56;
 const PAD = 2;
 
 function scrubResidualGreen(data) {
@@ -158,6 +159,8 @@ function placeFloor(src, sw, sh, dw, dh) {
 }
 
 async function main() {
+  const TARGET_BODY_H = resolveHqFxTargetMaxSide(META_JSON, 'sakura-shippuden-idle', LEGACY_FX_BODY_H);
+  console.log('HQ FX targetBodyH=' + TARGET_BODY_H + ' (legacy ' + LEGACY_FX_BODY_H + ')');
   if (!fs.existsSync(SRC)) throw new Error(`Missing source: ${SRC}`);
 
   const { data: raw, info } = await sharp(SRC).ensureAlpha().raw().toBuffer({ resolveWithObject: true });

@@ -1,1 +1,1 @@
-export { ShopPanel } from '@/ui/shop/shop-panel';
+export { ShopPanel, ShopLauncher } from '@/ui/shop/shop-panel';

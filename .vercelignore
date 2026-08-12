@@ -1,0 +1,16 @@
+# Local source / QA — not needed for Next.js build or runtime
+assets-src/
+assets/
+tmp/
+tools/
+apps/
+
+# Heavy local tooling & one-off scripts
+scripts/_*.js
+scripts/_qa*
+agent-transcripts/
+
+# Dev / editor
+.cursor/
+*.md
+!README.md

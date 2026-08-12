@@ -1,0 +1,478 @@
+{
+  "source": "C:/Users/marlo/Downloads/wonsr completo/wonsr completo/OtClient 1.7/data/things/860/Tibia.dat",
+  "otfi": {
+    "extended": true,
+    "transparency": false,
+    "frameDurations": false,
+    "frameGroups": false
+  },
+  "signature": 1277983123,
+  "countsStored": [
+    18285,
+    1977,
+    1231,
+    171
+  ],
+  "looks": {
+    "266": {
+      "id": 266,
+      "category": 1,
+      "width": 1,
+      "height": 1,
+      "realSize": 32,
+      "layers": 1,
+      "patternX": 4,
+      "patternY": 1,
+      "patternZ": 1,
+      "animationPhases": 3,
+      "spriteCount": 12,
+      "uniqueSprites": 12,
+      "sampleSpriteIds": [
+        20462,
+        20463,
+        20464,
+        20465,
+        20466,
+        20467,
+        20468,
+        20469,
+        20470,
+        20471,
+        20472,
+        20473
+      ],
+      "frames": [
+        {
+          "direction": "north",
+          "patternX": 0,
+          "phase": 0,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 20462
+            }
+          ]
+        },
+        {
+          "direction": "east",
+          "patternX": 1,
+          "phase": 0,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 20463
+            }
+          ]
+        },
+        {
+          "direction": "south",
+          "patternX": 2,
+          "phase": 0,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 20464
+            }
+          ]
+        },
+        {
+          "direction": "west",
+          "patternX": 3,
+          "phase": 0,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 20465
+            }
+          ]
+        },
+        {
+          "direction": "north",
+          "patternX": 0,
+          "phase": 1,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 20466
+            }
+          ]
+        },
+        {
+          "direction": "east",
+          "patternX": 1,
+          "phase": 1,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 20467
+            }
+          ]
+        },
+        {
+          "direction": "south",
+          "patternX": 2,
+          "phase": 1,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 20468
+            }
+          ]
+        },
+        {
+          "direction": "west",
+          "patternX": 3,
+          "phase": 1,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 20469
+            }
+          ]
+        },
+        {
+          "direction": "north",
+          "patternX": 0,
+          "phase": 2,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 20470
+            }
+          ]
+        },
+        {
+          "direction": "east",
+          "patternX": 1,
+          "phase": 2,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 20471
+            }
+          ]
+        },
+        {
+          "direction": "south",
+          "patternX": 2,
+          "phase": 2,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 20472
+            }
+          ]
+        },
+        {
+          "direction": "west",
+          "patternX": 3,
+          "phase": 2,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 20473
+            }
+          ]
+        }
+      ],
+      "pngProbe": [
+        {
+          "id": 20462,
+          "exists": true
+        },
+        {
+          "id": 20463,
+          "exists": true
+        },
+        {
+          "id": 20464,
+          "exists": true
+        },
+        {
+          "id": 20465,
+          "exists": true
+        },
+        {
+          "id": 20466,
+          "exists": true
+        },
+        {
+          "id": 20467,
+          "exists": true
+        },
+        {
+          "id": 20468,
+          "exists": true
+        },
+        {
+          "id": 20469,
+          "exists": true
+        },
+        {
+          "id": 20470,
+          "exists": true
+        },
+        {
+          "id": 20471,
+          "exists": true
+        },
+        {
+          "id": 20472,
+          "exists": true
+        },
+        {
+          "id": 20473,
+          "exists": true
+        }
+      ],
+      "assembled": {
+        "canvasW": 128,
+        "canvasH": 96,
+        "composites": 12,
+        "outFile": "C:\\Users\\marlo\\Projects\\idle-mmorpg\\assets-src\\wonsr-dat-validate\\look-266.png"
+      }
+    },
+    "519": {
+      "id": 519,
+      "category": 1,
+      "width": 1,
+      "height": 1,
+      "realSize": 32,
+      "layers": 1,
+      "patternX": 4,
+      "patternY": 1,
+      "patternZ": 1,
+      "animationPhases": 3,
+      "spriteCount": 12,
+      "uniqueSprites": 12,
+      "sampleSpriteIds": [
+        58497,
+        58498,
+        58499,
+        58500,
+        58501,
+        58502,
+        58503,
+        58504,
+        58505,
+        58506,
+        58507,
+        58508
+      ],
+      "frames": [
+        {
+          "direction": "north",
+          "patternX": 0,
+          "phase": 0,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 58497
+            }
+          ]
+        },
+        {
+          "direction": "east",
+          "patternX": 1,
+          "phase": 0,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 58498
+            }
+          ]
+        },
+        {
+          "direction": "south",
+          "patternX": 2,
+          "phase": 0,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 58499
+            }
+          ]
+        },
+        {
+          "direction": "west",
+          "patternX": 3,
+          "phase": 0,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 58500
+            }
+          ]
+        },
+        {
+          "direction": "north",
+          "patternX": 0,
+          "phase": 1,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 58501
+            }
+          ]
+        },
+        {
+          "direction": "east",
+          "patternX": 1,
+          "phase": 1,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 58502
+            }
+          ]
+        },
+        {
+          "direction": "south",
+          "patternX": 2,
+          "phase": 1,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 58503
+            }
+          ]
+        },
+        {
+          "direction": "west",
+          "patternX": 3,
+          "phase": 1,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 58504
+            }
+          ]
+        },
+        {
+          "direction": "north",
+          "patternX": 0,
+          "phase": 2,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 58505
+            }
+          ]
+        },
+        {
+          "direction": "east",
+          "patternX": 1,
+          "phase": 2,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 58506
+            }
+          ]
+        },
+        {
+          "direction": "south",
+          "patternX": 2,
+          "phase": 2,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 58507
+            }
+          ]
+        },
+        {
+          "direction": "west",
+          "patternX": 3,
+          "phase": 2,
+          "tiles": [
+            {
+              "w": 0,
+              "h": 0,
+              "spriteId": 58508
+            }
+          ]
+        }
+      ],
+      "pngProbe": [
+        {
+          "id": 58497,
+          "exists": true
+        },
+        {
+          "id": 58498,
+          "exists": true
+        },
+        {
+          "id": 58499,
+          "exists": true
+        },
+        {
+          "id": 58500,
+          "exists": true
+        },
+        {
+          "id": 58501,
+          "exists": true
+        },
+        {
+          "id": 58502,
+          "exists": true
+        },
+        {
+          "id": 58503,
+          "exists": true
+        },
+        {
+          "id": 58504,
+          "exists": true
+        },
+        {
+          "id": 58505,
+          "exists": true
+        },
+        {
+          "id": 58506,
+          "exists": true
+        },
+        {
+          "id": 58507,
+          "exists": true
+        },
+        {
+          "id": 58508,
+          "exists": true
+        }
+      ],
+      "assembled": {
+        "canvasW": 128,
+        "canvasH": 96,
+        "composites": 12,
+        "outFile": "C:\\Users\\marlo\\Projects\\idle-mmorpg\\assets-src\\wonsr-dat-validate\\look-519.png"
+      }
+    }
+  }
+}

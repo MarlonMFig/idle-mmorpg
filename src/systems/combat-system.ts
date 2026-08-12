@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import {
   PLAYER_ATTACK_COOLDOWN_MS,
   PLAYER_ATTACK_RANGE,
+  PLAYER_DEATH_RESPAWN_MS,
 } from '@/constants/combat';
 import { SKILL_DEFAULT_RANGE } from '@/constants/skill';
 import { getSkill } from '@/data/skills';
@@ -10,8 +11,10 @@ import { STAR_3_SPECIAL_DAMAGE_BONUS } from '@/constants/character-progression';
 import { attributesStore } from '@/stores/attributes-store';
 import { teamStore } from '@/stores/team-store';
 import { dialogueStore } from '@/stores/dialogue-store';
+import { helperStore } from '@/stores/helper-store';
 import { skillsStore } from '@/stores/skills-store';
 import { vitalsStore } from '@/stores/vitals-store';
+import { autoHelperSystem } from '@/systems/auto-helper-system';
 import { handleEnemyKill } from '@/systems/combat-rewards';
 import type { EnemyManager } from '@/systems/enemy-manager';
 import { findNearestAliveEnemy } from '@/systems/find-nearest-enemy';
@@ -22,6 +25,7 @@ import type { SkillDefinition } from '@/types/skill';
 
 /**
  * Combate idle: ataque básico; jutsus da hotbar quando existirem.
+ * Inimigos perseguem e golpeiam o jogador dentro de `chaseRadius`.
  * VFX de effects/missiles WONSR ficam desligados — só animação do personagem
  * e o SkillVfx genérico quando não há sheet de jutsu.
  */
@@ -30,6 +34,8 @@ export class CombatSystem {
   /** Próximo índice da rotação na hotbar. */
   private step = 0;
   private lastActionAt = 0;
+  /** Quando o jogador pode reviver após a morte (ms scene). */
+  private playerRespawnAt = 0;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -41,7 +47,25 @@ export class CombatSystem {
   }
 
   update(time: number): void {
-    this.enemyManager.update(time);
+    if (this.player.isDead() || vitalsStore.isDead()) {
+      this.enemyManager.update(time);
+      // Ligou Auto Revive depois de morrer: agenda tentativa.
+      if (
+        this.playerRespawnAt <= 0 &&
+        helperStore.getSnapshot().autoRevive
+      ) {
+        this.playerRespawnAt = time + PLAYER_DEATH_RESPAWN_MS;
+      }
+      this.tryPlayerRespawn(time);
+      return;
+    }
+
+    const enemyHits = this.enemyManager.update(time, this.player.x, this.player.y);
+    for (const raw of enemyHits) {
+      this.applyEnemyHit(raw);
+      if (this.player.isDead() || vitalsStore.isDead()) return;
+    }
+
     skillsStore.consumePendingCast();
 
     if (dialogueStore.isOpen()) return;
@@ -70,6 +94,57 @@ export class CombatSystem {
     }
 
     this.tryJutsu(time, this.step + readyOffset, filled);
+  }
+
+  private applyEnemyHit(rawDamage: number): void {
+    if (rawDamage <= 0 || this.player.isDead()) return;
+
+    const { damage, died } = vitalsStore.applyDamage(
+      rawDamage,
+      attributesStore.getDefense(),
+    );
+    if (damage <= 0) return;
+
+    if (died) {
+      this.player.playDeath();
+      if (helperStore.getSnapshot().autoRevive) {
+        this.playerRespawnAt = this.scene.time.now + PLAYER_DEATH_RESPAWN_MS;
+      } else {
+        this.playerRespawnAt = 0;
+      }
+      return;
+    }
+
+    this.player.playHurt();
+    if (!this.player.isCastingSkill()) {
+      playPlayerPulse(this.scene, this.player.sprite, 0.92, 1.04, 70);
+      this.player.sprite.setTintFill(0xff6b6b);
+      this.scene.time.delayedCall(70, () => {
+        if (!this.player.isDead() && !this.player.isCastingSkill()) {
+          this.player.sprite.clearTint();
+        }
+      });
+    }
+  }
+
+  private tryPlayerRespawn(time: number): void {
+    if (this.playerRespawnAt <= 0 || time < this.playerRespawnAt) return;
+
+    if (!helperStore.getSnapshot().autoRevive) {
+      this.playerRespawnAt = 0;
+      return;
+    }
+
+    if (!autoHelperSystem.tryConsumeRevive(time)) {
+      // Sem item: tenta de novo em breve (ex.: comprou no market enquanto morto).
+      this.playerRespawnAt = time + 1000;
+      return;
+    }
+
+    this.playerRespawnAt = 0;
+    vitalsStore.healFull();
+    this.player.clearDeath();
+    this.player.sprite.clearTint();
   }
 
   private tryBasicAttack(time: number): void {

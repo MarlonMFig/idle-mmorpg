@@ -18,6 +18,7 @@ const {
   writePng,
   countOpaque,
 } = require('./lib/alpha-frame-pack');
+const { resolveHqFxTargetMaxSide } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const LOCAL_SRC_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'rock-lee');
@@ -32,7 +33,9 @@ const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'rock-lee');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'rock-lee');
 /** Max cell side in game (content scaled to this). */
-const TARGET_H = 40;
+const EXPECTED_SINGLE = 1;
+/** Legacy kick-dust height when body was ~48. */
+const LEGACY_FX_H = 40;
 const PAD = 2;
 
 function resolveSource() {
@@ -145,7 +148,9 @@ async function main() {
     }
   }
 
-  const scale = Math.min(1, TARGET_H / box.height);
+  const TARGET_H = resolveHqFxTargetMaxSide(META_JSON, 'rock-lee-idle', LEGACY_FX_H);
+  console.log(`HQ FX targetH=${TARGET_H} (legacy ${LEGACY_FX_H})`);
+  const scale = TARGET_H / Math.max(1, box.height);
   const scaled = nearestScale(crop, box.width, box.height, scale);
   const fw = scaled.width + PAD * 2;
   const fh = scaled.height + PAD * 2;
