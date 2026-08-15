@@ -315,7 +315,10 @@ export class GameScene extends Phaser.Scene {
             mapVideo.setOrigin(0, 0);
             mapVideo.setDepth(0.5);
             mapVideo.setMute(true);
-            mapVideo.setPauseOnBlur(false);
+            // Phaser tipa incompleto: setPauseOnBlur existe em runtime no Video.
+            (mapVideo as Phaser.GameObjects.Video & { setPauseOnBlur: (v: boolean) => void }).setPauseOnBlur(
+              false,
+            );
             mapVideo.setDisplaySize(rendered.width, rendered.height);
             mapVideo.play(true);
           } catch (error) {

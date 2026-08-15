@@ -41,11 +41,16 @@ export function worldTextResolution(scene: Phaser.Scene): number {
   return Phaser.Math.Clamp(zoom * dpr, 1, 4);
 }
 
+/** Phaser tipa só `setResolution`; o getter `resolution` existe em runtime. */
+function textResolution(text: Phaser.GameObjects.Text): number {
+  return (text as Phaser.GameObjects.Text & { resolution: number }).resolution;
+}
+
 export function sharpenWorldText(
   text: Phaser.GameObjects.Text,
 ): Phaser.GameObjects.Text {
   const res = worldTextResolution(text.scene);
-  if (Math.abs(text.resolution - res) > 0.04) {
+  if (Math.abs(textResolution(text) - res) > 0.04) {
     text.setResolution(res);
   }
   return text;
@@ -66,7 +71,7 @@ export function refreshWorldTextResolution(scene: Phaser.Scene): void {
   const res = worldTextResolution(scene);
   for (const child of scene.children.getAll()) {
     if (child instanceof Phaser.GameObjects.Text) {
-      if (Math.abs(child.resolution - res) > 0.04) {
+      if (Math.abs(textResolution(child) - res) > 0.04) {
         child.setResolution(res);
       }
     }

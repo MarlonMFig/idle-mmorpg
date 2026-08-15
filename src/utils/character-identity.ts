@@ -122,7 +122,7 @@ export function normalizeSealedCharacter(raw: unknown): SealedCharacter | null {
     clanId: isCharacterClanId(entry.clanId)
       ? entry.clanId
       : resolveCharacterClan({ lookType: entry.lookType, starterId }),
-    level: hasOwnLevel ? entry.level : 1,
+    level: hasOwnLevel ? clampCharacterLevel(entry.level) : 1,
     xp: clampCharacterXp(entry.xp),
     isFavorite: entry.isFavorite === true,
     isLocked: entry.isLocked === true,
