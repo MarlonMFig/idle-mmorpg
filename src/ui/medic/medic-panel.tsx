@@ -11,7 +11,7 @@ import { skillsStore } from '@/stores/skills-store';
 import { teamStore } from '@/stores/team-store';
 import { vitalsStore } from '@/stores/vitals-store';
 
-export const MEDIC_ICON_SRC = '/ui/hub-menu/medico.png?v=modelo2';
+export const MEDIC_ICON_SRC = '/ui/hub-menu/medico.png';
 
 /**
  * Cura completa da equipe: HP cheio no personagem em campo e chakra
