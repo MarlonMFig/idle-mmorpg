@@ -1,13 +1,38 @@
 'use client';
 
+import { useCallback, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { useStore } from '@/hooks/use-store';
 import { systemLogStore } from '@/lib/system-log';
+import { multiplayerStore } from '@/stores/multiplayer-store';
 
 /**
- * Log de sistema (compras, selamentos, feedback de equipe).
+ * Log de sistema + chat multiplayer (quando conectado).
  */
 export function ChatPlaceholder() {
   const lines = useStore(systemLogStore, (s) => s.lines);
+  const status = useStore(multiplayerStore, (s) => s.status);
+  const [draft, setDraft] = useState('');
+  const canSend = status === 'connected';
+
+  const submit = useCallback(() => {
+    const text = draft.trim();
+    if (!text || !canSend) return;
+    if (multiplayerStore.sendChat(text)) {
+      setDraft('');
+    }
+  }, [draft, canSend]);
+
+  const onSubmit = (event: FormEvent) => {
+    event.preventDefault();
+    submit();
+  };
+
+  const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      submit();
+    }
+  };
 
   return (
     <section className="hud-panel hud-chat" aria-label="Chat">
@@ -21,18 +46,22 @@ export function ChatPlaceholder() {
           </p>
         ))}
       </div>
-      <div className="hud-chat__compose">
+      <form className="hud-chat__compose" onSubmit={onSubmit}>
         <input
           className="hud-chat__input"
           type="text"
-          placeholder="Mensagem… (em breve)"
-          disabled
-          aria-disabled="true"
+          maxLength={120}
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={onKeyDown}
+          placeholder={canSend ? 'Mensagem…' : 'Conectando…'}
+          disabled={!canSend}
+          aria-disabled={!canSend}
         />
-        <button className="hud-chat__send" type="button" disabled>
+        <button className="hud-chat__send" type="submit" disabled={!canSend || !draft.trim()}>
           Enviar
         </button>
-      </div>
+      </form>
     </section>
   );
 }

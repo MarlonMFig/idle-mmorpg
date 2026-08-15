@@ -1,0 +1,28 @@
+{
+  "mapKey": "huntPaisDoVento",
+  "slug": "hunt-pais-do-vento",
+  "label": "Deserto da Areia",
+  "image": "/maps/hunt-pais-do-vento.png",
+  "foreground": "/maps/hunt-pais-do-vento-fg.png",
+  "tmx": "/maps/hunt-pais-do-vento.tmx",
+  "width": 3840,
+  "height": 2160,
+  "cols": 240,
+  "rows": 135,
+  "lateralFloorY": 1400,
+  "layoutScale": 6.75,
+  "spawn": {
+    "x": 1920,
+    "y": 1400
+  },
+  "enemySpawns": [
+    {
+      "x": 3680,
+      "y": 1400
+    },
+    {
+      "x": 160,
+      "y": 1400
+    }
+  ]
+}

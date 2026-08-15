@@ -17,6 +17,7 @@
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const { resolveHqScale, resolvePackContentHeight, NATIVE_PIXELS } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const JUTSU_INPUT = path.join(
@@ -30,7 +31,6 @@ const JUTSU_INPUT = path.join(
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'hinata');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'hinata');
-const TARGET_BODY_H = 48;
 const FRAME_RATE = 12;
 /** Retired assets removed after successful process. */
 const RETIRED_SPRITES = ['twin-lion.png'];
@@ -189,10 +189,10 @@ function normalize(frames, widths, heights) {
 }
 
 async function scaleFrames(frames, fw, fh, contentHeight) {
-  const scale = Math.min(1, TARGET_BODY_H / Math.max(1, contentHeight));
+  const scale = resolveHqScale(contentHeight, { mode: 'match', metaPath: META_JSON, idleKey: 'hinata-idle' });
   const outW = Math.max(1, Math.round(fw * scale));
   const outH = Math.max(1, Math.round(fh * scale));
-  const outContent = Math.max(1, Math.round(contentHeight * scale));
+  const outContent = resolvePackContentHeight(contentHeight, scale, { mode: 'match', metaPath: META_JSON, idleKey: 'hinata-idle' });
   const out = [];
   for (const frame of frames) {
     const { data } = await sharp(frame, {

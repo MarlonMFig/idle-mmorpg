@@ -1,5 +1,7 @@
 import { MAP_KEYS, type MapKey } from '@/maps/map-registry';
 import { createStore } from '@/stores/create-store';
+import { huntAnalyzerStore } from '@/stores/hunt-analyzer-store';
+import { vitalsStore } from '@/stores/vitals-store';
 
 export type GameMode = 'hub' | 'combat';
 
@@ -55,6 +57,7 @@ export const locationStore = {
       travelSeq: 0,
       sessionStarted: true,
     });
+    huntAnalyzerStore.onHuntChanged(location.huntId);
   },
 
   markSessionStarted(): void {
@@ -71,6 +74,10 @@ export const locationStore = {
 
   enterHub(): void {
     const state = store.getSnapshot();
+    // Sem Revive na caça: Voltar ao hub recupera o personagem.
+    if (vitalsStore.isDead()) {
+      vitalsStore.healFull();
+    }
     store.setState({
       ...state,
       mode: 'hub',
@@ -83,6 +90,7 @@ export const locationStore = {
 
   enterCombat(mapKey: MapKey = MAP_KEYS.forest, huntId: string | null = null): void {
     const state = store.getSnapshot();
+    huntAnalyzerStore.onHuntChanged(huntId);
     store.setState({
       ...state,
       mode: 'combat',

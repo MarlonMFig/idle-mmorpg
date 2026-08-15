@@ -23,6 +23,9 @@
 # misc
 .DS_Store
 *.pem
+.cursor/
+.tmp/
+.tmp-maps-4k/
 
 # debug
 npm-debug.log*
@@ -44,9 +47,6 @@ next-env.d.ts
 /apps/
 
 # WONSR source extraction (large/reproducible local artifacts)
-/assets-src/wonsr-sprites-png/
-/assets-src/wonsr-sprites/
-/assets-src/wonsr-dat.json
-/assets-src/opentibia-tools/
+/assets-src/
 /tmp/
 /tools/opentibia-tools/

@@ -1,29 +1,29 @@
 {
   "kabuto-walk": {
     "image": "/sprites/player/kabuto/walk.png",
-    "frameWidth": 40,
-    "frameHeight": 52,
+    "frameWidth": 78,
+    "frameHeight": 128,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.48484848484848486,
+    "contentHeight": 124,
+    "scale": 1,
     "residualGreen": 0,
-    "pureBlack": 1521
+    "pureBlack": 10059
   },
   "kabuto-idle": {
     "image": "/sprites/player/kabuto/idle.png",
-    "frameWidth": 29,
-    "frameHeight": 64,
+    "frameWidth": 57,
+    "frameHeight": 128,
     "frameCount": 13,
-    "contentHeight": 48,
-    "scale": 0.48484848484848486
+    "contentHeight": 124,
+    "scale": 1
   },
   "kabuto-combo1": {
     "image": "/sprites/player/kabuto/combo1.png",
-    "frameWidth": 60,
-    "frameHeight": 54,
+    "frameWidth": 120,
+    "frameHeight": 128,
     "frameCount": 4,
-    "contentHeight": 48,
-    "scale": 0.48484848484848486,
+    "contentHeight": 124,
+    "scale": 1,
     "range": [
       0,
       4
@@ -31,11 +31,11 @@
   },
   "kabuto-combo2": {
     "image": "/sprites/player/kabuto/combo2.png",
-    "frameWidth": 60,
-    "frameHeight": 54,
+    "frameWidth": 120,
+    "frameHeight": 128,
     "frameCount": 4,
-    "contentHeight": 48,
-    "scale": 0.48484848484848486,
+    "contentHeight": 124,
+    "scale": 1,
     "range": [
       4,
       8
@@ -43,11 +43,11 @@
   },
   "kabuto-combo3": {
     "image": "/sprites/player/kabuto/combo3.png",
-    "frameWidth": 60,
-    "frameHeight": 54,
+    "frameWidth": 120,
+    "frameHeight": 128,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.48484848484848486,
+    "contentHeight": 124,
+    "scale": 1,
     "range": [
       8,
       13
@@ -55,46 +55,48 @@
   },
   "kabuto-hurt": {
     "image": "/sprites/player/kabuto/hurt.png",
-    "frameWidth": 51,
-    "frameHeight": 50,
+    "frameWidth": 130,
+    "frameHeight": 128,
     "frameCount": 2,
-    "contentHeight": 48,
+    "contentHeight": 124,
     "frameRate": 10,
-    "scale": 0.48484848484848486
+    "scale": 1
   },
   "kabuto-death": {
     "image": "/sprites/player/kabuto/death.png",
-    "frameWidth": 51,
-    "frameHeight": 50,
+    "frameWidth": 130,
+    "frameHeight": 128,
     "frameCount": 3,
-    "contentHeight": 48,
+    "contentHeight": 124,
     "frameRate": 8,
-    "scale": 0.48484848484848486
+    "scale": 1
   },
   "kabuto-senpo-hakugeki": {
     "image": "/sprites/player/kabuto/senpo-hakugeki.png",
-    "frameWidth": 70,
-    "frameHeight": 64,
+    "frameWidth": 163,
+    "frameHeight": 130,
     "frameCount": 54,
-    "contentHeight": 48,
-    "scale": 0.48484848484848486,
+    "contentHeight": 124,
+    "scale": 1.0163934426229508,
     "frameRate": 14,
     "durationMs": 3857,
     "hitDelayMs": 3143,
     "residualGreen": 0,
-    "pureBlack": 15311
+    "pureBlack": 66531,
+    "originX": 0.19631901840490798
   },
   "skill-senpo-hakugeki": {
     "image": "/sprites/player/kabuto/senpo-hakugeki.png",
-    "frameWidth": 70,
-    "frameHeight": 64,
+    "frameWidth": 163,
+    "frameHeight": 130,
     "frameCount": 54,
-    "contentHeight": 48,
-    "scale": 0.48484848484848486,
+    "contentHeight": 124,
+    "scale": 1.0163934426229508,
     "frameRate": 14,
     "durationMs": 3857,
     "hitDelayMs": 3143,
     "residualGreen": 0,
-    "pureBlack": 15311
+    "pureBlack": 66531,
+    "originX": 0.19631901840490798
   }
 }

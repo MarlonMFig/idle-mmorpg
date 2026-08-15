@@ -2,6 +2,7 @@ import { COMBAT_TEST_XP_MULTIPLIER } from '@/constants/combat';
 import { applyStageXpGain } from '@/data/xp-stages';
 import { attributesStore } from '@/stores/attributes-store';
 import { skillsStore } from '@/stores/skills-store';
+import { teamStore } from '@/stores/team-store';
 import { villageStore } from '@/stores/village-store';
 import { vitalsStore } from '@/stores/vitals-store';
 
@@ -14,10 +15,15 @@ export function grantPlayerXp(amount: number): number {
     amount * COMBAT_TEST_XP_MULTIPLIER,
     vitalsStore.getLevel(),
   );
-  const leveled = vitalsStore.addXp(scaled);
-  if (leveled) {
+  const accountLeveled = vitalsStore.addXp(scaled);
+  const active = teamStore.getActive();
+  const characterLeveled = active
+    ? teamStore.addCharacterXp(active.id, scaled)
+    : false;
+  if (characterLeveled) {
     attributesStore.onLevelChanged(true);
-
+  }
+  if (accountLeveled) {
     const villageId = villageStore.getPlayerVillageId();
     if (villageId) {
       skillsStore.syncLevelUnlocks(villageId, vitalsStore.getLevel());

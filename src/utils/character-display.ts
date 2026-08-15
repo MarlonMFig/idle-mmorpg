@@ -4,9 +4,9 @@ import {
 } from '@/constants/character-progression';
 import type { SealedCharacter } from '@/types/team';
 
-/** Nível espelhado da conta (UI). */
-export function displayLevelForCharacter(accountLevel: number): number {
-  return Math.max(1, Math.floor(accountLevel));
+/** Nível do personagem (próprio; fallback 1). */
+export function displayLevelForCharacter(memberLevel: number): number {
+  return Math.max(1, Math.floor(memberLevel || 1));
 }
 
 export function formatStars(stars: number): string {
@@ -14,7 +14,7 @@ export function formatStars(stars: number): string {
   return n === 0 ? '☆0' : `${'★'.repeat(n)}${'☆'.repeat(5 - n)}`;
 }
 
-export function characterMetaLine(member: SealedCharacter, accountLevel: number): string {
-  const level = displayLevelForCharacter(accountLevel);
+export function characterMetaLine(member: SealedCharacter, liveLevel?: number): string {
+  const level = displayLevelForCharacter(liveLevel ?? member.level);
   return `Nv.${level} · ${CHARACTER_QUALITY_RANK_LABELS[member.quality]} · ${formatStars(member.stars)} · ${CHARACTER_CLAN_LABELS[member.clanId]}`;
 }

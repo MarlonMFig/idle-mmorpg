@@ -2,7 +2,9 @@
  * Kakashi walk — alpha-only per-frame sequence (6f side walk).
  * Clean transparent sources: NO black-key / green flood (silver hair survives).
  * Body-lock (torso+feet) so stride does not deslizar.
- * Uniform absoluteScale: max walk contentH → TARGET_BODY_H 48 (one nearest).
+ *
+ * HQ: absoluteScale = 1 (native pixels — no downsample). Walk is Kakashi's body
+ * ruler: contentHeight = measured walk body, and every other anim matches it.
  *
  * npm run kakashi:walk
  * Input:  assets/naruto-source/nu/kakashi/walk/frame_*.png
@@ -22,6 +24,13 @@ const {
   bbox,
   isChromaGreen,
 } = require('./lib/alpha-frame-pack');
+const {
+  resolveHqScale,
+  resolvePackContentHeight,
+  hqLinearScale,
+  hqAreaScale,
+  NATIVE_PIXELS,
+} = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'kakashi', 'walk');
@@ -29,12 +38,15 @@ const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'kakashi');
 const PREVIEW = path.join(ROOT, 'public', 'sprites', 'player', 'previews', 'kakashi.png');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'kakashi');
-const TARGET_BODY_H = 48;
+/** Walk is Kakashi's body ruler: native pixels here, other anims match it. */
+const HQ = { mode: 'idle' };
 const FRAME_RATE = 10;
 const EXPECTED = 6;
 const PAD = 2;
+/** Body-lock budgets, in px of the legacy 48px body (scaled by hqLinearScale). */
 const BODY_CX_VAR_MAX = 0.95;
 const BODY_CX_RANGE_MAX = 1.75;
+const FEET_Y_DELTA_MAX = 1;
 
 function isSilverHair(r, g, b) {
   if (r <= 14 && g <= 14 && b <= 14) return false;
@@ -232,19 +244,26 @@ function normalizeBodyLock(frames, widths, heights, pad = PAD) {
   };
 }
 
-/** One nearest scale of body-locked cells. contentHeight reported as TARGET. */
-async function scaleLockedCells(frames, fw, fh, absoluteScale) {
-  const outW = Math.max(1, Math.round(fw * absoluteScale));
-  const outH = Math.max(1, Math.round(fh * absoluteScale));
+/** One nearest scale of body-locked cells (skipped entirely at native 1:1). */
+async function scaleLockedCells(frames, fw, fh, contentHeight, absoluteScale, scaleOpts) {
+  const skipResize = Math.abs(absoluteScale - 1) < 1e-6;
+  const outW = skipResize ? fw : Math.max(1, Math.round(fw * absoluteScale));
+  const outH = skipResize ? fh : Math.max(1, Math.round(fh * absoluteScale));
   const out = [];
   for (const frame of frames) {
-    const { data } = await sharp(frame, {
-      raw: { width: fw, height: fh, channels: 4 },
-    })
-      .resize(outW, outH, { kernel: sharp.kernel.nearest })
-      .ensureAlpha()
-      .raw()
-      .toBuffer({ resolveWithObject: true });
+    let data;
+    if (skipResize) {
+      data = Buffer.from(frame);
+    } else {
+      const res = await sharp(frame, {
+        raw: { width: fw, height: fh, channels: 4 },
+      })
+        .resize(outW, outH, { kernel: sharp.kernel.nearest })
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      data = res.data;
+    }
 
     for (let i = 0; i < data.length; i += 4) {
       if (data[i + 3] < 128) {
@@ -268,7 +287,7 @@ async function scaleLockedCells(frames, fw, fh, absoluteScale) {
     frames: out,
     frameWidth: outW,
     frameHeight: outH,
-    contentHeight: TARGET_BODY_H,
+    contentHeight: resolvePackContentHeight(contentHeight, absoluteScale, scaleOpts),
     scale: absoluteScale,
   };
 }
@@ -322,10 +341,12 @@ async function main() {
       `(min=${Math.min(...beforeH)} max=${maxContentH} Δ=${maxContentH - Math.min(...beforeH)})`,
   );
 
-  const absoluteScale = TARGET_BODY_H / Math.max(1, maxContentH);
-  console.log(
-    `absoluteScale=${absoluteScale.toFixed(6)} = ${TARGET_BODY_H}/maxContentH=${maxContentH} (nearest once)`,
-  );
+  const absoluteScale = resolveHqScale(maxContentH, HQ);
+  if (NATIVE_PIXELS) {
+    console.log(
+      `HQ walk absoluteScale=${absoluteScale.toFixed(4)} (native pixels) rulerBodyH=${maxContentH}`,
+    );
+  }
 
   const rawFrames = keyed.map((k) => k.frame);
   const widths = keyed.map((k) => k.width);
@@ -348,8 +369,14 @@ async function main() {
     norm.frames,
     norm.frameWidth,
     norm.frameHeight,
+    norm.contentHeight,
     absoluteScale,
+    HQ,
   );
+  const linear = hqLinearScale(scaled.contentHeight);
+  const bodyCxVarMax = BODY_CX_VAR_MAX * linear;
+  const bodyCxRangeMax = BODY_CX_RANGE_MAX * linear;
+  const feetYDeltaMax = Math.round(FEET_Y_DELTA_MAX * linear);
 
   const afterH = scaled.frames.map((f) => bbox(f, scaled.frameWidth, scaled.frameHeight).height);
   const sheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
@@ -366,6 +393,7 @@ async function main() {
       minOlivePerFrame: 0,
       minBluePerFrame: 0,
       minOpaquePerFrame: 100,
+      areaScale: hqAreaScale(scaled.contentHeight),
     },
   );
   const silverHair = countSilverHair(sheet.data);
@@ -401,19 +429,19 @@ async function main() {
   if (qa.pureBlack < 120) {
     throw new Error(`QA fail: pure black outline nearly gone (${qa.pureBlack})`);
   }
-  if (cxStats.std > BODY_CX_VAR_MAX) {
+  if (cxStats.std > bodyCxVarMax) {
     throw new Error(
-      `QA fail body-lock: bodyCx std=${cxStats.std.toFixed(3)}px > ${BODY_CX_VAR_MAX}px`,
+      `QA fail body-lock: bodyCx std=${cxStats.std.toFixed(3)}px > ${bodyCxVarMax.toFixed(2)}px`,
     );
   }
-  if (cxStats.max - cxStats.min > BODY_CX_RANGE_MAX) {
+  if (cxStats.max - cxStats.min > bodyCxRangeMax) {
     throw new Error(
-      `QA fail body-lock: bodyCx range Δ=${(cxStats.max - cxStats.min).toFixed(2)}px > ${BODY_CX_RANGE_MAX}px`,
+      `QA fail body-lock: bodyCx range Δ=${(cxStats.max - cxStats.min).toFixed(2)}px > ${bodyCxRangeMax.toFixed(2)}px`,
     );
   }
-  if (feetStats.max - feetStats.min > 1) {
+  if (feetStats.max - feetStats.min > feetYDeltaMax) {
     throw new Error(
-      `QA fail body-lock: feetY Δ=${feetStats.max - feetStats.min}px (need ≤ 1)`,
+      `QA fail body-lock: feetY Δ=${feetStats.max - feetStats.min}px (need ≤ ${feetYDeltaMax})`,
     );
   }
 
@@ -449,7 +477,7 @@ async function main() {
       bodyCxRange: +(cxStats.max - cxStats.min).toFixed(3),
       feetYDelta: feetStats.max - feetStats.min,
     },
-    note: '6-frame walk; alpha-only; body-lock torso+feet; nearest maxContentH→48; silver hair preserved',
+    note: '6-frame walk; alpha-only; body-lock torso+feet; HQ native pixels (scale 1) — body ruler; silver hair preserved',
   };
   updateMeta(META_JSON, 'kakashi-walk', entry);
 
@@ -477,7 +505,7 @@ async function main() {
       frameCount: entry.frameCount,
       contentHeight: entry.contentHeight,
       scale: entry.scale,
-      scaleMethod: 'nearest-maxBody→48',
+      scaleMethod: 'hq-native-1:1',
       residualGreen: qa.residualGreen,
       silverHair,
       bodyCxStd: entry.bodyLock.bodyCxStd,

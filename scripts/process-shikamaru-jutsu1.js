@@ -14,7 +14,7 @@ const sharp = require('sharp');
 const ROOT = path.resolve(__dirname, '..');
 const INPUT = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'shikamaru-jutsu1-sheet.png');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'shikamaru');
-const TARGET_BODY_H = 48;
+const HQ = { hq: { mode: 'match', metaPath: META_JSON, idleKey: 'shikamaru-idle' } };
 const FRAME_RATE = 12;
 const MAX_SHEET_W = 4096;
 
@@ -273,7 +273,7 @@ async function main() {
     bodyNorm.cellW,
     bodyNorm.cellH,
     bodyNorm.contentHeight,
-    TARGET_BODY_H,
+    HQ,
   );
 
   // Explosão: maior banda abaixo de y=700 com células largas/laranja.

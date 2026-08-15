@@ -1,0 +1,28 @@
+{
+  "mapKey": "huntMonteMyoboku",
+  "slug": "hunt-monte-myoboku",
+  "label": "Monte Myoboku",
+  "image": "/maps/hunt-monte-myoboku.png",
+  "foreground": "/maps/hunt-monte-myoboku-fg.png",
+  "tmx": "/maps/hunt-monte-myoboku.tmx",
+  "width": 3840,
+  "height": 2160,
+  "cols": 240,
+  "rows": 135,
+  "lateralFloorY": 1440,
+  "layoutScale": 5.75,
+  "spawn": {
+    "x": 1920,
+    "y": 1440
+  },
+  "enemySpawns": [
+    {
+      "x": 3680,
+      "y": 1440
+    },
+    {
+      "x": 160,
+      "y": 1440
+    }
+  ]
+}

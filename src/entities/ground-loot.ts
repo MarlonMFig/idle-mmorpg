@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser';
+import { sharpenWorldText } from '@/constants/nameplate';
 import { LOOT_DESPAWN_MS } from '@/constants/loot';
 import { RARITY_COLOR } from '@/data/items';
 import type { GroundLootData, RolledLoot } from '@/types/loot';
@@ -32,16 +33,18 @@ export class GroundLoot {
     this.sprite.setTint(color);
     this.sprite.setData('lootId', data.id);
 
-    this.label = scene.add
-      .text(data.x, data.y - 20, `${data.name} ×${data.quantity}`, {
-        fontFamily: 'sans-serif',
-        fontSize: '10px',
-        color: '#f2efe6',
-        stroke: '#000000',
-        strokeThickness: 3,
-      })
-      .setOrigin(0.5, 1)
-      .setDepth(5);
+    this.label = sharpenWorldText(
+      scene.add
+        .text(data.x, data.y - 20, `${data.name} ×${data.quantity}`, {
+          fontFamily: 'Tahoma, "Segoe UI", sans-serif',
+          fontSize: '11px',
+          color: '#f2efe6',
+          stroke: '#000000',
+          strokeThickness: 2,
+        })
+        .setOrigin(0.5, 1)
+        .setDepth(5),
+    );
 
     scene.tweens.add({
       targets: this.sprite,

@@ -1,13 +1,13 @@
 import * as Phaser from 'phaser';
 import { preloadCharacterPack } from '@/data/character-packs';
-import { getKonohaHub } from '@/data/hub-backgrounds';
+import { getActiveHub } from '@/data/hub-backgrounds';
 import { listWonsrRenderedMaps } from '@/data/wonsr-rendered-maps';
 import { WONSR_SPRITE_INDEX_URL } from '@/data/wonsr-sprites';
 import { getPlayerSession } from '@/game/registry';
 import { GameScene } from '@/game/scenes/game-scene';
 import { getActiveCharacterPack } from '@/lib/active-character';
 import { MapLoader, MAP_KEYS } from '@/maps';
-import { EnemyManager, LootManager, NPCManager } from '@/systems';
+import { EnemyManager, LootManager, NPCManager, SkillVfx } from '@/systems';
 
 /**
  * Carrega mapas, pack do avatar, NPCs, monstros e loot; avança para a GameScene.
@@ -29,15 +29,31 @@ export class PreloadScene extends Phaser.Scene {
     preloadCharacterPack(this, pack);
     this.registry.set('characterPackId', pack.id);
 
-    const hub = getKonohaHub();
+    const hub = getActiveHub();
     this.load.image(hub.key, hub.url);
     if (hub.tilemapImageKey && hub.tilemapImageUrl) {
       this.load.image(hub.tilemapImageKey, hub.tilemapImageUrl);
     }
 
     // PNGs pré-renderizados dos mapas de caça WONSR (visual do combate).
+    // Mapas podem compartilhar arte; carregar a mesma key duas vezes gera aviso.
+    const loadedImages = new Set<string>();
     for (const rendered of listWonsrRenderedMaps()) {
-      this.load.image(rendered.imageKey, rendered.imageUrl);
+      if (!loadedImages.has(rendered.imageKey)) {
+        loadedImages.add(rendered.imageKey);
+        this.load.image(rendered.imageKey, rendered.imageUrl);
+      }
+      if (
+        rendered.foregroundKey &&
+        rendered.foregroundUrl &&
+        !loadedImages.has(rendered.foregroundKey)
+      ) {
+        loadedImages.add(rendered.foregroundKey);
+        this.load.image(rendered.foregroundKey, rendered.foregroundUrl);
+      }
+      if (rendered.videoKey && rendered.videoUrl) {
+        this.load.video(rendered.videoKey, rendered.videoUrl, true);
+      }
     }
 
     // Índice das sheets de outfit; as folhas em si são carregadas sob demanda.
@@ -46,12 +62,33 @@ export class PreloadScene extends Phaser.Scene {
     NPCManager.preload(this);
     EnemyManager.preload(this);
     LootManager.preload(this);
+    SkillVfx.preload(this);
     this.mapLoader = new MapLoader(this);
     this.mapLoader
       .queue(MAP_KEYS.leafVillage)
-      .queue(MAP_KEYS.leafVillageHub)
+      .queue(MAP_KEYS.hubInterdimensional)
       .queue(MAP_KEYS.forest)
       .queue(MAP_KEYS.huntForestClearing)
+      .queue(MAP_KEYS.huntArenaExameChunnin)
+      .queue(MAP_KEYS.huntArenaExameChunin)
+      .queue(MAP_KEYS.huntCampoTreinamento)
+      .queue(MAP_KEYS.huntEsconderijoAkatsuki)
+      .queue(MAP_KEYS.huntKonohaDestruida)
+      .queue(MAP_KEYS.huntLabOrochimaru)
+      .queue(MAP_KEYS.huntPaisDoVento)
+      .queue(MAP_KEYS.huntPontePaisOnda)
+      .queue(MAP_KEYS.huntValeDoFim)
+      .queue(MAP_KEYS.huntValeDoFimLateral)
+      .queue(MAP_KEYS.huntValeLoop)
+      .queue(MAP_KEYS.huntMonteMyoboku)
+      .queue(MAP_KEYS.huntDistritoUchiha)
+      .queue(MAP_KEYS.huntCampoGuerraNinja)
+      .queue(MAP_KEYS.huntArredoresReinoClover)
+      .queue(MAP_KEYS.huntNamekusei)
+      .queue(MAP_KEYS.huntJogosCell)
+      .queue(MAP_KEYS.huntTorneioArtesMarciais)
+      .queue(MAP_KEYS.huntSalaDoTempo)
+      .queue(MAP_KEYS.huntDesertoSaiyajin)
       .queue(MAP_KEYS.academy)
       .preload();
   }

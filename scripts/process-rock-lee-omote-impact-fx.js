@@ -18,6 +18,7 @@ const {
   writePng,
   countOpaque,
 } = require('./lib/alpha-frame-pack');
+const { resolveHqFxTargetMaxSide } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const LOCAL_SRC_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'rock-lee');
@@ -31,8 +32,8 @@ const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'rock-lee');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'rock-lee');
 const EXPECTED = 5;
-/** Tall dust plume — taller than body content (~48) for read. */
-const TARGET_H = 72;
+/** Legacy plume height when body was ~48 — HQ scales with idle. */
+const LEGACY_FX_H = 72;
 const PAD = 2;
 
 function resolveSource() {
@@ -204,7 +205,9 @@ async function main() {
   });
 
   const maxContentH = Math.max(...crops.map((c) => c.height));
-  const scale = Math.min(1, TARGET_H / maxContentH);
+  const TARGET_H = resolveHqFxTargetMaxSide(META_JSON, 'rock-lee-idle', LEGACY_FX_H);
+  console.log(`HQ FX targetH=${TARGET_H} (legacy ${LEGACY_FX_H})`);
+  const scale = TARGET_H / Math.max(1, maxContentH);
   const scaled = crops.map((c) => nearestScale(c.data, c.width, c.height, scale));
   const fw = Math.max(...scaled.map((s) => s.width)) + PAD * 2;
   const fh = Math.max(...scaled.map((s) => s.height)) + PAD * 2;

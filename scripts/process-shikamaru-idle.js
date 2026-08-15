@@ -20,6 +20,7 @@ const {
   updateMeta,
   writePng,
 } = require('./lib/alpha-frame-pack');
+const { hqLinearScale, hqAreaScale } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'shikamaru', 'idle');
@@ -27,7 +28,7 @@ const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'shikamaru');
 const PREVIEW = path.join(ROOT, 'public', 'sprites', 'player', 'previews', 'shikamaru.png');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'shikamaru');
-const TARGET_BODY_H = 48;
+const HQ = { hq: { mode: 'idle' } };
 const FRAME_RATE = 8;
 const EXPECTED = 8;
 
@@ -49,8 +50,10 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     norm.contentHeight,
-    TARGET_BODY_H,
+    HQ,
   );
+  const linear = hqLinearScale(scaled.contentHeight);
+  const areaScale = hqAreaScale(scaled.contentHeight);
   const sheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
   const qa = qaSheet(
     sheet.data,
@@ -64,6 +67,7 @@ async function main() {
       minOlivePerFrame: 20,
       minBluePerFrame: 5,
       minOpaquePerFrame: 100,
+      areaScale,
     },
   );
 
@@ -83,7 +87,7 @@ async function main() {
   if (qa.olive < 80) {
     throw new Error(`QA fail: olive jacket nearly gone (${qa.olive})`);
   }
-  if (qa.footSpread > 4) {
+  if (qa.footSpread > Math.round(4 * linear)) {
     console.warn(`WARN footSpread=${qa.footSpread}`);
   }
 

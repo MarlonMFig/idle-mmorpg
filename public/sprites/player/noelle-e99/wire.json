@@ -1,0 +1,198 @@
+{
+  "id": "noelle-e99",
+  "name": "Noelle (Valkyrie)",
+  "lookType": 9060,
+  "contentHeight": 53,
+  "idle": {
+    "image": "/sprites/player/noelle-e99/idle.png",
+    "frameWidth": 38,
+    "frameHeight": 57,
+    "frameCount": 4,
+    "contentHeight": 53,
+    "scale": 1,
+    "originX": 0.5263157894736842,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/noelle-e99/walk.png",
+    "frameWidth": 29,
+    "frameHeight": 56,
+    "frameCount": 12,
+    "contentHeight": 53,
+    "scale": 1,
+    "originX": 0.41379310344827586,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/noelle-e99/combo1.png",
+      "frameWidth": 64,
+      "frameHeight": 56,
+      "frameCount": 3,
+      "contentHeight": 53,
+      "scale": 1,
+      "originX": 0.4375,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/noelle-e99/combo2.png",
+      "frameWidth": 53,
+      "frameHeight": 54,
+      "frameCount": 4,
+      "contentHeight": 53,
+      "scale": 1,
+      "originX": 0.37735849056603776,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/noelle-e99/combo3.png",
+      "frameWidth": 64,
+      "frameHeight": 56,
+      "frameCount": 3,
+      "contentHeight": 53,
+      "scale": 1,
+      "originX": 0.4375,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/noelle-e99/hurt.png",
+    "frameWidth": 50,
+    "frameHeight": 56,
+    "frameCount": 3,
+    "contentHeight": 53,
+    "scale": 1,
+    "originX": 0.48,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/noelle-e99/death.png",
+    "frameWidth": 60,
+    "frameHeight": 25,
+    "frameCount": 1,
+    "contentHeight": 53,
+    "scale": 1,
+    "originX": 0.5166666666666667,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-noelle-e99-1",
+      "skillName": "Noelle (Valkyrie) · Especial 1",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/noelle-e99/special1.png",
+        "frameWidth": 46,
+        "frameHeight": 56,
+        "frameCount": 4,
+        "contentHeight": 53,
+        "scale": 1,
+        "originX": 0.5869565217391305,
+        "durationMs": 700,
+        "hitDelayMs": 583,
+        "frameRate": 8,
+        "skillId": "skill-noelle-e99-1",
+        "skillName": "Noelle (Valkyrie) · Especial 1",
+        "actionId": 3000
+      },
+      "fx": {
+        "image": "/sprites/player/noelle-e99/special1-fx.png",
+        "frameWidth": 207,
+        "frameHeight": 377,
+        "frameCount": 10,
+        "contentHeight": 373,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 3000
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-noelle-e99-2",
+      "skillName": "Skill 1",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/noelle-e99/special2.png",
+        "frameWidth": 64,
+        "frameHeight": 56,
+        "frameCount": 3,
+        "contentHeight": 53,
+        "scale": 1,
+        "originX": 0.4375,
+        "durationMs": 1033,
+        "hitDelayMs": 533,
+        "frameRate": 8,
+        "skillId": "skill-noelle-e99-2",
+        "skillName": "Skill 1",
+        "actionId": 1000
+      },
+      "fx": null,
+      "index": 1
+    },
+    {
+      "skillId": "skill-noelle-e99-3",
+      "skillName": "Skill 3",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/noelle-e99/special3.png",
+        "frameWidth": 67,
+        "frameHeight": 55,
+        "frameCount": 20,
+        "contentHeight": 53,
+        "scale": 1,
+        "originX": 0.29850746268656714,
+        "durationMs": 2033,
+        "hitDelayMs": 917,
+        "frameRate": 10,
+        "skillId": "skill-noelle-e99-3",
+        "skillName": "Skill 3",
+        "actionId": 1200
+      },
+      "fx": {
+        "image": "/sprites/player/noelle-e99/special3-fx.png",
+        "frameWidth": 174,
+        "frameHeight": 341,
+        "frameCount": 16,
+        "contentHeight": 337,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 280
+      },
+      "index": 2
+    },
+    {
+      "skillId": "skill-noelle-e99-4",
+      "skillName": "Skill 6",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/noelle-e99/special4.png",
+        "frameWidth": 45,
+        "frameHeight": 56,
+        "frameCount": 4,
+        "contentHeight": 53,
+        "scale": 1,
+        "originX": 0.6,
+        "durationMs": 750,
+        "hitDelayMs": 333,
+        "frameRate": 8,
+        "skillId": "skill-noelle-e99-4",
+        "skillName": "Skill 6",
+        "actionId": 1500
+      },
+      "fx": {
+        "image": "/sprites/player/noelle-e99/special4-fx.png",
+        "frameWidth": 918,
+        "frameHeight": 275,
+        "frameCount": 10,
+        "contentHeight": 271,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 9,
+        "durationMs": 1500
+      },
+      "index": 3
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+{
+  "william-combo1": {
+    "image": "/sprites/player/william/combo1.png",
+    "frameWidth": 82,
+    "frameHeight": 59,
+    "frameCount": 6,
+    "contentHeight": 62,
+    "scale": 1,
+    "originX": 0.43902439024390244,
+    "frameRate": 12
+  },
+  "william-combo2": {
+    "image": "/sprites/player/william/combo2.png",
+    "frameWidth": 83,
+    "frameHeight": 63,
+    "frameCount": 5,
+    "contentHeight": 62,
+    "scale": 1,
+    "originX": 0.6987951807228916,
+    "frameRate": 12
+  },
+  "william-combo3": {
+    "image": "/sprites/player/william/combo3.png",
+    "frameWidth": 51,
+    "frameHeight": 58,
+    "frameCount": 6,
+    "contentHeight": 62,
+    "scale": 1,
+    "originX": 0.5294117647058824,
+    "frameRate": 12
+  },
+  "william-idle": {
+    "image": "/sprites/player/william/idle.png",
+    "frameWidth": 40,
+    "frameHeight": 66,
+    "frameCount": 4,
+    "contentHeight": 62,
+    "scale": 1,
+    "originX": 0.6,
+    "frameRate": 8
+  },
+  "william-walk": {
+    "image": "/sprites/player/william/walk.png",
+    "frameWidth": 92,
+    "frameHeight": 56,
+    "frameCount": 8,
+    "contentHeight": 62,
+    "scale": 1,
+    "originX": 0.5217391304347826,
+    "frameRate": 12
+  },
+  "william-hurt": {
+    "image": "/sprites/player/william/hurt.png",
+    "frameWidth": 69,
+    "frameHeight": 62,
+    "frameCount": 3,
+    "contentHeight": 62,
+    "scale": 1,
+    "originX": 0.6811594202898551,
+    "frameRate": 10
+  },
+  "william-death": {
+    "image": "/sprites/player/william/death.png",
+    "frameWidth": 71,
+    "frameHeight": 20,
+    "frameCount": 1,
+    "contentHeight": 62,
+    "scale": 1,
+    "originX": 0.49295774647887325,
+    "frameRate": 8
+  },
+  "william-special1": {
+    "image": "/sprites/player/william/special1.png",
+    "frameWidth": 48,
+    "frameHeight": 69,
+    "frameCount": 24,
+    "contentHeight": 62,
+    "scale": 1,
+    "originX": 0.7083333333333334,
+    "durationMs": 8100,
+    "hitDelayMs": 3650,
+    "frameRate": 10,
+    "skillId": "skill-william-1",
+    "skillName": "0",
+    "actionId": 3000
+  },
+  "william-special2": {
+    "image": "/sprites/player/william/special2.png",
+    "frameWidth": 58,
+    "frameHeight": 69,
+    "frameCount": 13,
+    "contentHeight": 62,
+    "scale": 1,
+    "originX": 0.5862068965517241,
+    "durationMs": 1517,
+    "hitDelayMs": 683,
+    "frameRate": 9,
+    "skillId": "skill-william-2",
+    "skillName": "William Vangeance · Especial 2",
+    "actionId": 1000
+  },
+  "william-special3": {
+    "image": "/sprites/player/william/special3.png",
+    "frameWidth": 58,
+    "frameHeight": 69,
+    "frameCount": 9,
+    "contentHeight": 62,
+    "scale": 1,
+    "originX": 0.5862068965517241,
+    "durationMs": 2467,
+    "hitDelayMs": 1117,
+    "frameRate": 8,
+    "skillId": "skill-william-3",
+    "skillName": "0",
+    "actionId": 2000
+  },
+  "william-special4": {
+    "image": "/sprites/player/william/special4.png",
+    "frameWidth": 77,
+    "frameHeight": 64,
+    "frameCount": 7,
+    "contentHeight": 62,
+    "scale": 1,
+    "originX": 0.5974025974025974,
+    "durationMs": 1017,
+    "hitDelayMs": 450,
+    "frameRate": 8,
+    "skillId": "skill-william-4",
+    "skillName": "William Vangeance · Especial 4",
+    "actionId": 1500
+  }
+}

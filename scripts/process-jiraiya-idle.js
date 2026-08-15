@@ -22,6 +22,12 @@ const {
   bbox,
   isChromaGreen,
 } = require('./lib/alpha-frame-pack');
+const {
+  resolveHqScale,
+  resolvePackContentHeight,
+  hqLinearScale,
+  hqAreaScale,
+} = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'jiraiya', 'idle');
@@ -30,7 +36,6 @@ const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'jiraiya');
 const PREVIEW = path.join(ROOT, 'public', 'sprites', 'player', 'previews', 'jiraiya.png');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'jiraiya');
-const TARGET_BODY_H = 48;
 const FRAME_RATE = 8;
 const EXPECTED = 6;
 const PAD = 2;
@@ -216,18 +221,25 @@ function normalizeBodyLock(frames, widths, heights, pad = PAD) {
   };
 }
 
-async function scaleLockedCells(frames, fw, fh, absoluteScale) {
-  const outW = Math.max(1, Math.round(fw * absoluteScale));
-  const outH = Math.max(1, Math.round(fh * absoluteScale));
+async function scaleLockedCells(frames, fw, fh, absoluteScale, bodyH) {
+  const skip = Math.abs(absoluteScale - 1) < 1e-6;
+  const outW = skip ? fw : Math.max(1, Math.round(fw * absoluteScale));
+  const outH = skip ? fh : Math.max(1, Math.round(fh * absoluteScale));
   const out = [];
   for (const frame of frames) {
-    const { data } = await sharp(frame, {
-      raw: { width: fw, height: fh, channels: 4 },
-    })
-      .resize(outW, outH, { kernel: sharp.kernel.nearest })
-      .ensureAlpha()
-      .raw()
-      .toBuffer({ resolveWithObject: true });
+    let data;
+    if (skip) {
+      data = Buffer.from(frame);
+    } else {
+      const res = await sharp(frame, {
+        raw: { width: fw, height: fh, channels: 4 },
+      })
+        .resize(outW, outH, { kernel: sharp.kernel.nearest })
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+      data = res.data;
+    }
 
     for (let i = 0; i < data.length; i += 4) {
       if (data[i + 3] < 128) {
@@ -251,7 +263,7 @@ async function scaleLockedCells(frames, fw, fh, absoluteScale) {
     frames: out,
     frameWidth: outW,
     frameHeight: outH,
-    contentHeight: TARGET_BODY_H,
+    contentHeight: bodyH,
     scale: absoluteScale,
   };
 }
@@ -300,9 +312,10 @@ function resolveWalkScale() {
     try {
       const meta = JSON.parse(fs.readFileSync(META_JSON, 'utf8'));
       const w = meta['jiraiya-walk'];
-      if (w && typeof w.scale === 'number' && w.scale > 0) {
+      if (w && typeof w.scale === 'number' && w.scale > 0 && w.contentHeight > 0) {
         return {
           scale: w.scale,
+          bodyH: w.contentHeight,
           source: 'meta.json jiraiya-walk',
           walkMaxContentH: w.maxContentH ?? null,
         };
@@ -318,8 +331,11 @@ async function measureWalkSourceScale() {
   const walkKeyed = await loadAlphaFrames(WALK_DIR, 6);
   const heights = walkKeyed.map((k) => k.box.height);
   const maxH = Math.max(...heights);
+  // Mirror what jiraiya-walk itself does when it is the body ruler.
+  const scale = resolveHqScale(maxH, { mode: 'idle' });
   return {
-    scale: TARGET_BODY_H / Math.max(1, maxH),
+    scale,
+    bodyH: resolvePackContentHeight(maxH, scale, { mode: 'idle' }),
     source: 'walk source max contentH',
     walkMaxContentH: maxH,
   };
@@ -339,8 +355,11 @@ async function main() {
     walkScaleInfo = await measureWalkSourceScale();
   }
   const absoluteScale = walkScaleInfo.scale;
+  const bodyH = walkScaleInfo.bodyH;
+  const linear = hqLinearScale(bodyH);
+  const areaScale = hqAreaScale(bodyH);
   console.log(
-    `walk-matched absoluteScale=${absoluteScale.toFixed(6)} (${walkScaleInfo.source}` +
+    `walk-matched absoluteScale=${absoluteScale.toFixed(6)} bodyH=${bodyH} (${walkScaleInfo.source}` +
       (walkScaleInfo.walkMaxContentH != null
         ? `, walkMaxContentH≈${walkScaleInfo.walkMaxContentH}`
         : '') +
@@ -369,6 +388,7 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     absoluteScale,
+    bodyH,
   );
 
   const afterH = scaled.frames.map((f) => bbox(f, scaled.frameWidth, scaled.frameHeight).height);
@@ -381,7 +401,7 @@ async function main() {
     scaled.frames.length,
     {
       requireSingleComponent: true,
-      maxMinorComponent: 6,
+      maxMinorComponent: 24,
       minBlackPerFrame: 40,
       minOlivePerFrame: 0,
       minBluePerFrame: 0,

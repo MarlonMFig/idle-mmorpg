@@ -1,0 +1,208 @@
+{
+  "id": "vanica",
+  "name": "Vanica",
+  "lookType": 9040,
+  "contentHeight": 54,
+  "idle": {
+    "image": "/sprites/player/vanica/idle.png",
+    "frameWidth": 32,
+    "frameHeight": 58,
+    "frameCount": 5,
+    "contentHeight": 54,
+    "scale": 1,
+    "originX": 0.46875,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/vanica/walk.png",
+    "frameWidth": 33,
+    "frameHeight": 56,
+    "frameCount": 6,
+    "contentHeight": 54,
+    "scale": 1,
+    "originX": 0.45454545454545453,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/vanica/combo1.png",
+      "frameWidth": 44,
+      "frameHeight": 56,
+      "frameCount": 4,
+      "contentHeight": 54,
+      "scale": 1,
+      "originX": 0.4772727272727273,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/vanica/combo2.png",
+      "frameWidth": 55,
+      "frameHeight": 59,
+      "frameCount": 3,
+      "contentHeight": 54,
+      "scale": 1,
+      "originX": 0.43636363636363634,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/vanica/combo3.png",
+      "frameWidth": 58,
+      "frameHeight": 58,
+      "frameCount": 3,
+      "contentHeight": 54,
+      "scale": 1,
+      "originX": 0.3620689655172414,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/vanica/hurt.png",
+    "frameWidth": 47,
+    "frameHeight": 58,
+    "frameCount": 3,
+    "contentHeight": 54,
+    "scale": 1,
+    "originX": 0.5319148936170213,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/vanica/death.png",
+    "frameWidth": 58,
+    "frameHeight": 18,
+    "frameCount": 1,
+    "contentHeight": 54,
+    "scale": 1,
+    "originX": 0.5,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-vanica-1",
+      "skillName": "0",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/vanica/special1.png",
+        "frameWidth": 63,
+        "frameHeight": 58,
+        "frameCount": 2,
+        "contentHeight": 54,
+        "scale": 1,
+        "originX": 0.47619047619047616,
+        "durationMs": 1533,
+        "hitDelayMs": 1433,
+        "frameRate": 8,
+        "skillId": "skill-vanica-1",
+        "skillName": "0",
+        "actionId": 1100
+      },
+      "fx": {
+        "image": "/sprites/player/vanica/special1-fx.png",
+        "frameWidth": 89,
+        "frameHeight": 62,
+        "frameCount": 7,
+        "contentHeight": 58,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 8,
+        "durationMs": 1200
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-vanica-2",
+      "skillName": "0",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/vanica/special2.png",
+        "frameWidth": 99,
+        "frameHeight": 62,
+        "frameCount": 5,
+        "contentHeight": 54,
+        "scale": 1,
+        "originX": 0.48484848484848486,
+        "durationMs": 1000,
+        "hitDelayMs": 450,
+        "frameRate": 8,
+        "skillId": "skill-vanica-2",
+        "skillName": "0",
+        "actionId": 3000
+      },
+      "fx": {
+        "image": "/sprites/player/vanica/special2-fx.png",
+        "frameWidth": 86,
+        "frameHeight": 62,
+        "frameCount": 4,
+        "contentHeight": 58,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 8,
+        "durationMs": 583
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-vanica-3",
+      "skillName": "0",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/vanica/special3.png",
+        "frameWidth": 63,
+        "frameHeight": 61,
+        "frameCount": 4,
+        "contentHeight": 54,
+        "scale": 1,
+        "originX": 0.5396825396825397,
+        "durationMs": 1000,
+        "hitDelayMs": 450,
+        "frameRate": 8,
+        "skillId": "skill-vanica-3",
+        "skillName": "0",
+        "actionId": 1200
+      },
+      "fx": {
+        "image": "/sprites/player/vanica/special3-fx.png",
+        "frameWidth": 62,
+        "frameHeight": 61,
+        "frameCount": 5,
+        "contentHeight": 57,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 8,
+        "durationMs": 750
+      },
+      "index": 2
+    },
+    {
+      "skillId": "skill-vanica-4",
+      "skillName": "0",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/vanica/special4.png",
+        "frameWidth": 39,
+        "frameHeight": 58,
+        "frameCount": 3,
+        "contentHeight": 54,
+        "scale": 1,
+        "originX": 0.46153846153846156,
+        "durationMs": 1533,
+        "hitDelayMs": 500,
+        "frameRate": 8,
+        "skillId": "skill-vanica-4",
+        "skillName": "0",
+        "actionId": 1040
+      },
+      "fx": {
+        "image": "/sprites/player/vanica/special4-fx.png",
+        "frameWidth": 89,
+        "frameHeight": 62,
+        "frameCount": 18,
+        "contentHeight": 58,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 8,
+        "durationMs": 3017
+      },
+      "index": 3
+    }
+  ]
+}

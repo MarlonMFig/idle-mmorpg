@@ -1,92 +1,137 @@
 {
   "hinata-idle": {
     "image": "/sprites/player/hinata/idle.png",
-    "frameWidth": 33,
-    "frameHeight": 52,
+    "frameWidth": 38,
+    "frameHeight": 58,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.7384615384615385,
-    "source": "hinata-idle-sheet.png",
-    "frameRate": 8,
-    "residualGreen": 0,
-    "pureBlackHair": 830,
-    "headInteriorHoles": 1,
-    "note": "5-frame Gentle Fist idle stance; green exterior key; no black key"
+    "contentHeight": 54,
+    "scale": 1
   },
   "hinata-walk": {
     "image": "/sprites/player/hinata/walk.png",
-    "frameWidth": 25,
-    "frameHeight": 51,
+    "frameWidth": 30,
+    "frameHeight": 60,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.7058823529411765,
-    "source": "hinata-walk-sheet.png",
-    "frameRate": 10,
+    "contentHeight": 54,
+    "scale": 1,
     "residualGreen": 0,
-    "pureBlackHair": 907,
-    "headInteriorHoles": 0,
-    "plateRimWhite": 0,
-    "maxWhiteEdgeRun": 0,
-    "note": "6-frame side walk RIGHT; plate+rim strip (not black hair); green exterior key"
+    "pureBlack": 2092
   },
   "hinata-combo1": {
     "image": "/sprites/player/hinata/combo1.png",
-    "frameWidth": 55,
-    "frameHeight": 55,
+    "frameWidth": 56,
+    "frameHeight": 57,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.8135593220338984,
-    "source": "hinata-combo-sheet.png",
-    "frameRate": 12,
-    "note": "prep + first palm strike (5f)"
+    "contentHeight": 54,
+    "scale": 1,
+    "range": [
+      0,
+      5
+    ]
   },
   "hinata-combo2": {
     "image": "/sprites/player/hinata/combo2.png",
-    "frameWidth": 55,
-    "frameHeight": 55,
+    "frameWidth": 56,
+    "frameHeight": 57,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.8135593220338984,
-    "source": "hinata-combo-sheet.png",
-    "frameRate": 12,
-    "note": "second palm strike (5f)"
+    "contentHeight": 54,
+    "scale": 1,
+    "range": [
+      5,
+      10
+    ]
   },
   "hinata-combo3": {
     "image": "/sprites/player/hinata/combo3.png",
-    "frameWidth": 55,
-    "frameHeight": 55,
+    "frameWidth": 56,
+    "frameHeight": 57,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.8135593220338984,
-    "source": "hinata-combo-sheet.png",
-    "frameRate": 12,
-    "note": "low finisher / recovery (5f)"
+    "contentHeight": 54,
+    "scale": 1,
+    "range": [
+      10,
+      15
+    ]
   },
   "hinata-attack": {
     "image": "/sprites/player/hinata/attack.png",
-    "frameWidth": 55,
-    "frameHeight": 55,
+    "frameWidth": 75,
+    "frameHeight": 74,
     "frameCount": 15,
-    "contentHeight": 48,
-    "scale": 0.8135593220338984,
+    "contentHeight": 65,
+    "scale": 1.1016949152542372,
     "source": "hinata-combo-sheet.png",
     "frameRate": 12,
     "note": "full combo strip (15f); top=10 bottom=5; content-island cells"
   },
   "hinata-hakke-shou": {
     "image": "/sprites/player/hinata/hakke-shou.png",
-    "frameWidth": 148,
-    "frameHeight": 175,
-    "frameCount": 31,
-    "contentHeight": 48,
-    "scale": 0.39344262295081966,
+    "frameWidth": 86,
+    "frameHeight": 85,
+    "frameCount": 27,
+    "contentHeight": 54,
+    "scale": 1,
     "frameRate": 12,
-    "durationMs": 2583,
-    "hitDelayMs": 1421,
-    "source": "assets/naruto-source/nu/hinata/jutsu-new (frame_001.png, frame_002.png, frame_003.png, frame_004.png, frame_005.png, frame_006.png, frame_007.png, frame_008.png, frame_009.png, frame_010.png, frame_011.png, frame_012.png, frame_013.png, frame_014.png, frame_015.png, frame_016.png, frame_017.png, frame_018.png, frame_019.png, frame_020.png, frame_021.png, frame_022.png, frame_023.png, frame_024.png, frame_025.png, frame_026.png, frame_027.png, frame_028.png, frame_029.png, frame_030.png, frame_031.png)",
+    "durationMs": 2250,
+    "hitDelayMs": 1750,
     "residualGreen": 0,
-    "residualExteriorBlack": 0,
-    "pureBlackHair": 13157,
-    "note": "31f Hakke Shōhō (stance→dash flurry→cream impact); alpha-only pack, no chromakey"
+    "pureBlack": 11505,
+    "originX": 0.5
+  },
+  "hinata-hurt": {
+    "image": "/sprites/player/hinata/hurt.png",
+    "frameWidth": 64,
+    "frameHeight": 59,
+    "frameCount": 2,
+    "contentHeight": 54,
+    "frameRate": 10,
+    "scale": 1
+  },
+  "hinata-death": {
+    "image": "/sprites/player/hinata/death.png",
+    "frameWidth": 64,
+    "frameHeight": 59,
+    "frameCount": 3,
+    "contentHeight": 54,
+    "frameRate": 8,
+    "scale": 1
+  },
+  "skill-hakke-shouhou": {
+    "image": "/sprites/player/hinata/hakke-shou.png",
+    "frameWidth": 86,
+    "frameHeight": 85,
+    "frameCount": 27,
+    "contentHeight": 54,
+    "scale": 1,
+    "frameRate": 12,
+    "durationMs": 2250,
+    "hitDelayMs": 1750,
+    "residualGreen": 0,
+    "pureBlack": 11505,
+    "originX": 0.5
+  },
+  "hinata-hakke-shou-fx": {
+    "image": "/sprites/player/hinata/hakke-shou-fx.png",
+    "frameWidth": 56,
+    "frameHeight": 67,
+    "frameCount": 4,
+    "contentHeight": 63,
+    "scale": 0.3888888888888889,
+    "frameRate": 12,
+    "durationMs": 333,
+    "residualGreen": 0,
+    "source": "hinata/jutsu-vfx (VFX JUTSU.zip)"
+  },
+  "skill-hakke-shouhou-fx": {
+    "image": "/sprites/player/hinata/hakke-shou-fx.png",
+    "frameWidth": 56,
+    "frameHeight": 67,
+    "frameCount": 4,
+    "contentHeight": 63,
+    "scale": 0.3888888888888889,
+    "frameRate": 12,
+    "durationMs": 333,
+    "residualGreen": 0,
+    "source": "hinata/jutsu-vfx (VFX JUTSU.zip)"
   }
 }

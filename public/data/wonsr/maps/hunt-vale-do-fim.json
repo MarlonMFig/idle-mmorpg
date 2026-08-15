@@ -1,0 +1,28 @@
+{
+  "mapKey": "huntValeDoFim",
+  "slug": "hunt-vale-do-fim",
+  "label": "Vale do Fim",
+  "image": "/maps/hunt-vale-do-fim.png",
+  "foreground": "/maps/hunt-vale-do-fim-fg.png",
+  "tmx": "/maps/hunt-vale-do-fim.tmx",
+  "width": 3840,
+  "height": 2160,
+  "cols": 240,
+  "rows": 135,
+  "lateralFloorY": 1384,
+  "layoutScale": 6.75,
+  "spawn": {
+    "x": 1920,
+    "y": 1384
+  },
+  "enemySpawns": [
+    {
+      "x": 3680,
+      "y": 1384
+    },
+    {
+      "x": 160,
+      "y": 1384
+    }
+  ]
+}

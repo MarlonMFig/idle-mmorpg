@@ -50,8 +50,10 @@ export class StubNetTransport implements NetTransport {
 
   send(message: NetMessage): void {
     if (!this.connected) return;
-    // Servidor real retransmitiria; o stub só observa (e mantém sim peer independente).
-    void message;
+    // Echo chat locally so the UI works without a server.
+    if (message.type === 'chat_message') {
+      this.emit(message);
+    }
   }
 
   onMessage(handler: NetMessageHandler): () => void {
@@ -93,6 +95,7 @@ export class StubNetTransport implements NetTransport {
       nickname: 'Shinobi Sombra',
       villageId: options.villageId === 'konoha' ? 'suna' : 'konoha',
       mapKey: options.mapKey,
+      characterId: 'naruto-classic',
       x: 340,
       y: 300,
       direction: 'down',

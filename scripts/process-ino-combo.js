@@ -19,13 +19,14 @@ const {
   updateMeta,
   writePng,
 } = require('./lib/alpha-frame-pack');
+const { hqLinearScale, hqAreaScale } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'ino', 'combo');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'ino');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'ino');
-const TARGET_BODY_H = 48;
+const HQ = { hq: { mode: 'match', metaPath: META_JSON, idleKey: 'ino-idle' } };
 const FRAME_RATE = 12;
 const EXPECTED = 14;
 
@@ -73,8 +74,10 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     norm.contentHeight,
-    TARGET_BODY_H,
+    HQ,
   );
+  const linear = hqLinearScale(scaled.contentHeight);
+  const areaScale = hqAreaScale(scaled.contentHeight);
 
   const fullSheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
   const fullQa = qaSheet(
@@ -91,6 +94,7 @@ async function main() {
       minOlivePerFrame: 0,
       minBluePerFrame: 0,
       minOpaquePerFrame: 80,
+      areaScale,
     },
   );
   const purple = countPurple(fullSheet.data);
@@ -111,7 +115,7 @@ async function main() {
   if (purple < 50) {
     throw new Error(`QA fail: purple hair nearly gone (${purple})`);
   }
-  if (fullQa.footSpread > 6) {
+  if (fullQa.footSpread > Math.round(6 * linear)) {
     console.warn(`WARN footSpread=${fullQa.footSpread}`);
   }
 
@@ -141,6 +145,7 @@ async function main() {
         minOlivePerFrame: 0,
         minBluePerFrame: 0,
         minOpaquePerFrame: 80,
+        areaScale,
       },
     );
     if (qa.residualGreen > 0) {

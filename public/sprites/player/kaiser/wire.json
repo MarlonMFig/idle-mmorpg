@@ -1,0 +1,208 @@
+{
+  "id": "kaiser",
+  "name": "Kaiser",
+  "lookType": 9056,
+  "contentHeight": 61,
+  "idle": {
+    "image": "/sprites/player/kaiser/idle.png",
+    "frameWidth": 45,
+    "frameHeight": 65,
+    "frameCount": 4,
+    "contentHeight": 61,
+    "scale": 1,
+    "originX": 0.5111111111111111,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/kaiser/walk.png",
+    "frameWidth": 42,
+    "frameHeight": 65,
+    "frameCount": 5,
+    "contentHeight": 61,
+    "scale": 1,
+    "originX": 0.5952380952380952,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/kaiser/combo1.png",
+      "frameWidth": 59,
+      "frameHeight": 65,
+      "frameCount": 4,
+      "contentHeight": 61,
+      "scale": 1,
+      "originX": 0.4745762711864407,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/kaiser/combo2.png",
+      "frameWidth": 52,
+      "frameHeight": 65,
+      "frameCount": 4,
+      "contentHeight": 61,
+      "scale": 1,
+      "originX": 0.4423076923076923,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/kaiser/combo3.png",
+      "frameWidth": 55,
+      "frameHeight": 65,
+      "frameCount": 2,
+      "contentHeight": 61,
+      "scale": 1,
+      "originX": 0.43636363636363634,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/kaiser/hurt.png",
+    "frameWidth": 63,
+    "frameHeight": 65,
+    "frameCount": 2,
+    "contentHeight": 61,
+    "scale": 1,
+    "originX": 0.6507936507936508,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/kaiser/death.png",
+    "frameWidth": 65,
+    "frameHeight": 27,
+    "frameCount": 1,
+    "contentHeight": 61,
+    "scale": 1,
+    "originX": 0.5076923076923077,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-kaiser-1",
+      "skillName": "Kaiser · Especial 1",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/kaiser/special1.png",
+        "frameWidth": 52,
+        "frameHeight": 65,
+        "frameCount": 6,
+        "contentHeight": 61,
+        "scale": 1,
+        "originX": 0.4423076923076923,
+        "durationMs": 1133,
+        "hitDelayMs": 500,
+        "frameRate": 8,
+        "skillId": "skill-kaiser-1",
+        "skillName": "Kaiser · Especial 1",
+        "actionId": 1200
+      },
+      "fx": {
+        "image": "/sprites/player/kaiser/special1-fx.png",
+        "frameWidth": 413,
+        "frameHeight": 410,
+        "frameCount": 8,
+        "contentHeight": 406,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 333
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-kaiser-2",
+      "skillName": "0",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/kaiser/special2.png",
+        "frameWidth": 55,
+        "frameHeight": 65,
+        "frameCount": 8,
+        "contentHeight": 61,
+        "scale": 1,
+        "originX": 0.4909090909090909,
+        "durationMs": 667,
+        "hitDelayMs": 300,
+        "frameRate": 12,
+        "skillId": "skill-kaiser-2",
+        "skillName": "0",
+        "actionId": 1100
+      },
+      "fx": {
+        "image": "/sprites/player/kaiser/special2-fx.png",
+        "frameWidth": 384,
+        "frameHeight": 381,
+        "frameCount": 16,
+        "contentHeight": 377,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 1167
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-kaiser-3",
+      "skillName": "0",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/kaiser/special3.png",
+        "frameWidth": 55,
+        "frameHeight": 65,
+        "frameCount": 2,
+        "contentHeight": 61,
+        "scale": 1,
+        "originX": 0.4909090909090909,
+        "durationMs": 2233,
+        "hitDelayMs": 1000,
+        "frameRate": 8,
+        "skillId": "skill-kaiser-3",
+        "skillName": "0",
+        "actionId": 1000
+      },
+      "fx": {
+        "image": "/sprites/player/kaiser/special3-fx.png",
+        "frameWidth": 493,
+        "frameHeight": 487,
+        "frameCount": 10,
+        "contentHeight": 483,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 5067
+      },
+      "index": 2
+    },
+    {
+      "skillId": "skill-kaiser-4",
+      "skillName": "0",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/kaiser/special4.png",
+        "frameWidth": 55,
+        "frameHeight": 65,
+        "frameCount": 4,
+        "contentHeight": 61,
+        "scale": 1,
+        "originX": 0.4909090909090909,
+        "durationMs": 2450,
+        "hitDelayMs": 1100,
+        "frameRate": 8,
+        "skillId": "skill-kaiser-4",
+        "skillName": "0",
+        "actionId": 1700
+      },
+      "fx": {
+        "image": "/sprites/player/kaiser/special4-fx.png",
+        "frameWidth": 407,
+        "frameHeight": 453,
+        "frameCount": 16,
+        "contentHeight": 449,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 11,
+        "durationMs": 2183
+      },
+      "index": 3
+    }
+  ]
+}

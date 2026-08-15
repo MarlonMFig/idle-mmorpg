@@ -2,6 +2,8 @@
  * Chouji walk — horizontal strip (side walk RIGHT), green chroma exterior only.
  * Do not strip white scarf / bandage via isLabelPixel (stripLabels: false).
  *
+ * HQ: match idle contentHeight (body density). Prefer native when already equal.
+ *
  * Cells: content-island detection (prefer natural 6; do NOT force equal cols).
  *
  * npm run chouji:walk
@@ -16,12 +18,12 @@ const {
   isGreenBg,
   fillInteriorHoles,
 } = require('./lib/chroma-green-bg');
+const { resolveHqScale, resolvePackContentHeight, NATIVE_PIXELS } = require('./lib/chouji-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'chouji-walk-sheet.png');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'chouji');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
-const TARGET_BODY_H = 48;
 const FRAME_RATE = 10;
 /** Soft expectation for logging — real count comes from content islands. */
 const HINT_EXPECTED = 6;
@@ -205,11 +207,16 @@ function normalize(cut, pad = 2) {
   return { frames, cellW, cellH, contentHeight: contentH0 || cut[0].bh };
 }
 
-async function scaleFrames(frames, cellW, cellH, contentHeight) {
-  const scale = TARGET_BODY_H / Math.max(1, contentHeight);
+async function scaleFrames(frames, cellW, cellH, contentHeight, scaleOpts = {}) {
+  const scale = resolveHqScale(contentHeight, scaleOpts);
   const outW = Math.max(1, Math.round(cellW * scale));
   const outH = Math.max(1, Math.round(cellH * scale));
-  const outContent = Math.max(1, Math.round(contentHeight * scale));
+  const outContent = resolvePackContentHeight(contentHeight, scale, scaleOpts);
+  if (NATIVE_PIXELS) {
+    console.log(
+      `HQ walk scale=${scale.toFixed(4)} (→ idle contentH) contentH=${outContent} cell ${cellW}x${cellH} → ${outW}x${outH}`,
+    );
+  }
   const out = [];
   for (const frame of frames) {
     const { data: d } = await sharp(frame, {
@@ -431,7 +438,10 @@ async function main() {
   }
 
   const norm = normalize(cut);
-  const scaled = await scaleFrames(norm.frames, norm.cellW, norm.cellH, norm.contentHeight);
+  const scaled = await scaleFrames(norm.frames, norm.cellW, norm.cellH, norm.contentHeight, {
+    metaPath: META_JSON,
+    matchIdle: true,
+  });
   const sheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
   const qa = qaMetrics(
     sheet.data,
@@ -466,7 +476,7 @@ async function main() {
     scale: scaled.scale,
     source: 'chouji-walk-sheet.png',
     frameRate: FRAME_RATE,
-    note: `${scaled.frames.length}-frame Part I side walk RIGHT; green exterior key; content-island cells`,
+    note: `${scaled.frames.length}-frame Part I side walk RIGHT; HQ matched to idle contentH; green exterior key; content-island cells`,
   };
 
   let meta = {};

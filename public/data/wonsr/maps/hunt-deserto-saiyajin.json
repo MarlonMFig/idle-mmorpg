@@ -1,0 +1,28 @@
+{
+  "mapKey": "huntDesertoSaiyajin",
+  "slug": "hunt-deserto-saiyajin",
+  "label": "Deserto Rochoso Saiyajin",
+  "image": "/maps/hunt-deserto-saiyajin.png",
+  "foreground": "/maps/hunt-deserto-saiyajin-fg.png",
+  "tmx": "/maps/hunt-deserto-saiyajin.tmx",
+  "width": 3840,
+  "height": 2160,
+  "cols": 240,
+  "rows": 135,
+  "lateralFloorY": 1424,
+  "layoutScale": 5.75,
+  "spawn": {
+    "x": 1920,
+    "y": 1424
+  },
+  "enemySpawns": [
+    {
+      "x": 3680,
+      "y": 1424
+    },
+    {
+      "x": 160,
+      "y": 1424
+    }
+  ]
+}

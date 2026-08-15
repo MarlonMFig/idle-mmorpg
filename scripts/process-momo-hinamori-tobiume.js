@@ -22,6 +22,7 @@ const {
   isChromaGreen,
   bbox,
 } = require('./lib/alpha-frame-pack');
+const { preferNativeScale, readIdleContentHeight } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const SRC_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'momo-hinamori', 'jutsu');
@@ -133,12 +134,13 @@ async function packTobiume(frames, widths, heights) {
     sumH += bbox(frames[i], widths[i], heights[i]).height;
   }
   const refH = Math.max(1, Math.round(sumH / n));
-  const scale = TARGET_BODY_H / refH;
+  const idleH = readIdleContentHeight(META_JSON, 'momo-hinamori-idle') || TARGET_BODY_H;
+  const scale = preferNativeScale(idleH / refH);
   const cropW = Math.max(1, Math.round(union.width * scale));
   const cropH = Math.max(1, Math.round(union.height * scale));
   const fw = cropW + PAD * 2;
   const fh = cropH + PAD * 2;
-  console.log(`scale=${scale.toFixed(4)} refH=${refH} cell=${fw}x${fh}`);
+  console.log(`scale=${scale.toFixed(4)} refH=${refH} → idleH=${idleH} cell=${fw}x${fh}`);
 
   const packed = [];
   for (let i = 0; i < frames.length; i += 1) {
@@ -183,7 +185,7 @@ async function packTobiume(frames, widths, heights) {
     packed.push(canvas);
   }
 
-  return { frames: packed, frameWidth: fw, frameHeight: fh, scale, refH };
+  return { frames: packed, frameWidth: fw, frameHeight: fh, scale, refH, contentHeight: idleH };
 }
 
 async function processTobiume() {
@@ -227,7 +229,7 @@ async function processTobiume() {
     frameWidth: packed.frameWidth,
     frameHeight: packed.frameHeight,
     frameCount: EXPECTED,
-    contentHeight: TARGET_BODY_H,
+    contentHeight: packed.contentHeight,
     scale: packed.scale,
     frameRate: FRAME_RATE,
     durationMs: Math.round((EXPECTED / FRAME_RATE) * 1000),

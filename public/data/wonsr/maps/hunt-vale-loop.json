@@ -1,0 +1,27 @@
+{
+  "mapKey": "huntValeLoop",
+  "slug": "hunt-vale-loop",
+  "label": "Vale do Fim (Loop)",
+  "image": "/maps/hunt-vale-loop.png",
+  "video": "/maps/hunt-vale-loop.mp4",
+  "tmx": "/maps/hunt-vale-loop.tmx",
+  "width": 1904,
+  "height": 1088,
+  "cols": 119,
+  "rows": 68,
+  "lateralFloorY": 861,
+  "spawn": {
+    "x": 952,
+    "y": 861
+  },
+  "enemySpawns": [
+    {
+      "x": 1824,
+      "y": 861
+    },
+    {
+      "x": 80,
+      "y": 861
+    }
+  ]
+}

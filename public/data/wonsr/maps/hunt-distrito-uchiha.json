@@ -1,0 +1,28 @@
+{
+  "mapKey": "huntDistritoUchiha",
+  "slug": "hunt-distrito-uchiha",
+  "label": "Distrito Uchiha",
+  "image": "/maps/hunt-distrito-uchiha.png",
+  "foreground": "/maps/hunt-distrito-uchiha-fg.png",
+  "tmx": "/maps/hunt-distrito-uchiha.tmx",
+  "width": 3840,
+  "height": 2160,
+  "cols": 240,
+  "rows": 135,
+  "lateralFloorY": 1420,
+  "layoutScale": 5.75,
+  "spawn": {
+    "x": 1920,
+    "y": 1420
+  },
+  "enemySpawns": [
+    {
+      "x": 3680,
+      "y": 1420
+    },
+    {
+      "x": 160,
+      "y": 1420
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "mapKey": "huntArenaExameChunnin",
+  "slug": "hunt-arena-exame-chunnin",
+  "label": "País do Ferro",
+  "image": "/maps/hunt-arena-exame-chunnin.png",
+  "foreground": "/maps/hunt-arena-exame-chunnin-fg.png",
+  "tmx": "/maps/hunt-arena-exame-chunnin.tmx",
+  "width": 3840,
+  "height": 2160,
+  "cols": 240,
+  "rows": 135,
+  "lateralFloorY": 1400,
+  "layoutScale": 6.75,
+  "spawn": {
+    "x": 1920,
+    "y": 1400
+  },
+  "enemySpawns": [
+    {
+      "x": 3680,
+      "y": 1400
+    },
+    {
+      "x": 160,
+      "y": 1400
+    }
+  ]
+}

@@ -1,0 +1,188 @@
+{
+  "id": "gordon",
+  "name": "Gordon",
+  "lookType": 9047,
+  "contentHeight": 59,
+  "idle": {
+    "image": "/sprites/player/gordon/idle.png",
+    "frameWidth": 31,
+    "frameHeight": 63,
+    "frameCount": 5,
+    "contentHeight": 59,
+    "scale": 1,
+    "originX": 0.5483870967741935,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/gordon/walk.png",
+    "frameWidth": 65,
+    "frameHeight": 57,
+    "frameCount": 4,
+    "contentHeight": 59,
+    "scale": 1,
+    "originX": 0.5538461538461539,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/gordon/combo1.png",
+      "frameWidth": 74,
+      "frameHeight": 57,
+      "frameCount": 4,
+      "contentHeight": 59,
+      "scale": 1,
+      "originX": 0.3108108108108108,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/gordon/combo2.png",
+      "frameWidth": 64,
+      "frameHeight": 58,
+      "frameCount": 4,
+      "contentHeight": 59,
+      "scale": 1,
+      "originX": 0.3125,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/gordon/combo3.png",
+      "frameWidth": 52,
+      "frameHeight": 57,
+      "frameCount": 3,
+      "contentHeight": 59,
+      "scale": 1,
+      "originX": 0.4230769230769231,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/gordon/hurt.png",
+    "frameWidth": 61,
+    "frameHeight": 62,
+    "frameCount": 2,
+    "contentHeight": 59,
+    "scale": 1,
+    "originX": 0.5737704918032787,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/gordon/death.png",
+    "frameWidth": 64,
+    "frameHeight": 30,
+    "frameCount": 1,
+    "contentHeight": 59,
+    "scale": 1,
+    "originX": 0.515625,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-gordon-1",
+      "skillName": "0",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/gordon/special1.png",
+        "frameWidth": 31,
+        "frameHeight": 62,
+        "frameCount": 2,
+        "contentHeight": 59,
+        "scale": 1,
+        "originX": 0.5483870967741935,
+        "durationMs": 1367,
+        "hitDelayMs": 617,
+        "frameRate": 8,
+        "skillId": "skill-gordon-1",
+        "skillName": "0",
+        "actionId": 1200
+      },
+      "fx": {
+        "image": "/sprites/player/gordon/special1-fx.png",
+        "frameWidth": 38,
+        "frameHeight": 62,
+        "frameCount": 2,
+        "contentHeight": 58,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 8,
+        "durationMs": 650
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-gordon-2",
+      "skillName": "0",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/gordon/special2.png",
+        "frameWidth": 50,
+        "frameHeight": 62,
+        "frameCount": 3,
+        "contentHeight": 59,
+        "scale": 1,
+        "originX": 0.38,
+        "durationMs": 667,
+        "hitDelayMs": 300,
+        "frameRate": 8,
+        "skillId": "skill-gordon-2",
+        "skillName": "0",
+        "actionId": 1400
+      },
+      "fx": {
+        "image": "/sprites/player/gordon/special2-fx.png",
+        "frameWidth": 38,
+        "frameHeight": 62,
+        "frameCount": 2,
+        "contentHeight": 58,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 8,
+        "durationMs": 433
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-gordon-3",
+      "skillName": "Gordon · Especial 3",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/gordon/special3.png",
+        "frameWidth": 53,
+        "frameHeight": 58,
+        "frameCount": 3,
+        "contentHeight": 59,
+        "scale": 1,
+        "originX": 0.41509433962264153,
+        "durationMs": 1017,
+        "hitDelayMs": 450,
+        "frameRate": 8,
+        "skillId": "skill-gordon-3",
+        "skillName": "Gordon · Especial 3",
+        "actionId": 2000
+      },
+      "fx": null,
+      "index": 2
+    },
+    {
+      "skillId": "skill-gordon-4",
+      "skillName": "0",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/gordon/special4.png",
+        "frameWidth": 38,
+        "frameHeight": 62,
+        "frameCount": 1,
+        "contentHeight": 59,
+        "scale": 1,
+        "originX": 0.4473684210526316,
+        "durationMs": 583,
+        "hitDelayMs": 267,
+        "frameRate": 8,
+        "skillId": "skill-gordon-4",
+        "skillName": "0",
+        "actionId": 1100
+      },
+      "fx": null,
+      "index": 3
+    }
+  ]
+}

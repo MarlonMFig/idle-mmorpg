@@ -3,12 +3,17 @@
 import Image from 'next/image';
 import { useCallback, useState } from 'react';
 import { useStore } from '@/hooks/use-store';
+import { forgeStore } from '@/stores/forge-store';
 import { huntStore } from '@/stores/hunt-store';
 import { huntAnalyzerStore } from '@/stores/hunt-analyzer-store';
+import { helperStore } from '@/stores/helper-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { locationStore } from '@/stores/location-store';
+import { medicStore } from '@/stores/medic-store';
 import { accountStore } from '@/stores/account-store';
+import { guildStore } from '@/stores/guild-store';
 import { teamStore } from '@/stores/team-store';
+import { toggleTeamManager } from '@/ui/team';
 
 type HubMenuId =
   | 'equipe'
@@ -19,7 +24,8 @@ type HubMenuId =
   | 'guild'
   | 'ranking'
   | 'mapa'
-  | 'hunt-analyzer';
+  | 'hunt-analyzer'
+  | 'helper';
 
 interface HubMenuItem {
   id: HubMenuId;
@@ -34,58 +40,65 @@ const HUB_MENU_ITEMS: readonly HubMenuItem[] = [
   {
     id: 'equipe',
     label: 'Equipe',
-    iconSrc: '/ui/hub-menu/equipe.png',
+    iconSrc: '/ui/hub-menu/equipe.png?v=modelo2',
     tone: '#6aa8ff',
     title: 'Equipe (E)',
   },
   {
     id: 'inventario',
     label: 'Inventário',
-    iconSrc: '/ui/hub-menu/inventario.png',
+    iconSrc: '/ui/hub-menu/inventario.png?v=modelo2',
     tone: '#ff6b9d',
-    title: 'Inventário (I)',
+    title: 'Inventário',
   },
   {
     id: 'medico',
     label: 'Médico',
-    iconSrc: '/ui/hub-menu/medico.png',
+    iconSrc: '/ui/hub-menu/medico.png?v=modelo2',
     tone: '#f0a0b8',
-    comingSoon: true,
+    title: 'Centro de Cura Ninja',
   },
   {
     id: 'anime-coins',
     label: 'Anime Coins',
-    iconSrc: '/ui/hub-menu/anime-coins.png',
+    iconSrc: '/ui/hub-menu/anime-coins.png?v=modelo2',
     tone: '#e8b84a',
     comingSoon: true,
   },
   {
     id: 'cla',
     label: 'Clã',
-    iconSrc: '/ui/hub-menu/cla.png',
+    iconSrc: '/ui/hub-menu/cla.png?v=modelo2',
     tone: '#5aa8ff',
     title: 'Clãs',
   },
   {
     id: 'guild',
     label: 'Guild',
-    iconSrc: '/ui/hub-menu/guild.png',
+    iconSrc: '/ui/hub-menu/guild.png?v=modelo2',
     tone: '#e05a5a',
-    comingSoon: true,
+    title: 'Guild',
   },
   {
     id: 'ranking',
     label: 'Ranking',
-    iconSrc: '/ui/hub-menu/ranking.png',
+    iconSrc: '/ui/hub-menu/ranking.png?v=modelo2',
     tone: '#e8b84a',
     comingSoon: true,
   },
   {
     id: 'hunt-analyzer',
     label: 'Analyzer',
-    iconSrc: '/ui/hub-menu/hunt-analyzer.png',
+    iconSrc: '/ui/hub-menu/hunt-analyzer.png?v=modelo2',
     tone: '#5ec8ff',
     title: 'Hunt Analyzer',
+  },
+  {
+    id: 'helper',
+    label: 'Helper',
+    iconSrc: '/ui/hub-menu/helper.png?v=modelo2',
+    tone: '#7ad4a8',
+    title: 'Auto-Helper',
   },
   {
     id: 'mapa',
@@ -104,7 +117,10 @@ export function HubTopMenu() {
   const teamOpen = useStore(teamStore, (s) => s.isOpen);
   const invOpen = useStore(inventoryStore, (s) => s.isOpen);
   const clanOpen = useStore(accountStore, (s) => s.isOpen);
+  const guildOpen = useStore(guildStore, (s) => s.isOpen);
   const analyzerOpen = useStore(huntAnalyzerStore, (s) => s.isOpen);
+  const helperOpen = useStore(helperStore, (s) => s.isOpen);
+  const medicOpen = useStore(medicStore, (s) => s.isOpen);
   const [toast, setToast] = useState<string | null>(null);
 
   const flash = useCallback((message: string) => {
@@ -116,9 +132,11 @@ export function HubTopMenu() {
     (id: HubMenuId) => {
       switch (id) {
         case 'equipe':
-          teamStore.toggleOpen();
+          toggleTeamManager();
           return;
         case 'inventario':
+          forgeStore.close();
+          teamStore.setOpen(false);
           inventoryStore.toggleOpen();
           return;
         case 'cla':
@@ -130,14 +148,17 @@ export function HubTopMenu() {
         case 'hunt-analyzer':
           huntAnalyzerStore.toggleOpen();
           return;
+        case 'helper':
+          helperStore.toggleOpen();
+          return;
         case 'medico':
-          flash('Médico — em breve');
+          medicStore.toggleOpen();
           return;
         case 'anime-coins':
           flash('Anime Coins — em breve');
           return;
         case 'guild':
-          flash('Guild — em breve');
+          guildStore.toggleOpen();
           return;
         case 'ranking':
           flash('Ranking — em breve');
@@ -155,7 +176,10 @@ export function HubTopMenu() {
             (item.id === 'equipe' && teamOpen) ||
             (item.id === 'inventario' && invOpen) ||
             (item.id === 'cla' && clanOpen) ||
-            (item.id === 'hunt-analyzer' && analyzerOpen);
+            (item.id === 'guild' && guildOpen) ||
+            (item.id === 'hunt-analyzer' && analyzerOpen) ||
+            (item.id === 'helper' && helperOpen) ||
+            (item.id === 'medico' && medicOpen);
 
           return (
             <button

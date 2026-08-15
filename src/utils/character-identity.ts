@@ -33,6 +33,17 @@ export function clampCharacterStars(value: unknown): CharacterStars {
   return n as CharacterStars;
 }
 
+/** 0 = legado sem nível (migrar da conta). */
+export function clampCharacterLevel(value: unknown, fallback = 1): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return fallback;
+  return Math.max(0, Math.min(9999, Math.floor(value)));
+}
+
+export function clampCharacterXp(value: unknown): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return 0;
+  return Math.max(0, Math.floor(value));
+}
+
 export function buildSealedCharacter(input: {
   id?: string;
   name: string;
@@ -43,6 +54,8 @@ export function buildSealedCharacter(input: {
   quality?: CharacterQuality;
   stars?: CharacterStars;
   clanId?: CharacterClanId;
+  level?: number;
+  xp?: number;
   isFavorite?: boolean;
   isLocked?: boolean;
   characterKey?: string;
@@ -59,6 +72,8 @@ export function buildSealedCharacter(input: {
     quality: input.quality ?? DEFAULT_OBTAIN_QUALITY,
     stars: input.stars ?? 0,
     clanId: input.clanId ?? resolveCharacterClan({ lookType, starterId: input.starterId }),
+    level: Math.max(1, clampCharacterLevel(input.level, 1)),
+    xp: clampCharacterXp(input.xp),
     isFavorite: input.isFavorite ?? false,
     isLocked: input.isLocked ?? false,
   };
@@ -88,6 +103,9 @@ export function normalizeSealedCharacter(raw: unknown): SealedCharacter | null {
         ? entry.sourceId
         : null;
 
+  const hasOwnLevel =
+    typeof entry.level === 'number' && Number.isFinite(entry.level) && entry.level >= 1;
+
   const built = buildSealedCharacter({
     id: entry.id,
     name: entry.name,
@@ -104,12 +122,16 @@ export function normalizeSealedCharacter(raw: unknown): SealedCharacter | null {
     clanId: isCharacterClanId(entry.clanId)
       ? entry.clanId
       : resolveCharacterClan({ lookType: entry.lookType, starterId }),
+    level: hasOwnLevel ? entry.level : 1,
+    xp: clampCharacterXp(entry.xp),
     isFavorite: entry.isFavorite === true,
     isLocked: entry.isLocked === true,
   });
 
   return {
     ...built,
+    // 0 = save legado sem nível por personagem (migrar da conta).
+    level: hasOwnLevel ? built.level : 0,
     previewUrl: built.previewUrl ?? '',
   };
 }

@@ -3,7 +3,10 @@
  * Clean transparent sources: NO black flood/peel (black hair must survive).
  *
  * Body-lock pack (shared feetY + body-core X) so hair/cloak breath does not
- * slide the torso between frames. Scale matches walk absoluteScale.
+ * slide the torso between frames.
+ *
+ * HQ: absoluteScale = 1 (native pixels — max quality). contentHeight = idle body,
+ * which is the ruler every other Itachi anim matches.
  *
  * npm run itachi:idle
  * Input:  assets/naruto-source/nu/itachi/idle/frame_*.png
@@ -23,15 +26,18 @@ const {
   isChromaGreen,
   bbox,
 } = require('./lib/alpha-frame-pack');
+const {
+  resolveHqScale,
+  resolvePackContentHeight,
+  NATIVE_PIXELS,
+} = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'itachi', 'idle');
-const WALK_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'itachi', 'walk');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'itachi');
 const PREVIEW = path.join(ROOT, 'public', 'sprites', 'player', 'previews', 'itachi.png');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'itachi');
-const TARGET_BODY_H = 48;
 const FRAME_RATE = 7;
 const EXPECTED = 4;
 const PAD = 2;
@@ -233,7 +239,7 @@ function normalizeBodyLock(frames, widths, heights, pad = PAD) {
  * Uniform nearest scale of already body-locked cells (shared absoluteScale).
  * Do not recompute per-frame scale from posed bbox height.
  */
-async function scaleLockedCells(frames, fw, fh, absoluteScale) {
+async function scaleLockedCells(frames, fw, fh, contentHeight, absoluteScale, scaleOpts) {
   const outW = Math.max(1, Math.round(fw * absoluteScale));
   const outH = Math.max(1, Math.round(fh * absoluteScale));
   const out = [];
@@ -268,7 +274,7 @@ async function scaleLockedCells(frames, fw, fh, absoluteScale) {
     frames: out,
     frameWidth: outW,
     frameHeight: outH,
-    contentHeight: TARGET_BODY_H,
+    contentHeight: resolvePackContentHeight(contentHeight, absoluteScale, scaleOpts),
     scale: absoluteScale,
   };
 }
@@ -333,38 +339,6 @@ function variance(vals) {
   return { mean, variance: v, std: Math.sqrt(v), min: Math.min(...vals), max: Math.max(...vals) };
 }
 
-function resolveWalkScale() {
-  if (fs.existsSync(META_JSON)) {
-    try {
-      const meta = JSON.parse(fs.readFileSync(META_JSON, 'utf8'));
-      const w = meta['itachi-walk'];
-      if (w && typeof w.scale === 'number' && w.scale > 0) {
-        return {
-          scale: w.scale,
-          source: 'meta.json itachi-walk',
-          walkMaxContentH:
-            w.maxContentH ??
-            (w.scale > 0 ? Math.round(TARGET_BODY_H / w.scale) : null),
-        };
-      }
-    } catch {
-      /* fall through */
-    }
-  }
-  return null;
-}
-
-async function measureWalkSourceScale() {
-  const walkKeyed = await loadAlphaFrames(WALK_DIR, 6);
-  const heights = walkKeyed.map((k) => k.box.height);
-  const maxH = Math.max(...heights);
-  return {
-    scale: TARGET_BODY_H / Math.max(1, maxH),
-    source: 'walk source max contentH',
-    walkMaxContentH: maxH,
-  };
-}
-
 async function main() {
   const keyed = await loadAlphaFrames(INPUT_DIR, EXPECTED);
 
@@ -372,19 +346,6 @@ async function main() {
   console.log(
     `BEFORE contentH per frame: ${beforeH.map((h, i) => `f${i}=${h}`).join(' ')} ` +
       `(min=${Math.min(...beforeH)} max=${Math.max(...beforeH)} Δ=${Math.max(...beforeH) - Math.min(...beforeH)})`,
-  );
-
-  let walkScaleInfo = resolveWalkScale();
-  if (!walkScaleInfo) {
-    walkScaleInfo = await measureWalkSourceScale();
-  }
-  const absoluteScale = walkScaleInfo.scale;
-  console.log(
-    `walk-matched absoluteScale=${absoluteScale.toFixed(6)} (${walkScaleInfo.source}` +
-      (walkScaleInfo.walkMaxContentH != null
-        ? `, walkMaxContentH≈${walkScaleInfo.walkMaxContentH}`
-        : '') +
-      `)`,
   );
 
   const rawFrames = keyed.map((k) => k.frame);
@@ -411,11 +372,21 @@ async function main() {
       `destBodyCx=${norm.destBodyCx} destFeetY=${norm.destFeetY}`,
   );
 
+  const scaleOpts = { mode: 'idle' };
+  const absoluteScale = resolveHqScale(norm.contentHeight, scaleOpts);
+  if (NATIVE_PIXELS) {
+    console.log(
+      `HQ idle absoluteScale=${absoluteScale.toFixed(4)} (native pixels) bodyH=${norm.contentHeight}`,
+    );
+  }
+
   const scaled = await scaleLockedCells(
     norm.frames,
     norm.frameWidth,
     norm.frameHeight,
+    norm.contentHeight,
     absoluteScale,
+    scaleOpts,
   );
 
   const sheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
@@ -523,7 +494,7 @@ async function main() {
     residualGreen: qa.residualGreen,
     residualExteriorBlack: 0,
     pureBlack: qa.pureBlack,
-    walkMatchedScale: absoluteScale,
+    nativePixels: NATIVE_PIXELS,
     bodyLock: {
       destBodyCx: norm.destBodyCx,
       destFeetY: norm.destFeetY,
@@ -532,7 +503,7 @@ async function main() {
       feetYDelta: feetStats.max - feetStats.min,
     },
     note:
-      '4-frame idle; alpha-only; body-lock (shared feetY + torso-core X); scale matched walk',
+      '4-frame idle; alpha-only; body-lock (shared feetY + torso-core X); HQ nativePixels ruler',
   };
   updateMeta(META_JSON, 'itachi-idle', entry);
 

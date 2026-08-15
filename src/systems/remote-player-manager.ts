@@ -9,7 +9,10 @@ import type { PlayerNetState } from '@/types/net';
 export class RemotePlayerManager {
   private readonly remotes = new Map<string, RemotePlayer>();
 
-  constructor(private readonly scene: Phaser.Scene) {}
+  constructor(
+    private readonly scene: Phaser.Scene,
+    private readonly worldScale = 1,
+  ) {}
 
   upsert(state: PlayerNetState): void {
     const existing = this.remotes.get(state.playerId);
@@ -17,7 +20,7 @@ export class RemotePlayerManager {
       existing.applyNetworkState(state);
       return;
     }
-    this.remotes.set(state.playerId, new RemotePlayer(this.scene, state));
+    this.remotes.set(state.playerId, new RemotePlayer(this.scene, state, this.worldScale));
     multiplayerStore.setRemoteCount(this.remotes.size);
   }
 

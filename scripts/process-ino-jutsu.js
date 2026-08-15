@@ -30,7 +30,7 @@ const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'ino', 'jutsu
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'ino');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'ino');
-const TARGET_BODY_H = 48;
+const HQ = { hq: { mode: 'match', metaPath: META_JSON, idleKey: 'ino-idle' } };
 const FRAME_RATE = 12;
 const PAD = 2;
 /** Burst frames where body lock is critical (0-based; frames 12–17 of sequence). */
@@ -478,7 +478,7 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     norm.contentHeight,
-    TARGET_BODY_H,
+    HQ,
   );
   const cleaned = scaled.frames.map((f) =>
     scrubFrame(f, scaled.frameWidth, scaled.frameHeight),

@@ -21,6 +21,13 @@ import {
   SHIKAMARU_LOOK_TYPE,
   TSUNADE_CURATED_LOOK_TYPE,
   UCHIHA_ITACHI_LOOK_TYPE,
+  SHISUI_LOOK_TYPES,
+  NARUTO_SHIPPUDEN_LOOK_TYPES,
+  GOKU_LOOK_TYPES,
+  FREEZA_LOOK_TYPES,
+  GOTENKS_LOOK_TYPES,
+  MAJIN_BOO_LOOK_TYPES,
+  PICCOLO_LOOK_TYPES,
   KABUTO_CURATED_LOOK_TYPE,
   KIBA_CURATED_LOOK_TYPE,
   KIMIMARO_CURATED_LOOK_TYPE,
@@ -36,7 +43,13 @@ import {
   SHINO_CURATED_LOOK_TYPE,
   MOMO_HINAMORI_CURATED_LOOK_TYPE,
   HITSUGAYA_CURATED_LOOK_TYPE,
+  ASTA_CURATED_LOOK_TYPE,
+  LUFFY_CURATED_LOOK_TYPE,
+  KENSHIN_CURATED_LOOK_TYPE,
 } from '@/data/character-packs';
+import { BLACK_CLOVER_PREVIEW_BY_LOOK_TYPE } from '@/data/black-clover-packs';
+import { JUJUTSU_KAISEN_PREVIEW_BY_LOOK_TYPE } from '@/data/jujutsu-kaisen-packs';
+import { JUMP_FORCE_PREVIEW_BY_LOOK_TYPE } from '@/data/jump-force-packs';
 
 /** Preview estático (UI caças / inventário). */
 const PREVIEW_BY_LOOK_TYPE: Record<number, string> = {
@@ -56,6 +69,29 @@ const PREVIEW_BY_LOOK_TYPE: Record<number, string> = {
   [KAKASHI_CURATED_LOOK_TYPE]: '/sprites/player/previews/kakashi.png',
   [NARUTO_SENNIN_LOOK_TYPE]: '/sprites/player/previews/naruto-sennin.png',
   [UCHIHA_ITACHI_LOOK_TYPE]: '/sprites/player/previews/itachi.png',
+  ...Object.fromEntries(
+    SHISUI_LOOK_TYPES.map((look) => [look, '/sprites/player/previews/shisui.png']),
+  ),
+  ...Object.fromEntries(
+    NARUTO_SHIPPUDEN_LOOK_TYPES.map(
+      (look) => [look, '/sprites/player/previews/naruto-shippuden.png'],
+    ),
+  ),
+  ...Object.fromEntries(
+    GOKU_LOOK_TYPES.map((look) => [look, '/sprites/player/previews/goku.png']),
+  ),
+  ...Object.fromEntries(
+    FREEZA_LOOK_TYPES.map((look) => [look, '/sprites/player/previews/freeza.png']),
+  ),
+  ...Object.fromEntries(
+    GOTENKS_LOOK_TYPES.map((look) => [look, '/sprites/player/previews/gotenks.png']),
+  ),
+  ...Object.fromEntries(
+    MAJIN_BOO_LOOK_TYPES.map((look) => [look, '/sprites/player/previews/majin-boo.png']),
+  ),
+  ...Object.fromEntries(
+    PICCOLO_LOOK_TYPES.map((look) => [look, '/sprites/player/previews/piccolo.png']),
+  ),
   ...Object.fromEntries(
     JIRAIYA_LOOK_TYPES.map((look) => [look, '/sprites/player/previews/jiraiya.png']),
   ),
@@ -78,6 +114,12 @@ const PREVIEW_BY_LOOK_TYPE: Record<number, string> = {
   [SHINO_CURATED_LOOK_TYPE]: '/sprites/player/previews/shino.png',
   [MOMO_HINAMORI_CURATED_LOOK_TYPE]: '/sprites/player/previews/momo-hinamori.png',
   [HITSUGAYA_CURATED_LOOK_TYPE]: '/sprites/player/previews/hitsugaya.png',
+  [ASTA_CURATED_LOOK_TYPE]: '/sprites/player/previews/asta.png',
+  [LUFFY_CURATED_LOOK_TYPE]: '/sprites/player/previews/luffy.png',
+  [KENSHIN_CURATED_LOOK_TYPE]: '/sprites/player/previews/kenshin.png',
+  ...BLACK_CLOVER_PREVIEW_BY_LOOK_TYPE,
+  ...JUJUTSU_KAISEN_PREVIEW_BY_LOOK_TYPE,
+  ...JUMP_FORCE_PREVIEW_BY_LOOK_TYPE,
 };
 
 /** lookTypes com pack lateral no mapa (em vez do atlas/outfit WONSR). */

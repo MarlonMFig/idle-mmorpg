@@ -1,0 +1,111 @@
+{
+  "luffy-walk": {
+    "image": "/sprites/player/luffy/walk.png",
+    "frameWidth": 108,
+    "frameHeight": 81,
+    "frameCount": 8,
+    "contentHeight": 77,
+    "scale": 1.1492537313432836,
+    "originX": 0.5462962962962963,
+    "frameRate": 12
+  },
+  "luffy-idle": {
+    "image": "/sprites/player/luffy/idle.png",
+    "frameWidth": 44,
+    "frameHeight": 81,
+    "frameCount": 4,
+    "contentHeight": 77,
+    "scale": 1,
+    "originX": 0.4772727272727273,
+    "frameRate": 8
+  },
+  "luffy-combo1": {
+    "image": "/sprites/player/luffy/combo1.png",
+    "frameWidth": 100,
+    "frameHeight": 84,
+    "frameCount": 6,
+    "contentHeight": 77,
+    "scale": 0.44508670520231214,
+    "originX": 0.26
+  },
+  "luffy-combo2": {
+    "image": "/sprites/player/luffy/combo2.png",
+    "frameWidth": 100,
+    "frameHeight": 84,
+    "frameCount": 6,
+    "contentHeight": 77,
+    "scale": 0.44508670520231214,
+    "originX": 0.26
+  },
+  "luffy-combo3": {
+    "image": "/sprites/player/luffy/combo3.png",
+    "frameWidth": 100,
+    "frameHeight": 84,
+    "frameCount": 7,
+    "contentHeight": 77,
+    "scale": 0.44508670520231214,
+    "originX": 0.26
+  },
+  "luffy-hurt": {
+    "image": "/sprites/player/luffy/hurt.png",
+    "frameWidth": 98,
+    "frameHeight": 81,
+    "frameCount": 3,
+    "contentHeight": 77,
+    "scale": 1.2222222222222223,
+    "originX": 0.4489795918367347,
+    "frameRate": 10
+  },
+  "luffy-death": {
+    "image": "/sprites/player/luffy/death.png",
+    "frameWidth": 98,
+    "frameHeight": 81,
+    "frameCount": 1,
+    "contentHeight": 77,
+    "scale": 1.2222222222222223,
+    "originX": 0.4489795918367347,
+    "frameRate": 8
+  },
+  "luffy-gatling": {
+    "image": "/sprites/player/luffy/gatling.png",
+    "frameWidth": 147,
+    "frameHeight": 71,
+    "frameCount": 14,
+    "contentHeight": 77,
+    "scale": 1,
+    "originX": 0.46938775510204084
+  },
+  "skill-gomu-gatling": {
+    "image": "/sprites/player/luffy/gomu-gatling.png",
+    "frameWidth": 168,
+    "frameHeight": 81,
+    "frameCount": 14,
+    "contentHeight": 77,
+    "scale": 1.1492537313432836,
+    "originX": 0.47619047619047616,
+    "frameRate": 12,
+    "durationMs": 1167,
+    "hitDelayMs": 500
+  },
+  "luffy-attack": {
+    "image": "/sprites/player/luffy/attack.png",
+    "frameWidth": 100,
+    "frameHeight": 84,
+    "frameCount": 19,
+    "contentHeight": 77,
+    "scale": 0.44508670520231214,
+    "originX": 0.26
+  },
+  "luffy-gomu-gatling": {
+    "image": "/sprites/player/luffy/gomu-gatling.png",
+    "frameWidth": 168,
+    "frameHeight": 81,
+    "frameCount": 14,
+    "contentHeight": 77,
+    "scale": 1.1492537313432836,
+    "originX": 0.47619047619047616,
+    "frameRate": 12,
+    "durationMs": 1167,
+    "hitDelayMs": 500
+  }
+}

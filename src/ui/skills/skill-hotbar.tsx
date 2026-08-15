@@ -5,7 +5,7 @@ import { SKILL_ELEMENT_CSS, SKILL_ELEMENT_LABELS } from '@/constants/skill';
 import { getSkill } from '@/data/skills';
 import { useStore } from '@/hooks/use-store';
 import { skillsStore } from '@/stores/skills-store';
-import { useVitalsStore } from '@/hooks/use-vitals-store';
+import { teamStore } from '@/stores/team-store';
 import { HudPanel } from '@/ui/hud/hud-panel';
 
 /**
@@ -14,7 +14,10 @@ import { HudPanel } from '@/ui/hud/hud-panel';
 export function SkillHotbar() {
   const hotbar = useStore(skillsStore, (s) => s.hotbar);
   const cooldownReadyAt = useStore(skillsStore, (s) => s.cooldownReadyAt);
-  const { level } = useVitalsStore();
+  const level = useStore(teamStore, (s) => {
+    const active = s.collection.find((entry) => entry.id === s.activeId);
+    return Math.max(1, active?.level || 1);
+  });
   const [now, setNow] = useState(() => Date.now());
 
   const filled = hotbar.filter((id): id is string => id != null);

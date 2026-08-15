@@ -1,0 +1,28 @@
+{
+  "mapKey": "huntTorneioArtesMarciais",
+  "slug": "hunt-torneio-artes-marciais",
+  "label": "Torneio de Artes Marciais",
+  "image": "/maps/hunt-torneio-artes-marciais.png",
+  "foreground": "/maps/hunt-torneio-artes-marciais-fg.png",
+  "tmx": "/maps/hunt-torneio-artes-marciais.tmx",
+  "width": 3840,
+  "height": 2160,
+  "cols": 240,
+  "rows": 135,
+  "lateralFloorY": 1460,
+  "layoutScale": 5.75,
+  "spawn": {
+    "x": 1920,
+    "y": 1460
+  },
+  "enemySpawns": [
+    {
+      "x": 3680,
+      "y": 1460
+    },
+    {
+      "x": 160,
+      "y": 1460
+    }
+  ]
+}

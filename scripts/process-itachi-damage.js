@@ -7,6 +7,8 @@
  *
  * Clean transparent sources: NO black flood/peel. Never key pure black hair.
  *
+ * HQ: nativePixels — scaled so body density matches the idle contentHeight ruler.
+ *
  * npm run itachi:damage
  * Input:  assets/naruto-source/nu/itachi/damage/frame_001..005.png
  * Output: public/sprites/player/itachi/hurt.png + death.png
@@ -29,7 +31,7 @@ const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'itachi', 'da
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'itachi');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'itachi');
-const TARGET_BODY_H = 48;
+const HQ = { mode: 'match', metaPath: META_JSON, idleKey: 'itachi-idle' };
 const EXPECTED = 5;
 const HURT_N = 2;
 const DEATH_N = 3;
@@ -117,7 +119,10 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     norm.contentHeight,
-    TARGET_BODY_H,
+    { hq: HQ },
+  );
+  console.log(
+    `HQ damage scale=${scaled.scale.toFixed(4)} bodyH=${norm.contentHeight} → idle contentH=${scaled.contentHeight}`,
   );
 
   fs.mkdirSync(OUT_DIR, { recursive: true });

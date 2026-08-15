@@ -1,0 +1,27 @@
+{
+  "mapKey": "huntValeDoFimLateral",
+  "slug": "hunt-vale-do-fim-lateral",
+  "label": "Floresta de Treino (Lateral)",
+  "image": "/maps/hunt-vale-do-fim-lateral.png",
+  "foreground": "/maps/hunt-vale-do-fim-lateral-fg.png",
+  "tmx": "/maps/hunt-vale-do-fim-lateral.tmx",
+  "width": 1024,
+  "height": 576,
+  "cols": 64,
+  "rows": 36,
+  "lateralFloorY": 373,
+  "spawn": {
+    "x": 512,
+    "y": 373
+  },
+  "enemySpawns": [
+    {
+      "x": 968,
+      "y": 373
+    },
+    {
+      "x": 56,
+      "y": 373
+    }
+  ]
+}

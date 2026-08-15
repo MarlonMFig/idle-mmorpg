@@ -2,6 +2,9 @@
  * Chouji idle — horizontal strip (breath + chips bag), green chroma exterior only.
  * Do not strip white scarf / bandage via isLabelPixel (stripLabels: false).
  *
+ * HQ: absoluteScale = 1 (native pixels — max quality). contentHeight = idle body.
+ * World size via contentHeight + displayScale (no art downsample).
+ *
  * Cells: content-island detection (source has 17 discrete figures; forced equal-20
  * sliced through bodies — do NOT force equal cols on uneven spacing).
  *
@@ -17,13 +20,13 @@ const {
   isGreenBg,
   fillInteriorHoles,
 } = require('./lib/chroma-green-bg');
+const { resolveHqScale, resolvePackContentHeight, NATIVE_PIXELS } = require('./lib/chouji-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'chouji-idle-sheet.png');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'chouji');
 const PREVIEW = path.join(ROOT, 'public', 'sprites', 'player', 'previews', 'chouji.png');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
-const TARGET_BODY_H = 48;
 const FRAME_RATE = 10;
 /** Soft expectation for logging — real count comes from content islands. */
 const HINT_EXPECTED = 20;
@@ -207,13 +210,19 @@ function normalize(cut, pad = 2) {
   return { frames, cellW, cellH, contentHeight: contentH0 || cut[0].bh };
 }
 
-async function scaleFrames(frames, cellW, cellH, contentHeight) {
-  const scale = TARGET_BODY_H / Math.max(1, contentHeight);
+async function scaleFrames(frames, cellW, cellH, contentHeight, scaleOpts = {}) {
+  const scale = resolveHqScale(contentHeight, scaleOpts);
   const outW = Math.max(1, Math.round(cellW * scale));
   const outH = Math.max(1, Math.round(cellH * scale));
-  const outContent = Math.max(1, Math.round(contentHeight * scale));
+  const outContent = resolvePackContentHeight(contentHeight, scale, scaleOpts);
+  if (NATIVE_PIXELS) {
+    console.log(
+      `HQ idle scale=${scale.toFixed(4)} (native pixels) contentH=${outContent} cell ${cellW}x${cellH} → ${outW}x${outH}`,
+    );
+  }
   const out = [];
   for (const frame of frames) {
+    // Identity resize when scale≈1 — nearest keeps crisp source pixels.
     const { data: d } = await sharp(frame, {
       raw: { width: cellW, height: cellH, channels: 4 },
     })
@@ -481,7 +490,7 @@ async function main() {
     scale: scaled.scale,
     source: 'chouji-idle-sheet.png',
     frameRate: FRAME_RATE,
-    note: `${scaled.frames.length}-frame Part I idle (breath+chips); green exterior key; RIGHT; content-island cells`,
+    note: `${scaled.frames.length}-frame Part I idle (breath+chips); HQ nativePixels; green exterior key; RIGHT; content-island cells`,
   };
 
   let meta = {};

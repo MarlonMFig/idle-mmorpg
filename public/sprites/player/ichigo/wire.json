@@ -1,0 +1,208 @@
+{
+  "id": "ichigo",
+  "name": "Ichigo Kurosaki",
+  "lookType": 9073,
+  "contentHeight": 51,
+  "idle": {
+    "image": "/sprites/player/ichigo/idle.png",
+    "frameWidth": 75,
+    "frameHeight": 55,
+    "frameCount": 8,
+    "contentHeight": 51,
+    "scale": 1,
+    "originX": 0.37333333333333335,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/ichigo/walk.png",
+    "frameWidth": 85,
+    "frameHeight": 48,
+    "frameCount": 8,
+    "contentHeight": 51,
+    "scale": 1,
+    "originX": 0.4117647058823529,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/ichigo/combo1.png",
+      "frameWidth": 94,
+      "frameHeight": 51,
+      "frameCount": 7,
+      "contentHeight": 51,
+      "scale": 1,
+      "originX": 0.6170212765957447,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/ichigo/combo2.png",
+      "frameWidth": 105,
+      "frameHeight": 84,
+      "frameCount": 7,
+      "contentHeight": 51,
+      "scale": 1,
+      "originX": 0.42857142857142855,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/ichigo/combo3.png",
+      "frameWidth": 112,
+      "frameHeight": 58,
+      "frameCount": 7,
+      "contentHeight": 51,
+      "scale": 1,
+      "originX": 0.42857142857142855,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/ichigo/hurt.png",
+    "frameWidth": 66,
+    "frameHeight": 49,
+    "frameCount": 3,
+    "contentHeight": 51,
+    "scale": 1,
+    "originX": 0.4090909090909091,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/ichigo/death.png",
+    "frameWidth": 68,
+    "frameHeight": 44,
+    "frameCount": 3,
+    "contentHeight": 51,
+    "scale": 1,
+    "originX": 0.5735294117647058,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-ichigo-1",
+      "skillName": "Getsuga Tenshou",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/ichigo/special1.png",
+        "frameWidth": 105,
+        "frameHeight": 105,
+        "frameCount": 13,
+        "contentHeight": 51,
+        "scale": 1,
+        "originX": 0.47619047619047616,
+        "durationMs": 717,
+        "hitDelayMs": 317,
+        "frameRate": 18,
+        "skillId": "skill-ichigo-1",
+        "skillName": "Getsuga Tenshou",
+        "actionId": 1400
+      },
+      "fx": {
+        "image": "/sprites/player/ichigo/special1-fx.png",
+        "frameWidth": 529,
+        "frameHeight": 309,
+        "frameCount": 11,
+        "contentHeight": 305,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 367
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-ichigo-2",
+      "skillName": "Crescend Getsuga Tenshou",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/ichigo/special2.png",
+        "frameWidth": 107,
+        "frameHeight": 87,
+        "frameCount": 12,
+        "contentHeight": 51,
+        "scale": 1,
+        "originX": 0.5327102803738317,
+        "durationMs": 850,
+        "hitDelayMs": 383,
+        "frameRate": 14,
+        "skillId": "skill-ichigo-2",
+        "skillName": "Crescend Getsuga Tenshou",
+        "actionId": 1200
+      },
+      "fx": {
+        "image": "/sprites/player/ichigo/special2-fx.png",
+        "frameWidth": 577,
+        "frameHeight": 240,
+        "frameCount": 12,
+        "contentHeight": 236,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 400
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-ichigo-3",
+      "skillName": "Giratory Sword",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/ichigo/special3.png",
+        "frameWidth": 116,
+        "frameHeight": 105,
+        "frameCount": 13,
+        "contentHeight": 51,
+        "scale": 1,
+        "originX": 0.5431034482758621,
+        "durationMs": 1133,
+        "hitDelayMs": 533,
+        "frameRate": 11,
+        "skillId": "skill-ichigo-3",
+        "skillName": "Giratory Sword",
+        "actionId": 1300
+      },
+      "fx": {
+        "image": "/sprites/player/ichigo/special3-fx.png",
+        "frameWidth": 249,
+        "frameHeight": 213,
+        "frameCount": 18,
+        "contentHeight": 209,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 600
+      },
+      "index": 2
+    },
+    {
+      "skillId": "skill-ichigo-4",
+      "skillName": "Reiatsu Explosion",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/ichigo/special4.png",
+        "frameWidth": 82,
+        "frameHeight": 88,
+        "frameCount": 10,
+        "contentHeight": 51,
+        "scale": 1,
+        "originX": 0.5121951219512195,
+        "durationMs": 783,
+        "hitDelayMs": 350,
+        "frameRate": 13,
+        "skillId": "skill-ichigo-4",
+        "skillName": "Reiatsu Explosion",
+        "actionId": 1500
+      },
+      "fx": {
+        "image": "/sprites/player/ichigo/special4-fx.png",
+        "frameWidth": 567,
+        "frameHeight": 548,
+        "frameCount": 10,
+        "contentHeight": 544,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 533
+      },
+      "index": 3
+    }
+  ]
+}

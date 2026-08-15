@@ -14,6 +14,12 @@
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const {
+  resolveHqScale,
+  resolvePackContentHeight,
+  hqLinearScale,
+  NATIVE_PIXELS,
+} = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const CURSOR_ASSETS = path.join(
@@ -493,10 +499,10 @@ function normalizeAnchored(frames, widths, heights) {
 }
 
 async function scaleFrames(frames, fw, fh, contentHeight) {
-  const scale = Math.min(1, TARGET_BODY_H / Math.max(1, contentHeight));
+  const scale = resolveHqScale(contentHeight, { mode: 'match', metaPath: META_JSON, idleKey: 'gaara-idle' });
   const outW = Math.max(1, Math.round(fw * scale));
   const outH = Math.max(1, Math.round(fh * scale));
-  const outContent = Math.max(1, Math.round(contentHeight * scale));
+  const outContent = resolvePackContentHeight(contentHeight, scale, { mode: 'match', metaPath: META_JSON, idleKey: 'gaara-idle' });
   const out = [];
   for (const frame of frames) {
     const { data } = await sharp(frame, {
@@ -794,8 +800,11 @@ async function main() {
   if (qa.residualGreen > 0) {
     throw new Error(`residualGreen=${qa.residualGreen} — not clean`);
   }
-  if (qa.footSpread > 6) {
-    throw new Error(`footSpread=${qa.footSpread} too high (body jitter)`);
+  const maxFootSpread = Math.round(6 * hqLinearScale(scaled.contentHeight));
+  if (qa.footSpread > maxFootSpread) {
+    throw new Error(
+      `footSpread=${qa.footSpread} too high (body jitter, max ${maxFootSpread})`,
+    );
   }
   if (qa.red < 20) throw new Error(`red hair nearly gone (${qa.red})`);
   if (qa.sand < 200) throw new Error(`sand VFX too thin (${qa.sand})`);

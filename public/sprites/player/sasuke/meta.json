@@ -708,21 +708,21 @@
   },
   "sasuke-walk": {
     "image": "/sprites/player/sasuke/walk.png",
-    "frameWidth": 45,
-    "frameHeight": 52,
+    "frameWidth": 99,
+    "frameHeight": 115,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.4948453608247423,
+    "contentHeight": 111,
+    "scale": 1.1443298969072164,
     "residualGreen": 0,
-    "pureBlack": 2254
+    "pureBlack": 11830
   },
   "sasuke-idle": {
     "image": "/sprites/player/sasuke/idle.png",
-    "frameWidth": 39,
-    "frameHeight": 52,
+    "frameWidth": 86,
+    "frameHeight": 115,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.43243243243243246
+    "contentHeight": 111,
+    "scale": 1
   },
   "sasuke-attack": {
     "image": "attack.png",
@@ -739,11 +739,11 @@
   },
   "sasuke-combo1": {
     "image": "/sprites/player/sasuke/combo1.png",
-    "frameWidth": 61,
-    "frameHeight": 52,
+    "frameWidth": 136,
+    "frameHeight": 116,
     "frameCount": 4,
-    "contentHeight": 48,
-    "scale": 0.42857142857142855,
+    "contentHeight": 111,
+    "scale": 1,
     "range": [
       0,
       4
@@ -751,11 +751,11 @@
   },
   "sasuke-combo2": {
     "image": "/sprites/player/sasuke/combo2.png",
-    "frameWidth": 61,
-    "frameHeight": 52,
+    "frameWidth": 136,
+    "frameHeight": 116,
     "frameCount": 4,
-    "contentHeight": 48,
-    "scale": 0.42857142857142855,
+    "contentHeight": 111,
+    "scale": 1,
     "range": [
       4,
       8
@@ -763,11 +763,11 @@
   },
   "sasuke-combo3": {
     "image": "/sprites/player/sasuke/combo3.png",
-    "frameWidth": 61,
-    "frameHeight": 52,
+    "frameWidth": 136,
+    "frameHeight": 116,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.42857142857142855,
+    "contentHeight": 111,
+    "scale": 1,
     "range": [
       8,
       13
@@ -775,66 +775,68 @@
   },
   "sasuke-gokakyu": {
     "image": "/sprites/player/sasuke/sasuke-gokakyu.png",
-    "frameWidth": 55,
-    "frameHeight": 52,
+    "frameWidth": 130,
+    "frameHeight": 120,
     "frameCount": 17,
-    "contentHeight": 48,
-    "scale": 0.4247787610619469,
+    "contentHeight": 111,
+    "scale": 1.0277777777777777,
     "frameRate": 12,
     "durationMs": 1417,
     "hitDelayMs": 917,
     "residualGreen": 0,
-    "pureBlack": 5760
+    "pureBlack": 32951,
+    "originX": 0.1076923076923077
   },
   "skill-katon-gokakyu": {
     "image": "/sprites/player/sasuke/sasuke-gokakyu.png",
-    "frameWidth": 55,
-    "frameHeight": 52,
+    "frameWidth": 130,
+    "frameHeight": 120,
     "frameCount": 17,
-    "contentHeight": 48,
-    "scale": 0.4247787610619469,
+    "contentHeight": 111,
+    "scale": 1.0277777777777777,
     "frameRate": 12,
     "durationMs": 1417,
     "hitDelayMs": 917,
     "residualGreen": 0,
-    "pureBlack": 5760
+    "pureBlack": 32951,
+    "originX": 0.1076923076923077
   },
   "sasuke-gokakyu-fx": {
     "image": "/sprites/player/sasuke/sasuke-gokakyu-fx.png",
-    "frameWidth": 76,
-    "frameHeight": 49,
+    "frameWidth": 171,
+    "frameHeight": 109,
     "frameCount": 12,
-    "contentHeight": 45,
-    "scale": 0.6050420168067226,
+    "contentHeight": 105,
+    "scale": 1.403361344537815,
     "flightFrameCount": 7,
     "residualGreen": 0,
     "source": "gokakyu-fx-source.png (main fireball strip)"
   },
   "sasuke-hurt": {
     "image": "/sprites/player/sasuke/hurt.png",
-    "frameWidth": 57,
-    "frameHeight": 52,
+    "frameWidth": 145,
+    "frameHeight": 115,
     "frameCount": 2,
-    "contentHeight": 48,
+    "contentHeight": 111,
     "frameRate": 10,
-    "scale": 0.4948453608247423
+    "scale": 1.1443298969072164
   },
   "sasuke-death": {
     "image": "/sprites/player/sasuke/death.png",
-    "frameWidth": 57,
-    "frameHeight": 52,
+    "frameWidth": 145,
+    "frameHeight": 115,
     "frameCount": 3,
-    "contentHeight": 48,
+    "contentHeight": 111,
     "frameRate": 8,
-    "scale": 0.4948453608247423
+    "scale": 1.1443298969072164
   },
   "skill-katon-gokakyu-fx": {
     "image": "/sprites/player/sasuke/sasuke-gokakyu-fx.png",
-    "frameWidth": 76,
-    "frameHeight": 49,
+    "frameWidth": 171,
+    "frameHeight": 109,
     "frameCount": 12,
-    "contentHeight": 45,
-    "scale": 0.6050420168067226,
+    "contentHeight": 105,
+    "scale": 1.403361344537815,
     "flightFrameCount": 7,
     "residualGreen": 0,
     "source": "gokakyu-fx-source.png (main fireball strip)"

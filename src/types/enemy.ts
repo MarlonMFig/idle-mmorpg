@@ -29,6 +29,12 @@ export interface EnemyWalkAnimation {
   /** Death (play once, hold last frame). */
   deathTextureKey?: string;
   deathAnimKey?: string;
+  /**
+   * Combo / ataque lateral (play once). Cicla `attackAnimKeys` a cada golpe.
+   * Texturas em paralelo com o mesmo índice.
+   */
+  attackAnimKeys?: string[];
+  attackTextureKeys?: string[];
 }
 
 /** @deprecated use LootDropEntry — mantido como alias. */
@@ -41,6 +47,8 @@ export interface EnemySealableIdentity {
   sourceId: string;
   name: string;
   lookType: number;
+  /** Nível da caça (catálogo), independente de FORCE_HUNT_LEVEL no combate. */
+  level?: number;
 }
 
 /** Definição autoritativa de um monstro. */
@@ -64,6 +72,8 @@ export interface EnemyDefinition {
   mapKey: MapKey;
   /** Presente quando o alvo da caça pode ser selado. */
   sealable?: EnemySealableIdentity;
+  /** Sem auto-respawn (duelo sequencial). */
+  noRespawn?: boolean;
 }
 
 export interface EnemyRuntimeStats {

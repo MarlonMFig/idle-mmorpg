@@ -20,6 +20,7 @@ const {
   writePng,
   bbox,
 } = require('./lib/alpha-frame-pack');
+const { hqLinearScale, hqAreaScale } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'neji', 'walk');
@@ -27,7 +28,8 @@ const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'neji');
 const PREVIEW = path.join(ROOT, 'public', 'sprites', 'player', 'previews', 'neji.png');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'neji');
-const TARGET_BODY_H = 48;
+/** Walk is Neji's body ruler: native pixels here, every other anim matches it. */
+const HQ = { mode: 'idle' };
 const FRAME_RATE = 10;
 const EXPECTED = 6;
 const MAX_BODY_H_VARIANCE = 4;
@@ -49,8 +51,11 @@ async function main() {
     keyed.map((k) => k.frame),
     keyed.map((k) => k.width),
     keyed.map((k) => k.height),
-    { targetBodyH: TARGET_BODY_H, pad: 2 },
+    { pad: 2, hq: HQ },
   );
+  const linear = hqLinearScale(packed.contentHeight);
+  const areaScale = hqAreaScale(packed.contentHeight);
+  const maxBodyHVariance = Math.round(MAX_BODY_H_VARIANCE * linear);
 
   const afterH = measureContentHeights(packed.frames, packed.frameWidth, packed.frameHeight);
   const bodyHVar = Math.max(...afterH) - Math.min(...afterH);
@@ -59,16 +64,16 @@ async function main() {
       `(min=${Math.min(...afterH)} max=${Math.max(...afterH)} Δ=${bodyHVar})`,
   );
   console.log(
-    `globalScale=${packed.scale.toFixed(6)} from maxContentH=${packed.maxContentH} → target=${TARGET_BODY_H}`,
+    `globalScale=${packed.scale.toFixed(6)} from maxContentH=${packed.maxContentH} → target=${packed.contentHeight}`,
   );
   console.log(
     `cell fw=${packed.frameWidth} fh=${packed.frameHeight} contentH=${packed.contentHeight} ` +
       `scaledW=[${packed.scaledWidths.join(',')}] scaledH=[${packed.scaledHeights.join(',')}]`,
   );
 
-  if (bodyHVar > MAX_BODY_H_VARIANCE) {
+  if (bodyHVar > maxBodyHVariance) {
     throw new Error(
-      `QA fail: body height variance ${bodyHVar}px > ${MAX_BODY_H_VARIANCE}px across walk frames`,
+      `QA fail: body height variance ${bodyHVar}px > ${maxBodyHVariance}px across walk frames`,
     );
   }
 
@@ -86,6 +91,7 @@ async function main() {
       minOlivePerFrame: 0,
       minBluePerFrame: 0,
       minOpaquePerFrame: 80,
+      areaScale,
     },
   );
 
@@ -102,7 +108,7 @@ async function main() {
   if (qa.pureBlack < 150) {
     throw new Error(`QA fail: pure black hair/outline nearly gone (${qa.pureBlack})`);
   }
-  if (qa.footSpread > 4) {
+  if (qa.footSpread > Math.round(4 * linear)) {
     console.warn(`WARN footSpread=${qa.footSpread}`);
   }
 

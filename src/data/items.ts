@@ -1,6 +1,7 @@
 import type { EquipSlot, ItemDefinition, ItemRarity } from '@/types/loot';
 import { formatModifierLine } from '@/utils/attributes';
 import { ANIME_LOOT_ITEMS } from '@/data/anime-items';
+import { HELPER_ITEM_DEFS } from '@/data/helper-items';
 import { WONSR_EQUIP_ITEMS } from '@/data/wonsr-equip-subset';
 
 export const ITEMS: Record<string, ItemDefinition> = {
@@ -111,6 +112,7 @@ export const ITEMS: Record<string, ItemDefinition> = {
     stackMax: 999,
     iconSrc: '/ui/items/sealing-scrolls/legendary.png',
   },
+  ...HELPER_ITEM_DEFS,
   ...ANIME_LOOT_ITEMS,
   ...Object.fromEntries(WONSR_EQUIP_ITEMS.map((item) => [item.id, item])),
 };
@@ -132,6 +134,10 @@ export type ItemId =
   | 'item-sealing-scroll-rare'
   | 'item-sealing-scroll-epic'
   | 'item-sealing-scroll-legendary'
+  | 'item-hp-potion'
+  | 'item-hp-potion-ultra'
+  | 'item-hp-potion-ultra-concentrada'
+  | 'item-revive'
   | `wonsr-item-${number}`;
 
 export const RARITY_COLOR: Record<ItemRarity, number> = {

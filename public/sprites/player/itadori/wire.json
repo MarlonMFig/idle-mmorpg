@@ -1,0 +1,144 @@
+{
+  "id": "itadori",
+  "name": "Yuji Itadori",
+  "lookType": 9066,
+  "contentHeight": 53,
+  "idle": {
+    "image": "/sprites/player/itadori/idle.png",
+    "frameWidth": 42,
+    "frameHeight": 57,
+    "frameCount": 4,
+    "contentHeight": 53,
+    "scale": 1,
+    "originX": 0.47619047619047616,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/itadori/walk.png",
+    "frameWidth": 54,
+    "frameHeight": 61,
+    "frameCount": 8,
+    "contentHeight": 53,
+    "scale": 1,
+    "originX": 0.5,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/itadori/combo1.png",
+      "frameWidth": 71,
+      "frameHeight": 58,
+      "frameCount": 7,
+      "contentHeight": 53,
+      "scale": 1,
+      "originX": 0.4084507042253521,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/itadori/combo2.png",
+      "frameWidth": 58,
+      "frameHeight": 59,
+      "frameCount": 6,
+      "contentHeight": 53,
+      "scale": 1,
+      "originX": 0.5172413793103449,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/itadori/combo3.png",
+      "frameWidth": 69,
+      "frameHeight": 58,
+      "frameCount": 6,
+      "contentHeight": 53,
+      "scale": 1,
+      "originX": 0.43478260869565216,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/itadori/hurt.png",
+    "frameWidth": 45,
+    "frameHeight": 61,
+    "frameCount": 3,
+    "contentHeight": 53,
+    "scale": 1,
+    "originX": 0.4888888888888889,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/itadori/death.png",
+    "frameWidth": 64,
+    "frameHeight": 64,
+    "frameCount": 3,
+    "contentHeight": 53,
+    "scale": 1,
+    "originX": 0.484375,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-itadori-3",
+      "skillName": "Yuji Itadori · Especial 3",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/itadori/special3.png",
+        "frameWidth": 69,
+        "frameHeight": 58,
+        "frameCount": 9,
+        "contentHeight": 53,
+        "scale": 1,
+        "originX": 0.42028985507246375,
+        "durationMs": 917,
+        "hitDelayMs": 767,
+        "frameRate": 10,
+        "skillId": "skill-itadori-3",
+        "skillName": "Yuji Itadori · Especial 3",
+        "actionId": 1300
+      },
+      "fx": {
+        "image": "/sprites/player/itadori/special3-fx.png",
+        "frameWidth": 192,
+        "frameHeight": 276,
+        "frameCount": 11,
+        "contentHeight": 272,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 367
+      },
+      "index": 2
+    },
+    {
+      "skillId": "skill-itadori-4",
+      "skillName": "Esp 2",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/itadori/special4.png",
+        "frameWidth": 60,
+        "frameHeight": 51,
+        "frameCount": 4,
+        "contentHeight": 53,
+        "scale": 1,
+        "originX": 0.38333333333333336,
+        "durationMs": 1183,
+        "hitDelayMs": 533,
+        "frameRate": 8,
+        "skillId": "skill-itadori-4",
+        "skillName": "Esp 2",
+        "actionId": 1400
+      },
+      "fx": {
+        "image": "/sprites/player/itadori/special4-fx.png",
+        "frameWidth": 451,
+        "frameHeight": 128,
+        "frameCount": 7,
+        "contentHeight": 124,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 280
+      },
+      "index": 3
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "freeza-walk": {
+    "image": "/sprites/player/freeza/walk.png",
+    "frameWidth": 126,
+    "frameHeight": 133,
+    "frameCount": 4,
+    "contentHeight": 129,
+    "scale": 1.084033613445378,
+    "residualGreen": 0,
+    "pureBlack": 0
+  },
+  "freeza-idle": {
+    "image": "/sprites/player/freeza/idle.png",
+    "frameWidth": 90,
+    "frameHeight": 133,
+    "frameCount": 6,
+    "contentHeight": 129,
+    "scale": 1
+  },
+  "freeza-combo1": {
+    "image": "/sprites/player/freeza/combo1.png",
+    "frameWidth": 153,
+    "frameHeight": 135,
+    "frameCount": 8,
+    "contentHeight": 129,
+    "scale": 1,
+    "range": [
+      0,
+      8
+    ]
+  },
+  "freeza-combo2": {
+    "image": "/sprites/player/freeza/combo2.png",
+    "frameWidth": 153,
+    "frameHeight": 135,
+    "frameCount": 8,
+    "contentHeight": 129,
+    "scale": 1,
+    "range": [
+      8,
+      16
+    ]
+  },
+  "freeza-combo3": {
+    "image": "/sprites/player/freeza/combo3.png",
+    "frameWidth": 153,
+    "frameHeight": 135,
+    "frameCount": 7,
+    "contentHeight": 129,
+    "scale": 1,
+    "range": [
+      16,
+      23
+    ]
+  },
+  "freeza-hurt": {
+    "image": "/sprites/player/freeza/hurt.png",
+    "frameWidth": 248,
+    "frameHeight": 133,
+    "frameCount": 2,
+    "contentHeight": 129,
+    "frameRate": 10,
+    "scale": 1.162162162162162
+  },
+  "freeza-death": {
+    "image": "/sprites/player/freeza/death.png",
+    "frameWidth": 248,
+    "frameHeight": 133,
+    "frameCount": 2,
+    "contentHeight": 129,
+    "frameRate": 8,
+    "scale": 1.162162162162162
+  },
+  "freeza-death-ball": {
+    "image": "/sprites/player/freeza/death-ball.png",
+    "frameWidth": 182,
+    "frameHeight": 143,
+    "frameCount": 10,
+    "contentHeight": 129,
+    "scale": 0.9416058394160584,
+    "frameRate": 12,
+    "durationMs": 833,
+    "hitDelayMs": 583,
+    "residualGreen": 0,
+    "pureBlack": 0,
+    "originX": 0.37362637362637363
+  },
+  "skill-death-ball": {
+    "image": "/sprites/player/freeza/death-ball.png",
+    "frameWidth": 182,
+    "frameHeight": 143,
+    "frameCount": 10,
+    "contentHeight": 129,
+    "scale": 0.9416058394160584,
+    "frameRate": 12,
+    "durationMs": 833,
+    "hitDelayMs": 583,
+    "residualGreen": 0,
+    "pureBlack": 0,
+    "originX": 0.37362637362637363
+  },
+  "freeza-death-ball-fx": {
+    "image": "/sprites/player/freeza/death-ball-fx.png",
+    "frameWidth": 72,
+    "frameHeight": 76,
+    "frameCount": 8,
+    "contentHeight": 76,
+    "scale": 1,
+    "residualGreen": 0,
+    "flightFrameCount": 3,
+    "note": "3f orb flight (vfx f8/10/12) + 5f impact (f19–f23); native scale=1"
+  },
+  "skill-death-ball-fx": {
+    "image": "/sprites/player/freeza/death-ball-fx.png",
+    "frameWidth": 72,
+    "frameHeight": 76,
+    "frameCount": 8,
+    "contentHeight": 76,
+    "scale": 1,
+    "residualGreen": 0,
+    "flightFrameCount": 3,
+    "note": "3f orb flight (vfx f8/10/12) + 5f impact (f19–f23); native scale=1"
+  }
+}

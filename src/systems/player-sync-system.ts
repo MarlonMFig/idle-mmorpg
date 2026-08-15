@@ -10,6 +10,7 @@ export interface PlayerSyncIdentity {
   nickname: string;
   villageId: VillageId;
   mapKey: string;
+  characterId: string;
 }
 
 /**
@@ -60,6 +61,7 @@ export class PlayerSyncSystem {
       nickname: this.identity.nickname,
       villageId: this.identity.villageId,
       mapKey: this.identity.mapKey,
+      characterId: this.identity.characterId,
       x: this.localPlayer.x,
       y: this.localPlayer.y,
       direction: this.localPlayer.direction,

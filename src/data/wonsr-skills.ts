@@ -21,7 +21,7 @@ export const WONSR_SKILL_DEFINITIONS: readonly SkillDefinition[] =
     id: jutsu.id,
     name: jutsu.name,
     element: jutsu.element,
-    cooldownMs: Math.max(1200, jutsu.cooldownMs),
+    cooldownMs: Math.max(5500, jutsu.cooldownMs),
     damage: Math.max(10, jutsu.damage),
     icon: `/sprites/skills/${jutsu.element}.svg`,
     animation: {

@@ -1,0 +1,208 @@
+{
+  "id": "yuno-spirit-sword",
+  "name": "Yuno Spirit Sword",
+  "lookType": 9046,
+  "contentHeight": 72,
+  "idle": {
+    "image": "/sprites/player/yuno-spirit-sword/idle.png",
+    "frameWidth": 59,
+    "frameHeight": 76,
+    "frameCount": 7,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.559322033898305,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/yuno-spirit-sword/walk.png",
+    "frameWidth": 46,
+    "frameHeight": 81,
+    "frameCount": 4,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.1956521739130435,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/yuno-spirit-sword/combo1.png",
+      "frameWidth": 101,
+      "frameHeight": 77,
+      "frameCount": 3,
+      "contentHeight": 72,
+      "scale": 1,
+      "originX": 0.39603960396039606,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/yuno-spirit-sword/combo2.png",
+      "frameWidth": 42,
+      "frameHeight": 84,
+      "frameCount": 3,
+      "contentHeight": 72,
+      "scale": 1,
+      "originX": 0.5952380952380952,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/yuno-spirit-sword/combo3.png",
+      "frameWidth": 66,
+      "frameHeight": 76,
+      "frameCount": 4,
+      "contentHeight": 72,
+      "scale": 1,
+      "originX": 0.3787878787878788,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/yuno-spirit-sword/hurt.png",
+    "frameWidth": 49,
+    "frameHeight": 74,
+    "frameCount": 3,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.40816326530612246,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/yuno-spirit-sword/death.png",
+    "frameWidth": 84,
+    "frameHeight": 35,
+    "frameCount": 1,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.2976190476190476,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-yuno-spirit-sword-1",
+      "skillName": "Wind Speed",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/yuno-spirit-sword/special1.png",
+        "frameWidth": 87,
+        "frameHeight": 77,
+        "frameCount": 9,
+        "contentHeight": 72,
+        "scale": 1,
+        "originX": 0.5287356321839081,
+        "durationMs": 1100,
+        "hitDelayMs": 333,
+        "frameRate": 8,
+        "skillId": "skill-yuno-spirit-sword-1",
+        "skillName": "Wind Speed",
+        "actionId": 1000
+      },
+      "fx": {
+        "image": "/sprites/player/yuno-spirit-sword/special1-fx.png",
+        "frameWidth": 260,
+        "frameHeight": 219,
+        "frameCount": 16,
+        "contentHeight": 215,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 1117
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-yuno-spirit-sword-2",
+      "skillName": "Wind Push",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/yuno-spirit-sword/special2.png",
+        "frameWidth": 42,
+        "frameHeight": 84,
+        "frameCount": 3,
+        "contentHeight": 72,
+        "scale": 1,
+        "originX": 0.5952380952380952,
+        "durationMs": 1583,
+        "hitDelayMs": 500,
+        "frameRate": 8,
+        "skillId": "skill-yuno-spirit-sword-2",
+        "skillName": "Wind Push",
+        "actionId": 1100
+      },
+      "fx": {
+        "image": "/sprites/player/yuno-spirit-sword/special2-fx.png",
+        "frameWidth": 647,
+        "frameHeight": 564,
+        "frameCount": 6,
+        "contentHeight": 560,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 600
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-yuno-spirit-sword-3",
+      "skillName": "Stand",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/yuno-spirit-sword/special3.png",
+        "frameWidth": 59,
+        "frameHeight": 76,
+        "frameCount": 3,
+        "contentHeight": 72,
+        "scale": 1,
+        "originX": 0.559322033898305,
+        "durationMs": 933,
+        "hitDelayMs": 417,
+        "frameRate": 8,
+        "skillId": "skill-yuno-spirit-sword-3",
+        "skillName": "Stand",
+        "actionId": 2000
+      },
+      "fx": {
+        "image": "/sprites/player/yuno-spirit-sword/special3-fx.png",
+        "frameWidth": 67,
+        "frameHeight": 89,
+        "frameCount": 14,
+        "contentHeight": 85,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 8,
+        "durationMs": 1933
+      },
+      "index": 2
+    },
+    {
+      "skillId": "skill-yuno-spirit-sword-4",
+      "skillName": "Wind bow",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/yuno-spirit-sword/special4.png",
+        "frameWidth": 65,
+        "frameHeight": 84,
+        "frameCount": 6,
+        "contentHeight": 72,
+        "scale": 1,
+        "originX": 0.4153846153846154,
+        "durationMs": 1750,
+        "hitDelayMs": 783,
+        "frameRate": 8,
+        "skillId": "skill-yuno-spirit-sword-4",
+        "skillName": "Wind bow",
+        "actionId": 1500
+      },
+      "fx": {
+        "image": "/sprites/player/yuno-spirit-sword/special4-fx.png",
+        "frameWidth": 106,
+        "frameHeight": 108,
+        "frameCount": 6,
+        "contentHeight": 104,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 983
+      },
+      "index": 3
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "asta-idle": {
+    "image": "/sprites/player/asta/idle.png",
+    "frameWidth": 62,
+    "frameHeight": 54,
+    "frameCount": 4,
+    "contentHeight": 50,
+    "scale": 1,
+    "originX": 0.3548387096774194
+  },
+  "asta-walk": {
+    "image": "/sprites/player/asta/walk.png",
+    "frameWidth": 114,
+    "frameHeight": 64,
+    "frameCount": 7,
+    "contentHeight": 50,
+    "scale": 1,
+    "originX": 0.6228070175438597
+  },
+  "asta-combo1": {
+    "image": "/sprites/player/asta/combo1.png",
+    "frameWidth": 104,
+    "frameHeight": 73,
+    "frameCount": 3,
+    "contentHeight": 50,
+    "scale": 1,
+    "originX": 0.5384615384615384
+  },
+  "asta-combo2": {
+    "image": "/sprites/player/asta/combo2.png",
+    "frameWidth": 94,
+    "frameHeight": 55,
+    "frameCount": 4,
+    "contentHeight": 50,
+    "scale": 1,
+    "originX": 0.5638297872340425
+  },
+  "asta-combo3": {
+    "image": "/sprites/player/asta/combo3.png",
+    "frameWidth": 142,
+    "frameHeight": 88,
+    "frameCount": 4,
+    "contentHeight": 50,
+    "scale": 1,
+    "originX": 0.39436619718309857
+  },
+  "asta-black-slash": {
+    "image": "/sprites/player/asta/black-slash.png",
+    "frameWidth": 138,
+    "frameHeight": 88,
+    "frameCount": 14,
+    "contentHeight": 50,
+    "scale": 1,
+    "originX": 0.39855072463768115,
+    "durationMs": 933,
+    "hitDelayMs": 267,
+    "frameRate": 15
+  },
+  "asta-black-strong": {
+    "image": "/sprites/player/asta/black-strong.png",
+    "frameWidth": 142,
+    "frameHeight": 66,
+    "frameCount": 8,
+    "contentHeight": 50,
+    "scale": 1,
+    "originX": 0.39436619718309857,
+    "durationMs": 950,
+    "hitDelayMs": 683,
+    "frameRate": 8
+  },
+  "asta-bull-thrust": {
+    "image": "/sprites/player/asta/bull-thrust.png",
+    "frameWidth": 125,
+    "frameHeight": 78,
+    "frameCount": 15,
+    "contentHeight": 50,
+    "scale": 1,
+    "originX": 0.608,
+    "durationMs": 2067,
+    "hitDelayMs": 1350,
+    "frameRate": 8
+  },
+  "asta-black-combo": {
+    "image": "/sprites/player/asta/black-combo.png",
+    "frameWidth": 139,
+    "frameHeight": 64,
+    "frameCount": 16,
+    "contentHeight": 50,
+    "scale": 1,
+    "originX": 0.381294964028777,
+    "durationMs": 767,
+    "hitDelayMs": 333,
+    "frameRate": 21
+  },
+  "asta-black-slash-fx": {
+    "image": "/sprites/player/asta/black-slash-fx.png",
+    "frameWidth": 245,
+    "frameHeight": 236,
+    "frameCount": 9,
+    "contentHeight": 232,
+    "scale": 1,
+    "originX": 0.5,
+    "frameRate": 34,
+    "durationMs": 267
+  },
+  "asta-black-strong-fx": {
+    "image": "/sprites/player/asta/black-strong-fx.png",
+    "frameWidth": 279,
+    "frameHeight": 165,
+    "frameCount": 10,
+    "contentHeight": 161,
+    "scale": 1,
+    "originX": 0.5,
+    "frameRate": 30,
+    "durationMs": 333
+  },
+  "asta-bull-thrust-fx": {
+    "image": "/sprites/player/asta/bull-thrust-fx.png",
+    "frameWidth": 194,
+    "frameHeight": 304,
+    "frameCount": 10,
+    "contentHeight": 300,
+    "scale": 1,
+    "originX": 0.5,
+    "frameRate": 20,
+    "durationMs": 500
+  },
+  "asta-black-combo-fx": {
+    "image": "/sprites/player/asta/black-combo-fx.png",
+    "frameWidth": 261,
+    "frameHeight": 132,
+    "frameCount": 6,
+    "contentHeight": 128,
+    "scale": 1,
+    "originX": 0.5,
+    "frameRate": 30,
+    "durationMs": 200
+  }
+}

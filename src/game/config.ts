@@ -18,6 +18,11 @@ export function createGameConfig(parent: HTMLElement): Phaser.Types.Core.GameCon
       width: parent.clientWidth || GAME_WIDTH,
       height: parent.clientHeight || GAME_HEIGHT,
     },
+    input: {
+      // Sem isto o Phaser também processa `mousedown` da window: um clique num
+      // painel da HUD vira clique no mundo e abre o prédio que estiver atrás.
+      windowEvents: false,
+    },
     physics: {
       default: 'arcade',
       arcade: {

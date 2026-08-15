@@ -1,8 +1,4 @@
-import type {
-  CharacterClanId,
-  CharacterQuality,
-  CharacterStars,
-} from '@/types/character-meta';
+import type { CharacterClanId, CharacterQuality, CharacterStars } from '@/types/character-meta';
 import type { StarterCharacterId } from '@/types/player-creation';
 
 /** Personagem na coleção (starter ou selado em caça). Instância única. */
@@ -28,6 +24,10 @@ export interface SealedCharacter {
   stars: CharacterStars;
   /** Afinidade de clã fixa do personagem. */
   clanId: CharacterClanId;
+  /** Nível próprio (selado herda o da caça; starter começa em 1). */
+  level: number;
+  /** XP atual rumo ao próximo nível. */
+  xp: number;
   isFavorite: boolean;
   isLocked: boolean;
 }
@@ -39,7 +39,6 @@ export interface TeamState {
   teamIds: string[];
   /** Membro que luta / aparece no mundo. */
   activeId: string | null;
-  inventoryTab: 'items' | 'characters' | 'forge';
   /** Janela de Equipe/Box aberta. */
   isOpen: boolean;
 }

@@ -1,34 +1,26 @@
 'use client';
 
 import Image from 'next/image';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
-  CHARACTER_CLAN_GLYPHS,
-  CHARACTER_CLAN_ICONS,
-  CHARACTER_CLAN_LABELS,
   CHARACTER_QUALITY_COLORS,
   CHARACTER_QUALITY_LABELS,
-  CHARACTER_QUALITY_RANK_LABELS,
-  CLAN_SYSTEM_UNLOCK_LEVEL,
   FORGE_MATERIAL_COST_BY_QUALITY,
   MAX_CHARACTER_STARS,
 } from '@/constants/character-progression';
+import { ATTRIBUTE_LABELS, ATTRIBUTE_ORDER } from '@/constants/attributes';
 import { INVENTORY_COLUMNS, INVENTORY_SLOT_COUNT } from '@/constants/inventory';
-import { TEAM_SLOT_COUNT } from '@/constants/sealing';
 import { getItem, RARITY_CSS } from '@/data/items';
 import { useStore } from '@/hooks/use-store';
-import { switchActiveCharacter } from '@/lib/active-character';
 import { planForgeStar } from '@/systems/forge';
-import { accountStore } from '@/stores/account-store';
 import { attributesStore } from '@/stores/attributes-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { teamStore } from '@/stores/team-store';
-import { vitalsStore } from '@/stores/vitals-store';
 import type { InventorySlot } from '@/types/inventory';
 import type { SealedCharacter } from '@/types/team';
-import { characterMetaLine, formatStars } from '@/utils/character-display';
+import { formatStars } from '@/utils/character-display';
 import { computePlayerAttributes } from '@/utils/attributes';
-import { HudPanel, HudPanelCollapsed } from '@/ui/hud/hud-panel';
+import { HudPanel } from '@/ui/hud/hud-panel';
 
 function slotLabel(slot: InventorySlot): string {
   if (!slot) return '';
@@ -47,27 +39,6 @@ function itemMonogram(itemId: string, name: string): string {
   return (clean.slice(0, 2) || '??').toUpperCase();
 }
 
-/** Compacto estilo 2.15M / 249K. */
-function formatCompact(value: number): string {
-  const n = Math.max(0, value);
-  if (n >= 1_000_000) {
-    const v = n / 1_000_000;
-    const text = v >= 10 ? v.toFixed(1) : v.toFixed(2);
-    return `${text.replace(/\.0+$/, '').replace(/(\.\d)0$/, '$1')}M`;
-  }
-  if (n >= 1_000) {
-    const v = n / 1_000;
-    const text = v >= 100 ? String(Math.round(v)) : v >= 10 ? v.toFixed(1) : v.toFixed(2);
-    return `${text.replace(/\.0+$/, '')}K`;
-  }
-  return String(Math.round(n));
-}
-
-function estimateHpMax(stars: number, level: number): number {
-  const attrs = computePlayerAttributes({ level, stars });
-  return Math.max(1, Math.round(attrs.totals.hp));
-}
-
 function StarRow({ stars, max = MAX_CHARACTER_STARS }: { stars: number; max?: number }) {
   const n = Math.max(0, Math.min(max, Math.floor(stars)));
   return (
@@ -76,94 +47,6 @@ function StarRow({ stars, max = MAX_CHARACTER_STARS }: { stars: number; max?: nu
         <span key={i} className={`char-stars__dot${i < n ? ' is-on' : ''}`} />
       ))}
     </span>
-  );
-}
-
-function TeamMemberCard({
-  member,
-  isActive,
-  selected,
-  accountLevel,
-  hp,
-  hpMax,
-  expPct,
-  onSelect,
-}: {
-  member: SealedCharacter;
-  isActive: boolean;
-  selected: boolean;
-  accountLevel: number;
-  hp: number;
-  hpMax: number;
-  expPct: number;
-  onSelect: () => void;
-}) {
-  const qualityColor = CHARACTER_QUALITY_COLORS[member.quality];
-  const hpSafe = Math.max(1, hpMax);
-  const hpPct = Math.max(0, Math.min(100, (hp / hpSafe) * 100));
-  const expSafe = Math.max(0, Math.min(100, expPct));
-
-  return (
-    <button
-      type="button"
-      className={`team-card${isActive ? ' is-active' : ''}${selected ? ' is-selected' : ''}`}
-      onClick={onSelect}
-      aria-pressed={selected}
-      title={member.name}
-    >
-      {isActive ? <span className="team-card__ribbon">ATIVO</span> : null}
-
-      <div className="team-card__avatar" style={{ ['--q' as string]: qualityColor }}>
-        <span className="team-card__halo" aria-hidden />
-        <Image
-          className="team-card__sprite"
-          src={member.previewUrl}
-          alt=""
-          width={52}
-          height={52}
-          unoptimized
-        />
-        <span className="team-card__rank" style={{ background: qualityColor }}>
-          {member.quality}
-        </span>
-      </div>
-
-      <div className="team-card__body">
-        <div className="team-card__title-row">
-          <span className="team-card__name">{member.name}</span>
-          <span className="team-card__lv">Lv.{accountLevel}</span>
-        </div>
-        <div className="team-card__bar team-card__bar--hp">
-          <span className="team-card__bar-fill" style={{ width: `${hpPct}%` }} />
-          <span className="team-card__bar-label">
-            {formatCompact(hp)}/{formatCompact(hpMax)}
-          </span>
-        </div>
-        <div className="team-card__bar team-card__bar--exp">
-          <span className="team-card__bar-fill" style={{ width: `${expSafe}%` }} />
-          <span className="team-card__bar-label">EXP {Math.round(expSafe)}%</span>
-        </div>
-        <div className="team-card__meta">
-          <StarRow stars={member.stars} />
-          {member.isFavorite ? <span className="team-card__tag">★</span> : null}
-          {member.isLocked ? <span className="team-card__tag">#</span> : null}
-        </div>
-      </div>
-    </button>
-  );
-}
-
-function TeamEmptySlot({ index }: { index: number }) {
-  return (
-    <div className="team-card team-card--empty" aria-label={`Slot de equipe ${index + 1} vazio`}>
-      <div className="team-card__avatar team-card__avatar--empty">
-        <span>+</span>
-      </div>
-      <div className="team-card__body">
-        <p className="team-card__empty-label">Slot vazio</p>
-        <p className="team-card__empty-hint">Adicione da coleção</p>
-      </div>
-    </div>
   );
 }
 
@@ -246,352 +129,193 @@ function Portrait({
   );
 }
 
-function IconBtn({
-  label,
-  title,
-  active,
-  danger,
-  disabled,
-  onClick,
-}: {
-  label: string;
-  title: string;
-  active?: boolean;
-  danger?: boolean;
-  disabled?: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      className={`char-icon-btn${active ? ' is-active' : ''}${danger ? ' is-danger' : ''}`}
-      title={title}
-      aria-label={title}
-      disabled={disabled}
-      onClick={onClick}
-    >
-      {label}
-    </button>
-  );
-}
-
-function CharacterDetail({
-  member,
-  inTeam,
-  isActive,
-}: {
-  member: SealedCharacter;
-  inTeam: boolean;
-  isActive: boolean;
-}) {
-  const level = useStore(vitalsStore, (s) => s.level);
-  return (
-    <div className="char-detail" title={characterMetaLine(member, level)}>
-      <div className="char-detail__head">
-        <Portrait member={member} size={56} inTeam={inTeam} isActive={isActive} />
-        <div className="char-detail__text">
-          <p className="char-detail__name">{member.name}</p>
-          <div className="char-detail__chips">
-            <span className="char-chip char-chip--level">Nv.{level}</span>
-            <span
-              className="char-chip char-chip--quality"
-              style={{
-                borderColor: CHARACTER_QUALITY_COLORS[member.quality],
-                color: CHARACTER_QUALITY_COLORS[member.quality],
-              }}
-              title={CHARACTER_QUALITY_RANK_LABELS[member.quality]}
-            >
-              {member.quality} · {CHARACTER_QUALITY_LABELS[member.quality]}
-            </span>
-            <span className="char-chip" title={CHARACTER_CLAN_LABELS[member.clanId]}>
-              {CHARACTER_CLAN_GLYPHS[member.clanId]} · {CHARACTER_CLAN_LABELS[member.clanId]}
-            </span>
-          </div>
-          <StarRow stars={member.stars} />
-        </div>
-      </div>
-      <div className="char-detail__actions" role="toolbar" aria-label="Ações do personagem">
-        {!inTeam ? (
-          <IconBtn label="＋" title="Adicionar à equipe" onClick={() => teamStore.addToTeam(member.id)} />
-        ) : (
-          <IconBtn label="✓" title="Na equipe" active disabled onClick={() => undefined} />
-        )}
-        {inTeam && !isActive ? (
-          <IconBtn label="▶" title="Tornar principal" onClick={() => switchActiveCharacter(member.id)} />
-        ) : null}
-        {inTeam && isActive ? (
-          <IconBtn label="●" title="Principal ativo" active disabled onClick={() => undefined} />
-        ) : null}
-        {inTeam && !isActive ? (
-          <IconBtn
-            label="✕"
-            title="Remover da equipe"
-            danger
-            onClick={() => teamStore.removeFromTeam(member.id)}
-          />
-        ) : null}
-        <IconBtn
-          label={member.isFavorite ? '★' : '☆'}
-          title={member.isFavorite ? 'Remover favorito' : 'Marcar favorito'}
-          active={member.isFavorite}
-          onClick={() => teamStore.setFavorite(member.id, !member.isFavorite)}
-        />
-        <IconBtn
-          label={member.isLocked ? '#' : '='}
-          title={member.isLocked ? 'Desbloquear' : 'Bloquear (protege da forja)'}
-          active={member.isLocked}
-          onClick={() => teamStore.setLocked(member.id, !member.isLocked)}
-        />
-      </div>
-    </div>
-  );
-}
-
-function ClanSection() {
-  const clanId = useStore(accountStore, (s) => s.clanId);
-  const level = useStore(vitalsStore, (s) => s.level);
-  const unlocked = level >= CLAN_SYSTEM_UNLOCK_LEVEL;
-
-  if (!unlocked) {
-    return (
-      <div className="char-clan char-clan--locked">
-        <span className="char-clan__icon" aria-hidden>
-          ?
-        </span>
-        <p className="char-clan__text">
-          Clãs no nível {CLAN_SYSTEM_UNLOCK_LEVEL}
-          <span className="char-clan__sub">Agora: {level}</span>
-        </p>
-      </div>
-    );
-  }
-
-  if (clanId) {
-    return (
-      <div className="char-clan char-clan--set">
-        <Image
-          className="char-clan__icon-img"
-          src={CHARACTER_CLAN_ICONS[clanId]}
-          alt=""
-          width={28}
-          height={28}
-          unoptimized
-        />
-        <p className="char-clan__text">
-          {CHARACTER_CLAN_LABELS[clanId]}
-          <span className="char-clan__sub">Troca indisponível</span>
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="char-clan">
-      <p className="char-clan__hint">Escolha o clã no menu Clã</p>
-      <button type="button" className="char-clan__pick" onClick={() => accountStore.setOpen(true)}>
-        Abrir clãs
-      </button>
-    </div>
-  );
-}
-
-function CharactersTab() {
-  const collection = useStore(teamStore, (s) => s.collection);
-  const teamIds = useStore(teamStore, (s) => s.teamIds);
-  const activeId = useStore(teamStore, (s) => s.activeId);
-  const vitals = useStore(vitalsStore, (s) => s);
-  const [selectedId, setSelectedId] = useState<string | null>(activeId);
-
-  const teamMembers = teamIds
-    .map((id) => collection.find((entry) => entry.id === id))
-    .filter((entry): entry is SealedCharacter => entry != null);
-
-  const selected =
-    collection.find((entry) => entry.id === selectedId) ??
-    collection.find((entry) => entry.id === activeId) ??
-    collection[0] ??
-    null;
-
-  const expPct = vitals.xpMax > 0 ? (vitals.xp / vitals.xpMax) * 100 : 0;
-
-  return (
-    <div className="char-panel">
-      <section className="team-window" aria-label="Equipe">
-        <header className="team-window__head">
-          <div>
-            <h3 className="team-window__title">Equipe</h3>
-            <p className="team-window__sub">
-              Conta · Nível {vitals.level} · {teamMembers.length}/{TEAM_SLOT_COUNT}
-            </p>
-          </div>
-        </header>
-
-        <ul className="team-window__list">
-          {Array.from({ length: TEAM_SLOT_COUNT }, (_, index) => {
-            const member = teamMembers[index] ?? null;
-            if (!member) {
-              return (
-                <li key={`empty-${index}`}>
-                  <TeamEmptySlot index={index} />
-                </li>
-              );
-            }
-            const isActive = member.id === activeId;
-            const hpMax = isActive
-              ? Math.max(1, vitals.hpMax)
-              : estimateHpMax(member.stars, vitals.level);
-            const hp = isActive ? vitals.hp : hpMax;
-            return (
-              <li key={member.id}>
-                <TeamMemberCard
-                  member={member}
-                  isActive={isActive}
-                  selected={selected?.id === member.id}
-                  accountLevel={vitals.level}
-                  hp={hp}
-                  hpMax={hpMax}
-                  expPct={expPct}
-                  onSelect={() => setSelectedId(member.id)}
-                />
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-
-      <section className="char-panel__section" aria-label="Coleção">
-        <header className="char-panel__head">
-          <h3 className="char-panel__title">Coleção</h3>
-          <span className="char-panel__count">{collection.length}</span>
-        </header>
-        {collection.length === 0 ? (
-          <p className="char-panel__empty">Nenhum personagem selado.</p>
-        ) : (
-          <div className="char-grid" role="list">
-            {collection.map((member) => {
-              const inTeam = teamIds.includes(member.id);
-              const isActive = member.id === activeId;
-              return (
-                <div key={member.id} className="char-grid__cell" role="listitem">
-                  <Portrait
-                    member={member}
-                    size={48}
-                    selected={selected?.id === member.id}
-                    inTeam={inTeam}
-                    isActive={isActive}
-                    onSelect={() => setSelectedId(member.id)}
-                  />
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
-      {selected ? (
-        <CharacterDetail
-          member={selected}
-          inTeam={teamIds.includes(selected.id)}
-          isActive={selected.id === activeId}
-        />
-      ) : null}
-
-      <section className="char-panel__section" aria-label="Clã">
-        <header className="char-panel__head">
-          <h3 className="char-panel__title">Clã</h3>
-        </header>
-        <ClanSection />
-      </section>
-    </div>
-  );
-}
-
-function ForgeTab() {
+export function ForgeTab() {
   const collection = useStore(teamStore, (s) => s.collection);
   const teamIds = useStore(teamStore, (s) => s.teamIds);
   const [targetId, setTargetId] = useState<string | null>(null);
   const [pendingConfirm, setPendingConfirm] = useState(false);
 
-  const targets = useMemo(
-    () => collection.filter((entry) => entry.stars < MAX_CHARACTER_STARS),
-    [collection],
-  );
+  const groups = useMemo(() => {
+    const grouped = new Map<
+      string,
+      { key: string; representative: SealedCharacter; entries: SealedCharacter[] }
+    >();
+    const team = new Set(teamIds);
+
+    for (const entry of collection) {
+      const key = `${entry.characterKey}::${entry.quality}`;
+      const group = grouped.get(key);
+      if (group) group.entries.push(entry);
+      else grouped.set(key, { key, representative: entry, entries: [entry] });
+    }
+
+    return [...grouped.values()]
+      .map((group) => {
+        const candidates = group.entries
+          .filter((entry) => entry.stars < MAX_CHARACTER_STARS)
+          .sort((a, b) => {
+            const teamDiff = Number(team.has(b.id)) - Number(team.has(a.id));
+            if (teamDiff !== 0) return teamDiff;
+            if (b.stars !== a.stars) return b.stars - a.stars;
+            return b.level - a.level;
+          });
+        const maxed = [...group.entries].sort((a, b) => b.stars - a.stars || b.level - a.level);
+        return { ...group, representative: candidates[0] ?? maxed[0] };
+      })
+      .sort(
+        (a, b) =>
+          a.representative.name.localeCompare(b.representative.name, 'pt-BR') ||
+          a.representative.quality.localeCompare(b.representative.quality),
+      );
+  }, [collection, teamIds]);
+
+  useEffect(() => {
+    if (targetId && collection.some((entry) => entry.id === targetId)) return;
+    setTargetId(groups[0]?.representative.id ?? null);
+    setPendingConfirm(false);
+  }, [collection, groups, targetId]);
 
   const plan = targetId ? planForgeStar({ targetId, collection, teamIds }) : null;
   const commonCost = FORGE_MATERIAL_COST_BY_QUALITY.D ?? 20;
-  const target = plan?.target ?? targets.find((entry) => entry.id === targetId) ?? null;
+  const target = plan?.target ?? collection.find((entry) => entry.id === targetId) ?? null;
+  const selectedGroup = groups.find((group) => group.entries.some((entry) => entry.id === targetId));
+  const currentStats = target
+    ? computePlayerAttributes({ level: Math.max(1, target.level), stars: target.stars }).totals
+    : null;
+  const nextStars = target ? Math.min(MAX_CHARACTER_STARS, target.stars + 1) : 0;
+  const nextStats = target
+    ? computePlayerAttributes({ level: Math.max(1, target.level), stars: nextStars }).totals
+    : null;
+  const formatStat = (value: number) =>
+    Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
 
   return (
     <div className="char-forge">
-      <p className="char-forge__hint">
-        +1★ com {commonCost} cópias do mesmo personagem (Comum). Fora da equipe · sem fav · sem
-        bloqueio.
-      </p>
-
-      <header className="char-panel__head">
-        <h3 className="char-panel__title">Escolha o alvo</h3>
-      </header>
-      <div className="char-grid char-grid--forge" role="list">
-        {targets.map((entry) => (
-          <div key={entry.id} className="char-grid__cell" role="listitem">
-            <Portrait
-              member={entry}
-              size={44}
-              selected={targetId === entry.id}
-              inTeam={teamIds.includes(entry.id)}
-              isActive={false}
-              onSelect={() => {
-                setTargetId(entry.id);
-                setPendingConfirm(false);
-              }}
-            />
-          </div>
-        ))}
-      </div>
-
-      {target ? (
-        <div className="char-forge__plan">
-          <div className="char-forge__target-line">
-            <Portrait member={target} size={40} />
+      <div className="char-forge__layout">
+        <aside className="char-forge__roster">
+          <header className="char-forge__section-head">
             <div>
-              <p className="char-detail__name">{target.name}</p>
-              <p className="char-forge__meta">
-                {formatStars(target.stars)} → {formatStars(Math.min(5, target.stars + 1))} · custo{' '}
-                {plan?.cost ?? commonCost}
-              </p>
+              <p className="char-forge__eyebrow">Personagens</p>
+              <h3>Escolha quem aprimorar</h3>
             </div>
+            <span>{groups.length}</span>
+          </header>
+          <div className="char-forge__roster-list" role="list">
+            {groups.length === 0 ? (
+              <p className="char-forge__empty">Nenhum personagem obtido.</p>
+            ) : (
+              groups.map((group) => {
+                const entry = group.representative;
+                const selected = selectedGroup?.key === group.key;
+                const qualityColor = CHARACTER_QUALITY_COLORS[entry.quality];
+                return (
+                  <button
+                    key={group.key}
+                    type="button"
+                    className={`char-forge__roster-item${selected ? ' is-selected' : ''}`}
+                    style={{ ['--quality' as string]: qualityColor }}
+                    onClick={() => {
+                      setTargetId(entry.id);
+                      setPendingConfirm(false);
+                    }}
+                    role="listitem"
+                    aria-pressed={selected}
+                  >
+                    <span className="char-forge__roster-avatar">
+                      <Image
+                        src={entry.previewUrl}
+                        alt=""
+                        width={42}
+                        height={42}
+                        unoptimized
+                      />
+                    </span>
+                    <span className="char-forge__roster-copy">
+                      <strong>{entry.name}</strong>
+                      <small>{CHARACTER_QUALITY_LABELS[entry.quality]}</small>
+                    </span>
+                    <span className="char-forge__roster-qty">×{group.entries.length}</span>
+                  </button>
+                );
+              })
+            )}
           </div>
+        </aside>
 
-          {plan?.reason === 'quality-not-configured' ? (
-            <p className="char-forge__warn">Rank sem custo de forja definido.</p>
-          ) : null}
-          {plan?.reason === 'max-stars' ? (
-            <p className="char-forge__warn">Já está no máximo de estrelas.</p>
-          ) : null}
-
-          {plan && (plan.reason === 'not-enough-materials' || plan.reason === 'ok') ? (
+        <section className="char-forge__detail">
+          {target && currentStats && nextStats ? (
             <>
-              <header className="char-panel__head">
-                <h3 className="char-panel__title">Consumir</h3>
-                <span className="char-panel__count">
-                  {plan.materialIds.length}/{plan.cost || commonCost}
-                </span>
-              </header>
-              <div className="char-grid char-grid--forge" role="list">
-                {plan.materialIds.map((id) => {
-                  const m = collection.find((entry) => entry.id === id);
-                  if (!m) return null;
-                  return (
-                    <div key={id} className="char-grid__cell" role="listitem">
-                      <Portrait member={m} size={36} />
-                    </div>
-                  );
-                })}
+              <div className="char-forge__hero">
+                <div
+                  className="char-forge__hero-portrait"
+                  style={{ ['--quality' as string]: CHARACTER_QUALITY_COLORS[target.quality] }}
+                >
+                  <Image
+                    src={target.previewUrl}
+                    alt=""
+                    width={92}
+                    height={92}
+                    unoptimized
+                  />
+                  <span>{target.quality}</span>
+                </div>
+                <div className="char-forge__hero-copy">
+                  <p>{CHARACTER_QUALITY_LABELS[target.quality]} · Nível {target.level}</p>
+                  <h3>{target.name}</h3>
+                  <div className="char-forge__star-upgrade">
+                    <span>{formatStars(target.stars)}</span>
+                    <b>→</b>
+                    <span className="is-next">{formatStars(nextStars)}</span>
+                  </div>
+                </div>
               </div>
-              {plan.reason === 'not-enough-materials' ? (
-                <p className="char-forge__warn">Faltam cópias elegíveis.</p>
-              ) : null}
-              {plan.reason === 'ok' ? (
+
+              <div className="char-forge__stats">
+                <header>
+                  <h4>Atributos após a forja</h4>
+                  <span>+2% nos atributos base</span>
+                </header>
+                <ul>
+                  {ATTRIBUTE_ORDER.map((id) => {
+                    const before = currentStats[id];
+                    const after = nextStats[id];
+                    return (
+                      <li key={id}>
+                        <span>{ATTRIBUTE_LABELS[id]}</span>
+                        <strong>{formatStat(before)}</strong>
+                        <b>→</b>
+                        <strong className="is-next">{formatStat(after)}</strong>
+                        <em>+{formatStat(after - before)}</em>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+
+              <div className="char-forge__cost">
+                <div>
+                  <span>Cópias para aprimorar</span>
+                  <strong>
+                    {plan?.materialIds.length ?? 0}/{plan?.cost || commonCost}
+                  </strong>
+                </div>
+                {plan?.reason === 'quality-not-configured' ? (
+                  <p className="char-forge__warn">
+                    A forja de qualidade {CHARACTER_QUALITY_LABELS[target.quality]} ainda não está
+                    disponível.
+                  </p>
+                ) : null}
+                {plan?.reason === 'max-stars' ? (
+                  <p className="char-forge__warn">Este personagem já alcançou 5 estrelas.</p>
+                ) : null}
+                {plan?.reason === 'not-enough-materials' ? (
+                  <p className="char-forge__warn">
+                    Faltam {(plan.cost || commonCost) - plan.materialIds.length} cópias elegíveis.
+                  </p>
+                ) : null}
+              </div>
+
+              {plan?.reason === 'ok' ? (
                 <div className="char-forge__actions">
                   {!pendingConfirm ? (
                     <button
@@ -599,12 +323,12 @@ function ForgeTab() {
                       className="char-forge__cta"
                       onClick={() => setPendingConfirm(true)}
                     >
-                      Revisar forja
+                      Aprimorar para {nextStars}★
                     </button>
                   ) : (
                     <>
-                      <p className="char-forge__warn">
-                        Confirma consumir {plan.cost} cópias?
+                      <p className="char-forge__confirm">
+                        Consumir {plan.cost} cópias de {target.name}?
                       </p>
                       <button
                         type="button"
@@ -615,7 +339,7 @@ function ForgeTab() {
                           setPendingConfirm(false);
                         }}
                       >
-                        Confirmar
+                        Confirmar forja
                       </button>
                       <button
                         type="button"
@@ -629,66 +353,76 @@ function ForgeTab() {
                 </div>
               ) : null}
             </>
-          ) : null}
-        </div>
-      ) : null}
+          ) : (
+            <div className="char-forge__empty-detail">
+              <span>★</span>
+              <p>Selecione um personagem para ver a evolução.</p>
+            </div>
+          )}
+        </section>
+      </div>
+      <p className="char-forge__hint">
+        Cada linha reúne todas as cópias do mesmo personagem e qualidade. A forja preserva o
+        personagem principal e consome apenas cópias fora da equipe, desbloqueadas e não favoritas.
+      </p>
     </div>
   );
 }
 
-/**
- * Inventário, grade de personagens e forja — sem equipamentos.
- */
+/** Inventário de itens. Personagens e forja possuem fluxos próprios. */
 export function InventoryPanel() {
   const isOpen = useStore(inventoryStore, (s) => s.isOpen);
   const slots = useStore(inventoryStore, (s) => s.slots);
   const selectedIndex = useStore(inventoryStore, (s) => s.selectedIndex);
-  const tab = useStore(teamStore, (s) => s.inventoryTab);
 
-  if (!isOpen) {
-    return (
-      <HudPanelCollapsed
-        label="Inventário (I)"
-        ariaLabel="Abrir inventário"
-        className="hud-inventory"
-        onOpen={() => inventoryStore.setOpen(true)}
-      />
-    );
-  }
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.code === 'Escape') {
+        event.preventDefault();
+        inventoryStore.setOpen(false);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen]);
+
+  if (!isOpen) return null;
 
   const selected = selectedIndex != null ? slots[selectedIndex] : null;
+  const selectedDef = selected ? getItem(selected.itemId) : undefined;
+  const occupied = slots.reduce((total, slot) => total + (slot ? 1 : 0), 0);
 
   return (
-    <HudPanel
-      title="Inventário"
-      badge="I"
-      ariaLabel="Inventário"
-      className="hud-inventory"
-      onClose={() => inventoryStore.setOpen(false)}
+    <div
+      className="hud-modal-layer hud-modal-layer--inventory"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) inventoryStore.setOpen(false);
+      }}
     >
-      <div className="hud-inventory__tabs" role="tablist" aria-label="Seções do inventário">
-        {(
-          [
-            ['items', 'Itens'],
-            ['characters', 'Chars'],
-            ['forge', 'Forja'],
-          ] as const
-        ).map(([id, label]) => (
-          <button
-            key={id}
-            type="button"
-            role="tab"
-            aria-selected={tab === id}
-            className={`hud-inventory__tab${tab === id ? ' is-active' : ''}`}
-            onClick={() => teamStore.setInventoryTab(id)}
+      <HudPanel
+        title="Inventário"
+        badge="I"
+        ariaLabel="Inventário"
+        className="hud-inventory"
+        onClose={() => inventoryStore.setOpen(false)}
+      >
+        <div className="hud-inventory__summary">
+          <div>
+            <p className="hud-inventory__eyebrow">Bolsa de itens</p>
+            <p className="hud-inventory__summary-title">Seus recursos e consumíveis</p>
+          </div>
+          <span
+            className="hud-inventory__capacity"
+            aria-label={`${occupied} de ${slots.length} slots`}
           >
-            {label}
-          </button>
-        ))}
-      </div>
+            <strong>{occupied}</strong>
+            <span>/ {slots.length}</span>
+          </span>
+        </div>
 
-      {tab === 'items' ? (
-        <>
+        <div className="hud-inventory__body">
           <div
             className="hud-inventory__grid"
             style={{ gridTemplateColumns: `repeat(${INVENTORY_COLUMNS}, minmax(0, 1fr))` }}
@@ -742,12 +476,54 @@ export function InventoryPanel() {
             })}
           </div>
 
-          <footer className="hud-inventory__footer">
-            <p className="hud-inventory__hint">
-              {selected
-                ? slotLabel(selected)
-                : `Clique para mover · ${INVENTORY_SLOT_COUNT} slots`}
-            </p>
+          <aside className={`hud-inventory__detail${selected ? ' has-selection' : ''}`}>
+            {selected ? (
+              <>
+                <div
+                  className="hud-inventory__detail-icon"
+                  style={{
+                    ['--item-rarity' as string]: selectedDef
+                      ? RARITY_CSS[selectedDef.rarity]
+                      : '#aab2bd',
+                  }}
+                >
+                  {selectedDef?.iconSrc ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={selectedDef.iconSrc}
+                      alt=""
+                      width={52}
+                      height={52}
+                      draggable={false}
+                    />
+                  ) : (
+                    <span>
+                      {itemMonogram(selected.itemId, selectedDef?.name ?? selected.itemId)}
+                    </span>
+                  )}
+                </div>
+                <div className="hud-inventory__detail-copy">
+                  <p className="hud-inventory__detail-name">
+                    {selectedDef?.name ?? selected.itemId}
+                  </p>
+                  <p
+                    className="hud-inventory__detail-rarity"
+                    style={{ color: selectedDef ? RARITY_CSS[selectedDef.rarity] : undefined }}
+                  >
+                    {selectedDef?.rarity ?? 'item'} · Quantidade {selected.quantity}
+                  </p>
+                  <p className="hud-inventory__detail-help">
+                    Selecione outro slot para mover ou empilhar este item.
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="hud-inventory__detail-empty">
+                <span aria-hidden>◇</span>
+                <p>Selecione um item para ver os detalhes.</p>
+              </div>
+            )}
+
             <div className="hud-inventory__actions">
               <button
                 type="button"
@@ -760,12 +536,15 @@ export function InventoryPanel() {
                 Descartar
               </button>
             </div>
-          </footer>
-        </>
-      ) : null}
+          </aside>
+        </div>
 
-      {tab === 'characters' ? <CharactersTab /> : null}
-      {tab === 'forge' ? <ForgeTab /> : null}
-    </HudPanel>
+        <footer className="hud-inventory__footer">
+          <p className="hud-inventory__hint">
+            Clique em dois slots para mover ou empilhar · {INVENTORY_SLOT_COUNT} espaços
+          </p>
+        </footer>
+      </HudPanel>
+    </div>
   );
 }

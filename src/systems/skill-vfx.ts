@@ -9,12 +9,54 @@ export interface SkillVfxPoints {
   toY: number;
 }
 
+/** Hit-spark curto no alvo — todos os combos básicos. */
+export const COMBO_HIT_FX = {
+  key: 'fx-combo-hit',
+  url: '/sprites/fx/combo-hit.png',
+  frameWidth: 48,
+  frameHeight: 48,
+  frameCount: 5,
+  animKey: 'fx-combo-hit-anim',
+} as const;
+
 /**
  * Animações reutilizáveis por `animation.kind`.
  * Novos jutsus só escolhem kind + tint/scale/duration.
  */
 export class SkillVfx {
   constructor(private readonly scene: Phaser.Scene) {}
+
+  static preload(scene: Phaser.Scene): void {
+    scene.load.spritesheet(COMBO_HIT_FX.key, COMBO_HIT_FX.url, {
+      frameWidth: COMBO_HIT_FX.frameWidth,
+      frameHeight: COMBO_HIT_FX.frameHeight,
+    });
+  }
+
+  /** Spark pequeno no ponto de impacto do combo (mid-body do alvo). */
+  playComboHit(x: number, y: number, scale = 1): void {
+    if (!this.scene.textures.exists(COMBO_HIT_FX.key)) return;
+
+    if (!this.scene.anims.exists(COMBO_HIT_FX.animKey)) {
+      this.scene.anims.create({
+        key: COMBO_HIT_FX.animKey,
+        frames: this.scene.anims.generateFrameNumbers(COMBO_HIT_FX.key, {
+          start: 0,
+          end: COMBO_HIT_FX.frameCount - 1,
+        }),
+        frameRate: 18,
+        repeat: 0,
+      });
+    }
+
+    const spark = this.scene.add
+      .sprite(x, y - 18, COMBO_HIT_FX.key, 0)
+      .setDepth(24)
+      .setScale(scale)
+      .setBlendMode(Phaser.BlendModes.ADD);
+    spark.play(COMBO_HIT_FX.animKey);
+    spark.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => spark.destroy());
+  }
 
   play(skill: SkillDefinition, points: SkillVfxPoints): void {
     const tint = skill.animation.tint ?? SKILL_ELEMENT_COLOR[skill.element];

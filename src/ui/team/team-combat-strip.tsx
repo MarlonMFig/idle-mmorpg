@@ -1,11 +1,14 @@
 'use client';
 
 import Image from 'next/image';
-import { useMemo } from 'react';
+import { useEffect, useMemo, type RefObject } from 'react';
 import { CHARACTER_QUALITY_COLORS } from '@/constants/character-progression';
 import { TEAM_SLOT_COUNT } from '@/constants/sealing';
+import { useDraggablePanel } from '@/hooks/use-draggable-panel';
 import { useStore } from '@/hooks/use-store';
 import { switchActiveCharacter } from '@/lib/active-character';
+import { xpRequiredForLevel } from '@/data/xp-stages';
+import { guildStore } from '@/stores/guild-store';
 import { teamStore } from '@/stores/team-store';
 import { vitalsStore } from '@/stores/vitals-store';
 import type { SealedCharacter } from '@/types/team';
@@ -75,7 +78,12 @@ function ActiveTeamRow({
 
       <div className="active-team__stats">
         <div className="active-team__title-row">
-          <span className="active-team__name">{member.name}</span>
+          <span className="active-team__name">
+            <span className="active-team__name-quality" style={{ color: qualityColor }}>
+              [{member.quality}]
+            </span>{' '}
+            {member.name}
+          </span>
           <span className="active-team__lv">Lv.{level}</span>
         </div>
         <div className="active-team__bar active-team__bar--hp">
@@ -118,13 +126,23 @@ export interface TeamCombatStripProps {
 }
 
 /**
- * Janela Equipe Ativa no topo esquerdo do mapa de caça (referência Monarca).
+ * Janela Equipe Ativa no mapa de caça — arrastável pelo cabeçalho.
  */
 export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
   const collection = useStore(teamStore, (s) => s.collection);
   const teamIds = useStore(teamStore, (s) => s.teamIds);
   const activeId = useStore(teamStore, (s) => s.activeId);
+  const guildId = useStore(guildStore, (s) => s.guildId);
+  const guildRegistryTick = useStore(guildStore, (s) => s.registryTick);
+
+  useEffect(() => {
+    teamStore.refreshPreviews();
+  }, []);
   const vitals = useStore(vitalsStore, (s) => s);
+  const { panelRef, style, isDragging, handleProps } = useDraggablePanel('active-team', {
+    zIndex: 32,
+    dragZIndex: 95,
+  });
 
   const teamMembers = useMemo(
     () =>
@@ -138,18 +156,52 @@ export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
 
   const activeMember =
     teamMembers.find((entry) => entry?.id === activeId) ?? teamMembers.find(Boolean) ?? null;
-
-  const expPct =
-    vitals.xpMax > 0 ? Math.max(0, Math.min(100, (vitals.xp / vitals.xpMax) * 100)) : 0;
+  const guild = useMemo(
+    () => (guildId ? guildStore.getMyGuild() : null),
+    // registryTick garante releitura quando emblema/nome mudam no registro.
+    [guildId, guildRegistryTick],
+  );
 
   return (
-    <aside className="active-team" aria-label="Equipe ativa">
-      <header className="active-team__head">
+    <aside
+      ref={panelRef as RefObject<HTMLElement>}
+      className={`active-team${isDragging ? ' is-dragging' : ''}`}
+      style={style}
+      aria-label="Equipe ativa"
+    >
+      <header
+        className="active-team__head active-team__head--drag"
+        title="Arrastar para mover"
+        {...handleProps}
+      >
         <p className="active-team__brand">Equipe</p>
-        <h2 className="active-team__player">{nickname || 'Shinobi'}</h2>
+        <h2 className="active-team__player">
+          <span className="active-team__nick">{nickname || 'Shinobi'}</span>
+          {guild ? (
+            <span
+              className="active-team__guild"
+              style={{ ['--g' as string]: guild.emblemBg }}
+              title={`Guild ${guild.name} [${guild.tag}]`}
+            >
+              {guild.emblemIcon.startsWith('/') ? (
+                <Image
+                  className="active-team__guild-emblem"
+                  src={guild.emblemIcon}
+                  alt=""
+                  width={22}
+                  height={28}
+                  unoptimized
+                />
+              ) : (
+                <span className="active-team__guild-emblem">{guild.emblemIcon}</span>
+              )}
+              <span className="active-team__guild-name">{guild.name}</span>
+            </span>
+          ) : null}
+        </h2>
         <p className="active-team__sub">
-          Nível {vitals.level}
-          {activeMember ? ` — ${activeMember.name}` : ''}
+          Conta Nv. {vitals.level}
+          {activeMember ? ` — ${activeMember.name} Nv.${Math.max(1, activeMember.level || 1)}` : ''}
         </p>
       </header>
 
@@ -164,20 +216,24 @@ export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
           }
 
           const isActive = member.id === activeId;
+          const memberLevel = Math.max(1, member.level || 1);
           const hpMax = isActive
             ? Math.max(1, vitals.hpMax)
-            : estimateHpMax(member.stars, vitals.level);
+            : estimateHpMax(member.stars, memberLevel);
           const hp = isActive ? vitals.hp : hpMax;
+          const xpMax = xpRequiredForLevel(memberLevel);
+          const expPct =
+            xpMax > 0 ? Math.max(0, Math.min(100, (member.xp / xpMax) * 100)) : 0;
 
           return (
             <li key={member.id}>
               <ActiveTeamRow
                 member={member}
                 isActive={isActive}
-                level={vitals.level}
+                level={memberLevel}
                 hp={hp}
                 hpMax={hpMax}
-                expPct={isActive ? expPct : 0}
+                expPct={expPct}
               />
             </li>
           );

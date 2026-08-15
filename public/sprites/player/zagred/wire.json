@@ -1,0 +1,208 @@
+{
+  "id": "zagred",
+  "name": "Zagred",
+  "lookType": 9051,
+  "contentHeight": 79,
+  "idle": {
+    "image": "/sprites/player/zagred/idle.png",
+    "frameWidth": 88,
+    "frameHeight": 83,
+    "frameCount": 8,
+    "contentHeight": 79,
+    "scale": 1,
+    "originX": 0.5909090909090909,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/zagred/walk.png",
+    "frameWidth": 65,
+    "frameHeight": 86,
+    "frameCount": 2,
+    "contentHeight": 79,
+    "scale": 1,
+    "originX": 0.5538461538461539,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/zagred/combo1.png",
+      "frameWidth": 85,
+      "frameHeight": 87,
+      "frameCount": 3,
+      "contentHeight": 79,
+      "scale": 1,
+      "originX": 0.16470588235294117,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/zagred/combo2.png",
+      "frameWidth": 79,
+      "frameHeight": 88,
+      "frameCount": 3,
+      "contentHeight": 79,
+      "scale": 1,
+      "originX": 0.35443037974683544,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/zagred/combo3.png",
+      "frameWidth": 103,
+      "frameHeight": 103,
+      "frameCount": 4,
+      "contentHeight": 79,
+      "scale": 1,
+      "originX": 0.3106796116504854,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/zagred/hurt.png",
+    "frameWidth": 72,
+    "frameHeight": 81,
+    "frameCount": 2,
+    "contentHeight": 79,
+    "scale": 1,
+    "originX": 0.3611111111111111,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/zagred/death.png",
+    "frameWidth": 122,
+    "frameHeight": 32,
+    "frameCount": 1,
+    "contentHeight": 79,
+    "scale": 1,
+    "originX": 0.32786885245901637,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-zagred-1",
+      "skillName": "0",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/zagred/special1.png",
+        "frameWidth": 79,
+        "frameHeight": 77,
+        "frameCount": 2,
+        "contentHeight": 79,
+        "scale": 1,
+        "originX": 0.7215189873417721,
+        "durationMs": 2083,
+        "hitDelayMs": 933,
+        "frameRate": 8,
+        "skillId": "skill-zagred-1",
+        "skillName": "0",
+        "actionId": 1000
+      },
+      "fx": {
+        "image": "/sprites/player/zagred/special1-fx.png",
+        "frameWidth": 180,
+        "frameHeight": 117,
+        "frameCount": 18,
+        "contentHeight": 113,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 8,
+        "durationMs": 5000
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-zagred-2",
+      "skillName": "Zagred · Especial 2",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/zagred/special2.png",
+        "frameWidth": 74,
+        "frameHeight": 60,
+        "frameCount": 7,
+        "contentHeight": 79,
+        "scale": 1,
+        "originX": 0.5135135135135135,
+        "durationMs": 1967,
+        "hitDelayMs": 0,
+        "frameRate": 8,
+        "skillId": "skill-zagred-2",
+        "skillName": "Zagred · Especial 2",
+        "actionId": 1005
+      },
+      "fx": {
+        "image": "/sprites/player/zagred/special2-fx.png",
+        "frameWidth": 180,
+        "frameHeight": 117,
+        "frameCount": 18,
+        "contentHeight": 113,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 8,
+        "durationMs": 3183
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-zagred-3",
+      "skillName": "0",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/zagred/special3.png",
+        "frameWidth": 181,
+        "frameHeight": 33,
+        "frameCount": 6,
+        "contentHeight": 79,
+        "scale": 1,
+        "originX": 0.34806629834254144,
+        "durationMs": 583,
+        "hitDelayMs": 200,
+        "frameRate": 10,
+        "skillId": "skill-zagred-3",
+        "skillName": "0",
+        "actionId": 1031
+      },
+      "fx": {
+        "image": "/sprites/player/zagred/special3-fx.png",
+        "frameWidth": 180,
+        "frameHeight": 77,
+        "frameCount": 10,
+        "contentHeight": 73,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 10,
+        "durationMs": 967
+      },
+      "index": 2
+    },
+    {
+      "skillId": "skill-zagred-4",
+      "skillName": "Zagred · Especial 4",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/zagred/special4.png",
+        "frameWidth": 38,
+        "frameHeight": 64,
+        "frameCount": 3,
+        "contentHeight": 79,
+        "scale": 1,
+        "originX": 0.5,
+        "durationMs": 280,
+        "hitDelayMs": 67,
+        "frameRate": 18,
+        "skillId": "skill-zagred-4",
+        "skillName": "Zagred · Especial 4",
+        "actionId": 1038
+      },
+      "fx": {
+        "image": "/sprites/player/zagred/special4-fx.png",
+        "frameWidth": 37,
+        "frameHeight": 64,
+        "frameCount": 3,
+        "contentHeight": 60,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 280
+      },
+      "index": 3
+    }
+  ]
+}

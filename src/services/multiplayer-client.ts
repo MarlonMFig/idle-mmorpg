@@ -1,5 +1,7 @@
 import type { NetTransport } from '@/services/net/transport';
 import { StubNetTransport } from '@/services/net/stub-transport';
+import { PartyKitTransport } from '@/services/net/partykit-transport';
+import { WsNetTransport } from '@/services/net/ws-transport';
 import type {
   NetConnectOptions,
   NetMessage,
@@ -11,12 +13,18 @@ export type MultiplayerClientHandlers = {
   onPlayerJoin?: (player: PlayerNetState) => void;
   onPlayerLeave?: (playerId: string) => void;
   onPlayerState?: (player: PlayerNetState) => void;
+  onChat?: (payload: {
+    playerId: string;
+    nickname: string;
+    text: string;
+    at: number;
+  }) => void;
   onConnectionChange?: (connected: boolean) => void;
 };
 
 /**
  * Cliente multiplayer de alto nível.
- * Trocar o transport (stub → WebSocket) sem mudar a GameScene.
+ * Transport: WebSocket (NEXT_PUBLIC_MULTIPLAYER_WS_URL) → PartyKit → stub.
  */
 export class MultiplayerClient {
   private unsubMessage: (() => void) | null = null;
@@ -39,7 +47,7 @@ export class MultiplayerClient {
   }
 
   setHandlers(handlers: MultiplayerClientHandlers): void {
-    this.handlers = handlers;
+    this.handlers = { ...this.handlers, ...handlers };
   }
 
   async connect(options: NetConnectOptions): Promise<void> {
@@ -60,7 +68,6 @@ export class MultiplayerClient {
     this.localPlayerId = null;
   }
 
-  /** Publica estado do jogador local para a rede. */
   sendLocalState(player: PlayerNetState): void {
     if (!this.transport.isConnected()) return;
     if (player.playerId !== this.localPlayerId) return;
@@ -70,6 +77,20 @@ export class MultiplayerClient {
   sendHelloJoin(player: PlayerNetState): void {
     if (!this.transport.isConnected()) return;
     this.transport.send({ type: 'player_join', player });
+  }
+
+  sendChat(text: string, nickname: string): void {
+    if (!this.transport.isConnected() || !this.localPlayerId) return;
+    const trimmed = text.trim().slice(0, 120);
+    if (!trimmed) return;
+    const message: NetMessage = {
+      type: 'chat_message',
+      playerId: this.localPlayerId,
+      nickname,
+      text: trimmed,
+      at: Date.now(),
+    };
+    this.transport.send(message);
   }
 
   private handleMessage(message: NetMessage): void {
@@ -96,6 +117,9 @@ export class MultiplayerClient {
           this.handlers.onPlayerState?.(player);
         }
         break;
+      case 'chat_message':
+        this.handlers.onChat?.(message);
+        break;
       default:
         break;
     }
@@ -109,7 +133,27 @@ export class MultiplayerClient {
   }
 }
 
-/** Factory padrão — stub até existir servidor. */
+function resolveWsUrl(): string | null {
+  const raw = process.env.NEXT_PUBLIC_MULTIPLAYER_WS_URL?.trim();
+  if (!raw) return null;
+  return raw.replace(/\/$/, '');
+}
+
+function resolvePartyHost(): string | null {
+  const host = process.env.NEXT_PUBLIC_PARTYKIT_HOST?.trim();
+  if (!host) return null;
+  return host.replace(/^https?:\/\//, '').replace(/\/$/, '');
+}
+
+/** Factory — WS URL → PartyKit host → stub. */
 export function createMultiplayerClient(): MultiplayerClient {
+  const wsUrl = resolveWsUrl();
+  if (wsUrl) {
+    return new MultiplayerClient(new WsNetTransport(wsUrl));
+  }
+  const host = resolvePartyHost();
+  if (host) {
+    return new MultiplayerClient(new PartyKitTransport(host));
+  }
   return new MultiplayerClient(new StubNetTransport());
 }

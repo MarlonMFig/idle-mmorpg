@@ -52,7 +52,7 @@ export class NPCManager {
     return this.loadDefinitions(getNpcsForMap(mapKey), mapKey);
   }
 
-  /** NPCs do hub Konoha (posições na arte 1024×576). */
+  /** NPCs do hub Konoha (posições na arte 3840×2160). */
   loadHub(): Npc[] {
     return this.loadDefinitions(getHubNpcs(), null);
   }

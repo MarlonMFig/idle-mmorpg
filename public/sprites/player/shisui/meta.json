@@ -1,0 +1,74 @@
+{
+  "shisui-walk": {
+    "image": "/sprites/player/shisui/walk.png",
+    "frameWidth": 59,
+    "frameHeight": 109,
+    "frameCount": 8,
+    "contentHeight": 110,
+    "scale": 1,
+    "residualGreen": 0,
+    "pureBlack": 3366
+  },
+  "shisui-idle": {
+    "image": "/sprites/player/shisui/idle.png",
+    "frameWidth": 53,
+    "frameHeight": 114,
+    "frameCount": 6,
+    "contentHeight": 110,
+    "scale": 1
+  },
+  "shisui-combo1": {
+    "image": "/sprites/player/shisui/combo1.png",
+    "frameWidth": 123,
+    "frameHeight": 120,
+    "frameCount": 6,
+    "contentHeight": 110,
+    "scale": 1,
+    "range": [
+      0,
+      6
+    ]
+  },
+  "shisui-combo2": {
+    "image": "/sprites/player/shisui/combo2.png",
+    "frameWidth": 123,
+    "frameHeight": 120,
+    "frameCount": 5,
+    "contentHeight": 110,
+    "scale": 1,
+    "range": [
+      6,
+      11
+    ]
+  },
+  "shisui-combo3": {
+    "image": "/sprites/player/shisui/combo3.png",
+    "frameWidth": 123,
+    "frameHeight": 120,
+    "frameCount": 6,
+    "contentHeight": 110,
+    "scale": 1,
+    "range": [
+      11,
+      17
+    ]
+  },
+  "shisui-hurt": {
+    "image": "/sprites/player/shisui/hurt.png",
+    "frameWidth": 101,
+    "frameHeight": 114,
+    "frameCount": 6,
+    "contentHeight": 110,
+    "frameRate": 10,
+    "scale": 1
+  },
+  "shisui-death": {
+    "image": "/sprites/player/shisui/death.png",
+    "frameWidth": 101,
+    "frameHeight": 114,
+    "frameCount": 6,
+    "contentHeight": 110,
+    "frameRate": 8,
+    "scale": 1
+  }
+}

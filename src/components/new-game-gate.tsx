@@ -6,6 +6,7 @@ import { NewGameScreen } from '@/ui/new-game';
 import { GameHud } from '@/ui/hud';
 import { DialogueWindow } from '@/ui/dialogue';
 import { accountStore } from '@/stores/account-store';
+import { guildStore } from '@/stores/guild-store';
 import { villageStore } from '@/stores/village-store';
 import { locationStore } from '@/stores/location-store';
 import { huntStore } from '@/stores/hunt-store';
@@ -44,6 +45,10 @@ export function NewGameGate() {
     huntStore.reset();
     villageStore.reset();
     accountStore.reset();
+    if (guildStore.getSnapshot().guildId) {
+      guildStore.leaveGuild();
+    }
+    guildStore.reset();
     inventoryStore.reset();
     skillsStore.reset(player.starterCharacterId);
     teamStore.reset(player.starterCharacterId);

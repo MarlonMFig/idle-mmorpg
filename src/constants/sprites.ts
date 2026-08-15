@@ -7,7 +7,20 @@
  * ~52px com zoom 2 aproxima o peso visual dos sprites pixel do vídeo ref.
  * (luta idle top-down) sem cobrir o mapa.
  */
-export const CHARACTER_DISPLAY_HEIGHT = 42;
+export const CHARACTER_DISPLAY_HEIGHT = 62;
+
+/**
+ * Multiplicador visual no hub ilustrado.
+ * 2.1 → ~130px de altura, ~80% das portas do hub lateral (160px na clínica,
+ * 165px na casa central), que é a proporção de uma pessoa em pé numa porta.
+ */
+export const HUB_CHARACTER_SCALE = 2.1;
+
+/**
+ * Layout 1024→3840. No combate contain (zoom 0.5 em 1080p) mantém o
+ * personagem no mesmo tamanho de tela que o mapa 1024 antigo.
+ */
+export const COMBAT_MAP_LAYOUT_SCALE = 3840 / 1024;
 
 /**
  * Pegada física no chão (px de mundo), igual para todos. Convertida para

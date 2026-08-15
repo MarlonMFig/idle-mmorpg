@@ -148,6 +148,11 @@ export const skillsStore = {
     return Math.max(0, readyAt - now);
   },
 
+  /** Chakra restaurado (Centro de Cura): todos os jutsus voltam a ficar prontos. */
+  clearCooldowns(): void {
+    store.setState((state) => ({ ...state, cooldownReadyAt: {} }));
+  },
+
   startCooldown(skillId: string, cooldownMs: number, now = Date.now()): void {
     const state = store.getSnapshot();
     store.setState({

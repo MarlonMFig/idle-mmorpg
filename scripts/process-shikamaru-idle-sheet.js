@@ -13,7 +13,7 @@ const ROOT = path.resolve(__dirname, '..');
 const INPUT = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'shikamaru-idle-sheet.png');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'shikamaru');
 const PREVIEW_PATH = path.join(ROOT, 'public', 'sprites', 'player', 'previews', 'shikamaru.png');
-const TARGET_BODY_H = 48;
+const HQ = { hq: { mode: 'idle' } };
 
 /** Fundo sólido da folha (115, 140, 214). */
 const BG = [115, 140, 214];

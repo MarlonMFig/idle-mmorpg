@@ -1,29 +1,29 @@
 {
   "momo-hinamori-walk": {
     "image": "/sprites/player/momo-hinamori/walk.png",
-    "frameWidth": 46,
-    "frameHeight": 52,
+    "frameWidth": 94,
+    "frameHeight": 107,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.46601941747572817,
+    "contentHeight": 100,
+    "scale": 1,
     "residualGreen": 0,
-    "pureBlack": 885
+    "pureBlack": 4075
   },
   "momo-hinamori-idle": {
     "image": "/sprites/player/momo-hinamori/idle.png",
-    "frameWidth": 51,
-    "frameHeight": 51,
+    "frameWidth": 102,
+    "frameHeight": 104,
     "frameCount": 8,
-    "contentHeight": 48,
-    "scale": 0.46601941747572817
+    "contentHeight": 100,
+    "scale": 1
   },
   "momo-hinamori-combo1": {
     "image": "/sprites/player/momo-hinamori/combo1.png",
-    "frameWidth": 59,
-    "frameHeight": 62,
+    "frameWidth": 98,
+    "frameHeight": 104,
     "frameCount": 4,
-    "contentHeight": 48,
-    "scale": 0.46601941747572817,
+    "contentHeight": 100,
+    "scale": 0.8,
     "range": [
       0,
       4
@@ -31,11 +31,11 @@
   },
   "momo-hinamori-combo2": {
     "image": "/sprites/player/momo-hinamori/combo2.png",
-    "frameWidth": 59,
-    "frameHeight": 62,
+    "frameWidth": 98,
+    "frameHeight": 104,
     "frameCount": 4,
-    "contentHeight": 48,
-    "scale": 0.46601941747572817,
+    "contentHeight": 100,
+    "scale": 0.8,
     "range": [
       4,
       8
@@ -43,11 +43,11 @@
   },
   "momo-hinamori-combo3": {
     "image": "/sprites/player/momo-hinamori/combo3.png",
-    "frameWidth": 59,
-    "frameHeight": 62,
+    "frameWidth": 98,
+    "frameHeight": 104,
     "frameCount": 3,
-    "contentHeight": 48,
-    "scale": 0.46601941747572817,
+    "contentHeight": 100,
+    "scale": 0.8,
     "range": [
       8,
       11
@@ -55,48 +55,48 @@
   },
   "momo-hinamori-hurt": {
     "image": "/sprites/player/momo-hinamori/hurt.png",
-    "frameWidth": 74,
-    "frameHeight": 52,
+    "frameWidth": 167,
+    "frameHeight": 104,
     "frameCount": 2,
-    "contentHeight": 48,
+    "contentHeight": 100,
     "frameRate": 10,
-    "scale": 0.45714285714285713
+    "scale": 0.9523809523809523
   },
   "momo-hinamori-death": {
     "image": "/sprites/player/momo-hinamori/death.png",
-    "frameWidth": 74,
-    "frameHeight": 52,
+    "frameWidth": 167,
+    "frameHeight": 104,
     "frameCount": 5,
-    "contentHeight": 48,
+    "contentHeight": 100,
     "frameRate": 8,
-    "scale": 0.45714285714285713
+    "scale": 0.9523809523809523
   },
   "momo-hinamori-tobiume": {
     "image": "/sprites/player/momo-hinamori/tobiume.png",
-    "frameWidth": 171,
-    "frameHeight": 55,
+    "frameWidth": 379,
+    "frameHeight": 119,
     "frameCount": 12,
-    "contentHeight": 48,
-    "scale": 0.4444444444444444,
+    "contentHeight": 100,
+    "scale": 1,
     "frameRate": 12,
     "durationMs": 1000,
     "hitDelayMs": 500,
     "residualGreen": 0,
-    "pureBlack": 2771,
+    "pureBlack": 13762,
     "source": "momo-hinamori/jutsu shared-source-crop body-lock (fire expands right)"
   },
   "skill-tobiume": {
     "image": "/sprites/player/momo-hinamori/tobiume.png",
-    "frameWidth": 171,
-    "frameHeight": 55,
+    "frameWidth": 379,
+    "frameHeight": 119,
     "frameCount": 12,
-    "contentHeight": 48,
-    "scale": 0.4444444444444444,
+    "contentHeight": 100,
+    "scale": 1,
     "frameRate": 12,
     "durationMs": 1000,
     "hitDelayMs": 500,
     "residualGreen": 0,
-    "pureBlack": 2771,
+    "pureBlack": 13762,
     "source": "momo-hinamori/jutsu shared-source-crop body-lock (fire expands right)"
   }
 }

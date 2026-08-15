@@ -6,6 +6,7 @@ export interface MultiplayerUiState {
   transportName: string;
   localPlayerId: string | null;
   remoteCount: number;
+  nickname: string;
 }
 
 const initialState: MultiplayerUiState = {
@@ -13,7 +14,12 @@ const initialState: MultiplayerUiState = {
   transportName: 'stub',
   localPlayerId: null,
   remoteCount: 0,
+  nickname: 'Shinobi',
 };
+
+type ChatSender = (text: string) => void;
+
+let chatSender: ChatSender | null = null;
 
 const store = createStore<MultiplayerUiState>(initialState);
 
@@ -23,6 +29,7 @@ export const multiplayerStore = {
   getSnapshot: store.getSnapshot,
 
   reset(): void {
+    chatSender = null;
     store.setState({ ...initialState });
   },
 
@@ -30,16 +37,18 @@ export const multiplayerStore = {
     store.setState({ ...store.getSnapshot(), status: 'connecting', transportName });
   },
 
-  setConnected(localPlayerId: string, transportName: string): void {
+  setConnected(localPlayerId: string, transportName: string, nickname?: string): void {
     store.setState({
       ...store.getSnapshot(),
       status: 'connected',
       localPlayerId,
       transportName,
+      nickname: nickname?.trim() || store.getSnapshot().nickname,
     });
   },
 
   setDisconnected(): void {
+    chatSender = null;
     store.setState({
       ...store.getSnapshot(),
       status: 'disconnected',
@@ -54,5 +63,22 @@ export const multiplayerStore = {
 
   setRemoteCount(remoteCount: number): void {
     store.setState({ ...store.getSnapshot(), remoteCount });
+  },
+
+  /** GameScene registra o envio de chat via MultiplayerClient. */
+  registerChatSender(sender: ChatSender | null): void {
+    chatSender = sender;
+  },
+
+  sendChat(text: string): boolean {
+    if (!chatSender) return false;
+    const trimmed = text.trim();
+    if (!trimmed) return false;
+    chatSender(trimmed);
+    return true;
+  },
+
+  canChat(): boolean {
+    return chatSender != null && store.getSnapshot().status === 'connected';
   },
 };

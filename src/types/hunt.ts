@@ -29,6 +29,17 @@ export interface HuntDefinition {
   mapKey: MapKey;
   description: string;
   targets: HuntTarget[];
+  /**
+   * Duelo lateral: entra o próximo da lista (sem respawn do mesmo inimigo).
+   * Com `maxAlive` > 1, vários ficam no mapa ao mesmo tempo.
+   */
+  sequentialTargets?: boolean;
+  /** Quantos inimigos vivos ao mesmo tempo (default 1 se sequential). */
+  maxAlive?: number;
+  /** Delay (ms) entre cada entrada no modo sequencial. */
+  entryDelayMs?: number;
+  /** Alterna spawn nas bordas direita → esquerda → direita… */
+  alternatingSides?: boolean;
 }
 
 export interface HuntCatalog {

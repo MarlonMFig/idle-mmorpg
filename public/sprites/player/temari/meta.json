@@ -1,29 +1,29 @@
 {
   "temari-walk": {
     "image": "/sprites/player/temari/walk.png",
-    "frameWidth": 42,
-    "frameHeight": 52,
+    "frameWidth": 74,
+    "frameHeight": 92,
     "frameCount": 8,
-    "contentHeight": 48,
-    "scale": 0.5454545454545454,
+    "contentHeight": 95,
+    "scale": 1,
     "residualGreen": 0,
-    "pureBlack": 3040
+    "pureBlack": 10342
   },
   "temari-idle": {
     "image": "/sprites/player/temari/idle.png",
-    "frameWidth": 44,
-    "frameHeight": 52,
+    "frameWidth": 85,
+    "frameHeight": 99,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.5052631578947369
+    "contentHeight": 95,
+    "scale": 1
   },
   "temari-combo1": {
     "image": "/sprites/player/temari/combo1.png",
-    "frameWidth": 50,
-    "frameHeight": 52,
+    "frameWidth": 102,
+    "frameHeight": 106,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.47058823529411764,
+    "contentHeight": 95,
+    "scale": 1,
     "range": [
       0,
       5
@@ -31,11 +31,11 @@
   },
   "temari-combo2": {
     "image": "/sprites/player/temari/combo2.png",
-    "frameWidth": 50,
-    "frameHeight": 52,
+    "frameWidth": 102,
+    "frameHeight": 106,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.47058823529411764,
+    "contentHeight": 95,
+    "scale": 1,
     "range": [
       5,
       10
@@ -43,11 +43,11 @@
   },
   "temari-combo3": {
     "image": "/sprites/player/temari/combo3.png",
-    "frameWidth": 50,
-    "frameHeight": 52,
+    "frameWidth": 102,
+    "frameHeight": 106,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.47058823529411764,
+    "contentHeight": 95,
+    "scale": 1,
     "range": [
       10,
       16
@@ -55,55 +55,57 @@
   },
   "temari-hurt": {
     "image": "/sprites/player/temari/hurt.png",
-    "frameWidth": 61,
-    "frameHeight": 49,
+    "frameWidth": 148,
+    "frameHeight": 99,
     "frameCount": 2,
-    "contentHeight": 48,
+    "contentHeight": 95,
     "frameRate": 10,
-    "scale": 0.5454545454545454
+    "scale": 1.1585365853658536
   },
   "temari-death": {
     "image": "/sprites/player/temari/death.png",
-    "frameWidth": 61,
-    "frameHeight": 49,
+    "frameWidth": 148,
+    "frameHeight": 99,
     "frameCount": 3,
-    "contentHeight": 48,
+    "contentHeight": 95,
     "frameRate": 8,
-    "scale": 0.5454545454545454
+    "scale": 1.1585365853658536
   },
   "temari-kamaitachi": {
     "image": "/sprites/player/temari/kamaitachi.png",
-    "frameWidth": 78,
-    "frameHeight": 59,
+    "frameWidth": 182,
+    "frameHeight": 107,
     "frameCount": 14,
-    "contentHeight": 48,
-    "scale": 0.5454545454545454,
+    "contentHeight": 95,
+    "scale": 1.0326086956521738,
     "frameRate": 12,
     "durationMs": 1167,
     "hitDelayMs": 750,
     "residualGreen": 0,
-    "pureBlack": 6897
+    "pureBlack": 24460,
+    "originX": 0.489010989010989
   },
   "skill-kamaitachi": {
     "image": "/sprites/player/temari/kamaitachi.png",
-    "frameWidth": 78,
-    "frameHeight": 59,
+    "frameWidth": 182,
+    "frameHeight": 107,
     "frameCount": 14,
-    "contentHeight": 48,
-    "scale": 0.5454545454545454,
+    "contentHeight": 95,
+    "scale": 1.0326086956521738,
     "frameRate": 12,
     "durationMs": 1167,
     "hitDelayMs": 750,
     "residualGreen": 0,
-    "pureBlack": 6897
+    "pureBlack": 24460,
+    "originX": 0.489010989010989
   },
   "temari-kamaitachi-fx": {
     "image": "/sprites/player/temari/kamaitachi-fx.png",
-    "frameWidth": 88,
-    "frameHeight": 52,
+    "frameWidth": 171,
+    "frameHeight": 99,
     "frameCount": 13,
-    "contentHeight": 48,
-    "scale": 1.2972972972972974,
+    "contentHeight": 95,
+    "scale": 2.5675675675675675,
     "frameRate": 14,
     "durationMs": 929,
     "residualGreen": 0,
@@ -111,11 +113,11 @@
   },
   "skill-kamaitachi-fx": {
     "image": "/sprites/player/temari/kamaitachi-fx.png",
-    "frameWidth": 88,
-    "frameHeight": 52,
+    "frameWidth": 171,
+    "frameHeight": 99,
     "frameCount": 13,
-    "contentHeight": 48,
-    "scale": 1.2972972972972974,
+    "contentHeight": 95,
+    "scale": 2.5675675675675675,
     "frameRate": 14,
     "durationMs": 929,
     "residualGreen": 0,

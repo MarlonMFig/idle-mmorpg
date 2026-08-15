@@ -1,0 +1,107 @@
+{
+  "kenshin-walk": {
+    "image": "/sprites/player/kenshin/walk.png",
+    "frameWidth": 81,
+    "frameHeight": 94,
+    "frameCount": 8,
+    "contentHeight": 90,
+    "scale": 1.1111111111111112,
+    "originX": 0.5,
+    "residualGreen": 0,
+    "pureBlack": 7367
+  },
+  "kenshin-idle": {
+    "image": "/sprites/player/kenshin/idle.png",
+    "frameWidth": 58,
+    "frameHeight": 94,
+    "frameCount": 4,
+    "contentHeight": 90,
+    "scale": 1,
+    "originX": 0.46551724137931033
+  },
+  "kenshin-combo1": {
+    "image": "/sprites/player/kenshin/combo1.png",
+    "frameWidth": 188,
+    "frameHeight": 117,
+    "frameCount": 9,
+    "contentHeight": 90,
+    "scale": 1.3636363636363635,
+    "originX": 0.4627659574468085,
+    "range": [
+      0,
+      9
+    ]
+  },
+  "kenshin-combo2": {
+    "image": "/sprites/player/kenshin/combo2.png",
+    "frameWidth": 188,
+    "frameHeight": 117,
+    "frameCount": 9,
+    "contentHeight": 90,
+    "scale": 1.3636363636363635,
+    "originX": 0.4627659574468085,
+    "range": [
+      9,
+      18
+    ]
+  },
+  "kenshin-combo3": {
+    "image": "/sprites/player/kenshin/combo3.png",
+    "frameWidth": 188,
+    "frameHeight": 117,
+    "frameCount": 9,
+    "contentHeight": 90,
+    "scale": 1.3636363636363635,
+    "originX": 0.4627659574468085,
+    "range": [
+      18,
+      27
+    ]
+  },
+  "kenshin-hurt": {
+    "image": "/sprites/player/kenshin/hurt.png",
+    "frameWidth": 114,
+    "frameHeight": 94,
+    "frameCount": 1,
+    "contentHeight": 90,
+    "frameRate": 10,
+    "scale": 0.967741935483871
+  },
+  "kenshin-death": {
+    "image": "/sprites/player/kenshin/death.png",
+    "frameWidth": 114,
+    "frameHeight": 94,
+    "frameCount": 3,
+    "contentHeight": 90,
+    "frameRate": 8,
+    "scale": 0.967741935483871
+  },
+  "kenshin-ryusuisen": {
+    "image": "/sprites/player/kenshin/ryusuisen.png",
+    "frameWidth": 173,
+    "frameHeight": 96,
+    "frameCount": 24,
+    "contentHeight": 90,
+    "scale": 0.5521472392638037,
+    "frameRate": 12,
+    "durationMs": 2000,
+    "hitDelayMs": 917,
+    "residualGreen": 0,
+    "pureBlack": 6414,
+    "originX": 0.4161849710982659
+  },
+  "skill-ryusuisen": {
+    "image": "/sprites/player/kenshin/ryusuisen.png",
+    "frameWidth": 173,
+    "frameHeight": 96,
+    "frameCount": 24,
+    "contentHeight": 90,
+    "scale": 0.5521472392638037,
+    "frameRate": 12,
+    "durationMs": 2000,
+    "hitDelayMs": 917,
+    "residualGreen": 0,
+    "pureBlack": 6414,
+    "originX": 0.4161849710982659
+  }
+}

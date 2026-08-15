@@ -2,8 +2,9 @@
  * Uchiha Itachi walk — alpha-only per-frame sequence (6f side walk).
  * Clean transparent sources: NO black flood/peel. Never key pure black hair.
  *
- * Uniform global scale (max contentH → 48) so posed limbs do not shrink the
- * body across the cycle. contentH 48 → display scale 52 via walk.
+ * Uniform global scale so posed limbs do not shrink the body across the cycle.
+ *
+ * HQ: nativePixels — scaled so body density matches the idle contentHeight ruler.
  *
  * npm run itachi:walk
  * Input:  assets/naruto-source/nu/itachi/walk/frame_*.png
@@ -28,11 +29,14 @@ const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'itachi');
 const PREVIEW = path.join(ROOT, 'public', 'sprites', 'player', 'previews', 'itachi.png');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'itachi');
-const TARGET_BODY_H = 48;
+const HQ = { mode: 'match', metaPath: META_JSON, idleKey: 'itachi-idle' };
 const FRAME_RATE = 10;
 const EXPECTED = 6;
-/** Magenta QA: body height variance across walk frames must be ≤ this. */
-const MAX_BODY_H_VARIANCE = 2;
+/**
+ * Magenta QA: body height variance across walk frames, as a fraction of the
+ * body ruler (was 2px on the legacy 48px body — native bodies are much taller).
+ */
+const MAX_BODY_H_VARIANCE_RATIO = 2 / 48;
 
 function measureContentHeights(frames, fw, fh) {
   return frames.map((frame) => bbox(frame, fw, fh).height);
@@ -51,7 +55,7 @@ async function main() {
     keyed.map((k) => k.frame),
     keyed.map((k) => k.width),
     keyed.map((k) => k.height),
-    { targetBodyH: TARGET_BODY_H, pad: 2 },
+    { hq: HQ, pad: 2 },
   );
 
   const afterH = measureContentHeights(packed.frames, packed.frameWidth, packed.frameHeight);
@@ -61,16 +65,17 @@ async function main() {
       `(min=${Math.min(...afterH)} max=${Math.max(...afterH)} Δ=${bodyHVar})`,
   );
   console.log(
-    `globalScale=${packed.scale.toFixed(6)} from maxContentH=${packed.maxContentH} → target=${TARGET_BODY_H}`,
+    `HQ globalScale=${packed.scale.toFixed(6)} from maxContentH=${packed.maxContentH} → idle ruler=${packed.targetBodyH}`,
   );
   console.log(
     `cell fw=${packed.frameWidth} fh=${packed.frameHeight} contentH=${packed.contentHeight} ` +
       `scaledW=[${packed.scaledWidths.join(',')}] scaledH=[${packed.scaledHeights.join(',')}]`,
   );
 
-  if (bodyHVar > MAX_BODY_H_VARIANCE) {
+  const maxBodyHVar = Math.max(2, Math.round(packed.contentHeight * MAX_BODY_H_VARIANCE_RATIO));
+  if (bodyHVar > maxBodyHVar) {
     throw new Error(
-      `QA fail: body height variance ${bodyHVar}px > ${MAX_BODY_H_VARIANCE}px across walk frames`,
+      `QA fail: body height variance ${bodyHVar}px > ${maxBodyHVar}px across walk frames`,
     );
   }
 

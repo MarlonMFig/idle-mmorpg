@@ -18,6 +18,9 @@ processCuratedAlphaPack({
   qaDir: path.join(ROOT, 'assets-src', '_qa', ID),
   expected: { idle: 13, walk: 5, combo: 13, damage: 5, jutsu: 54 },
   comboSplits: [4, 4, 5],
+  // Kabuto corre agachado e ataca fletido: a bbox curta é pose, não zoom.
+  // Sem isto o packer estica walk/combo/damage até a altura do idle em pé.
+  sameRipZoom: true,
   jutsu: {
     file: 'senpo-hakugeki.png',
     metaKey: 'kabuto-senpo-hakugeki',

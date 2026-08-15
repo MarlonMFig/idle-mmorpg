@@ -33,7 +33,7 @@ export class IdleAiSystem {
       return;
     }
 
-    if (this.player.isBusy()) {
+    if (this.player.isBusy() || this.player.isDead()) {
       this.player.sprite.setVelocity(0, 0);
       return;
     }
@@ -51,7 +51,8 @@ export class IdleAiSystem {
       return;
     }
 
-    const attackDistance = PLAYER_ATTACK_RANGE * 0.9;
+    const scale = this.player.worldScale;
+    const attackDistance = PLAYER_ATTACK_RANGE * 0.9 * scale;
     const distance = Phaser.Math.Distance.Between(
       this.player.x,
       this.player.y,
@@ -87,9 +88,13 @@ export class IdleAiSystem {
       const waypoint = this.path[this.pathIndex];
       if (
         Phaser.Math.Distance.Between(this.player.x, this.player.y, waypoint.x, waypoint.y) >
-        WAYPOINT_REACHED_PX
+        WAYPOINT_REACHED_PX * this.player.worldScale
       ) {
-        this.player.moveToward(waypoint.x, waypoint.y, WAYPOINT_REACHED_PX);
+        this.player.moveToward(
+          waypoint.x,
+          waypoint.y,
+          WAYPOINT_REACHED_PX * this.player.worldScale,
+        );
         return;
       }
       this.pathIndex++;

@@ -21,13 +21,14 @@ const {
   updateMeta,
   writePng,
 } = require('./lib/alpha-frame-pack');
+const { hqAreaScale } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'gaara', 'combo');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'gaara');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'gaara');
-const TARGET_BODY_H = 48;
+const HQ = { hq: { mode: 'match', metaPath: META_JSON, idleKey: 'gaara-idle' } };
 const FRAME_RATE = 12;
 const EXPECTED = 15;
 
@@ -79,8 +80,10 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     norm.contentHeight,
-    TARGET_BODY_H,
+    HQ,
   );
+
+  const areaScale = hqAreaScale(scaled.contentHeight);
 
   // Sand wave frames have freckle/sand-orb multi-comps (intentional VFX).
   // Early hit frames stay body-tight; full strip allows sand debris.
@@ -98,6 +101,7 @@ async function main() {
       minOlivePerFrame: 0,
       minBluePerFrame: 0,
       minOpaquePerFrame: 60,
+      areaScale,
     },
   );
 
@@ -115,6 +119,7 @@ async function main() {
       minOlivePerFrame: 0,
       minBluePerFrame: 0,
       minOpaquePerFrame: 70,
+      areaScale,
     },
   );
   console.log(
@@ -172,6 +177,7 @@ async function main() {
         minOlivePerFrame: 0,
         minBluePerFrame: 0,
         minOpaquePerFrame: 60,
+        areaScale,
       },
     );
     if (qa.residualGreen > 0) {

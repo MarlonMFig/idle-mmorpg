@@ -1,0 +1,28 @@
+{
+  "mapKey": "huntSalaDoTempo",
+  "slug": "hunt-sala-do-tempo",
+  "label": "Sala do Tempo",
+  "image": "/maps/hunt-sala-do-tempo.png",
+  "foreground": "/maps/hunt-sala-do-tempo-fg.png",
+  "tmx": "/maps/hunt-sala-do-tempo.tmx",
+  "width": 3840,
+  "height": 2160,
+  "cols": 240,
+  "rows": 135,
+  "lateralFloorY": 1464,
+  "layoutScale": 5.75,
+  "spawn": {
+    "x": 1920,
+    "y": 1464
+  },
+  "enemySpawns": [
+    {
+      "x": 3680,
+      "y": 1464
+    },
+    {
+      "x": 160,
+      "y": 1464
+    }
+  ]
+}

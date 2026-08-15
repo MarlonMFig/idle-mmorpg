@@ -26,13 +26,14 @@ const {
   isChromaGreen,
   bbox,
 } = require('./lib/alpha-frame-pack');
+const { hqAreaScale } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'shikamaru', 'jutsu');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'shikamaru');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'shikamaru');
-const TARGET_BODY_H = 48;
+const HQ = { hq: { mode: 'match', metaPath: META_JSON, idleKey: 'shikamaru-idle' } };
 const FRAME_RATE = 10;
 const EXPECTED = 21;
 
@@ -114,8 +115,9 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     midBody,
-    TARGET_BODY_H,
+    HQ,
   );
+  const areaScale = hqAreaScale(scaled.contentHeight);
   const sheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
 
   // Shadow VFX is intentional multi-component — disable single-comp fail
@@ -131,6 +133,7 @@ async function main() {
       minOlivePerFrame: 5,
       minBluePerFrame: 0,
       minOpaquePerFrame: 40,
+      areaScale,
     },
   );
 

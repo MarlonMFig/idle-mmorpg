@@ -6,8 +6,11 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const { keyBackground, isContent } = require('./chroma-black-bg');
+const { resolveHqScale, resolvePackContentHeight, NATIVE_PIXELS } = require('./strip-hq-scale');
 
-const TARGET_BODY_H = 48;
+const LEGACY_TARGET_BODY_H = 48;
+/** @deprecated Prefer HQ via resolveHqScale; kept for callers reading TARGET_BODY_H. */
+const TARGET_BODY_H = NATIVE_PIXELS ? LEGACY_TARGET_BODY_H : LEGACY_TARGET_BODY_H;
 
 async function loadKeyed(inputPath) {
   const { data, info } = await sharp(inputPath)
@@ -217,11 +220,16 @@ function normalize(cut, pad = 2) {
   return { frames, cellW, cellH, contentHeight: contentH0 || cut[0].bh };
 }
 
-async function scaleFrames(frames, cellW, cellH, contentHeight) {
-  const scale = Math.min(1, TARGET_BODY_H / Math.max(1, contentHeight));
+async function scaleFrames(frames, cellW, cellH, contentHeight, scaleOpts = { mode: 'idle' }) {
+  const scale = resolveHqScale(contentHeight, scaleOpts);
   const outW = Math.max(1, Math.round(cellW * scale));
   const outH = Math.max(1, Math.round(cellH * scale));
-  const outContent = Math.max(1, Math.round(contentHeight * scale));
+  const outContent = resolvePackContentHeight(contentHeight, scale, scaleOpts);
+  if (NATIVE_PIXELS) {
+    console.log(
+      `HQ gaara-pipeline scale=${scale.toFixed(4)} contentH=${outContent} ${cellW}x${cellH}→${outW}x${outH}`,
+    );
+  }
   const out = [];
   for (const frame of frames) {
     const { data: d } = await sharp(frame, {

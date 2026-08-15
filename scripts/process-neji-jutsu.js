@@ -25,6 +25,11 @@ const {
   isChromaGreen,
   countOpaque,
 } = require('./lib/alpha-frame-pack');
+const {
+  resolveHqScale,
+  resolvePackContentHeight,
+  hqLinearScale,
+} = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'neji', 'jutsu-completo');
@@ -32,7 +37,7 @@ const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'neji');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'neji');
 const OUT_NAME = 'kaiten.png';
-const TARGET_BODY_H = 48;
+const HQ = { mode: 'match', metaPath: META_JSON, idleKey: 'neji-walk' };
 const FRAME_RATE = 12;
 const PAD = 2;
 const EXPECTED = 18;
@@ -496,18 +501,21 @@ async function main() {
     `body-lock pack fw=${norm.frameWidth} fh=${norm.frameHeight} contentH=${norm.contentHeight.toFixed(1)} destBodyCx=${norm.destBodyCx} destFeetY=${norm.destFeetY}`,
   );
 
-  // Scale standing body → 48. Cap total frame height for huge dome.
-  let scale = TARGET_BODY_H / Math.max(1, norm.contentHeight);
+  // Scale standing body → shared body bar. Cap total frame height for huge dome.
+  const bodyH = resolvePackContentHeight(norm.contentHeight, 1, HQ);
+  const linear = hqLinearScale(bodyH);
+  const maxFrameH = Math.round(MAX_FRAME_H * linear);
+  let scale = resolveHqScale(norm.contentHeight, HQ);
   const walk = resolveWalkScale();
   if (walk && Math.abs(scale - walk.scale) / walk.scale < 0.12) {
     scale = walk.scale;
     console.log(`snapped to walk scale ${scale.toFixed(6)} (${walk.source})`);
   }
-  if (norm.frameHeight * scale > MAX_FRAME_H) {
-    scale = MAX_FRAME_H / norm.frameHeight;
-    console.log(`capped by MAX_FRAME_H → scale=${scale.toFixed(6)}`);
+  if (norm.frameHeight * scale > maxFrameH) {
+    scale = maxFrameH / norm.frameHeight;
+    console.log(`capped by maxFrameH=${maxFrameH} → scale=${scale.toFixed(6)}`);
   }
-  console.log(`final scale=${scale.toFixed(6)}`);
+  console.log(`final scale=${scale.toFixed(6)} bodyH=${bodyH}`);
 
   const scaled = await scaleNearest(norm.frames, norm.frameWidth, norm.frameHeight, scale);
   const sheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
@@ -547,7 +555,9 @@ async function main() {
 
     const gash = maxVerticalGash(fr, scaled.frameWidth, scaled.frameHeight);
     // Dome peak has intentional spin gaps / streaks — allow slightly longer runs.
-    const gashLimit = i >= DOME_PEAK_FROM && i <= DOME_PEAK_TO ? 14 : 8;
+    const gashLimit = Math.round(
+      (i >= DOME_PEAK_FROM && i <= DOME_PEAK_TO ? 14 : 8) * linear,
+    );
     if (gash >= gashLimit) {
       failures.push(`f${i + 1} vertical gash run=${gash} (limit ${gashLimit})`);
     }
@@ -585,12 +595,12 @@ async function main() {
   if (stanceBlack < 80) failures.push(`stance pure black too low (${stanceBlack}) — hair keyed?`);
 
   if (pal.residualGreen > 0) failures.push(`sheet residualGreen=${pal.residualGreen}`);
-  if (feetStats.std > FEET_Y_STD_MAX) {
+  if (feetStats.std > FEET_Y_STD_MAX * linear) {
     failures.push(
       `feetY drift std=${feetStats.std.toFixed(3)} range=[${feetStats.min},${feetStats.max}]`,
     );
   }
-  if (bodyCxStats.std > 2.5) {
+  if (bodyCxStats.std > 2.5 * linear) {
     failures.push(
       `stance bodyCx drift std=${bodyCxStats.std.toFixed(3)} range=[${bodyCxStats.min.toFixed(1)},${bodyCxStats.max.toFixed(1)}]`,
     );
@@ -636,7 +646,7 @@ async function main() {
     frameWidth: scaled.frameWidth,
     frameHeight: scaled.frameHeight,
     frameCount: n,
-    contentHeight: TARGET_BODY_H,
+    contentHeight: bodyH,
     scale: scaled.scale,
     frameRate: FRAME_RATE,
     durationMs,

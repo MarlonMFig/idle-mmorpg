@@ -3,6 +3,7 @@
  * Roda com: npx --yes tsx scripts/verify-sealing.ts
  */
 import { SEALING_SCROLL_ITEM_ID } from '../src/constants/sealing';
+import { helperStore } from '../src/stores/helper-store';
 import { inventoryStore } from '../src/stores/inventory-store';
 import { teamStore } from '../src/stores/team-store';
 import { trySealEnemy } from '../src/systems/sealing';
@@ -42,14 +43,11 @@ teamStore.reset('naruto-classic');
 assert(teamStore.getSnapshot().collection.length === 1, 'starter na coleção');
 assert(teamStore.getSnapshot().teamIds.length === 1, 'starter na equipe');
 
-let result = trySealEnemy(enemy(), () => 0);
-// reset dá 20 scrolls — mas teste limpa? inventory reset com 20. força zerar
-// ensure no scrolls: discard by resetting slots via remove
 while (inventoryStore.countItem(SEALING_SCROLL_ITEM_ID) > 0) {
   inventoryStore.removeItem(SEALING_SCROLL_ITEM_ID, inventoryStore.countItem(SEALING_SCROLL_ITEM_ID));
 }
 
-result = trySealEnemy(enemy(), () => 0);
+let result = trySealEnemy(enemy(), () => 0);
 assert(result.kind === 'skipped' && result.reason === 'no-scroll', 'sem pergaminho');
 
 inventoryStore.addItem(SEALING_SCROLL_ITEM_ID, 5);
@@ -60,9 +58,22 @@ assert(result.kind === 'failed', 'falha RNG');
 assert(inventoryStore.countItem(SEALING_SCROLL_ITEM_ID) === 4, 'consumiu 1 na falha');
 
 const beforeCount = teamStore.getSnapshot().collection.length;
-result = trySealEnemy(enemy(), () => 0);
+const sakuraEnemy = enemy({
+  level: 40,
+  sealable: {
+    characterId: 'wonsr-vocation-30',
+    sourceId: 'wonsr-vocation-30',
+    name: 'Sakura Haruno',
+    lookType: 1423,
+    level: 40,
+  },
+});
+result = trySealEnemy(sakuraEnemy, () => 0);
 assert(result.kind === 'success', 'sucesso');
 assert(teamStore.getSnapshot().collection.length === beforeCount + 1, 'cópia na coleção');
+const sealedId = result.kind === 'success' ? result.characterId : '';
+const sealedSakura = teamStore.getSnapshot().collection.find((entry) => entry.id === sealedId);
+assert(sealedSakura?.level === 1, `selado começa Nv.1, got ${sealedSakura?.level}`);
 assert(inventoryStore.countItem(SEALING_SCROLL_ITEM_ID) === 3, 'consumiu 1 no sucesso');
 
 // Duplicatas permitidas (forja)
@@ -101,5 +112,12 @@ assert(!teamStore.addToTeam(fourth.id), 'limite 3');
 assert(teamStore.setActive(sakuraIds[0]), 'troca ativo');
 assert(teamStore.getActive()?.id === sakuraIds[0], 'ativo ok');
 assert(!teamStore.removeFromTeam(sakuraIds[0]), 'não remove ativo');
+
+helperStore.setAutoSeal(false);
+result = trySealEnemy(enemy(), () => 0);
+assert(result.kind === 'skipped' && result.reason === 'disabled', 'auto off bloqueia');
+result = trySealEnemy(enemy(), () => 0, { manual: true });
+assert(result.kind === 'success', 'manual ignora auto off');
+helperStore.setAutoSeal(true);
 
 console.log('verify-sealing: ok');

@@ -15,13 +15,13 @@ const {
   isGreenBg,
   fillInteriorHoles,
 } = require('./lib/chroma-green-bg');
+const { resolveHqScale, resolvePackContentHeight, NATIVE_PIXELS } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'hinata-combo-sheet.png');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'hinata');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'hinata');
-const TARGET_BODY_H = 48;
 const FRAME_RATE = 12;
 
 function greenness(r, g, b) {
@@ -209,11 +209,14 @@ function normalize(cut, pad = 2) {
   return { frames, cellW, cellH, contentHeight: contentH0 || cut[0].bh };
 }
 
-async function scaleFrames(frames, cellW, cellH, contentHeight) {
-  const scale = TARGET_BODY_H / Math.max(1, contentHeight);
+async function scaleFrames(frames, cellW, cellH, contentHeight, scaleOpts = { mode: 'match', metaPath: META_JSON, idleKey: 'hinata-idle' }) {
+  const scale = resolveHqScale(contentHeight, scaleOpts);
   const outW = Math.max(1, Math.round(cellW * scale));
   const outH = Math.max(1, Math.round(cellH * scale));
-  const outContent = Math.max(1, Math.round(contentHeight * scale));
+  const outContent = resolvePackContentHeight(contentHeight, scale, scaleOpts);
+  if (NATIVE_PIXELS) {
+    console.log(`HQ scale=${scale.toFixed(4)} contentH=${outContent} cell ${cellW}x${cellH} → ${outW}x${outH}`);
+  }
   const out = [];
   for (const frame of frames) {
     const { data: d } = await sharp(frame, {

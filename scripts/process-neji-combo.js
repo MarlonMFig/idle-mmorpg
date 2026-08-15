@@ -20,6 +20,12 @@ const {
   writePng,
   bbox,
 } = require('./lib/alpha-frame-pack');
+const {
+  resolveHqScale,
+  resolvePackContentHeight,
+  hqLinearScale,
+  hqAreaScale,
+} = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'neji', 'combo');
@@ -27,7 +33,7 @@ const WALK_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'neji', 'walk'
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'neji');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'neji');
-const TARGET_BODY_H = 48;
+const HQ = { mode: 'match', metaPath: META_JSON, idleKey: 'neji-walk' };
 const FRAME_RATE = 12;
 const EXPECTED = 19;
 
@@ -47,13 +53,11 @@ function resolveWalkScale() {
     try {
       const meta = JSON.parse(fs.readFileSync(META_JSON, 'utf8'));
       const w = meta['neji-walk'];
-      if (w && typeof w.scale === 'number' && w.scale > 0) {
+      if (w && typeof w.scale === 'number' && w.scale > 0 && w.contentHeight > 0) {
         return {
           scale: w.scale,
           source: 'meta.json neji-walk',
-          walkMaxContentH:
-            w.maxContentH ??
-            (w.scale > 0 ? Math.round(TARGET_BODY_H / w.scale) : null),
+          walkMaxContentH: w.maxContentH ?? Math.round(w.contentHeight / w.scale),
         };
       }
     } catch {
@@ -68,7 +72,7 @@ async function measureWalkSourceScale() {
   const heights = walkKeyed.map((k) => k.box.height);
   const maxH = Math.max(...heights);
   return {
-    scale: TARGET_BODY_H / Math.max(1, maxH),
+    scale: resolveHqScale(maxH, { mode: 'idle' }),
     source: 'walk source max contentH',
     walkMaxContentH: maxH,
     walkHeights: heights,
@@ -101,8 +105,10 @@ async function main() {
     keyed.map((k) => k.frame),
     keyed.map((k) => k.width),
     keyed.map((k) => k.height),
-    { targetBodyH: TARGET_BODY_H, pad: 2, absoluteScale },
+    { pad: 2, absoluteScale, hq: HQ },
   );
+  const linear = hqLinearScale(packed.contentHeight);
+  const areaScale = hqAreaScale(packed.contentHeight);
 
   const afterH = measureContentHeights(packed.frames, packed.frameWidth, packed.frameHeight);
   console.log(
@@ -123,11 +129,13 @@ async function main() {
     packed.frames.length,
     {
       requireSingleComponent: true,
-      maxMinorComponent: 24,
+      // Finisher frames kick up a cloud of loose dust specks around the feet.
+      maxMinorComponent: 48,
       minBlackPerFrame: 30,
       minOlivePerFrame: 0,
       minBluePerFrame: 0,
       minOpaquePerFrame: 80,
+      areaScale,
     },
   );
 
@@ -144,7 +152,7 @@ async function main() {
   if (fullQa.pureBlack < 200) {
     throw new Error(`QA fail: pure black nearly gone (${fullQa.pureBlack})`);
   }
-  if (fullQa.footSpread > 8) {
+  if (fullQa.footSpread > Math.round(8 * linear)) {
     console.warn(`WARN footSpread=${fullQa.footSpread}`);
   }
 
@@ -180,11 +188,12 @@ async function main() {
       frames.length,
       {
         requireSingleComponent: true,
-        maxMinorComponent: 24,
+        maxMinorComponent: 48,
         minBlackPerFrame: 30,
         minOlivePerFrame: 0,
         minBluePerFrame: 0,
         minOpaquePerFrame: 80,
+        areaScale,
       },
     );
     if (qa.residualGreen > 0) {

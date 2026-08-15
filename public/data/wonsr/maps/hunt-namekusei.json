@@ -1,0 +1,28 @@
+{
+  "mapKey": "huntNamekusei",
+  "slug": "hunt-namekusei",
+  "label": "Planeta Namekusei",
+  "image": "/maps/hunt-namekusei.png",
+  "foreground": "/maps/hunt-namekusei-fg.png",
+  "tmx": "/maps/hunt-namekusei.tmx",
+  "width": 3840,
+  "height": 2160,
+  "cols": 240,
+  "rows": 135,
+  "lateralFloorY": 1384,
+  "layoutScale": 5.75,
+  "spawn": {
+    "x": 1920,
+    "y": 1384
+  },
+  "enemySpawns": [
+    {
+      "x": 3680,
+      "y": 1384
+    },
+    {
+      "x": 160,
+      "y": 1384
+    }
+  ]
+}

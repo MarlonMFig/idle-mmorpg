@@ -9,6 +9,7 @@
 const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
+const { resolveHqTargetBodyH, snapNativeScale } = require('./strip-hq-scale');
 
 const ALPHA_KEEP = 16;
 
@@ -112,11 +113,23 @@ function normalize(frames, widths, heights, { pad = 2, contentFromN = 2 } = {}) 
   };
 }
 
-async function scaleFrames(frames, fw, fh, contentHeight, targetBodyH = 48) {
-  const scale = targetBodyH / Math.max(1, contentHeight);
+/**
+ * `targetOrOpts` accepts either a fixed body height (legacy) or
+ * `{ hq: { mode, metaPath, idleKey } }` for HQ native pixels, where the ruler
+ * anim resolves to scale 1 and the rest match its contentHeight.
+ */
+async function scaleFrames(frames, fw, fh, contentHeight, targetOrOpts = 48) {
+  const hq = typeof targetOrOpts === 'object' && targetOrOpts ? targetOrOpts.hq : null;
+  const bodyH = hq
+    ? resolveHqTargetBodyH(contentHeight, hq)
+    : typeof targetOrOpts === 'number'
+      ? targetOrOpts
+      : 48;
+  const rawScale = bodyH / Math.max(1, contentHeight);
+  const scale = hq ? snapNativeScale(rawScale, contentHeight) : rawScale;
   const outW = Math.max(1, Math.round(fw * scale));
   const outH = Math.max(1, Math.round(fh * scale));
-  const outContent = Math.max(1, Math.round(contentHeight * scale));
+  const outContent = hq ? bodyH : Math.max(1, Math.round(contentHeight * scale));
   const out = [];
   for (const frame of frames) {
     const { data } = await sharp(frame, {
@@ -215,28 +228,63 @@ async function packUniformGlobalScale(
     refContentH = null,
     allowOversizedFrames = false,
     alignX = 'bbox',
+    /**
+     * Scale the whole source canvas (no bbox crop). Keeps the artist's ground
+     * line so walk/run cycles don't hop when hair/sword/trailing-foot pixels
+     * sit below the planted foot in some frames.
+     */
+    fullFrame = false,
+    /** Keep Namekian / costume greens (skip screen-green punch-out after resize). */
+    preserveCostumeGreen = false,
+    /**
+     * Keep the source alpha ramp instead of binarizing at 128. Pixel-art bodies
+     * want hard alpha; HD VFX (additive glows, slash trails) lose all their
+     * feathering and turn into flat blobs without this.
+     */
+    softAlpha = false,
+    /**
+     * HQ native pixels (opt-in). `{ mode:'idle'|'match', metaPath, idleKey }`
+     * replaces the fixed `targetBodyH` ruler with the character's own body:
+     * the ruler anim resolves to scale 1, everything else matches its
+     * contentHeight. Omit to keep legacy fixed-target behaviour.
+     */
+    hq = null,
   } = {},
 ) {
-  const boxes = frames.map((frame, i) => bbox(frame, widths[i], heights[i]));
+  const boxes = frames.map((frame, i) => {
+    if (fullFrame) {
+      return {
+        minX: 0,
+        minY: 0,
+        maxX: widths[i] - 1,
+        maxY: heights[i] - 1,
+        width: widths[i],
+        height: heights[i],
+      };
+    }
+    return bbox(frame, widths[i], heights[i]);
+  });
   const srcHeights = boxes.map((b) => b.height);
   const srcWidths = boxes.map((b) => b.width);
   const maxContentH = Math.max(...srcHeights);
+  const bodyH = hq ? resolveHqTargetBodyH(maxContentH, hq) : targetBodyH;
   let scale;
   if (absoluteScale != null && absoluteScale > 0) {
     scale = absoluteScale;
     // Walk density can overshoot on taller poses (idle hair / raised arms).
-    // Cap so no frame body exceeds targetBodyH — skip for body+VFX jutsus.
+    // Cap so no frame body exceeds bodyH — skip for body+VFX jutsus.
     if (!allowOversizedFrames) {
       const projected = maxContentH * scale;
-      if (projected > targetBodyH) {
-        scale = targetBodyH / Math.max(1, maxContentH);
+      if (projected > bodyH) {
+        scale = bodyH / Math.max(1, maxContentH);
       }
     }
   } else if (refContentH != null && refContentH > 0) {
-    scale = targetBodyH / refContentH;
+    scale = bodyH / refContentH;
   } else {
-    scale = targetBodyH / Math.max(1, maxContentH);
+    scale = bodyH / Math.max(1, maxContentH);
   }
+  if (hq) scale = snapNativeScale(scale, maxContentH);
 
   const crops = [];
   for (let i = 0; i < frames.length; i += 1) {
@@ -264,14 +312,15 @@ async function packUniformGlobalScale(
       .toBuffer({ resolveWithObject: true });
 
     for (let p = 0; p < data.length; p += 4) {
-      if (data[p + 3] < 128) {
+      const cut = softAlpha ? ALPHA_KEEP : 128;
+      if (data[p + 3] < cut) {
         data[p] = 0;
         data[p + 1] = 0;
         data[p + 2] = 0;
         data[p + 3] = 0;
       } else {
-        data[p + 3] = 255;
-        if (isChromaGreen(data[p], data[p + 1], data[p + 2])) {
+        if (!softAlpha) data[p + 3] = 255;
+        if (!preserveCostumeGreen && isChromaGreen(data[p], data[p + 1], data[p + 2])) {
           data[p] = 0;
           data[p + 1] = 0;
           data[p + 2] = 0;
@@ -319,12 +368,15 @@ async function packUniformGlobalScale(
 
   const scaledHeights = crops.map((c) => c.height);
   const scaledWidths = crops.map((c) => c.width);
+  const anchorX = destFeetX != null ? destFeetX : fw / 2;
 
   return {
     frames: packed,
     frameWidth: fw,
     frameHeight: fh,
-    contentHeight: targetBodyH,
+    contentHeight: bodyH,
+    /** Resolved body ruler (equals targetBodyH unless `hq` is set). */
+    targetBodyH: bodyH,
     scale,
     boxes,
     srcHeights,
@@ -333,6 +385,9 @@ async function packUniformGlobalScale(
     scaledWidths,
     maxContentH,
     alignX,
+    /** Pixel X of stance feet (or frame center) — use as originX = anchorX / fw. */
+    anchorX,
+    originX: anchorX / Math.max(1, fw),
   };
 }
 
@@ -437,6 +492,12 @@ function isBlueDetail(r, g, b) {
   return false;
 }
 
+/**
+ * `areaScale` rescales the pixel-area budgets, which were all tuned against the
+ * legacy 48px body. Native-pixel packs keep the same silhouette but many more
+ * pixels, so area grows with the square of the body ratio — pass
+ * `hqAreaScale(contentHeight)` instead of re-tuning every threshold by hand.
+ */
 function qaSheet(sheetData, sheetW, fh, fw, n, opts = {}) {
   const {
     requireSingleComponent = true,
@@ -445,7 +506,9 @@ function qaSheet(sheetData, sheetW, fh, fw, n, opts = {}) {
     minOlivePerFrame = 10,
     minBluePerFrame = 3,
     minOpaquePerFrame = 60,
+    areaScale = 1,
   } = opts;
+  const minorBudget = Math.round(maxMinorComponent * areaScale);
 
   let residualGreen = 0;
   let opaque = 0;
@@ -504,14 +567,12 @@ function qaSheet(sheetData, sheetW, fh, fw, n, opts = {}) {
     if (frameBlue < minBluePerFrame) {
       throw new Error(`Frame ${f} blue sandals/wrap missing (${frameBlue}px)`);
     }
-    if (requireSingleComponent) {
-      if (comps.length > 1) {
-        const minor = comps.slice(1).reduce((s, c) => s + c, 0);
-        if (minor > maxMinorComponent) {
-          throw new Error(
-            `Frame ${f} disconnected body nComps=${comps.length} top=${comps[0]} minor=${minor} sizes=${comps.join(',')}`,
-          );
-        }
+    if (requireSingleComponent && comps.length > 1) {
+      const minor = comps.slice(1).reduce((s, c) => s + c, 0);
+      if (minor > minorBudget) {
+        throw new Error(
+          `Frame ${f} disconnected body nComps=${comps.length} top=${comps[0]} minor=${minor} sizes=${comps.join(',')}`,
+        );
       }
     }
   }
@@ -585,7 +646,7 @@ async function writeFrameCrops(sheet, scaled, qaDir, prefix, scale = 4) {
   }
 }
 
-async function loadAlphaFrames(inputDir, expected = null) {
+async function loadAlphaFrames(inputDir, expected = null, { chromaKey = true } = {}) {
   if (!fs.existsSync(inputDir)) {
     throw new Error(`Missing input dir: ${inputDir}`);
   }
@@ -611,7 +672,23 @@ async function loadAlphaFrames(inputDir, expected = null) {
     ].map(([x, y]) => data[(y * info.width + x) * 4 + 3]);
     const alphaCorners = corners.every((a) => a < ALPHA_KEEP);
 
-    const frame = preserveFrame(data);
+    // chromaKey:false — Namekian / costume greens must survive (Piccolo).
+    let frame;
+    if (chromaKey) {
+      frame = preserveFrame(data);
+    } else {
+      frame = Buffer.from(data);
+      for (let i = 0; i < frame.length; i += 4) {
+        if (frame[i + 3] < ALPHA_KEEP) {
+          frame[i] = 0;
+          frame[i + 1] = 0;
+          frame[i + 2] = 0;
+          frame[i + 3] = 0;
+        } else {
+          frame[i + 3] = 255;
+        }
+      }
+    }
     const box = bbox(frame, info.width, info.height);
     const opaque = countOpaque(frame);
     if (opaque < 80 || box.width < 4 || box.height < 8) {

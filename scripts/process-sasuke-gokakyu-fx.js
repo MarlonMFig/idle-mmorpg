@@ -23,6 +23,7 @@ const {
   countOpaque,
   isChromaGreen,
 } = require('./lib/alpha-frame-pack');
+const { resolveHqFxTargetMaxSide } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const LOCAL_SRC_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'sasuke');
@@ -38,7 +39,7 @@ const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'sasuke');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'sasuke');
 const FLIGHT_FRAME_COUNT = 7;
-const TARGET_MAX_SIDE = 72;
+const LEGACY_FX_MAX_SIDE = 72;
 const PAD = 2;
 /** Take first N fire blobs from top rows (ignore ember strip under black label). */
 const MAX_FRAMES = 12;
@@ -229,7 +230,9 @@ async function main() {
   console.log(`usable crops=${crops.length} (dropped tiny blobs)`);
 
   const maxSide = Math.max(...crops.map((c) => Math.max(c.width, c.height)));
-  const scale = Math.min(1, TARGET_MAX_SIDE / maxSide);
+  const TARGET_MAX_SIDE = resolveHqFxTargetMaxSide(META_JSON, 'sasuke-idle', LEGACY_FX_MAX_SIDE);
+  console.log(`HQ FX targetMaxSide=${TARGET_MAX_SIDE} (legacy ${LEGACY_FX_MAX_SIDE})`);
+  const scale = TARGET_MAX_SIDE / Math.max(1, maxSide);
   const scaled = crops.map((c) => nearestScale(c.data, c.width, c.height, scale));
   const fw = Math.max(...scaled.map((s) => s.width)) + PAD * 2;
   const fh = Math.max(...scaled.map((s) => s.height)) + PAD * 2;

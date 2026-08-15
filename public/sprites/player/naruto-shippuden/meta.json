@@ -1,0 +1,102 @@
+{
+  "naruto-shippuden-walk": {
+    "image": "/sprites/player/naruto-shippuden/walk.png",
+    "frameWidth": 91,
+    "frameHeight": 112,
+    "frameCount": 6,
+    "contentHeight": 104,
+    "scale": 1,
+    "residualGreen": 0,
+    "pureBlack": 6491
+  },
+  "naruto-shippuden-idle": {
+    "image": "/sprites/player/naruto-shippuden/idle.png",
+    "frameWidth": 83,
+    "frameHeight": 108,
+    "frameCount": 6,
+    "contentHeight": 104,
+    "scale": 1
+  },
+  "naruto-shippuden-combo1": {
+    "image": "/sprites/player/naruto-shippuden/combo1.png",
+    "frameWidth": 115,
+    "frameHeight": 108,
+    "frameCount": 4,
+    "contentHeight": 104,
+    "scale": 1,
+    "range": [
+      0,
+      4
+    ]
+  },
+  "naruto-shippuden-combo2": {
+    "image": "/sprites/player/naruto-shippuden/combo2.png",
+    "frameWidth": 115,
+    "frameHeight": 108,
+    "frameCount": 4,
+    "contentHeight": 104,
+    "scale": 1,
+    "range": [
+      4,
+      8
+    ]
+  },
+  "naruto-shippuden-combo3": {
+    "image": "/sprites/player/naruto-shippuden/combo3.png",
+    "frameWidth": 115,
+    "frameHeight": 108,
+    "frameCount": 4,
+    "contentHeight": 104,
+    "scale": 1,
+    "range": [
+      8,
+      12
+    ]
+  },
+  "naruto-shippuden-hurt": {
+    "image": "/sprites/player/naruto-shippuden/hurt.png",
+    "frameWidth": 136,
+    "frameHeight": 102,
+    "frameCount": 2,
+    "contentHeight": 104,
+    "frameRate": 10,
+    "scale": 1
+  },
+  "naruto-shippuden-death": {
+    "image": "/sprites/player/naruto-shippuden/death.png",
+    "frameWidth": 136,
+    "frameHeight": 102,
+    "frameCount": 3,
+    "contentHeight": 104,
+    "frameRate": 8,
+    "scale": 1
+  },
+  "naruto-shippuden-rasengan": {
+    "image": "/sprites/player/naruto-shippuden/rasengan-shippuden.png",
+    "frameWidth": 319,
+    "frameHeight": 192,
+    "frameCount": 38,
+    "contentHeight": 104,
+    "scale": 0.7878787878787878,
+    "frameRate": 12,
+    "durationMs": 3167,
+    "hitDelayMs": 3000,
+    "residualGreen": 0,
+    "pureBlack": 38362,
+    "originX": 0.567398119122257
+  },
+  "skill-oodama-rasengan": {
+    "image": "/sprites/player/naruto-shippuden/rasengan-shippuden.png",
+    "frameWidth": 319,
+    "frameHeight": 192,
+    "frameCount": 38,
+    "contentHeight": 104,
+    "scale": 0.7878787878787878,
+    "frameRate": 12,
+    "durationMs": 3167,
+    "hitDelayMs": 3000,
+    "residualGreen": 0,
+    "pureBlack": 38362,
+    "originX": 0.567398119122257
+  }
+}

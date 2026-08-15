@@ -1,12 +1,13 @@
 import * as Phaser from 'phaser';
-import { applyForcedHuntLevels } from '@/constants/combat';
+import { applyForcedHuntLevels, ENEMY_CORPSE_MS } from '@/constants/combat';
 import { ENEMY_SPRITE_URL, ENEMY_TEXTURE_KEY } from '@/constants/enemy';
 import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
 import { resolveAnimeId } from '@/data/anime';
 import { buildAnimeHuntLoot } from '@/data/anime-loot';
+import { characterLateralOrigin } from '@/data/character-packs';
 import { getCuratedMapPack } from '@/data/curated-map-sprites';
 import { getEnemiesForMap } from '@/data/enemies';
-import { getWonsrRenderedMap } from '@/data/wonsr-rendered-maps';
+import { combatLayoutScale, getWonsrRenderedMap } from '@/data/wonsr-rendered-maps';
 import {
   ensureOutfitWalkAnims,
   outfitIdleFrame,
@@ -46,6 +47,16 @@ export class EnemyManager {
   private readonly enemies = new Map<string, Enemy>();
   private mapKey: MapKey | null = null;
   private collisionLayer: Phaser.Tilemaps.TilemapLayer | null = null;
+  /** Fila de duelo lateral (direita → esquerda, em ciclo). */
+  private duelHuntId: string | null = null;
+  private duelTargetIndex = 0;
+  private duelSide = 0;
+  private duelMaxAlive = 1;
+  private duelEntryDelayMs = 0;
+  private duelSpawnSeq = 0;
+  private duelLeft: { x: number; y: number } | null = null;
+  private duelRight: { x: number; y: number } | null = null;
+  private duelTimers: Phaser.Time.TimerEvent[] = [];
 
   constructor(private readonly scene: Phaser.Scene) {}
 
@@ -72,10 +83,13 @@ export class EnemyManager {
     return this.list();
   }
 
-  update(time: number): void {
+  update(time: number, playerX?: number, playerY?: number): number[] {
+    const hits: number[] = [];
     for (const enemy of this.enemies.values()) {
-      enemy.update(time);
+      const damage = enemy.update(time, playerX, playerY);
+      if (damage != null && damage > 0) hits.push(damage);
     }
+    return hits;
   }
 
   get(id: string): Enemy | undefined {
@@ -100,6 +114,100 @@ export class EnemyManager {
     }
     this.enemies.clear();
     this.mapKey = null;
+    this.clearDuel();
+  }
+
+  /**
+   * Após kill em caça `sequentialTargets`: remove o cadáver e agenda a próxima
+   * entrada (lado oposto, após `entryDelayMs`).
+   */
+  onEnemyKilled(enemyId: string): void {
+    if (!this.duelHuntId || !this.mapKey) return;
+    const dead = this.enemies.get(enemyId);
+    if (!dead) return;
+
+    this.scheduleDuel(ENEMY_CORPSE_MS, () => {
+      const still = this.enemies.get(enemyId);
+      if (still) {
+        still.destroy();
+        this.enemies.delete(enemyId);
+      }
+    });
+
+    this.scheduleDuel(this.duelEntryDelayMs, () => {
+      this.spawnDuelNext();
+    });
+  }
+
+  private clearDuel(): void {
+    for (const timer of this.duelTimers) {
+      timer.remove(false);
+    }
+    this.duelTimers = [];
+    this.duelHuntId = null;
+    this.duelTargetIndex = 0;
+    this.duelSide = 0;
+    this.duelMaxAlive = 1;
+    this.duelEntryDelayMs = 0;
+    this.duelSpawnSeq = 0;
+    this.duelLeft = null;
+    this.duelRight = null;
+  }
+
+  private scheduleDuel(delayMs: number, fn: () => void): void {
+    const timer = this.scene.time.delayedCall(Math.max(0, delayMs), () => {
+      this.duelTimers = this.duelTimers.filter((entry) => entry !== timer);
+      fn();
+    });
+    this.duelTimers.push(timer);
+  }
+
+  private aliveCount(): number {
+    let count = 0;
+    for (const enemy of this.enemies.values()) {
+      if (enemy.isAlive) count += 1;
+    }
+    return count;
+  }
+
+  private spawnDuelNext(): void {
+    if (!this.duelHuntId || !this.mapKey) return;
+    if (this.aliveCount() >= this.duelMaxAlive) return;
+
+    const raw = this.scene.cache.json.get(WONSR_HUNTS_KEY) as HuntCatalog | undefined;
+    const catalog = raw ? applyForcedHuntLevels(raw) : undefined;
+    const hunt = catalog?.hunts.find((entry) => entry.id === this.duelHuntId);
+    const rawHunt = raw?.hunts.find((entry) => entry.id === this.duelHuntId);
+    if (!hunt?.targets.length) return;
+
+    this.spawn(this.buildDuelDefinition(hunt, rawHunt, this.mapKey));
+  }
+
+  private buildDuelDefinition(
+    hunt: HuntCatalog['hunts'][number],
+    rawHunt: HuntCatalog['hunts'][number] | undefined,
+    mapKey: MapKey,
+  ): EnemyDefinition {
+    const spawn =
+      this.duelSide === 0
+        ? (this.duelRight ?? this.duelLeft)
+        : (this.duelLeft ?? this.duelRight);
+    const targetIndex = this.duelTargetIndex % hunt.targets.length;
+    const instanceIndex = this.duelSpawnSeq;
+    this.duelTargetIndex = (this.duelTargetIndex + 1) % hunt.targets.length;
+    this.duelSide = this.duelSide === 0 ? 1 : 0;
+    this.duelSpawnSeq += 1;
+
+    const def = this.buildHuntEnemyDefinition(
+      hunt,
+      rawHunt,
+      mapKey,
+      targetIndex,
+      spawn ?? EnemyManager.FALLBACK_SPAWNS[0],
+      true,
+      instanceIndex,
+    );
+    return def;
   }
 
   private spawn(definition: EnemyDefinition): Enemy {
@@ -125,6 +233,7 @@ export class EnemyManager {
     // TEST: FORCE_HUNT_LEVEL rewrites requiredLevel / level / HP / XP at catalog read.
     const catalog = raw ? applyForcedHuntLevels(raw) : undefined;
     const hunt = catalog?.hunts.find((entry) => entry.id === huntId);
+    const rawHunt = raw?.hunts.find((entry) => entry.id === huntId);
     if (!hunt) return [];
 
     const rendered = getWonsrRenderedMap(mapKey);
@@ -132,50 +241,119 @@ export class EnemyManager {
       rendered && rendered.enemySpawns.length
         ? rendered.enemySpawns
         : EnemyManager.FALLBACK_SPAWNS;
+
+    // Duelo lateral: entra pela direita; depois pela esquerda; em ciclo.
+    if (hunt.sequentialTargets) {
+      const floorY =
+        rendered?.lateralFloorY ??
+        rendered?.spawn.y ??
+        basePositions[0]?.y ??
+        EnemyManager.FALLBACK_SPAWNS[0].y;
+      const width = rendered?.width ?? 1024;
+      this.duelHuntId = huntId;
+      this.duelTargetIndex = 0;
+      this.duelSide = 0;
+      this.duelMaxAlive = Math.max(1, hunt.maxAlive ?? 1);
+      this.duelEntryDelayMs = Math.max(0, hunt.entryDelayMs ?? 0);
+      this.duelSpawnSeq = 0;
+      this.duelRight = hunt.alternatingSides
+        ? { x: width - 56, y: floorY }
+        : { ...(basePositions[0] ?? EnemyManager.FALLBACK_SPAWNS[0]) };
+      this.duelLeft = hunt.alternatingSides
+        ? { x: 56, y: floorY }
+        : { ...(basePositions[1] ?? this.duelRight) };
+      const first = this.buildDuelDefinition(hunt, rawHunt, mapKey);
+      if (this.duelMaxAlive > 1 && this.duelEntryDelayMs > 0) {
+        this.scheduleDuel(this.duelEntryDelayMs, () => this.spawnDuelNext());
+      }
+      return [first];
+    }
+
+    this.clearDuel();
+
     const positions = basePositions.flatMap((spawn) =>
       this.expandSpawn(spawn, rendered ? ENEMIES_PER_SPAWN : 1),
     );
 
+    return positions.map((spawn, index) =>
+      this.buildHuntEnemyDefinition(
+        hunt,
+        rawHunt,
+        mapKey,
+        index % hunt.targets.length,
+        spawn,
+        false,
+        index,
+      ),
+    );
+  }
+
+  private buildHuntEnemyDefinition(
+    hunt: HuntCatalog['hunts'][number],
+    rawHunt: HuntCatalog['hunts'][number] | undefined,
+    mapKey: MapKey,
+    targetIndex: number,
+    spawn: { x: number; y: number },
+    noRespawn: boolean,
+    instanceIndex = targetIndex,
+  ): EnemyDefinition {
+    const target = hunt.targets[targetIndex];
+    const curated = this.resolveCurated(target.lookType);
     const spriteIndex = this.scene.cache.json.get(WONSR_SPRITE_INDEX_KEY) as
       | WonsrSpriteIndex
       | undefined;
-
-    return positions.map((spawn, index) => {
-      const target = hunt.targets[index % hunt.targets.length];
-      const curated = this.resolveCurated(target.lookType);
-      const outfit = curated ?? this.resolveOutfit(spriteIndex, target.lookType);
-      const stats = { level: target.level, hp: target.hp, xp: target.xp };
-      const animeId = resolveAnimeId({
-        lookType: target.lookType,
-        source: target.source,
-        sourceId: target.sourceId,
-      });
-      return {
-        id: `${hunt.id}-${target.id}-${index}`,
-        name: target.name,
-        hp: stats.hp,
-        level: stats.level,
-        xp: stats.xp,
-        loot: buildAnimeHuntLoot(animeId, stats.level),
-        spawn,
-        speed: target.speed,
-        chaseRadius: Math.max(80, Math.min(180, target.targetDistance * 45)),
-        sprite:
-          outfit?.textureKey ??
-          (target.hasSprite ? WONSR_HUNT_ATLAS_KEY : ENEMY_TEXTURE_KEY),
-        spriteFrame:
-          outfit?.idleFrame ?? (target.hasSprite ? `look-${target.lookType}` : undefined),
-        walk: outfit?.walk,
-        spriteFit: outfit?.fit,
-        mapKey,
-        sealable: {
-          characterId: target.sourceId,
-          sourceId: target.sourceId,
-          name: target.name,
-          lookType: target.lookType,
-        },
-      };
+    const outfit = curated ?? this.resolveOutfit(spriteIndex, target.lookType);
+    const stats = { level: target.level, hp: target.hp, xp: target.xp };
+    const animeId = resolveAnimeId({
+      lookType: target.lookType,
+      source: target.source,
+      sourceId: target.sourceId,
     });
+    const layout = combatLayoutScale(mapKey);
+    const renderedMap = getWonsrRenderedMap(mapKey);
+    const fit = outfit?.fit
+      ? {
+          ...outfit.fit,
+          scale: outfit.fit.scale * layout,
+          scaleX: (outfit.fit.scaleX ?? outfit.fit.scale) * layout,
+        }
+      : undefined;
+    const baseChase = Math.max(80, Math.min(180, target.targetDistance * 45)) * layout;
+    const chaseRadius =
+      renderedMap?.lateralFloorY != null && renderedMap.width > 0
+        ? Math.max(baseChase, renderedMap.width)
+        : baseChase;
+    return {
+      id: noRespawn
+        ? `${hunt.id}-${target.id}-${instanceIndex}-d${Date.now() % 1_000_000}`
+        : `${hunt.id}-${target.id}-${instanceIndex}`,
+      name: target.name,
+      hp: stats.hp,
+      level: stats.level,
+      xp: stats.xp,
+      loot: buildAnimeHuntLoot(animeId, stats.level, {
+        lookType: target.lookType,
+      }),
+      spawn,
+      speed: target.speed * layout,
+      chaseRadius,
+      sprite:
+        outfit?.textureKey ??
+        (target.hasSprite ? WONSR_HUNT_ATLAS_KEY : ENEMY_TEXTURE_KEY),
+      spriteFrame:
+        outfit?.idleFrame ?? (target.hasSprite ? `look-${target.lookType}` : undefined),
+      walk: outfit?.walk,
+      spriteFit: fit,
+      mapKey,
+      noRespawn,
+      sealable: {
+        characterId: target.sourceId,
+        sourceId: target.sourceId,
+        name: target.name,
+        lookType: target.lookType,
+        level: rawHunt?.targets[targetIndex]?.level ?? target.level,
+      },
+    };
   }
 
   private resolveCurated(lookType: number): {
@@ -226,6 +404,32 @@ export class EnemyManager {
       repeat: -1,
     });
 
+    const attackSheets =
+      pack.attackChain && pack.attackChain.length > 0
+        ? [...pack.attackChain]
+        : pack.attack
+          ? [pack.attack]
+          : [];
+    const attackAnimKeys: string[] = [];
+    const attackTextureKeys: string[] = [];
+    for (let i = 0; i < attackSheets.length; i += 1) {
+      const sheet = attackSheets[i];
+      if (!this.scene.textures.exists(sheet.key)) continue;
+      const attackAnimKey = `curated-map-${lookType}-attack-${i}`;
+      if (this.scene.anims.exists(attackAnimKey)) this.scene.anims.remove(attackAnimKey);
+      this.scene.anims.create({
+        key: attackAnimKey,
+        frames: this.scene.anims.generateFrameNumbers(sheet.key, {
+          start: 0,
+          end: sheet.frameCount - 1,
+        }),
+        frameRate: sheet.frameRate ?? 12,
+        repeat: 0,
+      });
+      attackAnimKeys.push(attackAnimKey);
+      attackTextureKeys.push(sheet.key);
+    }
+
     let hurtTextureKey: string | undefined;
     let deathTextureKey: string | undefined;
     if (pack.hurt && this.scene.textures.exists(pack.hurt.key)) {
@@ -257,6 +461,7 @@ export class EnemyManager {
     const scaleY =
       (contentH > 0 ? CHARACTER_DISPLAY_HEIGHT / contentH : 1) * (pack.displayScale ?? 1);
     const scaleX = scaleY * (pack.displayScaleX ?? 1);
+    const origin = characterLateralOrigin(pack);
     const walkAnims: Partial<Record<WonsrDirection, string>> = {};
     const idleFrames: Partial<Record<WonsrDirection, number>> = {};
     for (const direction of MAP_DIRECTIONS) {
@@ -280,8 +485,15 @@ export class EnemyManager {
         hurtAnimKey: hurtTextureKey ? hurtAnimKey : undefined,
         deathTextureKey,
         deathAnimKey: deathTextureKey ? deathAnimKey : undefined,
+        attackAnimKeys: attackAnimKeys.length > 0 ? attackAnimKeys : undefined,
+        attackTextureKeys: attackTextureKeys.length > 0 ? attackTextureKeys : undefined,
       },
-      fit: { scale: scaleY, scaleX, originX: 0.5, originY: 1 },
+      fit: {
+        scale: scaleY,
+        scaleX,
+        originX: origin.x,
+        originY: origin.y,
+      },
     };
   }
 

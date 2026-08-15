@@ -23,6 +23,7 @@ const {
   writePng,
   countOpaque,
   isChromaGreen,
+  bbox,
 } = require('./lib/alpha-frame-pack');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -31,8 +32,18 @@ const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'rock-lee');
 const PREVIEW = path.join(ROOT, 'public', 'sprites', 'player', 'previews', 'rock-lee.png');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'rock-lee');
-const TARGET_BODY_H = 48;
+/** HQ: native pixels (scale=1). World size via contentHeight. */
+const NATIVE_SCALE = 1;
 const PAD = 2;
+
+function measureBodyHeight(frames, fw, fh) {
+  let maxH = 0;
+  for (const frame of frames) {
+    const b = bbox(frame, fw, fh);
+    maxH = Math.max(maxH, b.height);
+  }
+  return Math.max(1, maxH);
+}
 
 function scrub(frame) {
   const d = Buffer.from(frame);
@@ -114,17 +125,17 @@ function removeTinyIslands(frame, w, h, maxSize = 2) {
   }
 }
 
-async function packSequence(label, inputDir, expected, { absoluteScale = null, refContentH = null } = {}) {
+async function packSequence(label, inputDir, expected, { absoluteScale = NATIVE_SCALE, contentHeight = null } = {}) {
   const keyed = await loadAlphaFrames(inputDir, expected);
   const frames = keyed.map((k) => scrub(k.frame));
   const widths = keyed.map((k) => k.width);
   const heights = keyed.map((k) => k.height);
 
   const packed = await packUniformGlobalScale(frames, widths, heights, {
-    targetBodyH: TARGET_BODY_H,
+    targetBodyH: contentHeight || 48,
     pad: PAD,
     absoluteScale,
-    refContentH,
+    allowOversizedFrames: true,
   });
 
   for (let i = 0; i < packed.frames.length; i += 1) {
@@ -140,8 +151,12 @@ async function packSequence(label, inputDir, expected, { absoluteScale = null, r
     throw new Error(`${label}: residualGreen=${residualGreen}`);
   }
 
+  const bodyH =
+    contentHeight ||
+    measureBodyHeight(packed.frames, packed.frameWidth, packed.frameHeight);
+
   console.log(
-    `OK ${label} n=${packed.frames.length} fw=${packed.frameWidth} fh=${packed.frameHeight} scale=${packed.scale.toFixed(4)} black=${pureBlack}`,
+    `OK ${label} n=${packed.frames.length} fw=${packed.frameWidth} fh=${packed.frameHeight} scale=${packed.scale.toFixed(4)} contentH=${bodyH} black=${pureBlack}`,
   );
 
   return {
@@ -149,7 +164,7 @@ async function packSequence(label, inputDir, expected, { absoluteScale = null, r
     frames: packed.frames,
     frameWidth: packed.frameWidth,
     frameHeight: packed.frameHeight,
-    contentHeight: TARGET_BODY_H,
+    contentHeight: bodyH,
     scale: packed.scale,
     residualGreen,
     pureBlack,
@@ -176,26 +191,9 @@ async function writeSheet(outName, packed, qaPrefix) {
   return outPath;
 }
 
-async function processWalk() {
-  const packed = await packSequence('walk', path.join(SRC, 'walk'), 6);
-  await writeSheet('walk.png', packed, 'walk');
-  updateMeta(META_JSON, 'rock-lee-walk', {
-    image: '/sprites/player/rock-lee/walk.png',
-    frameWidth: packed.frameWidth,
-    frameHeight: packed.frameHeight,
-    frameCount: packed.frameCount,
-    contentHeight: packed.contentHeight,
-    scale: packed.scale,
-    residualGreen: packed.residualGreen,
-    pureBlack: packed.pureBlack,
-    source: 'assets/naruto-source/nu/rock-lee/walk',
-  });
-  return packed;
-}
-
-async function processIdle(walkScale) {
+async function processIdle() {
   const packed = await packSequence('idle', path.join(SRC, 'idle'), 6, {
-    absoluteScale: walkScale,
+    absoluteScale: NATIVE_SCALE,
   });
   await writeSheet('idle.png', packed, 'idle');
   // Preview from idle f0
@@ -219,9 +217,30 @@ async function processIdle(walkScale) {
   return packed;
 }
 
-async function processCombo(walkScale) {
+async function processWalk(contentHeight) {
+  const packed = await packSequence('walk', path.join(SRC, 'walk'), 6, {
+    absoluteScale: NATIVE_SCALE,
+    contentHeight,
+  });
+  await writeSheet('walk.png', packed, 'walk');
+  updateMeta(META_JSON, 'rock-lee-walk', {
+    image: '/sprites/player/rock-lee/walk.png',
+    frameWidth: packed.frameWidth,
+    frameHeight: packed.frameHeight,
+    frameCount: packed.frameCount,
+    contentHeight,
+    scale: packed.scale,
+    residualGreen: packed.residualGreen,
+    pureBlack: packed.pureBlack,
+    source: 'assets/naruto-source/nu/rock-lee/walk',
+  });
+  return { ...packed, contentHeight };
+}
+
+async function processCombo(contentHeight) {
   const packed = await packSequence('combo', path.join(SRC, 'combo'), 22, {
-    absoluteScale: walkScale,
+    absoluteScale: NATIVE_SCALE,
+    contentHeight,
   });
   // 7 + 7 + 8
   const splits = [
@@ -246,7 +265,7 @@ async function processCombo(walkScale) {
       frameWidth: packed.frameWidth,
       frameHeight: packed.frameHeight,
       frameCount: frames.length,
-      contentHeight: TARGET_BODY_H,
+      contentHeight,
       scale: packed.scale,
       residualGreen: 0,
       range: [sp.from, sp.to],
@@ -262,15 +281,16 @@ async function processCombo(walkScale) {
     frameWidth: packed.frameWidth,
     frameHeight: packed.frameHeight,
     frameCount: packed.frameCount,
-    contentHeight: TARGET_BODY_H,
+    contentHeight,
     scale: packed.scale,
   });
   return { packed, parts };
 }
 
-async function processDamage(walkScale) {
+async function processDamage(contentHeight) {
   const packed = await packSequence('damage', path.join(SRC, 'damage'), 5, {
-    absoluteScale: walkScale,
+    absoluteScale: NATIVE_SCALE,
+    contentHeight,
   });
   // 2 hurt + 3 death
   const hurtFrames = packed.frames.slice(0, 2);
@@ -311,7 +331,7 @@ async function processDamage(walkScale) {
     frameWidth: packed.frameWidth,
     frameHeight: packed.frameHeight,
     frameCount: 2,
-    contentHeight: TARGET_BODY_H,
+    contentHeight,
     scale: packed.scale,
     frameRate: 10,
   };
@@ -320,7 +340,7 @@ async function processDamage(walkScale) {
     frameWidth: packed.frameWidth,
     frameHeight: packed.frameHeight,
     frameCount: 3,
-    contentHeight: TARGET_BODY_H,
+    contentHeight,
     scale: packed.scale,
     frameRate: 8,
   };
@@ -330,18 +350,13 @@ async function processDamage(walkScale) {
   return { hurt, death, packed };
 }
 
-async function processJutsu(walkScale) {
+async function processJutsu(contentHeight) {
   // JUTSU COMPLETO.zip — 20 sequential alpha frames (frame_001…020) → Omote Renge
   const packed = await packSequence('jutsu', path.join(SRC, 'jutsu'), 20, {
-    absoluteScale: walkScale,
+    absoluteScale: NATIVE_SCALE,
+    contentHeight,
   });
   const scale = packed.scale;
-  const maxFh = 130;
-  if (packed.frameHeight > maxFh) {
-    console.warn(
-      `jutsu fh=${packed.frameHeight} > ${maxFh} — walk-matched scale (body density preferred)`,
-    );
-  }
 
   await writeSheet('omote-renge.png', packed, 'omote-renge');
 
@@ -353,7 +368,7 @@ async function processJutsu(walkScale) {
     frameWidth: packed.frameWidth,
     frameHeight: packed.frameHeight,
     frameCount: packed.frameCount,
-    contentHeight: TARGET_BODY_H,
+    contentHeight,
     scale,
     frameRate: FRAME_RATE,
     durationMs: Math.round((packed.frameCount / FRAME_RATE) * 1000),
@@ -386,30 +401,34 @@ async function main() {
   fs.mkdirSync(QA_DIR, { recursive: true });
   fs.mkdirSync(path.dirname(PREVIEW), { recursive: true });
 
-  const walk = await processWalk();
-  const idle = await processIdle(walk.scale);
-  const combo = await processCombo(walk.scale);
-  const damage = await processDamage(walk.scale);
-  const jutsu = await processJutsu(walk.scale);
+  console.log('rock-lee HQ native scale=1');
+  const idle = await processIdle();
+  const contentHeight = idle.contentHeight;
+  console.log(`contentHeight=${contentHeight} (idle body ruler)`);
+  const walk = await processWalk(contentHeight);
+  const combo = await processCombo(contentHeight);
+  const damage = await processDamage(contentHeight);
+  const jutsu = await processJutsu(contentHeight);
 
   const wire = {
     walk: {
       frameWidth: walk.frameWidth,
       frameHeight: walk.frameHeight,
       frameCount: walk.frameCount,
-      contentHeight: 48,
+      contentHeight,
       scale: walk.scale,
     },
     idle: {
       frameWidth: idle.frameWidth,
       frameHeight: idle.frameHeight,
       frameCount: idle.frameCount,
-      contentHeight: 48,
+      contentHeight,
     },
     combo: combo.parts.map((p) => ({
       frameWidth: p.frameWidth,
       frameHeight: p.frameHeight,
       frameCount: p.frameCount,
+      contentHeight,
     })),
     hurt: damage.hurt,
     death: damage.death,
@@ -417,10 +436,12 @@ async function main() {
       frameWidth: jutsu.omote.frameWidth,
       frameHeight: jutsu.omote.frameHeight,
       frameCount: jutsu.omote.frameCount,
+      contentHeight,
       durationMs: jutsu.omote.durationMs,
       hitDelayMs: jutsu.omote.hitDelayMs,
       frameRate: jutsu.omote.frameRate,
     },
+    nativePixels: true,
   };
   console.log('PACK_WIRE', JSON.stringify(wire, null, 2));
 }

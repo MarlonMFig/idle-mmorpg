@@ -24,13 +24,14 @@ const {
   updateMeta,
   writePng,
 } = require('./lib/alpha-frame-pack');
+const { hqAreaScale } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'kakashi', 'damage');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'kakashi');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'kakashi');
-const TARGET_BODY_H = 48;
+const HQ = { hq: { mode: 'match', metaPath: META_JSON, idleKey: 'kakashi-walk' } };
 const EXPECTED = 5;
 const HURT_N = 2;
 const DEATH_N = 3;
@@ -72,6 +73,9 @@ async function writeSlice(name, frames, scaled, frameRate, note) {
       minOlivePerFrame: 0,
       minBluePerFrame: 0,
       minOpaquePerFrame: 50,
+      areaScale: typeof scaled !== 'undefined' && scaled.contentHeight
+        ? (scaled.contentHeight / 48) ** 2
+        : 1,
     },
   );
   const silver = countSilver(sheet.data);
@@ -143,8 +147,9 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     norm.contentHeight,
-    TARGET_BODY_H,
+    HQ,
   );
+  const areaScale = hqAreaScale(scaled.contentHeight);
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
 

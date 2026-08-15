@@ -1,0 +1,198 @@
+{
+  "id": "asta-base",
+  "name": "Asta Classic",
+  "lookType": 9064,
+  "contentHeight": 53,
+  "idle": {
+    "image": "/sprites/player/asta-base/idle.png",
+    "frameWidth": 64,
+    "frameHeight": 57,
+    "frameCount": 4,
+    "contentHeight": 53,
+    "scale": 1,
+    "originX": 0.265625,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/asta-base/walk.png",
+    "frameWidth": 97,
+    "frameHeight": 58,
+    "frameCount": 8,
+    "contentHeight": 53,
+    "scale": 1,
+    "originX": 0.6391752577319587,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/asta-base/combo1.png",
+      "frameWidth": 90,
+      "frameHeight": 61,
+      "frameCount": 2,
+      "contentHeight": 53,
+      "scale": 1,
+      "originX": 0.5555555555555556,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/asta-base/combo2.png",
+      "frameWidth": 82,
+      "frameHeight": 62,
+      "frameCount": 3,
+      "contentHeight": 53,
+      "scale": 1,
+      "originX": 0.7073170731707317,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/asta-base/combo3.png",
+      "frameWidth": 114,
+      "frameHeight": 62,
+      "frameCount": 5,
+      "contentHeight": 53,
+      "scale": 1,
+      "originX": 0.5877192982456141,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/asta-base/hurt.png",
+    "frameWidth": 53,
+    "frameHeight": 53,
+    "frameCount": 3,
+    "contentHeight": 53,
+    "scale": 1,
+    "originX": 0.6415094339622641,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/asta-base/death.png",
+    "frameWidth": 92,
+    "frameHeight": 26,
+    "frameCount": 1,
+    "contentHeight": 53,
+    "scale": 1,
+    "originX": 0.6195652173913043,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-asta-base-1",
+      "skillName": "Black Combo",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/asta-base/special1.png",
+        "frameWidth": 131,
+        "frameHeight": 82,
+        "frameCount": 15,
+        "contentHeight": 53,
+        "scale": 1,
+        "originX": 0.5114503816793893,
+        "durationMs": 767,
+        "hitDelayMs": 333,
+        "frameRate": 18,
+        "skillId": "skill-asta-base-1",
+        "skillName": "Black Combo",
+        "actionId": 1300
+      },
+      "fx": null,
+      "index": 0
+    },
+    {
+      "skillId": "skill-asta-base-2",
+      "skillName": "Black Meteorite",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/asta-base/special2.png",
+        "frameWidth": 121,
+        "frameHeight": 56,
+        "frameCount": 5,
+        "contentHeight": 53,
+        "scale": 1,
+        "originX": 0.5950413223140496,
+        "durationMs": 2233,
+        "hitDelayMs": 2050,
+        "frameRate": 8,
+        "skillId": "skill-asta-base-2",
+        "skillName": "Black Meteorite",
+        "actionId": 3000
+      },
+      "fx": {
+        "image": "/sprites/player/asta-base/special2-fx.png",
+        "frameWidth": 335,
+        "frameHeight": 326,
+        "frameCount": 10,
+        "contentHeight": 322,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 500
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-asta-base-3",
+      "skillName": "Black Slash",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/asta-base/special3.png",
+        "frameWidth": 68,
+        "frameHeight": 57,
+        "frameCount": 4,
+        "contentHeight": 53,
+        "scale": 1,
+        "originX": 0.27941176470588236,
+        "durationMs": 467,
+        "hitDelayMs": 267,
+        "frameRate": 17,
+        "skillId": "skill-asta-base-3",
+        "skillName": "Black Slash",
+        "actionId": 1000
+      },
+      "fx": {
+        "image": "/sprites/player/asta-base/special3-fx.png",
+        "frameWidth": 245,
+        "frameHeight": 236,
+        "frameCount": 16,
+        "contentHeight": 232,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 1000
+      },
+      "index": 2
+    },
+    {
+      "skillId": "skill-asta-base-4",
+      "skillName": "Black Strong",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/asta-base/special4.png",
+        "frameWidth": 116,
+        "frameHeight": 67,
+        "frameCount": 8,
+        "contentHeight": 53,
+        "scale": 1,
+        "originX": 0.5775862068965517,
+        "durationMs": 950,
+        "hitDelayMs": 683,
+        "frameRate": 8,
+        "skillId": "skill-asta-base-4",
+        "skillName": "Black Strong",
+        "actionId": 1100
+      },
+      "fx": {
+        "image": "/sprites/player/asta-base/special4-fx.png",
+        "frameWidth": 279,
+        "frameHeight": 165,
+        "frameCount": 20,
+        "contentHeight": 161,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 1000
+      },
+      "index": 3
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "$schema": "https://www.partykit.io/schema.json",
+  "name": "idle-mmorpg-world",
+  "main": "party/world.ts",
+  "compatibilityDate": "2024-04-01"
+}

@@ -2,6 +2,11 @@ import * as Phaser from 'phaser';
 import type { Player } from '@/entities/player';
 import { dialogueStore } from '@/stores/dialogue-store';
 
+export interface PlayerInputOptions {
+  /** Hub de perfil: ignora o eixo vertical (senão o clamp do chão treme). */
+  lateral?: boolean;
+}
+
 /**
  * Movimento manual WASD / setas — ativo só no hub.
  */
@@ -12,11 +17,14 @@ export class PlayerInputSystem {
   private readonly keyS: Phaser.Input.Keyboard.Key | null;
   private readonly keyD: Phaser.Input.Keyboard.Key | null;
   private enabled = true;
+  private readonly lateral: boolean;
 
   constructor(
     scene: Phaser.Scene,
     private readonly player: Player,
+    options: PlayerInputOptions = {},
   ) {
+    this.lateral = options.lateral ?? false;
     const keyboard = scene.input.keyboard;
     if (!keyboard) {
       this.cursors = null;
@@ -50,8 +58,10 @@ export class PlayerInputSystem {
 
     if (this.keyA?.isDown || this.cursors?.left.isDown) dx -= 1;
     if (this.keyD?.isDown || this.cursors?.right.isDown) dx += 1;
-    if (this.keyW?.isDown || this.cursors?.up.isDown) dy -= 1;
-    if (this.keyS?.isDown || this.cursors?.down.isDown) dy += 1;
+    if (!this.lateral) {
+      if (this.keyW?.isDown || this.cursors?.up.isDown) dy -= 1;
+      if (this.keyS?.isDown || this.cursors?.down.isDown) dy += 1;
+    }
 
     this.player.applyMoveInput(dx, dy);
   }

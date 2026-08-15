@@ -5,10 +5,8 @@ import {
   QUEST_DEFINITIONS,
 } from '@/data/quests';
 import { getItem } from '@/data/items';
-import { SHOP_CURRENCY_ITEM_ID } from '@/constants/sealing';
 import { onItemGained } from '@/lib/item-events';
 import { createStore } from '@/stores/create-store';
-import { huntAnalyzerStore } from '@/stores/hunt-analyzer-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { villageStore } from '@/stores/village-store';
 import { grantPlayerXp } from '@/lib/grant-player-xp';
@@ -273,7 +271,3 @@ function grantRewards(quest: QuestDefinition): void {
 }
 
 onItemGained((itemId, qty) => questStore.onItemGained(itemId, qty));
-onItemGained((itemId, qty) => {
-  if (itemId === SHOP_CURRENCY_ITEM_ID) return;
-  huntAnalyzerStore.recordLootItems(qty);
-});

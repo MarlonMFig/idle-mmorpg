@@ -1,0 +1,198 @@
+{
+  "id": "fana",
+  "name": "Fana",
+  "lookType": 9059,
+  "contentHeight": 52,
+  "idle": {
+    "image": "/sprites/player/fana/idle.png",
+    "frameWidth": 29,
+    "frameHeight": 56,
+    "frameCount": 4,
+    "contentHeight": 52,
+    "scale": 1,
+    "originX": 0.5862068965517241,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/fana/walk.png",
+    "frameWidth": 31,
+    "frameHeight": 54,
+    "frameCount": 5,
+    "contentHeight": 52,
+    "scale": 1,
+    "originX": 0.5161290322580645,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/fana/combo1.png",
+      "frameWidth": 40,
+      "frameHeight": 55,
+      "frameCount": 4,
+      "contentHeight": 52,
+      "scale": 1,
+      "originX": 0.425,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/fana/combo2.png",
+      "frameWidth": 33,
+      "frameHeight": 54,
+      "frameCount": 4,
+      "contentHeight": 52,
+      "scale": 1,
+      "originX": 0.42424242424242425,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/fana/combo3.png",
+      "frameWidth": 35,
+      "frameHeight": 54,
+      "frameCount": 2,
+      "contentHeight": 52,
+      "scale": 1,
+      "originX": 0.4,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/fana/hurt.png",
+    "frameWidth": 53,
+    "frameHeight": 55,
+    "frameCount": 2,
+    "contentHeight": 52,
+    "scale": 1,
+    "originX": 0.660377358490566,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/fana/death.png",
+    "frameWidth": 61,
+    "frameHeight": 18,
+    "frameCount": 1,
+    "contentHeight": 52,
+    "scale": 1,
+    "originX": 0.4918032786885246,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-fana-1",
+      "skillName": "0",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/fana/special1.png",
+        "frameWidth": 52,
+        "frameHeight": 55,
+        "frameCount": 10,
+        "contentHeight": 52,
+        "scale": 1,
+        "originX": 0.4807692307692308,
+        "durationMs": 1767,
+        "hitDelayMs": 667,
+        "frameRate": 8,
+        "skillId": "skill-fana-1",
+        "skillName": "0",
+        "actionId": 1100
+      },
+      "fx": {
+        "image": "/sprites/player/fana/special1-fx.png",
+        "frameWidth": 291,
+        "frameHeight": 288,
+        "frameCount": 16,
+        "contentHeight": 284,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 280
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-fana-2",
+      "skillName": "0",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/fana/special2.png",
+        "frameWidth": 45,
+        "frameHeight": 55,
+        "frameCount": 3,
+        "contentHeight": 52,
+        "scale": 1,
+        "originX": 0.5333333333333333,
+        "durationMs": 1133,
+        "hitDelayMs": 517,
+        "frameRate": 8,
+        "skillId": "skill-fana-2",
+        "skillName": "0",
+        "actionId": 2000
+      },
+      "fx": null,
+      "index": 1
+    },
+    {
+      "skillId": "skill-fana-3",
+      "skillName": "0",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/fana/special3.png",
+        "frameWidth": 44,
+        "frameHeight": 51,
+        "frameCount": 3,
+        "contentHeight": 52,
+        "scale": 1,
+        "originX": 0.4318181818181818,
+        "durationMs": 1200,
+        "hitDelayMs": 533,
+        "frameRate": 8,
+        "skillId": "skill-fana-3",
+        "skillName": "0",
+        "actionId": 1051
+      },
+      "fx": {
+        "image": "/sprites/player/fana/special3-fx.png",
+        "frameWidth": 291,
+        "frameHeight": 288,
+        "frameCount": 16,
+        "contentHeight": 284,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 280
+      },
+      "index": 2
+    },
+    {
+      "skillId": "skill-fana-4",
+      "skillName": "0",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/fana/special4.png",
+        "frameWidth": 29,
+        "frameHeight": 56,
+        "frameCount": 4,
+        "contentHeight": 52,
+        "scale": 1,
+        "originX": 0.5862068965517241,
+        "durationMs": 280,
+        "hitDelayMs": 0,
+        "frameRate": 18,
+        "skillId": "skill-fana-4",
+        "skillName": "0",
+        "actionId": 1001
+      },
+      "fx": {
+        "image": "/sprites/player/fana/special4-fx.png",
+        "frameWidth": 377,
+        "frameHeight": 353,
+        "frameCount": 16,
+        "contentHeight": 349,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 17,
+        "durationMs": 1800
+      },
+      "index": 3
+    }
+  ]
+}

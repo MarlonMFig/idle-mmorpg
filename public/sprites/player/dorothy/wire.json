@@ -1,0 +1,208 @@
+{
+  "id": "dorothy",
+  "name": "Dorothy",
+  "lookType": 9061,
+  "contentHeight": 55,
+  "idle": {
+    "image": "/sprites/player/dorothy/idle.png",
+    "frameWidth": 27,
+    "frameHeight": 59,
+    "frameCount": 3,
+    "contentHeight": 55,
+    "scale": 1,
+    "originX": 0.48148148148148145,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/dorothy/walk.png",
+    "frameWidth": 38,
+    "frameHeight": 56,
+    "frameCount": 4,
+    "contentHeight": 55,
+    "scale": 1,
+    "originX": 0.3157894736842105,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/dorothy/combo1.png",
+      "frameWidth": 36,
+      "frameHeight": 59,
+      "frameCount": 3,
+      "contentHeight": 55,
+      "scale": 1,
+      "originX": 0.3611111111111111,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/dorothy/combo2.png",
+      "frameWidth": 37,
+      "frameHeight": 59,
+      "frameCount": 3,
+      "contentHeight": 55,
+      "scale": 1,
+      "originX": 0.35135135135135137,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/dorothy/combo3.png",
+      "frameWidth": 53,
+      "frameHeight": 59,
+      "frameCount": 4,
+      "contentHeight": 55,
+      "scale": 1,
+      "originX": 0.49056603773584906,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/dorothy/hurt.png",
+    "frameWidth": 60,
+    "frameHeight": 58,
+    "frameCount": 2,
+    "contentHeight": 55,
+    "scale": 1,
+    "originX": 0.6,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/dorothy/death.png",
+    "frameWidth": 77,
+    "frameHeight": 22,
+    "frameCount": 1,
+    "contentHeight": 55,
+    "scale": 1,
+    "originX": 0.4935064935064935,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-dorothy-1",
+      "skillName": "0",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/dorothy/special1.png",
+        "frameWidth": 54,
+        "frameHeight": 64,
+        "frameCount": 3,
+        "contentHeight": 55,
+        "scale": 1,
+        "originX": 0.5,
+        "durationMs": 2200,
+        "hitDelayMs": 983,
+        "frameRate": 8,
+        "skillId": "skill-dorothy-1",
+        "skillName": "0",
+        "actionId": 1000
+      },
+      "fx": {
+        "image": "/sprites/player/dorothy/special1-fx.png",
+        "frameWidth": 343,
+        "frameHeight": 291,
+        "frameCount": 10,
+        "contentHeight": 287,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 8,
+        "durationMs": 5583
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-dorothy-2",
+      "skillName": "0",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/dorothy/special2.png",
+        "frameWidth": 36,
+        "frameHeight": 59,
+        "frameCount": 3,
+        "contentHeight": 55,
+        "scale": 1,
+        "originX": 0.3611111111111111,
+        "durationMs": 900,
+        "hitDelayMs": 400,
+        "frameRate": 8,
+        "skillId": "skill-dorothy-2",
+        "skillName": "0",
+        "actionId": 1100
+      },
+      "fx": {
+        "image": "/sprites/player/dorothy/special2-fx.png",
+        "frameWidth": 113,
+        "frameHeight": 169,
+        "frameCount": 10,
+        "contentHeight": 165,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 8,
+        "durationMs": 1200
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-dorothy-3",
+      "skillName": "0",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/dorothy/special3.png",
+        "frameWidth": 40,
+        "frameHeight": 64,
+        "frameCount": 2,
+        "contentHeight": 55,
+        "scale": 1,
+        "originX": 0.45,
+        "durationMs": 2433,
+        "hitDelayMs": 1100,
+        "frameRate": 8,
+        "skillId": "skill-dorothy-3",
+        "skillName": "0",
+        "actionId": 1900
+      },
+      "fx": {
+        "image": "/sprites/player/dorothy/special3-fx.png",
+        "frameWidth": 384,
+        "frameHeight": 381,
+        "frameCount": 16,
+        "contentHeight": 377,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 4450
+      },
+      "index": 2
+    },
+    {
+      "skillId": "skill-dorothy-4",
+      "skillName": "Dorothy · Especial 4",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/dorothy/special4.png",
+        "frameWidth": 53,
+        "frameHeight": 59,
+        "frameCount": 4,
+        "contentHeight": 55,
+        "scale": 1,
+        "originX": 0.49056603773584906,
+        "durationMs": 850,
+        "hitDelayMs": 383,
+        "frameRate": 8,
+        "skillId": "skill-dorothy-4",
+        "skillName": "Dorothy · Especial 4",
+        "actionId": 1040
+      },
+      "fx": {
+        "image": "/sprites/player/dorothy/special4-fx.png",
+        "frameWidth": 648,
+        "frameHeight": 503,
+        "frameCount": 10,
+        "contentHeight": 499,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 16,
+        "durationMs": 2267
+      },
+      "index": 3
+    }
+  ]
+}

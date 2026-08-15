@@ -1,109 +1,117 @@
 {
   "shino-walk": {
     "image": "/sprites/player/shino/walk.png",
-    "frameWidth": 25,
-    "frameHeight": 52,
+    "frameWidth": 71,
+    "frameHeight": 154,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.32,
+    "contentHeight": 147,
+    "scale": 1,
     "residualGreen": 0,
-    "pureBlack": 1219
+    "pureBlack": 12050
   },
   "shino-idle": {
     "image": "/sprites/player/shino/idle.png",
-    "frameWidth": 25,
-    "frameHeight": 51,
+    "frameWidth": 68,
+    "frameHeight": 151,
     "frameCount": 7,
-    "contentHeight": 48,
-    "scale": 0.32
+    "contentHeight": 147,
+    "scale": 1
   },
   "shino-combo1": {
     "image": "/sprites/player/shino/combo1.png",
-    "frameWidth": 56,
-    "frameHeight": 54,
+    "frameWidth": 200,
+    "frameHeight": 151,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.5581395348837209,
+    "contentHeight": 147,
+    "scale": 1.651685393258427,
+    "originX": 0.36,
     "range": [
       0,
       5
-    ]
+    ],
+    "source": "shino/combo (COMBO ATACK.zip, 16f)"
   },
   "shino-combo2": {
     "image": "/sprites/player/shino/combo2.png",
-    "frameWidth": 56,
-    "frameHeight": 54,
+    "frameWidth": 200,
+    "frameHeight": 151,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.5581395348837209,
+    "contentHeight": 147,
+    "scale": 1.651685393258427,
+    "originX": 0.36,
     "range": [
       5,
       10
-    ]
+    ],
+    "source": "shino/combo (COMBO ATACK.zip, 16f)"
   },
   "shino-combo3": {
     "image": "/sprites/player/shino/combo3.png",
-    "frameWidth": 56,
-    "frameHeight": 54,
+    "frameWidth": 200,
+    "frameHeight": 151,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.5581395348837209,
+    "contentHeight": 147,
+    "scale": 1.651685393258427,
+    "originX": 0.36,
     "range": [
       10,
       16
-    ]
+    ],
+    "source": "shino/combo (COMBO ATACK.zip, 16f)"
   },
   "shino-hurt": {
     "image": "/sprites/player/shino/hurt.png",
-    "frameWidth": 51,
-    "frameHeight": 49,
+    "frameWidth": 158,
+    "frameHeight": 144,
     "frameCount": 2,
-    "contentHeight": 48,
+    "contentHeight": 147,
     "frameRate": 10,
-    "scale": 0.32
+    "scale": 1
   },
   "shino-death": {
     "image": "/sprites/player/shino/death.png",
-    "frameWidth": 51,
-    "frameHeight": 49,
+    "frameWidth": 158,
+    "frameHeight": 144,
     "frameCount": 3,
-    "contentHeight": 48,
+    "contentHeight": 147,
     "frameRate": 8,
-    "scale": 0.32
+    "scale": 1
   },
   "shino-kikaichu": {
     "image": "/sprites/player/shino/kikaichu.png",
-    "frameWidth": 57,
-    "frameHeight": 52,
+    "frameWidth": 170,
+    "frameHeight": 151,
     "frameCount": 13,
-    "contentHeight": 48,
-    "scale": 0.5581395348837209,
+    "contentHeight": 147,
+    "scale": 1.7093023255813953,
     "frameRate": 12,
     "durationMs": 1083,
     "hitDelayMs": 667,
     "residualGreen": 0,
-    "pureBlack": 5153
+    "pureBlack": 50806,
+    "originX": 0.4764705882352941
   },
   "skill-kikaichu": {
     "image": "/sprites/player/shino/kikaichu.png",
-    "frameWidth": 57,
-    "frameHeight": 52,
+    "frameWidth": 170,
+    "frameHeight": 151,
     "frameCount": 13,
-    "contentHeight": 48,
-    "scale": 0.5581395348837209,
+    "contentHeight": 147,
+    "scale": 1.7093023255813953,
     "frameRate": 12,
     "durationMs": 1083,
     "hitDelayMs": 667,
     "residualGreen": 0,
-    "pureBlack": 5153
+    "pureBlack": 50806,
+    "originX": 0.4764705882352941
   },
   "shino-kikaichu-fx": {
     "image": "/sprites/player/shino/kikaichu-fx.png",
-    "frameWidth": 67,
-    "frameHeight": 60,
+    "frameWidth": 198,
+    "frameHeight": 176,
     "frameCount": 18,
-    "contentHeight": 56,
-    "scale": 0.47863247863247865,
+    "contentHeight": 172,
+    "scale": 1.4700854700854702,
     "frameRate": 12,
     "durationMs": 1500,
     "residualGreen": 0,
@@ -111,14 +119,24 @@
   },
   "skill-kikaichu-fx": {
     "image": "/sprites/player/shino/kikaichu-fx.png",
-    "frameWidth": 67,
-    "frameHeight": 60,
+    "frameWidth": 198,
+    "frameHeight": 176,
     "frameCount": 18,
-    "contentHeight": 56,
-    "scale": 0.47863247863247865,
+    "contentHeight": 172,
+    "scale": 1.4700854700854702,
     "frameRate": 12,
     "durationMs": 1500,
     "residualGreen": 0,
     "source": "shino/jutsu-vfx (VFX JUTSU.zip, 18f insect swarm)"
+  },
+  "shino-attack": {
+    "image": "/sprites/player/shino/attack.png",
+    "frameWidth": 200,
+    "frameHeight": 151,
+    "frameCount": 16,
+    "contentHeight": 147,
+    "scale": 1.651685393258427,
+    "originX": 0.36,
+    "source": "shino/combo (COMBO ATACK.zip, 16f)"
   }
 }

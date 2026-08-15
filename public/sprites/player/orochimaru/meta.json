@@ -1,29 +1,29 @@
 {
   "orochimaru-walk": {
     "image": "/sprites/player/orochimaru/walk.png",
-    "frameWidth": 24,
-    "frameHeight": 52,
+    "frameWidth": 50,
+    "frameHeight": 112,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.4444444444444444,
+    "contentHeight": 110,
+    "scale": 1,
     "residualGreen": 0,
-    "pureBlack": 1423
+    "pureBlack": 7121
   },
   "orochimaru-idle": {
     "image": "/sprites/player/orochimaru/idle.png",
-    "frameWidth": 25,
-    "frameHeight": 52,
+    "frameWidth": 53,
+    "frameHeight": 114,
     "frameCount": 4,
-    "contentHeight": 48,
-    "scale": 0.43636363636363634
+    "contentHeight": 110,
+    "scale": 1
   },
   "orochimaru-combo1": {
     "image": "/sprites/player/orochimaru/combo1.png",
-    "frameWidth": 63,
-    "frameHeight": 52,
+    "frameWidth": 136,
+    "frameHeight": 112,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.4444444444444444,
+    "contentHeight": 110,
+    "scale": 1,
     "range": [
       0,
       5
@@ -31,11 +31,11 @@
   },
   "orochimaru-combo2": {
     "image": "/sprites/player/orochimaru/combo2.png",
-    "frameWidth": 63,
-    "frameHeight": 52,
+    "frameWidth": 136,
+    "frameHeight": 112,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.4444444444444444,
+    "contentHeight": 110,
+    "scale": 1,
     "range": [
       5,
       10
@@ -43,11 +43,11 @@
   },
   "orochimaru-combo3": {
     "image": "/sprites/player/orochimaru/combo3.png",
-    "frameWidth": 63,
-    "frameHeight": 52,
+    "frameWidth": 136,
+    "frameHeight": 112,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.4444444444444444,
+    "contentHeight": 110,
+    "scale": 1,
     "range": [
       10,
       15
@@ -55,20 +55,20 @@
   },
   "orochimaru-hurt": {
     "image": "/sprites/player/orochimaru/hurt.png",
-    "frameWidth": 51,
-    "frameHeight": 49,
+    "frameWidth": 160,
+    "frameHeight": 114,
     "frameCount": 2,
-    "contentHeight": 48,
+    "contentHeight": 110,
     "frameRate": 10,
-    "scale": 0.4444444444444444
+    "scale": 1.0891089108910892
   },
   "orochimaru-death": {
     "image": "/sprites/player/orochimaru/death.png",
-    "frameWidth": 51,
-    "frameHeight": 49,
+    "frameWidth": 160,
+    "frameHeight": 114,
     "frameCount": 4,
-    "contentHeight": 48,
+    "contentHeight": 110,
     "frameRate": 8,
-    "scale": 0.4444444444444444
+    "scale": 1.0891089108910892
   }
 }

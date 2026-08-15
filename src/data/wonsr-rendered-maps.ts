@@ -1,3 +1,4 @@
+import { COMBAT_MAP_LAYOUT_SCALE } from '@/constants/sprites';
 import { MAP_KEYS, type MapKey } from '@/maps/map-registry';
 
 /**
@@ -21,10 +22,57 @@ export interface WonsrRenderedMap {
   spawn: { x: number; y: number };
   /** Pontos de spawn dos inimigos (px), extraídos do nowo-spawn.xml do recorte. */
   enemySpawns: readonly { x: number; y: number }[];
+  /**
+   * Combate lateral: trava pés nesta Y (visão de perfil).
+   * Sem isso, o mapa usa movimento livre 2D das arenas top-down.
+   */
+  lateralFloorY?: number;
+  /** Escala dos sprites neste mapa (default: 3.75 nas arenas 4K, 1 nos menores). */
+  layoutScale?: number;
+  /**
+   * Overlay na frente dos sprites (grama / corte do solo).
+   * Pés ficam atrás da vegetação; o restante da imagem é transparente.
+   */
+  foregroundKey?: string;
+  foregroundUrl?: string;
+  /** Fundo em vídeo (loop). O PNG `imageKey` fica atrás até o primeiro frame. */
+  videoKey?: string;
+  videoUrl?: string;
+}
+
+export const COMBAT_MAP_NATIVE_WIDTH = 3840;
+export const COMBAT_MAP_NATIVE_HEIGHT = 2160;
+
+/** Spawns das arenas art (3840×2160, layout × 3.75 vs 1024×576). */
+const ART_ARENA_4K = {
+  width: COMBAT_MAP_NATIVE_WIDTH,
+  height: COMBAT_MAP_NATIVE_HEIGHT,
+  spawn: { x: 1980, y: 1455 },
+  enemySpawns: [
+    { x: 1980, y: 904 },
+    { x: 1328, y: 1249 },
+    { x: 2633, y: 1249 },
+    { x: 1523, y: 1043 },
+    { x: 2438, y: 1043 },
+    { x: 1459, y: 1388 },
+    { x: 2501, y: 1388 },
+    { x: 1980, y: 1283 },
+  ],
+} as const;
+
+function artArena(mapKey: MapKey, slug: string): WonsrRenderedMap {
+  return {
+    mapKey,
+    imageKey: `map-${slug}`,
+    imageUrl: `/maps/${slug}.png?v=4k`,
+    width: ART_ARENA_4K.width,
+    height: ART_ARENA_4K.height,
+    spawn: { ...ART_ARENA_4K.spawn },
+    enemySpawns: ART_ARENA_4K.enemySpawns,
+  };
 }
 
 export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
-  // Floresta a oeste de Konoha (bounds x=1808 y=1904 z=7, 56×56 tiles).
   [MAP_KEYS.forest]: {
     mapKey: MAP_KEYS.forest,
     imageKey: 'map-wonsr-forest',
@@ -32,7 +80,6 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
     width: 1792,
     height: 1792,
     spawn: { x: 752, y: 880 },
-    // Spawns originais de monstros do WONSR dentro do recorte.
     enemySpawns: [
       { x: 1296, y: 48 },
       { x: 272, y: 240 },
@@ -47,24 +94,315 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
       { x: 1744, y: 1648 },
     ],
   },
-  // Arena de clareira (arte full-image) — todas as caças por enquanto.
   [MAP_KEYS.huntForestClearing]: {
     mapKey: MAP_KEYS.huntForestClearing,
     imageKey: 'map-hunt-forest-clearing',
-    imageUrl: '/maps/hunt-forest-clearing.png',
+    imageUrl: '/maps/hunt-forest-clearing.png?v=lat4k2',
+    foregroundKey: 'map-hunt-forest-clearing-fg',
+    foregroundUrl: '/maps/hunt-forest-clearing-fg.png?v=lat4k2',
+    width: 3840,
+    height: 2160,
+    spawn: { x: 1920, y: 1400 },
+    enemySpawns: [
+      { x: 3680, y: 1400 },
+      { x: 160, y: 1400 },
+    ],
+    lateralFloorY: 1400,
+    layoutScale: 4.75,
+  },
+  [MAP_KEYS.huntValeDoFim]: {
+    mapKey: MAP_KEYS.huntValeDoFim,
+    imageKey: 'map-hunt-vale-do-fim',
+    imageUrl: '/maps/hunt-vale-do-fim.png?v=lat4k2',
+    foregroundKey: 'map-hunt-vale-do-fim-fg',
+    foregroundUrl: '/maps/hunt-vale-do-fim-fg.png?v=lat4k2',
+    width: 3840,
+    height: 2160,
+    spawn: { x: 1920, y: 1384 },
+    enemySpawns: [
+      { x: 3680, y: 1384 },
+      { x: 160, y: 1384 },
+    ],
+    lateralFloorY: 1384,
+    layoutScale: 4.75,
+  },
+  [MAP_KEYS.huntCampoTreinamento]: {
+    mapKey: MAP_KEYS.huntCampoTreinamento,
+    imageKey: 'map-hunt-campo-treinamento',
+    imageUrl: '/maps/hunt-campo-treinamento.png?v=lat4k2',
+    foregroundKey: 'map-hunt-campo-treinamento-fg',
+    foregroundUrl: '/maps/hunt-campo-treinamento-fg.png?v=lat4k2',
+    width: 3840,
+    height: 2160,
+    spawn: { x: 1920, y: 1386 },
+    enemySpawns: [
+      { x: 3680, y: 1386 },
+      { x: 160, y: 1386 },
+    ],
+    // A grama vai até 1380 e a terra começa em 1396: 1400 enterrava os pés.
+    lateralFloorY: 1386,
+    layoutScale: 4.75,
+  },
+  [MAP_KEYS.huntPontePaisOnda]: {
+    mapKey: MAP_KEYS.huntPontePaisOnda,
+    imageKey: 'map-hunt-ponte-pais-onda',
+    imageUrl: '/maps/hunt-ponte-pais-onda.png?v=lat4k2',
+    foregroundKey: 'map-hunt-ponte-pais-onda-fg',
+    foregroundUrl: '/maps/hunt-ponte-pais-onda-fg.png?v=lat4k2',
+    width: 3840,
+    height: 2160,
+    spawn: { x: 1920, y: 1470 },
+    enemySpawns: [
+      { x: 3680, y: 1470 },
+      { x: 160, y: 1470 },
+    ],
+    lateralFloorY: 1470,
+    layoutScale: 4.75,
+  },
+  [MAP_KEYS.huntEsconderijoAkatsuki]: {
+    mapKey: MAP_KEYS.huntEsconderijoAkatsuki,
+    imageKey: 'map-hunt-esconderijo-akatsuki',
+    imageUrl: '/maps/hunt-esconderijo-akatsuki.png?v=lat4k2',
+    foregroundKey: 'map-hunt-esconderijo-akatsuki-fg',
+    foregroundUrl: '/maps/hunt-esconderijo-akatsuki-fg.png?v=lat4k2',
+    width: 3840,
+    height: 2160,
+    spawn: { x: 1920, y: 1400 },
+    enemySpawns: [
+      { x: 3680, y: 1400 },
+      { x: 160, y: 1400 },
+    ],
+    lateralFloorY: 1400,
+    layoutScale: 4.75,
+  },
+  [MAP_KEYS.huntLabOrochimaru]: {
+    mapKey: MAP_KEYS.huntLabOrochimaru,
+    imageKey: 'map-hunt-lab-orochimaru',
+    imageUrl: '/maps/hunt-lab-orochimaru.png?v=lat4k2',
+    foregroundKey: 'map-hunt-lab-orochimaru-fg',
+    foregroundUrl: '/maps/hunt-lab-orochimaru-fg.png?v=lat4k2',
+    width: 3840,
+    height: 2160,
+    spawn: { x: 1920, y: 1400 },
+    enemySpawns: [
+      { x: 3680, y: 1400 },
+      { x: 160, y: 1400 },
+    ],
+    lateralFloorY: 1400,
+    layoutScale: 4.75,
+  },
+  [MAP_KEYS.huntPaisDoVento]: {
+    mapKey: MAP_KEYS.huntPaisDoVento,
+    imageKey: 'map-hunt-pais-do-vento',
+    imageUrl: '/maps/hunt-pais-do-vento.png?v=lat4k2',
+    foregroundKey: 'map-hunt-pais-do-vento-fg',
+    foregroundUrl: '/maps/hunt-pais-do-vento-fg.png?v=lat4k2',
+    width: 3840,
+    height: 2160,
+    spawn: { x: 1920, y: 1387 },
+    enemySpawns: [
+      { x: 3680, y: 1387 },
+      { x: 160, y: 1387 },
+    ],
+    lateralFloorY: 1387,
+    layoutScale: 4.75,
+  },
+  [MAP_KEYS.huntArenaExameChunnin]: {
+    mapKey: MAP_KEYS.huntArenaExameChunnin,
+    imageKey: 'map-hunt-arena-exame-chunnin',
+    imageUrl: '/maps/hunt-arena-exame-chunnin.png?v=lat4k2',
+    foregroundKey: 'map-hunt-arena-exame-chunnin-fg',
+    foregroundUrl: '/maps/hunt-arena-exame-chunnin-fg.png?v=lat4k2',
+    width: 3840,
+    height: 2160,
+    spawn: { x: 1920, y: 1400 },
+    enemySpawns: [
+      { x: 3680, y: 1400 },
+      { x: 160, y: 1400 },
+    ],
+    lateralFloorY: 1400,
+    layoutScale: 4.75,
+  },
+  [MAP_KEYS.huntMonteMyoboku]: {
+    mapKey: MAP_KEYS.huntMonteMyoboku,
+    imageKey: 'map-hunt-monte-myoboku',
+    imageUrl: '/maps/hunt-monte-myoboku.png?v=lat4k3',
+    foregroundKey: 'map-hunt-monte-myoboku-fg',
+    foregroundUrl: '/maps/hunt-monte-myoboku-fg.png?v=lat4k3',
+    width: 3840,
+    height: 2160,
+    spawn: { x: 1920, y: 1440 },
+    enemySpawns: [
+      { x: 3680, y: 1440 },
+      { x: 160, y: 1440 },
+    ],
+    lateralFloorY: 1440,
+    layoutScale: 4.75,
+  },
+  [MAP_KEYS.huntArenaExameChunin]: {
+    mapKey: MAP_KEYS.huntArenaExameChunin,
+    imageKey: 'map-hunt-arena-exame-chunin',
+    imageUrl: '/maps/hunt-arena-exame-chunin.png?v=lat4k3',
+    foregroundKey: 'map-hunt-arena-exame-chunin-fg',
+    foregroundUrl: '/maps/hunt-arena-exame-chunin-fg.png?v=lat4k3',
+    width: 3840,
+    height: 2160,
+    spawn: { x: 1920, y: 1500 },
+    enemySpawns: [
+      { x: 3680, y: 1500 },
+      { x: 160, y: 1500 },
+    ],
+    lateralFloorY: 1500,
+    layoutScale: 4.75,
+  },
+  [MAP_KEYS.huntDistritoUchiha]: {
+    mapKey: MAP_KEYS.huntDistritoUchiha,
+    imageKey: 'map-hunt-distrito-uchiha',
+    imageUrl: '/maps/hunt-distrito-uchiha.png?v=lat4k3',
+    foregroundKey: 'map-hunt-distrito-uchiha-fg',
+    foregroundUrl: '/maps/hunt-distrito-uchiha-fg.png?v=lat4k3',
+    width: 3840,
+    height: 2160,
+    spawn: { x: 1920, y: 1420 },
+    enemySpawns: [
+      { x: 3680, y: 1420 },
+      { x: 160, y: 1420 },
+    ],
+    lateralFloorY: 1420,
+    layoutScale: 4.75,
+  },
+  [MAP_KEYS.huntCampoGuerraNinja]: {
+    mapKey: MAP_KEYS.huntCampoGuerraNinja,
+    imageKey: 'map-hunt-campo-guerra-ninja',
+    imageUrl: '/maps/hunt-campo-guerra-ninja.png?v=lat4k3',
+    foregroundKey: 'map-hunt-campo-guerra-ninja-fg',
+    foregroundUrl: '/maps/hunt-campo-guerra-ninja-fg.png?v=lat4k3',
+    width: 3840,
+    height: 2160,
+    spawn: { x: 1920, y: 1390 },
+    enemySpawns: [
+      { x: 3680, y: 1390 },
+      { x: 160, y: 1390 },
+    ],
+    lateralFloorY: 1390,
+    layoutScale: 4.75,
+  },
+  [MAP_KEYS.huntArredoresReinoClover]: {
+    mapKey: MAP_KEYS.huntArredoresReinoClover,
+    imageKey: 'map-hunt-arredores-reino-clover',
+    imageUrl: '/maps/hunt-arredores-reino-clover.png?v=4k1',
+    // PNG 4096×2160 original, copiado sem recompressão ou resize.
+    width: 4096,
+    height: 2160,
+    spawn: { x: 2048, y: 1396 },
+    enemySpawns: [
+      { x: 3760, y: 1396 },
+      { x: 336, y: 1396 },
+    ],
+    lateralFloorY: 1396,
+    layoutScale: 5.75,
+  },
+  [MAP_KEYS.huntKonohaDestruida]: artArena(
+    MAP_KEYS.huntKonohaDestruida,
+    'hunt-konoha-destruida',
+  ),
+  [MAP_KEYS.huntValeDoFimLateral]: {
+    mapKey: MAP_KEYS.huntValeDoFimLateral,
+    imageKey: 'map-hunt-vale-do-fim-lateral',
+    imageUrl: '/maps/hunt-vale-do-fim-lateral.png?v=forest2',
+    foregroundKey: 'map-hunt-vale-do-fim-lateral-fg',
+    foregroundUrl: '/maps/hunt-vale-do-fim-lateral-fg.png?v=forest2',
     width: 1024,
     height: 576,
-    spawn: { x: 528, y: 376 },
+    spawn: { x: 512, y: 373 },
     enemySpawns: [
-      { x: 528, y: 220 },
-      { x: 370, y: 316 },
-      { x: 686, y: 316 },
-      { x: 428, y: 255 },
-      { x: 628, y: 255 },
-      { x: 413, y: 359 },
-      { x: 643, y: 359 },
-      { x: 528, y: 324 },
+      { x: 968, y: 373 },
+      { x: 56, y: 373 },
     ],
+    lateralFloorY: 373,
+    // Sprites grandes na visão de perfil (mapa 1024×576).
+    layoutScale: 1.8,
+  },
+  [MAP_KEYS.huntValeLoop]: {
+    mapKey: MAP_KEYS.huntValeLoop,
+    imageKey: 'map-hunt-vale-loop',
+    imageUrl: '/maps/hunt-vale-loop.png?v=loop2',
+    videoKey: 'map-hunt-vale-loop-video',
+    videoUrl: '/maps/hunt-vale-loop.mp4?v=loop2',
+    width: 1904,
+    height: 1088,
+    spawn: { x: 952, y: 861 },
+    enemySpawns: [
+      { x: 1824, y: 861 },
+      { x: 80, y: 861 },
+    ],
+    lateralFloorY: 861,
+    layoutScale: 3.2,
+  },
+  [MAP_KEYS.huntNamekusei]: {
+    mapKey: MAP_KEYS.huntNamekusei,
+    imageKey: 'map-hunt-namekusei',
+    imageUrl: '/maps/hunt-namekusei.png?v=latdb2',
+    foregroundKey: 'map-hunt-namekusei-fg',
+    foregroundUrl: '/maps/hunt-namekusei-fg.png?v=latdb2',
+    width: 3840,
+    height: 2160,
+    spawn: { x: 1920, y: 1384 },
+    enemySpawns: [
+      { x: 3680, y: 1384 },
+      { x: 160, y: 1384 },
+    ],
+    lateralFloorY: 1384,
+    layoutScale: 5.75,
+  },
+  [MAP_KEYS.huntJogosCell]: artArena(MAP_KEYS.huntJogosCell, 'hunt-jogos-cell'),
+  [MAP_KEYS.huntTorneioArtesMarciais]: {
+    mapKey: MAP_KEYS.huntTorneioArtesMarciais,
+    imageKey: 'map-hunt-torneio-artes-marciais',
+    imageUrl: '/maps/hunt-torneio-artes-marciais.png?v=latdb2',
+    foregroundKey: 'map-hunt-torneio-artes-marciais-fg',
+    foregroundUrl: '/maps/hunt-torneio-artes-marciais-fg.png?v=latdb2',
+    width: 3840,
+    height: 2160,
+    spawn: { x: 1920, y: 1460 },
+    enemySpawns: [
+      { x: 3680, y: 1460 },
+      { x: 160, y: 1460 },
+    ],
+    lateralFloorY: 1460,
+    layoutScale: 5.75,
+  },
+  [MAP_KEYS.huntSalaDoTempo]: {
+    mapKey: MAP_KEYS.huntSalaDoTempo,
+    imageKey: 'map-hunt-sala-do-tempo',
+    imageUrl: '/maps/hunt-sala-do-tempo.png?v=latdb2',
+    foregroundKey: 'map-hunt-sala-do-tempo-fg',
+    foregroundUrl: '/maps/hunt-sala-do-tempo-fg.png?v=latdb2',
+    width: 3840,
+    height: 2160,
+    spawn: { x: 1920, y: 1464 },
+    enemySpawns: [
+      { x: 3680, y: 1464 },
+      { x: 160, y: 1464 },
+    ],
+    lateralFloorY: 1464,
+    layoutScale: 5.75,
+  },
+  [MAP_KEYS.huntDesertoSaiyajin]: {
+    mapKey: MAP_KEYS.huntDesertoSaiyajin,
+    imageKey: 'map-hunt-deserto-saiyajin',
+    imageUrl: '/maps/hunt-deserto-saiyajin.png?v=latdb2',
+    foregroundKey: 'map-hunt-deserto-saiyajin-fg',
+    foregroundUrl: '/maps/hunt-deserto-saiyajin-fg.png?v=latdb2',
+    width: 3840,
+    height: 2160,
+    spawn: { x: 1920, y: 1424 },
+    enemySpawns: [
+      { x: 3680, y: 1424 },
+      { x: 160, y: 1424 },
+    ],
+    lateralFloorY: 1424,
+    layoutScale: 5.75,
   },
 };
 
@@ -76,4 +414,16 @@ export function listWonsrRenderedMaps(): WonsrRenderedMap[] {
   return Object.values(WONSR_RENDERED_MAPS).filter(
     (entry): entry is WonsrRenderedMap => entry != null,
   );
+}
+
+/** 3.75 nos mapas 4K; override por mapa; 1 no recorte legado. */
+export function combatLayoutScale(mapKey: MapKey | null | undefined): number {
+  if (!mapKey) return 1;
+  const rendered = getWonsrRenderedMap(mapKey);
+  if (!rendered) return 1;
+  if (typeof rendered.layoutScale === 'number' && rendered.layoutScale > 0) {
+    return rendered.layoutScale;
+  }
+  if (rendered.width < COMBAT_MAP_NATIVE_WIDTH) return 1;
+  return COMBAT_MAP_LAYOUT_SCALE;
 }

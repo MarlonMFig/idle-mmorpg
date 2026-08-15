@@ -1,5 +1,7 @@
 import { clampStars } from '@/constants/character-progression';
+import { xpRequiredForLevel } from '@/data/xp-stages';
 import { STARTERS } from '@/data/starters';
+import { getCuratedPortraitUrl } from '@/data/curated-map-sprites';
 import {
   CHOUJI_CURATED_LOOK_TYPE,
   getCharacterPack,
@@ -31,6 +33,22 @@ import {
   SHINO_CURATED_LOOK_TYPE,
   MOMO_HINAMORI_CURATED_LOOK_TYPE,
   HITSUGAYA_CURATED_LOOK_TYPE,
+  SHISUI_CURATED_LOOK_TYPE,
+  SHISUI_LOOK_TYPES,
+  NARUTO_SHIPPUDEN_CURATED_LOOK_TYPE,
+  NARUTO_SHIPPUDEN_LOOK_TYPES,
+  GOKU_CURATED_LOOK_TYPE,
+  GOKU_LOOK_TYPES,
+  FREEZA_CURATED_LOOK_TYPE,
+  FREEZA_LOOK_TYPES,
+  GOTENKS_CURATED_LOOK_TYPE,
+  GOTENKS_LOOK_TYPES,
+  MAJIN_BOO_CURATED_LOOK_TYPE,
+  MAJIN_BOO_LOOK_TYPES,
+  PICCOLO_CURATED_LOOK_TYPE,
+  PICCOLO_LOOK_TYPES,
+  ASTA_CURATED_LOOK_TYPE,
+  LUFFY_CURATED_LOOK_TYPE,
 } from '@/data/character-packs';
 import { emitSystemMessage } from '@/lib/system-log';
 import { planForgeStar } from '@/systems/forge';
@@ -38,10 +56,7 @@ import { createStore } from '@/stores/create-store';
 import { TEAM_SLOT_COUNT } from '@/constants/sealing';
 import type { StarterCharacterId } from '@/types/player-creation';
 import type { SealedCharacter, TeamState } from '@/types/team';
-import {
-  buildSealedCharacter,
-  normalizeSealedCharacter,
-} from '@/utils/character-identity';
+import { buildSealedCharacter, normalizeSealedCharacter } from '@/utils/character-identity';
 
 function starterMember(starterId: StarterCharacterId): SealedCharacter {
   const starter = STARTERS.find((entry) => entry.id === starterId);
@@ -109,6 +124,48 @@ function previewForLookType(lookType: number): string {
   if (lookType === UCHIHA_ITACHI_LOOK_TYPE) {
     return '/sprites/player/previews/itachi.png';
   }
+  if (
+    lookType === SHISUI_CURATED_LOOK_TYPE ||
+    (SHISUI_LOOK_TYPES as readonly number[]).includes(lookType)
+  ) {
+    return '/sprites/player/previews/shisui.png';
+  }
+  if (
+    lookType === NARUTO_SHIPPUDEN_CURATED_LOOK_TYPE ||
+    (NARUTO_SHIPPUDEN_LOOK_TYPES as readonly number[]).includes(lookType)
+  ) {
+    return '/sprites/player/previews/naruto-shippuden.png';
+  }
+  if (
+    lookType === GOKU_CURATED_LOOK_TYPE ||
+    (GOKU_LOOK_TYPES as readonly number[]).includes(lookType)
+  ) {
+    return '/sprites/player/previews/goku.png';
+  }
+  if (
+    lookType === FREEZA_CURATED_LOOK_TYPE ||
+    (FREEZA_LOOK_TYPES as readonly number[]).includes(lookType)
+  ) {
+    return '/sprites/player/previews/freeza.png';
+  }
+  if (
+    lookType === GOTENKS_CURATED_LOOK_TYPE ||
+    (GOTENKS_LOOK_TYPES as readonly number[]).includes(lookType)
+  ) {
+    return '/sprites/player/previews/gotenks.png';
+  }
+  if (
+    lookType === MAJIN_BOO_CURATED_LOOK_TYPE ||
+    (MAJIN_BOO_LOOK_TYPES as readonly number[]).includes(lookType)
+  ) {
+    return '/sprites/player/previews/majin-boo.png';
+  }
+  if (
+    lookType === PICCOLO_CURATED_LOOK_TYPE ||
+    (PICCOLO_LOOK_TYPES as readonly number[]).includes(lookType)
+  ) {
+    return '/sprites/player/previews/piccolo.png';
+  }
   if ((JIRAIYA_LOOK_TYPES as readonly number[]).includes(lookType)) {
     return '/sprites/player/previews/jiraiya.png';
   }
@@ -163,14 +220,28 @@ function previewForLookType(lookType: number): string {
   if (lookType === HITSUGAYA_CURATED_LOOK_TYPE) {
     return '/sprites/player/previews/hitsugaya.png';
   }
-  return `/sprites/wonsr/outfits/${lookType}.png`;
+  if (lookType === ASTA_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/asta.png';
+  }
+  if (lookType === LUFFY_CURATED_LOOK_TYPE) {
+    return '/sprites/player/previews/luffy.png';
+  }
+  return getCuratedPortraitUrl(lookType) ?? `/sprites/wonsr/outfits/${lookType}.png`;
+}
+
+/** Prefer preview curado (`/previews/`) sobre URL legada quebrada (outfit WONSR 90xx). */
+function resolvePreviewUrl(lookType: number, stored?: string | null): string {
+  const fromLook = previewForLookType(lookType);
+  if (fromLook.includes('/sprites/player/previews/')) return fromLook;
+  if (stored && stored.includes('/sprites/player/previews/')) return stored;
+  if (stored && stored.length > 0 && !stored.includes('/sprites/wonsr/outfits/')) return stored;
+  return fromLook;
 }
 
 const store = createStore<TeamState>({
   collection: [],
   teamIds: [],
   activeId: null,
-  inventoryTab: 'items',
   isOpen: false,
 });
 
@@ -192,7 +263,6 @@ export const teamStore = {
       collection: [member],
       teamIds: [member.id],
       activeId: member.id,
-      inventoryTab: 'items',
       isOpen: false,
     });
   },
@@ -207,7 +277,7 @@ export const teamStore = {
       .filter((entry): entry is SealedCharacter => entry != null)
       .map((entry) => ({
         ...entry,
-        previewUrl: entry.previewUrl || previewForLookType(entry.lookType),
+        previewUrl: resolvePreviewUrl(entry.lookType, entry.previewUrl),
       }));
     if (collection.length === 0) return false;
 
@@ -223,24 +293,16 @@ export const teamStore = {
       activeId = teamIds[0] ?? collection[0].id;
     }
     if (!teamIds.includes(activeId)) {
-      teamIds = [activeId, ...teamIds.filter((id) => id !== activeId)].slice(
-        0,
-        TEAM_SLOT_COUNT,
-      );
+      teamIds = [activeId, ...teamIds.filter((id) => id !== activeId)].slice(0, TEAM_SLOT_COUNT);
     }
 
     commit({
       collection,
       teamIds,
       activeId,
-      inventoryTab: 'items',
       isOpen: false,
     });
     return true;
-  },
-
-  setInventoryTab(tab: TeamState['inventoryTab']): void {
-    commit({ ...store.getSnapshot(), inventoryTab: tab });
   },
 
   toggleOpen(): void {
@@ -252,17 +314,91 @@ export const teamStore = {
     commit({ ...store.getSnapshot(), isOpen });
   },
 
+  /** Reaplica previews curados (corrige saves com lookType 90xx → outfit WONSR inexistente). */
+  refreshPreviews(): void {
+    const state = store.getSnapshot();
+    let changed = false;
+    const collection = state.collection.map((entry) => {
+      const next = resolvePreviewUrl(entry.lookType, entry.previewUrl);
+      if (next === entry.previewUrl) return entry;
+      changed = true;
+      return { ...entry, previewUrl: next };
+    });
+    if (changed) commit({ ...state, collection });
+  },
+
   getActive(): SealedCharacter | null {
     const state = store.getSnapshot();
     if (!state.activeId) return null;
     return state.collection.find((entry) => entry.id === state.activeId) ?? null;
   },
 
+  /** Grava nível/XP do personagem (selamento, XP de caça, troca de ativo). */
+  setCharacterProgress(instanceId: string, progress: { level: number; xp: number }): boolean {
+    const state = store.getSnapshot();
+    const level = Math.max(1, Math.floor(progress.level));
+    const xp = Math.max(0, Math.floor(progress.xp));
+    let found = false;
+    const collection = state.collection.map((entry) => {
+      if (entry.id !== instanceId) return entry;
+      found = true;
+      if (entry.level === level && entry.xp === xp) return entry;
+      return { ...entry, level, xp };
+    });
+    if (!found) return false;
+    commit({ ...state, collection });
+    return true;
+  },
+
+  /**
+   * Saves antigos sem nível por personagem.
+   * Starter recupera o progresso da conta (era o único nível).
+   * Cópias seladas entram no Nv.1 — não herdam caça nem conta.
+   */
+  migrateMissingLevels(accountLevel: number, accountXp: number): void {
+    const state = store.getSnapshot();
+    const accountLv = Math.max(1, Math.floor(accountLevel));
+    const accountXpClamped = Math.max(0, Math.floor(accountXp));
+    let changed = false;
+    const collection = state.collection.map((entry) => {
+      if (entry.level >= 1) return entry;
+      changed = true;
+      if (entry.starterId) {
+        return { ...entry, level: accountLv, xp: accountXpClamped };
+      }
+      return { ...entry, level: 1, xp: 0 };
+    });
+    if (!changed) return;
+    commit({ ...state, collection });
+  },
+
+  /** XP próprio do personagem (independente da conta). @returns se subiu de nível. */
+  addCharacterXp(instanceId: string, amount: number): boolean {
+    if (amount <= 0) return false;
+    const state = store.getSnapshot();
+    let leveled = false;
+    const collection = state.collection.map((entry) => {
+      if (entry.id !== instanceId) return entry;
+      let level = Math.max(1, entry.level);
+      let xp = Math.max(0, entry.xp);
+      let xpMax = xpRequiredForLevel(level);
+      xp += amount;
+      while (xp >= xpMax) {
+        xp -= xpMax;
+        level += 1;
+        xpMax = xpRequiredForLevel(level);
+        leveled = true;
+      }
+      return { ...entry, level, xp };
+    });
+    commit({ ...state, collection });
+    return leveled;
+  },
+
   /** Contagem de instâncias com o mesmo characterKey. */
   countByCharacterKey(characterKey: string): number {
-    return store
-      .getSnapshot()
-      .collection.filter((entry) => entry.characterKey === characterKey).length;
+    return store.getSnapshot().collection.filter((entry) => entry.characterKey === characterKey)
+      .length;
   },
 
   hasInstance(instanceId: string): boolean {
@@ -295,13 +431,15 @@ export const teamStore = {
       quality: member.quality,
       stars: member.stars,
       clanId: member.clanId,
+      level: member.level,
+      xp: member.xp,
       isFavorite: member.isFavorite,
       isLocked: member.isLocked,
     });
 
     const sealed: SealedCharacter = {
       ...built,
-      previewUrl: built.previewUrl ?? previewForLookType(member.lookType),
+      previewUrl: resolvePreviewUrl(member.lookType, built.previewUrl ?? member.previewUrl),
     };
     commit({
       ...state,

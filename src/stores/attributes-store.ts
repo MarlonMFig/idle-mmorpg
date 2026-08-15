@@ -14,6 +14,10 @@ function activeStars(): number {
   return teamStore.getActive()?.stars ?? 0;
 }
 
+function activeCharacterLevel(): number {
+  return Math.max(1, teamStore.getActive()?.level || 1);
+}
+
 function buildState(level: number, stars: number, activeBuffs: AttributeBuff[]): PlayerAttributes {
   return computePlayerAttributes({ level, stars, buffs: activeBuffs });
 }
@@ -65,7 +69,7 @@ export const attributesStore = {
    */
   recalculate(fullHeal = false): void {
     this.pruneExpiredBuffs();
-    store.setState(buildState(vitalsStore.getLevel(), activeStars(), buffs));
+    store.setState(buildState(activeCharacterLevel(), activeStars(), buffs));
     syncVitals(fullHeal);
   },
 
@@ -88,7 +92,7 @@ export const attributesStore = {
   addBuff(id: string, modifiers: AttributeModifiers, durationMs?: number): void {
     const expiresAt = durationMs != null ? Date.now() + durationMs : undefined;
     buffs = [...buffs.filter((buff) => buff.id !== id), { id, modifiers, expiresAt }];
-    store.setState(buildState(vitalsStore.getLevel(), activeStars(), buffs));
+    store.setState(buildState(activeCharacterLevel(), activeStars(), buffs));
     syncVitals(false);
   },
 
@@ -96,14 +100,14 @@ export const attributesStore = {
     const next = buffs.filter((buff) => buff.id !== id);
     if (next.length === buffs.length) return;
     buffs = next;
-    store.setState(buildState(vitalsStore.getLevel(), activeStars(), buffs));
+    store.setState(buildState(activeCharacterLevel(), activeStars(), buffs));
     syncVitals(false);
   },
 
   clearBuffs(): void {
     if (buffs.length === 0) return;
     buffs = [];
-    store.setState(buildState(vitalsStore.getLevel(), activeStars(), buffs));
+    store.setState(buildState(activeCharacterLevel(), activeStars(), buffs));
     syncVitals(false);
   },
 

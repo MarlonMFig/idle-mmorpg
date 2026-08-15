@@ -1,0 +1,28 @@
+{
+  "mapKey": "huntLabOrochimaru",
+  "slug": "hunt-lab-orochimaru",
+  "label": "Esconderijo Orochimaru",
+  "image": "/maps/hunt-lab-orochimaru.png",
+  "foreground": "/maps/hunt-lab-orochimaru-fg.png",
+  "tmx": "/maps/hunt-lab-orochimaru.tmx",
+  "width": 3840,
+  "height": 2160,
+  "cols": 240,
+  "rows": 135,
+  "lateralFloorY": 1400,
+  "layoutScale": 6.75,
+  "spawn": {
+    "x": 1920,
+    "y": 1400
+  },
+  "enemySpawns": [
+    {
+      "x": 3680,
+      "y": 1400
+    },
+    {
+      "x": 160,
+      "y": 1400
+    }
+  ]
+}

@@ -1,29 +1,29 @@
 {
   "tayuya-walk": {
     "image": "/sprites/player/tayuya/walk.png",
-    "frameWidth": 39,
-    "frameHeight": 52,
+    "frameWidth": 73,
+    "frameHeight": 98,
     "frameCount": 8,
-    "contentHeight": 48,
-    "scale": 0.5106382978723404,
+    "contentHeight": 91,
+    "scale": 1,
     "residualGreen": 0,
-    "pureBlack": 3139
+    "pureBlack": 12039
   },
   "tayuya-idle": {
     "image": "/sprites/player/tayuya/idle.png",
-    "frameWidth": 42,
-    "frameHeight": 50,
+    "frameWidth": 75,
+    "frameHeight": 95,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.5106382978723404
+    "contentHeight": 91,
+    "scale": 1
   },
   "tayuya-combo1": {
     "image": "/sprites/player/tayuya/combo1.png",
-    "frameWidth": 54,
-    "frameHeight": 50,
+    "frameWidth": 103,
+    "frameHeight": 95,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.5106382978723404,
+    "contentHeight": 91,
+    "scale": 1.011111111111111,
     "range": [
       0,
       5
@@ -31,11 +31,11 @@
   },
   "tayuya-combo2": {
     "image": "/sprites/player/tayuya/combo2.png",
-    "frameWidth": 54,
-    "frameHeight": 50,
+    "frameWidth": 103,
+    "frameHeight": 95,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.5106382978723404,
+    "contentHeight": 91,
+    "scale": 1.011111111111111,
     "range": [
       5,
       10
@@ -43,11 +43,11 @@
   },
   "tayuya-combo3": {
     "image": "/sprites/player/tayuya/combo3.png",
-    "frameWidth": 54,
-    "frameHeight": 50,
+    "frameWidth": 103,
+    "frameHeight": 95,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.5106382978723404,
+    "contentHeight": 91,
+    "scale": 1.011111111111111,
     "range": [
       10,
       15
@@ -55,55 +55,57 @@
   },
   "tayuya-hurt": {
     "image": "/sprites/player/tayuya/hurt.png",
-    "frameWidth": 55,
-    "frameHeight": 51,
+    "frameWidth": 147,
+    "frameHeight": 95,
     "frameCount": 2,
-    "contentHeight": 48,
+    "contentHeight": 91,
     "frameRate": 10,
-    "scale": 0.5106382978723404
+    "scale": 0.9891304347826086
   },
   "tayuya-death": {
     "image": "/sprites/player/tayuya/death.png",
-    "frameWidth": 55,
-    "frameHeight": 51,
+    "frameWidth": 147,
+    "frameHeight": 95,
     "frameCount": 3,
-    "contentHeight": 48,
+    "contentHeight": 91,
     "frameRate": 8,
-    "scale": 0.5106382978723404
+    "scale": 0.9891304347826086
   },
   "tayuya-magen-mateki": {
     "image": "/sprites/player/tayuya/magen-mateki.png",
-    "frameWidth": 90,
-    "frameHeight": 95,
+    "frameWidth": 174,
+    "frameHeight": 167,
     "frameCount": 18,
-    "contentHeight": 48,
-    "scale": 0.5106382978723404,
+    "contentHeight": 91,
+    "scale": 0.91,
     "frameRate": 12,
     "durationMs": 1500,
     "hitDelayMs": 917,
     "residualGreen": 0,
-    "pureBlack": 6497
+    "pureBlack": 20895,
+    "originX": 0.45977011494252873
   },
   "skill-magen-mateki": {
     "image": "/sprites/player/tayuya/magen-mateki.png",
-    "frameWidth": 90,
-    "frameHeight": 95,
+    "frameWidth": 174,
+    "frameHeight": 167,
     "frameCount": 18,
-    "contentHeight": 48,
-    "scale": 0.5106382978723404,
+    "contentHeight": 91,
+    "scale": 0.91,
     "frameRate": 12,
     "durationMs": 1500,
     "hitDelayMs": 917,
     "residualGreen": 0,
-    "pureBlack": 6497
+    "pureBlack": 20895,
+    "originX": 0.45977011494252873
   },
   "tayuya-magen-mateki-fx": {
     "image": "/sprites/player/tayuya/magen-mateki-fx.png",
-    "frameWidth": 34,
-    "frameHeight": 44,
+    "frameWidth": 60,
+    "frameHeight": 80,
     "frameCount": 4,
-    "contentHeight": 40,
-    "scale": 1.1428571428571428,
+    "contentHeight": 76,
+    "scale": 2.1714285714285713,
     "frameRate": 12,
     "durationMs": 333,
     "residualGreen": 0,
@@ -111,11 +113,11 @@
   },
   "skill-magen-mateki-fx": {
     "image": "/sprites/player/tayuya/magen-mateki-fx.png",
-    "frameWidth": 34,
-    "frameHeight": 44,
+    "frameWidth": 60,
+    "frameHeight": 80,
     "frameCount": 4,
-    "contentHeight": 40,
-    "scale": 1.1428571428571428,
+    "contentHeight": 76,
+    "scale": 2.1714285714285713,
     "frameRate": 12,
     "durationMs": 333,
     "residualGreen": 0,

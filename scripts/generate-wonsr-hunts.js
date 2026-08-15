@@ -121,16 +121,6 @@ function buildCuratedExtraCharacters() {
       sourceMonster: null,
     },
     {
-      id: 'wonsr-character-naruto-sennin',
-      sourceId: 'wonsr-character-naruto-sennin',
-      name: 'Naruto Sennin',
-      category: 'personagem',
-      source: 'curated/naruto-sennin',
-      lookType: 9001,
-      hasSprite: false,
-      sourceMonster: null,
-    },
-    {
       id: 'wonsr-character-uchiha-itachi',
       sourceId: 'wonsr-character-uchiha-itachi',
       name: 'Uchiha Itachi',
@@ -141,22 +131,82 @@ function buildCuratedExtraCharacters() {
       sourceMonster: null,
     },
     {
+      id: 'curated-character-shisui',
+      sourceId: 'curated-character-shisui',
+      name: 'Uchiha Shisui',
+      category: 'personagem',
+      source: 'curated/shisui',
+      lookType: 9030,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'curated-character-naruto-shippuden',
+      sourceId: 'curated-character-naruto-shippuden',
+      name: 'Naruto Shippuden',
+      category: 'personagem',
+      source: 'curated/naruto-shippuden',
+      lookType: 9031,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'curated-character-goku',
+      sourceId: 'curated-character-goku',
+      name: 'Son Goku',
+      category: 'personagem',
+      source: 'curated/goku',
+      lookType: 9032,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'curated-character-freeza',
+      sourceId: 'curated-character-freeza',
+      name: 'Freeza',
+      category: 'personagem',
+      source: 'curated/freeza',
+      lookType: 9033,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'curated-character-gotenks',
+      sourceId: 'curated-character-gotenks',
+      name: 'Gotenks',
+      category: 'personagem',
+      source: 'curated/gotenks',
+      lookType: 9034,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'curated-character-majin-boo',
+      sourceId: 'curated-character-majin-boo',
+      name: 'Majin Boo',
+      category: 'personagem',
+      source: 'curated/majin-boo',
+      lookType: 9035,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'curated-character-piccolo',
+      sourceId: 'curated-character-piccolo',
+      name: 'Piccolo',
+      category: 'personagem',
+      source: 'curated/piccolo',
+      lookType: 9036,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
       id: 'wonsr-character-shikamaru-nara',
       sourceId: 'wonsr-character-shikamaru-nara',
       name: 'Shikamaru Nara',
       category: 'personagem',
       source: 'curated/shikamaru',
       lookType: 1426,
-      hasSprite: false,
-      sourceMonster: null,
-    },
-    {
-      id: 'wonsr-character-sakura-haruno',
-      sourceId: 'wonsr-character-sakura-haruno',
-      name: 'Sakura Haruno',
-      category: 'personagem',
-      source: 'curated/sakura',
-      lookType: 1423,
       hasSprite: false,
       sourceMonster: null,
     },
@@ -410,6 +460,66 @@ function buildCuratedExtraCharacters() {
       hasSprite: false,
       sourceMonster: null,
     },
+    {
+      id: 'curated-character-asta',
+      sourceId: 'curated-character-asta',
+      name: 'Asta',
+      category: 'personagem',
+      source: 'curated/asta',
+      lookType: 9037,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    {
+      id: 'curated-character-luffy',
+      sourceId: 'curated-character-luffy',
+      name: 'Monkey D. Luffy',
+      category: 'personagem',
+      source: 'curated/luffy',
+      lookType: 9038,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    ...require('./lib/bc-roster').BC_ROSTER.map((row) => ({
+      id: `curated-character-${row.id}`,
+      sourceId: `curated-character-${row.id}`,
+      name: row.name,
+      category: 'personagem',
+      source: `curated/${row.id}`,
+      lookType: row.lookType,
+      hasSprite: false,
+      sourceMonster: null,
+    })),
+    ...require('./lib/jjk-roster').JJK_ROSTER.map((row) => ({
+      id: `curated-character-${row.id}`,
+      sourceId: `curated-character-${row.id}`,
+      name: row.name,
+      category: 'personagem',
+      source: `curated/${row.id}`,
+      lookType: row.lookType,
+      hasSprite: false,
+      sourceMonster: null,
+    })),
+    {
+      id: 'curated-character-kenshin',
+      sourceId: 'curated-character-kenshin',
+      name: 'Kenshin Himura',
+      category: 'personagem',
+      source: 'curated/kenshin',
+      lookType: 9072,
+      hasSprite: false,
+      sourceMonster: null,
+    },
+    ...require('./lib/jump-force-roster').JUMP_FORCE_ROSTER.map((row) => ({
+      id: `curated-character-${row.id}`,
+      sourceId: `curated-character-${row.id}`,
+      name: row.name,
+      category: 'personagem',
+      source: `curated/${row.id}`,
+      lookType: row.lookType,
+      hasSprite: false,
+      sourceMonster: null,
+    })),
   ];
 }
 
@@ -420,14 +530,13 @@ function buildCuratedExtraCharacters() {
 function buildBaseCharacters() {
   const preferredFirst = [
     'Uzumaki Naruto',
-    'Naruto Sennin',
-    'Sakura Haruno',
     'Rock Lee',
     'Hinata Hyuga',
     'Shikamaru Nara',
     'Gaara',
     'Uchiha Sasuke',
     'Uchiha Itachi',
+    'Uchiha Shisui',
     'Neji Hyuga',
     'Chouji Akimichi',
     'Ino Yamanaka',
@@ -451,6 +560,41 @@ function buildBaseCharacters() {
     'Shino Aburame',
     'Momo Hinamori',
     'Toshiro Hitsugaya',
+    'Asta',
+    'Monkey D. Luffy',
+    'Mereoleona',
+    'Vanica',
+    'Zenon',
+    'Reve',
+    'Yuno Spirit Dive',
+    'Yuno Royal Knight',
+    'Yuno Spirit Sword',
+    'Gordon',
+    'Rakugeki Yuno',
+    'Black Asta',
+    'Zora',
+    'Zagred',
+    'Yami Sukehiro',
+    'William Vangeance',
+    'Luck Voltia',
+    'Langris Vaude',
+    'Kaiser',
+    'Julius Novachrono',
+    'Gauche',
+    'Fana',
+    'Noelle (Valkyrie)',
+    'Dorothy',
+    'Asta Demon',
+    'Asta Classic',
+    'Gojo Satoru',
+    'Yuji Itadori',
+    'Agito',
+    'Mahito',
+    'Maki Zenin',
+    'Ryomen Sukuna',
+    'Toji Fushiguro',
+    'Kenshin Himura',
+    'Ichigo Kurosaki',
   ];
   const order = new Map(preferredFirst.map((name, index) => [name, index]));
   return buildCuratedExtraCharacters().sort((a, b) => {
@@ -476,6 +620,79 @@ function huntName(index, targets) {
   return `Mapa de ${targetName}`;
 }
 
+/** Arenas de caça (laterais 4K). */
+const HUNT_ARENA_KEYS = [
+  'huntCampoTreinamento',
+  'huntArenaExameChunin',
+  'huntArenaExameChunnin',
+  'huntPontePaisOnda',
+  'huntValeDoFim',
+  'huntPaisDoVento',
+  'huntEsconderijoAkatsuki',
+  'huntLabOrochimaru',
+  'huntKonohaDestruida',
+  'huntMonteMyoboku',
+  'huntDistritoUchiha',
+  'huntCampoGuerraNinja',
+  'huntArredoresReinoClover',
+  'huntForestClearing',
+  'huntNamekusei',
+  'huntTorneioArtesMarciais',
+  'huntSalaDoTempo',
+  'huntDesertoSaiyajin',
+];
+
+/**
+ * Escolhe arena tematica pelo alvo; fallback rotativo nas arenas de caça.
+ */
+function pickHuntMapKey(index, targets) {
+  const id = `${targets[0]?.id || ''} ${targets[0]?.name || ''}`.toLowerCase();
+  if (/gaara|vento|temari|kankuro/.test(id)) return 'huntPaisDoVento';
+  if (/zabuza|onda|haku|ponte/.test(id)) return 'huntPontePaisOnda';
+  if (/pain|pein|konan|nagato/.test(id)) return 'huntKonohaDestruida';
+  if (/orochimaru|kabuto|lab/.test(id)) return 'huntLabOrochimaru';
+  if (/kisame|deidara|sasori|hidan|kakuzu|akatsuki/.test(id)) {
+    return 'huntEsconderijoAkatsuki';
+  }
+  if (/jiraiya|sennin|myoboku|fukasaku|shima|gama|sapo/.test(id)) {
+    return 'huntMonteMyoboku';
+  }
+  if (/sasuke|itachi|obito|uchiha|shisui/.test(id)) return 'huntDistritoUchiha';
+  if (/madara|hashirama|vale/.test(id)) return 'huntValeDoFim';
+  if (/naruto/.test(id)) return 'huntValeDoFim';
+  if (/neji|rock.?lee|guy|chouji|\bino\b|shikamaru|tenten|exame|chunin|chunnin/.test(id)) {
+    return 'huntArenaExameChunin';
+  }
+  if (/sakura|hinata|kakashi|iruka|treino|konohamaru|tsunade/.test(id)) {
+    return 'huntCampoTreinamento';
+  }
+  if (/kimimaro|jiroubou|jirobo|tayuya|sakon|kidomaru|otogakure/.test(id)) {
+    return 'huntLabOrochimaru';
+  }
+  if (/kiba|shino|floresta|morte|death.?forest/.test(id)) return 'huntForestClearing';
+  if (/guerra|war|shinobi.?war|danzo/.test(id)) return 'huntCampoGuerraNinja';
+  if (/ferro|samurai|kenshin|himura/.test(id)) return 'huntArenaExameChunnin';
+  if (/freeza|frieza|piccolo|namek/.test(id)) return 'huntNamekusei';
+  if (/vegeta|saiyan|nappa|raditz|broly|deserto|cell|jogos|goku/.test(id)) {
+    return 'huntDesertoSaiyajin';
+  }
+  if (/gotenks|torneio|tenkaichi/.test(id)) return 'huntTorneioArtesMarciais';
+  if (/majin|boo|buu|sala/.test(id)) return 'huntSalaDoTempo';
+  if (
+    /asta|black.?clover|mereoleona|vanica|zenon|noelle|yuno|yami|julius|langris|gauche|zagred|dorothy|gordon|zora|luck|william|kaiser|fana|reve/.test(
+      id,
+    )
+  ) {
+    return 'huntArredoresReinoClover';
+  }
+  if (/luffy|one.?piece|pirate/.test(id)) return 'huntPontePaisOnda';
+  if (/gojo|itadori|yuji|agito|mahito|maki|sukuna|toji|jujutsu|zenin/.test(id)) {
+    return 'huntForestClearing';
+  }
+  if (/hitsugaya|hinamori|bleach|ichigo/.test(id)) return 'huntArenaExameChunnin';
+  return HUNT_ARENA_KEYS[index % HUNT_ARENA_KEYS.length];
+}
+
 function buildHunts(characters) {
   const hunts = [];
   for (let offset = 0; offset < characters.length; offset += TARGETS_PER_HUNT) {
@@ -499,8 +716,7 @@ function buildHunts(characters) {
       id: `wonsr-hunt-${String(index + 1).padStart(3, '0')}`,
       name: huntName(index, targets),
       requiredLevel: level,
-      // For now: todas as caças usam a arena de clareira (huntForestClearing).
-      mapKey: 'huntForestClearing',
+      mapKey: pickHuntMapKey(index, targets),
       description: `Caça automática de ${targets[0]?.name || 'personagem'} para níveis ${level}+.`,
       targets,
     });

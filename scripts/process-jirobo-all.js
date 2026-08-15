@@ -24,6 +24,7 @@ const {
   bbox,
   isChromaGreen,
 } = require('./lib/alpha-frame-pack');
+const { preferNativeScale } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const SRC = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'jirobo');
@@ -266,7 +267,7 @@ function normalizeBodyLock(frames, widths, heights, {
   };
 }
 
-async function scaleLocked(frames, fw, fh, absoluteScale, kernel = 'nearest') {
+async function scaleLocked(frames, fw, fh, absoluteScale, kernel = 'nearest', bodyH = null) {
   const skip = Math.abs(absoluteScale - 1) < 1e-6;
   const outW = skip ? fw : Math.max(1, Math.round(fw * absoluteScale));
   const outH = skip ? fh : Math.max(1, Math.round(fh * absoluteScale));
@@ -291,7 +292,7 @@ async function scaleLocked(frames, fw, fh, absoluteScale, kernel = 'nearest') {
     frames: out,
     frameWidth: outW,
     frameHeight: outH,
-    contentHeight: TARGET_BODY_H,
+    contentHeight: bodyH != null ? bodyH : Math.max(1, Math.round(TARGET_BODY_H)),
     scale: absoluteScale,
   };
 }
@@ -319,15 +320,15 @@ async function processWalk() {
   const keyed = await loadAlphaFrames(path.join(SRC, 'walk'), 6);
   const beforeH = keyed.map((k) => k.box.height);
   const maxH = Math.max(...beforeH);
-  const absoluteScale = TARGET_BODY_H / Math.max(1, maxH);
-  console.log(`[walk] maxContentH=${maxH} scale=${absoluteScale.toFixed(4)}`);
+  const absoluteScale = 1; // HQ native pixels
+  console.log(`[walk] maxContentH=${maxH} scale=${absoluteScale.toFixed(4)} (HQ native)`);
 
   const norm = normalizeBodyLock(
     keyed.map((k) => k.frame),
     keyed.map((k) => k.width),
     keyed.map((k) => k.height),
   );
-  const scaled = await scaleLocked(norm.frames, norm.frameWidth, norm.frameHeight, absoluteScale, 'nearest');
+  const scaled = await scaleLocked(norm.frames, norm.frameWidth, norm.frameHeight, absoluteScale, 'nearest', maxH);
   const afterH = scaled.frames.map((f) => bbox(f, scaled.frameWidth, scaled.frameHeight).height);
   const sheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
   const residualGreen = assertNoGreen('walk', sheet.data);
@@ -340,7 +341,7 @@ async function processWalk() {
     frameWidth: scaled.frameWidth,
     frameHeight: scaled.frameHeight,
     frameCount: scaled.frames.length,
-    contentHeight: TARGET_BODY_H,
+    contentHeight: scaled.contentHeight,
     scale: absoluteScale,
     maxContentH: maxH,
     frameRate: 10,
@@ -355,7 +356,7 @@ async function processWalk() {
   return entry;
 }
 
-async function processIdle(walkScale) {
+async function processIdle(walkScale, walkContentH) {
   const keyed = await loadAlphaFrames(path.join(SRC, 'idle'), 6);
   const absoluteScale = walkScale;
   const norm = normalizeBodyLock(
@@ -363,7 +364,14 @@ async function processIdle(walkScale) {
     keyed.map((k) => k.width),
     keyed.map((k) => k.height),
   );
-  const scaled = await scaleLocked(norm.frames, norm.frameWidth, norm.frameHeight, absoluteScale, 'nearest');
+  const scaled = await scaleLocked(
+    norm.frames,
+    norm.frameWidth,
+    norm.frameHeight,
+    absoluteScale,
+    'nearest',
+    walkContentH,
+  );
   const afterH = scaled.frames.map((f) => bbox(f, scaled.frameWidth, scaled.frameHeight).height);
   const sheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
   const residualGreen = assertNoGreen('idle', sheet.data);
@@ -378,7 +386,7 @@ async function processIdle(walkScale) {
     frameWidth: scaled.frameWidth,
     frameHeight: scaled.frameHeight,
     frameCount: scaled.frames.length,
-    contentHeight: TARGET_BODY_H,
+    contentHeight: scaled.contentHeight,
     scale: absoluteScale,
     frameRate: 7,
     residualGreen,
@@ -392,7 +400,7 @@ async function processIdle(walkScale) {
   return entry;
 }
 
-async function processCombo(walkScale) {
+async function processCombo(walkScale, walkContentH) {
   const keyed = await loadAlphaFrames(path.join(SRC, 'combo'), 16);
   const SLICES = [
     { name: 'combo1', from: 0, to: 6, note: 'prep + strikes' },
@@ -408,7 +416,12 @@ async function processCombo(walkScale) {
   const projected = norm.contentHeight * walkScale;
   let absoluteScale = walkScale;
   let scaleSource = 'walk-matched';
-  if (Math.abs(projected - TARGET_BODY_H) > 2) {
+  // HQ: upsample combo standing body to idle/walk ruler when sources differ in zoom.
+  if (Math.abs(walkScale - 1) < 1e-6) {
+    absoluteScale = preferNativeScale(walkContentH / Math.max(1, norm.contentHeight));
+    scaleSource =
+      absoluteScale === 1 ? 'hq-native-walk-1:1' : `hq-match-idle→${walkContentH}`;
+  } else if (Math.abs(projected - TARGET_BODY_H) > 2) {
     absoluteScale = TARGET_BODY_H / Math.max(1, norm.contentHeight);
     scaleSource = 'body-match-lanczos3→48';
   }
@@ -419,7 +432,8 @@ async function processCombo(walkScale) {
     norm.frameWidth,
     norm.frameHeight,
     absoluteScale,
-    'lanczos3',
+    Math.abs(absoluteScale - 1) < 1e-6 ? 'nearest' : 'lanczos3',
+    walkContentH,
   );
   const afterH = scaled.frames.map((f) => bbox(f, scaled.frameWidth, scaled.frameHeight).height);
   const fullSheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
@@ -439,7 +453,7 @@ async function processCombo(walkScale) {
       frameWidth: scaled.frameWidth,
       frameHeight: scaled.frameHeight,
       frameCount: frames.length,
-      contentHeight: TARGET_BODY_H,
+      contentHeight: scaled.contentHeight,
       scale: absoluteScale,
       frameRate: 12,
       residualGreen: 0,
@@ -463,7 +477,7 @@ async function processCombo(walkScale) {
     frameWidth: scaled.frameWidth,
     frameHeight: scaled.frameHeight,
     frameCount: scaled.frames.length,
-    contentHeight: TARGET_BODY_H,
+    contentHeight: scaled.contentHeight,
     scale: absoluteScale,
     residualGreen,
     contentHeights: afterH,
@@ -475,7 +489,7 @@ async function processCombo(walkScale) {
   return wire;
 }
 
-async function processDamage() {
+async function processDamage(walkContentH) {
   const keyed = await loadAlphaFrames(path.join(SRC, 'damage'), 6);
   const HURT_N = 3;
   const DEATH_N = 3;
@@ -490,8 +504,18 @@ async function processDamage() {
     norm.frameWidth,
     norm.frameHeight,
     norm.contentHeight,
-    TARGET_BODY_H,
+    {
+      hq: {
+        mode: 'match',
+        metaPath: META_JSON,
+        idleKey: 'jirobo-idle',
+      },
+    },
   );
+  // Prefer idle ruler when meta idle missing — fall back via walkContentH stamp.
+  if (walkContentH && scaled.contentHeight !== walkContentH) {
+    scaled.contentHeight = walkContentH;
+  }
   // scrub residual green after nearest scale
   scaled.frames = scaled.frames.map((f) => scrubFrame(f, scaled.frameWidth, scaled.frameHeight));
 
@@ -532,7 +556,7 @@ async function processDamage() {
   return { hurt, death };
 }
 
-async function processJutsu(walkScale) {
+async function processJutsu(walkScale, walkContentH) {
   const keyed = await loadAlphaFrames(path.join(SRC, 'jutsu'), null);
   const FRAME_RATE = 12;
   // Standing body from late recovery frames (f10–11) when earth VFX recedes.
@@ -562,7 +586,11 @@ async function processJutsu(walkScale) {
   const projected = contentH * walkScale;
   let absoluteScale = walkScale;
   let scaleSource = 'walk-matched';
-  if (Math.abs(projected - TARGET_BODY_H) > 8) {
+  if (Math.abs(walkScale - 1) < 1e-6) {
+    absoluteScale = preferNativeScale(walkContentH / Math.max(1, contentH));
+    scaleSource =
+      absoluteScale === 1 ? 'hq-native-walk-1:1' : `hq-match-idle→${walkContentH}`;
+  } else if (Math.abs(projected - TARGET_BODY_H) > 8) {
     absoluteScale = TARGET_BODY_H / Math.max(1, contentH);
     scaleSource = 'body-match-lanczos3→48';
   }
@@ -576,7 +604,8 @@ async function processJutsu(walkScale) {
     norm.frameWidth,
     norm.frameHeight,
     absoluteScale,
-    'lanczos3',
+    Math.abs(absoluteScale - 1) < 1e-6 ? 'nearest' : 'lanczos3',
+    walkContentH,
   );
   const cleaned = scaled.frames.map((f) => scrubFrame(f, scaled.frameWidth, scaled.frameHeight));
   const sheet = stitch(cleaned, scaled.frameWidth, scaled.frameHeight);
@@ -624,7 +653,7 @@ async function processJutsu(walkScale) {
     frameWidth: scaled.frameWidth,
     frameHeight: scaled.frameHeight,
     frameCount: cleaned.length,
-    contentHeight: TARGET_BODY_H,
+    contentHeight: scaled.contentHeight,
     scale: absoluteScale,
     frameRate: FRAME_RATE,
     residualGreen,
@@ -655,10 +684,10 @@ async function main() {
   fs.mkdirSync(QA_DIR, { recursive: true });
 
   const walk = await processWalk();
-  const idle = await processIdle(walk.scale);
-  const combo = await processCombo(walk.scale);
-  const dmg = await processDamage();
-  const jutsu = await processJutsu(walk.scale);
+  const idle = await processIdle(walk.scale, walk.contentHeight);
+  const combo = await processCombo(walk.scale, walk.contentHeight);
+  const dmg = await processDamage(walk.contentHeight);
+  const jutsu = await processJutsu(walk.scale, walk.contentHeight);
 
   console.log(
     'PACK_WIRE',

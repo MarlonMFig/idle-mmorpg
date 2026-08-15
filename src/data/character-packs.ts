@@ -1,5 +1,14 @@
 import type * as Phaser from 'phaser';
 import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
+import {
+  BLACK_CLOVER_BY_LOOK_TYPE,
+  BLACK_CLOVER_BY_SLUG,
+} from '@/data/black-clover-packs';
+import {
+  JUJUTSU_KAISEN_BY_LOOK_TYPE,
+  JUJUTSU_KAISEN_BY_SLUG,
+} from '@/data/jujutsu-kaisen-packs';
+import { JUMP_FORCE_BY_LOOK_TYPE, JUMP_FORCE_BY_SLUG } from '@/data/jump-force-packs';
 import type { WonsrDirection } from '@/data/wonsr-sprites';
 import type { StarterCharacterId } from '@/types/player-creation';
 
@@ -25,6 +34,23 @@ export interface SpriteSheetDef {
    * Sem valor: walk 12, idle 8, attack 12 (ver Player.ensureAnimations).
    */
   frameRate?: number;
+  /**
+   * Origin X (0–1) quando a folha trava os pés (ex.: jutsu com beam).
+   * Sem valor: 0.5.
+   */
+  originX?: number;
+  /** FX opcional do golpe (slash / spark no caster). */
+  fx?: SpriteSheetDef;
+  /** Âncora do FX. Default `'caster'`. */
+  fxAttach?: 'caster' | 'target';
+  /** Delay (ms) até spawnar o FX; default ~55% da duração do golpe. */
+  fxReleaseMs?: number;
+  /** `true` = origin nos pés. Default true quando attach=caster. */
+  fxGround?: boolean;
+  /** Blend do FX (slash Mugen AfterFX → `'add'`). */
+  fxBlend?: 'normal' | 'add';
+  /** Multiplicador extra de escala do FX (1 = default). */
+  fxScale?: number;
 }
 
 export interface CharacterSkillAnimDef extends SpriteSheetDef {
@@ -41,6 +67,13 @@ export interface CharacterSkillAnimDef extends SpriteSheetDef {
    * durante o trajeto; frames N..fim no impacto. (ex.: pedra do Jirobo N=2)
    */
   fxFlightFrameCount?: number;
+  /**
+   * Se o projétil rotaciona na direção do voo. Default true (pedra / bola de fogo).
+   * Orbes com rastro vertical (ex.: água da Noelle) devem ficar `false`.
+   */
+  fxFlightRotate?: boolean;
+  /** Espelha o projétil no eixo X conforme a direção do voo (pássaro / seta). */
+  fxFlightFlip?: boolean;
   /**
    * Momento (ms) em que o FX solta:
    * - com `fxFlightFrameCount`: projétil deixa a mão / corpo
@@ -112,6 +145,13 @@ export interface CharacterPack {
    * Fontes densas/largas (ex. Sasuke) usam valor menor que 1.
    */
   displayScaleX?: number;
+  /**
+   * Locomoção visual. `fly` = sheet de movimento é voo (não passada no chão);
+   * o sprite fica elevado por `flightHoverPx` com origin abaixo dos pés.
+   */
+  locomotion?: 'walk' | 'fly';
+  /** Elevação em px de mundo quando `locomotion: 'fly'` (padrão 14). */
+  flightHoverPx?: number;
 }
 
 function wonsrOutfitSheet(
@@ -138,10 +178,10 @@ const NARUTO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-rasengan': {
     key: 'naruto-rasengan',
     url: '/sprites/player/naruto/rasengan.png',
-    frameWidth: 139,
-    frameHeight: 84,
+    frameWidth: 256,
+    frameHeight: 140,
     frameCount: 48,
-    contentHeight: 48,
+    contentHeight: 81,
     frameRate: 12,
     durationMs: 4000,
     hitDelayMs: 2583,
@@ -151,46 +191,46 @@ const NARUTO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
 const NARUTO_WALK: SpriteSheetDef = {
   key: 'naruto-walk',
   url: '/sprites/player/naruto/walk.png',
-  frameWidth: 34,
-  frameHeight: 52,
+  frameWidth: 55,
+  frameHeight: 86,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 81,
 };
 
 const NARUTO_IDLE: SpriteSheetDef = {
   key: 'naruto-idle',
   url: '/sprites/player/naruto/idle.png',
-  frameWidth: 37,
-  frameHeight: 51,
+  frameWidth: 61,
+  frameHeight: 85,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 81,
 };
 
 const NARUTO_COMBO_1: SpriteSheetDef = {
   key: 'naruto-combo1',
   url: '/sprites/player/naruto/combo1.png',
-  frameWidth: 52,
-  frameHeight: 50,
+  frameWidth: 86,
+  frameHeight: 83,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 81,
 };
 
 const NARUTO_COMBO_2: SpriteSheetDef = {
   key: 'naruto-combo2',
   url: '/sprites/player/naruto/combo2.png',
-  frameWidth: 52,
-  frameHeight: 50,
+  frameWidth: 86,
+  frameHeight: 83,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 81,
 };
 
 const NARUTO_COMBO_3: SpriteSheetDef = {
   key: 'naruto-combo3',
   url: '/sprites/player/naruto/combo3.png',
-  frameWidth: 52,
-  frameHeight: 50,
+  frameWidth: 86,
+  frameHeight: 83,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 81,
 };
 
 const NARUTO_ATTACK_CHAIN = [NARUTO_COMBO_1, NARUTO_COMBO_2, NARUTO_COMBO_3] as const;
@@ -198,20 +238,20 @@ const NARUTO_ATTACK_CHAIN = [NARUTO_COMBO_1, NARUTO_COMBO_2, NARUTO_COMBO_3] as 
 const NARUTO_HURT: CharacterReactionAnimDef = {
   key: 'naruto-hurt',
   url: '/sprites/player/naruto/hurt.png',
-  frameWidth: 53,
-  frameHeight: 51,
+  frameWidth: 97,
+  frameHeight: 85,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 81,
   frameRate: 10,
 };
 
 const NARUTO_DEATH: CharacterReactionAnimDef = {
   key: 'naruto-death',
   url: '/sprites/player/naruto/death.png',
-  frameWidth: 53,
-  frameHeight: 51,
+  frameWidth: 97,
+  frameHeight: 85,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 81,
   frameRate: 8,
 };
 
@@ -231,46 +271,46 @@ const SASUKE_WALK: SpriteSheetDef = {
   key: 'sasuke-walk',
   url: '/sprites/player/sasuke/walk.png',
   // npm run sasuke:all — assets/naruto-source/nu/sasuke/walk
-  frameWidth: 45,
-  frameHeight: 52,
+  frameWidth: 99,
+  frameHeight: 115,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 111,
 };
 
 const SASUKE_IDLE: SpriteSheetDef = {
   key: 'sasuke-idle',
   url: '/sprites/player/sasuke/idle.png',
-  frameWidth: 39,
-  frameHeight: 52,
+  frameWidth: 86,
+  frameHeight: 115,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 111,
 };
 
 const SASUKE_COMBO_1: SpriteSheetDef = {
   key: 'sasuke-combo1',
   url: '/sprites/player/sasuke/combo1.png',
-  frameWidth: 61,
-  frameHeight: 52,
+  frameWidth: 136,
+  frameHeight: 116,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 111,
 };
 
 const SASUKE_COMBO_2: SpriteSheetDef = {
   key: 'sasuke-combo2',
   url: '/sprites/player/sasuke/combo2.png',
-  frameWidth: 61,
-  frameHeight: 52,
+  frameWidth: 136,
+  frameHeight: 116,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 111,
 };
 
 const SASUKE_COMBO_3: SpriteSheetDef = {
   key: 'sasuke-combo3',
   url: '/sprites/player/sasuke/combo3.png',
-  frameWidth: 61,
-  frameHeight: 52,
+  frameWidth: 136,
+  frameHeight: 116,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 111,
 };
 
 const SASUKE_ATTACK_CHAIN = [SASUKE_COMBO_1, SASUKE_COMBO_2, SASUKE_COMBO_3] as const;
@@ -278,20 +318,20 @@ const SASUKE_ATTACK_CHAIN = [SASUKE_COMBO_1, SASUKE_COMBO_2, SASUKE_COMBO_3] as 
 const SASUKE_HURT: CharacterReactionAnimDef = {
   key: 'sasuke-hurt',
   url: '/sprites/player/sasuke/hurt.png',
-  frameWidth: 57,
-  frameHeight: 52,
+  frameWidth: 145,
+  frameHeight: 115,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 111,
   frameRate: 10,
 };
 
 const SASUKE_DEATH: CharacterReactionAnimDef = {
   key: 'sasuke-death',
   url: '/sprites/player/sasuke/death.png',
-  frameWidth: 57,
-  frameHeight: 52,
+  frameWidth: 145,
+  frameHeight: 115,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 111,
   frameRate: 8,
 };
 
@@ -301,10 +341,10 @@ const SASUKE_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-katon-gokakyu': {
     key: 'sasuke-gokakyu',
     url: '/sprites/player/sasuke/sasuke-gokakyu.png',
-    frameWidth: 55,
-    frameHeight: 52,
+    frameWidth: 130,
+    frameHeight: 120,
     frameCount: 17,
-    contentHeight: 48,
+    contentHeight: 111,
     frameRate: 12,
     // Hold pose through flight + impact
     durationMs: 1600,
@@ -316,10 +356,10 @@ const SASUKE_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     fx: {
       key: 'sasuke-gokakyu-fx',
       url: '/sprites/player/sasuke/sasuke-gokakyu-fx.png',
-      frameWidth: 76,
-      frameHeight: 49,
+      frameWidth: 171,
+      frameHeight: 109,
       frameCount: 12,
-      contentHeight: 45,
+      contentHeight: 105,
     },
   },
 };
@@ -347,48 +387,48 @@ const ROCK_LEE_WALK: SpriteSheetDef = {
   key: 'rock-lee-walk',
   url: '/sprites/player/rock-lee/walk.png',
   // npm run rock-lee:all — assets/naruto-source/nu/rock-lee/walk
-  frameWidth: 31,
-  frameHeight: 52,
+  frameWidth: 76,
+  frameHeight: 134,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 127,
 };
 
 const ROCK_LEE_IDLE: SpriteSheetDef = {
   key: 'rock-lee-idle',
   url: '/sprites/player/rock-lee/idle.png',
   // npm run rock-lee:all — assets/naruto-source/nu/rock-lee/idle
-  frameWidth: 32,
-  frameHeight: 51,
+  frameWidth: 80,
+  frameHeight: 131,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 127,
 };
 
 const ROCK_LEE_COMBO_1: SpriteSheetDef = {
   key: 'rock-lee-combo1',
   url: '/sprites/player/rock-lee/combo1.png',
   // 22f combo → 7+7+8 (npm run rock-lee:all)
-  frameWidth: 56,
-  frameHeight: 51,
+  frameWidth: 145,
+  frameHeight: 130,
   frameCount: 7,
-  contentHeight: 48,
+  contentHeight: 127,
 };
 
 const ROCK_LEE_COMBO_2: SpriteSheetDef = {
   key: 'rock-lee-combo2',
   url: '/sprites/player/rock-lee/combo2.png',
-  frameWidth: 56,
-  frameHeight: 51,
+  frameWidth: 145,
+  frameHeight: 130,
   frameCount: 7,
-  contentHeight: 48,
+  contentHeight: 127,
 };
 
 const ROCK_LEE_COMBO_3: SpriteSheetDef = {
   key: 'rock-lee-combo3',
   url: '/sprites/player/rock-lee/combo3.png',
-  frameWidth: 56,
-  frameHeight: 51,
+  frameWidth: 145,
+  frameHeight: 130,
   frameCount: 8,
-  contentHeight: 48,
+  contentHeight: 127,
 };
 
 const ROCK_LEE_ATTACK_CHAIN = [ROCK_LEE_COMBO_1, ROCK_LEE_COMBO_2, ROCK_LEE_COMBO_3] as const;
@@ -396,20 +436,20 @@ const ROCK_LEE_ATTACK_CHAIN = [ROCK_LEE_COMBO_1, ROCK_LEE_COMBO_2, ROCK_LEE_COMB
 const ROCK_LEE_HURT: CharacterReactionAnimDef = {
   key: 'rock-lee-hurt',
   url: '/sprites/player/rock-lee/hurt.png',
-  frameWidth: 53,
-  frameHeight: 45,
+  frameWidth: 136,
+  frameHeight: 116,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 127,
   frameRate: 10,
 };
 
 const ROCK_LEE_DEATH: CharacterReactionAnimDef = {
   key: 'rock-lee-death',
   url: '/sprites/player/rock-lee/death.png',
-  frameWidth: 53,
-  frameHeight: 45,
+  frameWidth: 136,
+  frameHeight: 116,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 127,
   frameRate: 8,
 };
 
@@ -418,10 +458,10 @@ const ROCK_LEE_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-omote-renge': {
     key: 'rock-lee-omote-renge',
     url: '/sprites/player/rock-lee/omote-renge.png',
-    frameWidth: 77,
-    frameHeight: 82,
+    frameWidth: 201,
+    frameHeight: 216,
     frameCount: 20,
-    contentHeight: 48,
+    contentHeight: 127,
     frameRate: 14,
     durationMs: 1429,
     // Frame 16 impact: (15 / 14) * 1000
@@ -432,10 +472,10 @@ const ROCK_LEE_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     fx: {
       key: 'rock-lee-omote-renge-fx',
       url: '/sprites/player/rock-lee/omote-renge-fx.png',
-      frameWidth: 51,
-      frameHeight: 44,
+      frameWidth: 129,
+      frameHeight: 110,
       frameCount: 1,
-      contentHeight: 40,
+      contentHeight: 106,
     },
     // Ground slam dust (frame 16) — 5f strip
     fxSecondaryReleaseMs: 1071,
@@ -444,10 +484,10 @@ const ROCK_LEE_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     fxSecondary: {
       key: 'rock-lee-omote-renge-impact-fx',
       url: '/sprites/player/rock-lee/omote-renge-impact-fx.png',
-      frameWidth: 92,
-      frameHeight: 76,
+      frameWidth: 237,
+      frameHeight: 195,
       frameCount: 5,
-      contentHeight: 72,
+      contentHeight: 191,
     },
   },
 };
@@ -477,46 +517,46 @@ const ROCK_LEE_PACK: CharacterPack = {
 const SHIKAMARU_IDLE: SpriteSheetDef = {
   key: 'shikamaru-idle',
   url: '/sprites/player/shikamaru/idle.png',
-  frameWidth: 27,
-  frameHeight: 49,
+  frameWidth: 97,
+  frameHeight: 175,
   frameCount: 8,
-  contentHeight: 48,
+  contentHeight: 171,
 };
 
 const SHIKAMARU_WALK: SpriteSheetDef = {
   key: 'shikamaru-walk',
   url: '/sprites/player/shikamaru/walk.png',
-  frameWidth: 24,
-  frameHeight: 49,
+  frameWidth: 84,
+  frameHeight: 176,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 171,
 };
 
 const SHIKAMARU_COMBO_1: SpriteSheetDef = {
   key: 'shikamaru-combo1',
   url: '/sprites/player/shikamaru/combo1.png',
-  frameWidth: 48,
-  frameHeight: 58,
+  frameWidth: 172,
+  frameHeight: 208,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 171,
 };
 
 const SHIKAMARU_COMBO_2: SpriteSheetDef = {
   key: 'shikamaru-combo2',
   url: '/sprites/player/shikamaru/combo2.png',
-  frameWidth: 48,
-  frameHeight: 58,
+  frameWidth: 172,
+  frameHeight: 208,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 171,
 };
 
 const SHIKAMARU_COMBO_3: SpriteSheetDef = {
   key: 'shikamaru-combo3',
   url: '/sprites/player/shikamaru/combo3.png',
-  frameWidth: 48,
-  frameHeight: 58,
+  frameWidth: 172,
+  frameHeight: 208,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 171,
 };
 
 const SHIKAMARU_ATTACK_CHAIN = [SHIKAMARU_COMBO_1, SHIKAMARU_COMBO_2, SHIKAMARU_COMBO_3] as const;
@@ -530,20 +570,20 @@ const SHIKAMARU_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-explosion-kunai': {
     key: 'shikamaru-explosion-kunai',
     url: '/sprites/player/shikamaru/explosion-kunai.png',
-    frameWidth: 44,
-    frameHeight: 51,
+    frameWidth: 155,
+    frameHeight: 182,
     frameCount: 14,
-    contentHeight: 48,
+    contentHeight: 171,
     frameRate: 10,
     durationMs: 1400,
     hitDelayMs: 812,
     fx: {
       key: 'shikamaru-explosion-kunai-fx',
       url: '/sprites/player/shikamaru/explosion-kunai-fx.png',
-      frameWidth: 42,
-      frameHeight: 52,
+      frameWidth: 151,
+      frameHeight: 185,
       frameCount: 18,
-      contentHeight: 52,
+      contentHeight: 185,
     },
   },
 };
@@ -570,48 +610,48 @@ export const NEJI_CURATED_LOOK_TYPE = 9003;
 const NEJI_IDLE: SpriteSheetDef = {
   key: 'neji-idle',
   url: '/sprites/player/neji/idle.png',
-  frameWidth: 37,
-  frameHeight: 47,
+  frameWidth: 91,
+  frameHeight: 115,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 117,
 };
 
 /** npm run neji:walk — assets/naruto-source/nu/neji/walk (6f alpha) */
 const NEJI_WALK: SpriteSheetDef = {
   key: 'neji-walk',
   url: '/sprites/player/neji/walk.png',
-  frameWidth: 27,
-  frameHeight: 52,
+  frameWidth: 61,
+  frameHeight: 121,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 117,
 };
 
 /** npm run neji:combo — 19f alpha → 5+5+9 (same absoluteScale as walk) */
 const NEJI_COMBO_1: SpriteSheetDef = {
   key: 'neji-combo1',
   url: '/sprites/player/neji/combo1.png',
-  frameWidth: 57,
-  frameHeight: 53,
+  frameWidth: 131,
+  frameHeight: 121,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 117,
 };
 
 const NEJI_COMBO_2: SpriteSheetDef = {
   key: 'neji-combo2',
   url: '/sprites/player/neji/combo2.png',
-  frameWidth: 57,
-  frameHeight: 53,
+  frameWidth: 131,
+  frameHeight: 121,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 117,
 };
 
 const NEJI_COMBO_3: SpriteSheetDef = {
   key: 'neji-combo3',
   url: '/sprites/player/neji/combo3.png',
-  frameWidth: 57,
-  frameHeight: 53,
+  frameWidth: 131,
+  frameHeight: 121,
   frameCount: 9,
-  contentHeight: 48,
+  contentHeight: 117,
 };
 
 const NEJI_ATTACK_CHAIN = [NEJI_COMBO_1, NEJI_COMBO_2, NEJI_COMBO_3] as const;
@@ -621,10 +661,10 @@ const NEJI_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-hakke-kaiten': {
     key: 'neji-kaiten',
     url: '/sprites/player/neji/kaiten.png',
-    frameWidth: 140,
-    frameHeight: 91,
+    frameWidth: 342,
+    frameHeight: 222,
     frameCount: 18,
-    contentHeight: 48,
+    contentHeight: 117,
     frameRate: 12,
     durationMs: 1500,
     // Hit when blue dome fully formed (frame 5 @ 12fps).
@@ -648,46 +688,46 @@ export const GAARA_LOOK_TYPES = [1395, 41, 42, 710] as const;
 const GAARA_IDLE: SpriteSheetDef = {
   key: 'gaara-idle',
   url: '/sprites/player/gaara/idle.png',
-  frameWidth: 24,
-  frameHeight: 50,
+  frameWidth: 59,
+  frameHeight: 124,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 120,
 };
 
 const GAARA_WALK: SpriteSheetDef = {
   key: 'gaara-walk',
   url: '/sprites/player/gaara/walk.png',
-  frameWidth: 25,
-  frameHeight: 50,
+  frameWidth: 64,
+  frameHeight: 125,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 120,
 };
 
 const GAARA_COMBO_1: SpriteSheetDef = {
   key: 'gaara-combo1',
   url: '/sprites/player/gaara/combo1.png',
-  frameWidth: 77,
-  frameHeight: 69,
+  frameWidth: 194,
+  frameHeight: 171,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 120,
 };
 
 const GAARA_COMBO_2: SpriteSheetDef = {
   key: 'gaara-combo2',
   url: '/sprites/player/gaara/combo2.png',
-  frameWidth: 77,
-  frameHeight: 69,
+  frameWidth: 194,
+  frameHeight: 171,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 120,
 };
 
 const GAARA_COMBO_3: SpriteSheetDef = {
   key: 'gaara-combo3',
   url: '/sprites/player/gaara/combo3.png',
-  frameWidth: 77,
-  frameHeight: 69,
+  frameWidth: 194,
+  frameHeight: 171,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 120,
 };
 
 const GAARA_ATTACK_CHAIN = [GAARA_COMBO_1, GAARA_COMBO_2, GAARA_COMBO_3] as const;
@@ -696,10 +736,10 @@ const GAARA_ATTACK_CHAIN = [GAARA_COMBO_1, GAARA_COMBO_2, GAARA_COMBO_3] as cons
 const GAARA_HURT: CharacterReactionAnimDef = {
   key: 'gaara-hurt',
   url: '/sprites/player/gaara/hurt.png',
-  frameWidth: 57,
-  frameHeight: 50,
+  frameWidth: 143,
+  frameHeight: 126,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 120,
   frameRate: 9,
 };
 
@@ -707,10 +747,10 @@ const GAARA_HURT: CharacterReactionAnimDef = {
 const GAARA_DEATH: CharacterReactionAnimDef = {
   key: 'gaara-death',
   url: '/sprites/player/gaara/death.png',
-  frameWidth: 57,
-  frameHeight: 50,
+  frameWidth: 143,
+  frameHeight: 126,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 120,
   frameRate: 8,
 };
 
@@ -718,10 +758,10 @@ const GAARA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-sand-prison': {
     key: 'gaara-sand-prison',
     url: '/sprites/player/gaara/sand-prison.png',
-    frameWidth: 198,
-    frameHeight: 172,
+    frameWidth: 494,
+    frameHeight: 430,
     frameCount: 25,
-    contentHeight: 48,
+    contentHeight: 120,
     frameRate: 11,
     durationMs: 2273,
     hitDelayMs: 1637,
@@ -746,46 +786,46 @@ export const SAKURA_LOOK_TYPES = [1423, 350, 352] as const;
 const SAKURA_IDLE: SpriteSheetDef = {
   key: 'sakura-idle',
   url: '/sprites/player/sakura/idle.png',
-  frameWidth: 34,
-  frameHeight: 51,
-  frameCount: 6,
-  contentHeight: 48,
+  frameWidth: 54,
+  frameHeight: 130,
+  frameCount: 4,
+  contentHeight: 123,
 };
 
 const SAKURA_WALK: SpriteSheetDef = {
   key: 'sakura-walk',
   url: '/sprites/player/sakura/walk.png',
-  frameWidth: 31,
-  frameHeight: 52,
+  frameWidth: 130,
+  frameHeight: 134,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 123,
 };
 
 const SAKURA_COMBO_1: SpriteSheetDef = {
   key: 'sakura-combo1',
   url: '/sprites/player/sakura/combo1.png',
-  frameWidth: 44,
-  frameHeight: 52,
-  frameCount: 4,
-  contentHeight: 48,
+  frameWidth: 119,
+  frameHeight: 129,
+  frameCount: 2,
+  contentHeight: 123,
 };
 
 const SAKURA_COMBO_2: SpriteSheetDef = {
   key: 'sakura-combo2',
   url: '/sprites/player/sakura/combo2.png',
-  frameWidth: 44,
-  frameHeight: 52,
-  frameCount: 4,
-  contentHeight: 48,
+  frameWidth: 119,
+  frameHeight: 129,
+  frameCount: 2,
+  contentHeight: 123,
 };
 
 const SAKURA_COMBO_3: SpriteSheetDef = {
   key: 'sakura-combo3',
   url: '/sprites/player/sakura/combo3.png',
-  frameWidth: 44,
-  frameHeight: 52,
-  frameCount: 4,
-  contentHeight: 48,
+  frameWidth: 119,
+  frameHeight: 129,
+  frameCount: 1,
+  contentHeight: 123,
 };
 
 const SAKURA_ATTACK_CHAIN = [SAKURA_COMBO_1, SAKURA_COMBO_2, SAKURA_COMBO_3] as const;
@@ -793,20 +833,20 @@ const SAKURA_ATTACK_CHAIN = [SAKURA_COMBO_1, SAKURA_COMBO_2, SAKURA_COMBO_3] as 
 const SAKURA_HURT: CharacterReactionAnimDef = {
   key: 'sakura-hurt',
   url: '/sprites/player/sakura/hurt.png',
-  frameWidth: 55,
-  frameHeight: 47,
+  frameWidth: 191,
+  frameHeight: 117,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 123,
   frameRate: 10,
 };
 
 const SAKURA_DEATH: CharacterReactionAnimDef = {
   key: 'sakura-death',
   url: '/sprites/player/sakura/death.png',
-  frameWidth: 55,
-  frameHeight: 47,
+  frameWidth: 191,
+  frameHeight: 117,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 123,
   frameRate: 8,
 };
 
@@ -814,10 +854,10 @@ const SAKURA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-chou-bakou': {
     key: 'sakura-chou-bakou',
     url: '/sprites/player/sakura/chou-bakou.png',
-    frameWidth: 79,
-    frameHeight: 88,
-    frameCount: 19,
-    contentHeight: 48,
+    frameWidth: 119,
+    frameHeight: 129,
+    frameCount: 13,
+    contentHeight: 123,
     frameRate: 12,
     durationMs: 1583,
     hitDelayMs: 917,
@@ -838,6 +878,7 @@ const SAKURA_PACK: CharacterPack = {
 
 /**
  * Chouji Akimichi (Part I) — idle + walk + combo + Nikudan Sensha.
+ * HQ nativePixels: idle scale=1; walk/combo/jutsu matched to idle contentHeight.
  * npm run chouji:idle — assets/naruto-source/nu/chouji-idle-sheet.png
  * npm run chouji:walk — assets/naruto-source/nu/chouji-walk-sheet.png
  * npm run chouji:combo — assets/naruto-source/nu/chouji-combo-sheet.png
@@ -849,48 +890,48 @@ export const CHOUJI_CURATED_LOOK_TYPE = 9004;
 const CHOUJI_IDLE: SpriteSheetDef = {
   key: 'chouji-idle',
   url: '/sprites/player/chouji/idle.png',
-  frameWidth: 29,
-  frameHeight: 50,
+  frameWidth: 51,
+  frameHeight: 89,
   frameCount: 17,
-  contentHeight: 48,
+  contentHeight: 85,
 };
 
-/** npm run chouji:walk — 6f side walk RIGHT (dims not shared with idle). */
+/** npm run chouji:walk — 6f side walk RIGHT (body matched to idle contentH). */
 const CHOUJI_WALK: SpriteSheetDef = {
   key: 'chouji-walk',
   url: '/sprites/player/chouji/walk.png',
-  frameWidth: 29,
-  frameHeight: 51,
+  frameWidth: 51,
+  frameHeight: 89,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 85,
 };
 
 /** npm run chouji:combo — punch(3) + kick(4) + multi-size fist finisher */
 const CHOUJI_COMBO_1: SpriteSheetDef = {
   key: 'chouji-combo1',
   url: '/sprites/player/chouji/combo1.png',
-  frameWidth: 51,
-  frameHeight: 52,
+  frameWidth: 87,
+  frameHeight: 90,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 85,
 };
 
 const CHOUJI_COMBO_2: SpriteSheetDef = {
   key: 'chouji-combo2',
   url: '/sprites/player/chouji/combo2.png',
-  frameWidth: 51,
-  frameHeight: 52,
+  frameWidth: 87,
+  frameHeight: 90,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 85,
 };
 
 const CHOUJI_COMBO_3: SpriteSheetDef = {
   key: 'chouji-combo3',
   url: '/sprites/player/chouji/combo3.png',
-  frameWidth: 51,
-  frameHeight: 52,
+  frameWidth: 87,
+  frameHeight: 90,
   frameCount: 8,
-  contentHeight: 48,
+  contentHeight: 85,
 };
 
 const CHOUJI_ATTACK_CHAIN = [CHOUJI_COMBO_1, CHOUJI_COMBO_2, CHOUJI_COMBO_3] as const;
@@ -900,13 +941,14 @@ const CHOUJI_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-nikudan-sensha': {
     key: 'chouji-nikudan-sensha',
     url: '/sprites/player/chouji/nikudan-sensha.png',
-    frameWidth: 58,
-    frameHeight: 77,
+    frameWidth: 103,
+    frameHeight: 137,
     frameCount: 25,
-    contentHeight: 48,
+    contentHeight: 85,
     frameRate: 12,
     durationMs: 2083,
-    hitDelayMs: 1083,
+    // Spin starts ~f14 (1083ms); hit near end of roll so dash reaches the target.
+    hitDelayMs: 1833,
   },
 };
 
@@ -921,75 +963,104 @@ const CHOUJI_PACK: CharacterPack = {
 };
 
 /**
- * Hinata Hyuga — idle + walk + palm-strike combo + jutsus.
- * npm run hinata:idle — assets/naruto-source/nu/hinata-idle-sheet.png
- * npm run hinata:walk — assets/naruto-source/nu/hinata-walk-sheet.png
- * npm run hinata:combo — assets/naruto-source/nu/hinata-combo-sheet.png
- * npm run hinata:jutsu — hakke-shou.png (31f primary sequence)
- * Source: assets/naruto-source/nu/hinata/jutsu-new
- * lookType 9005 é identidade client-only.
+ * Hinata Hyuga — idle + walk + palm combo + hurt/death + Hakke Shōhō (+ VFX).
+ * npm run hinata:all — assets/naruto-source/nu/hinata/{idle,walk,combo,damage,jutsu,jutsu-vfx}
+ * lookType 9005 é identidade client-only. HQ nativePixels (contentHeight 54).
  */
 export const HINATA_CURATED_LOOK_TYPE = 9005;
 
 const HINATA_IDLE: SpriteSheetDef = {
   key: 'hinata-idle',
   url: '/sprites/player/hinata/idle.png',
-  frameWidth: 33,
-  frameHeight: 52,
+  frameWidth: 38,
+  frameHeight: 58,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 54,
 };
 
 const HINATA_WALK: SpriteSheetDef = {
   key: 'hinata-walk',
   url: '/sprites/player/hinata/walk.png',
-  frameWidth: 25,
-  frameHeight: 51,
+  frameWidth: 30,
+  frameHeight: 60,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 54,
 };
 
 const HINATA_COMBO_1: SpriteSheetDef = {
   key: 'hinata-combo1',
   url: '/sprites/player/hinata/combo1.png',
-  frameWidth: 55,
-  frameHeight: 55,
+  frameWidth: 56,
+  frameHeight: 57,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 54,
 };
 
 const HINATA_COMBO_2: SpriteSheetDef = {
   key: 'hinata-combo2',
   url: '/sprites/player/hinata/combo2.png',
-  frameWidth: 55,
-  frameHeight: 55,
+  frameWidth: 56,
+  frameHeight: 57,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 54,
 };
 
 const HINATA_COMBO_3: SpriteSheetDef = {
   key: 'hinata-combo3',
   url: '/sprites/player/hinata/combo3.png',
-  frameWidth: 55,
-  frameHeight: 55,
+  frameWidth: 56,
+  frameHeight: 57,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 54,
 };
 
 const HINATA_ATTACK_CHAIN = [HINATA_COMBO_1, HINATA_COMBO_2, HINATA_COMBO_3] as const;
 
-/** npm run hinata:jutsu — single Hakke Shōhō strip (replaces twin-lion + old 41f). */
+const HINATA_HURT: CharacterReactionAnimDef = {
+  key: 'hinata-hurt',
+  url: '/sprites/player/hinata/hurt.png',
+  frameWidth: 64,
+  frameHeight: 59,
+  frameCount: 2,
+  contentHeight: 54,
+  frameRate: 10,
+};
+
+const HINATA_DEATH: CharacterReactionAnimDef = {
+  key: 'hinata-death',
+  url: '/sprites/player/hinata/death.png',
+  frameWidth: 64,
+  frameHeight: 59,
+  frameCount: 3,
+  contentHeight: 54,
+  frameRate: 8,
+};
+
+/** npm run hinata:all — Hakke Shōhō 27f body + 4f VFX spikes. */
 const HINATA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-hakke-shouhou': {
     key: 'hinata-hakke-shou',
     url: '/sprites/player/hinata/hakke-shou.png',
-    frameWidth: 148,
-    frameHeight: 175,
-    frameCount: 31,
-    contentHeight: 48,
+    frameWidth: 86,
+    frameHeight: 85,
+    frameCount: 27,
+    contentHeight: 54,
     frameRate: 12,
-    durationMs: 2583,
-    hitDelayMs: 1421,
+    durationMs: 2250,
+    // Frame 22 @ 12fps — palm impact after smear; handstand f26–27 is follow-up
+    hitDelayMs: 1750,
+    originX: 0.5,
+    fxReleaseMs: 1750,
+    fxAttach: 'target',
+    fxGround: true,
+    fx: {
+      key: 'hinata-hakke-shou-fx',
+      url: '/sprites/player/hinata/hakke-shou-fx.png',
+      frameWidth: 56,
+      frameHeight: 67,
+      frameCount: 4,
+      contentHeight: 63,
+    },
   },
 };
 
@@ -999,6 +1070,8 @@ const HINATA_PACK: CharacterPack = {
   idle: HINATA_IDLE,
   attack: HINATA_COMBO_1,
   attackChain: HINATA_ATTACK_CHAIN,
+  hurt: HINATA_HURT,
+  death: HINATA_DEATH,
   skillAnims: HINATA_JUTSU_ANIMS,
   hotbarSkillIds: ['skill-hakke-shouhou'],
 };
@@ -1017,49 +1090,49 @@ const GUY_IDLE: SpriteSheetDef = {
   key: 'guy-idle',
   url: '/sprites/player/guy/idle.png',
   // npm run guy:idle — 6f breath; alpha-only
-  frameWidth: 28,
-  frameHeight: 49,
+  frameWidth: 82,
+  frameHeight: 144,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 140,
 };
 
 const GUY_WALK: SpriteSheetDef = {
   key: 'guy-walk',
   url: '/sprites/player/guy/walk.png',
-  frameWidth: 25,
-  frameHeight: 50,
+  frameWidth: 74,
+  frameHeight: 147,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 140,
 };
 
 const GUY_COMBO_1: SpriteSheetDef = {
   key: 'guy-combo1',
   url: '/sprites/player/guy/combo1.png',
   // frame_001…005 — hit 1
-  frameWidth: 49,
-  frameHeight: 59,
+  frameWidth: 136,
+  frameHeight: 163,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 132,
 };
 
 const GUY_COMBO_2: SpriteSheetDef = {
   key: 'guy-combo2',
   url: '/sprites/player/guy/combo2.png',
   // frame_006…010 — hit 2
-  frameWidth: 49,
-  frameHeight: 59,
+  frameWidth: 136,
+  frameHeight: 163,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 132,
 };
 
 const GUY_COMBO_3: SpriteSheetDef = {
   key: 'guy-combo3',
   url: '/sprites/player/guy/combo3.png',
   // frame_011…020 — finisher
-  frameWidth: 49,
-  frameHeight: 59,
+  frameWidth: 136,
+  frameHeight: 163,
   frameCount: 10,
-  contentHeight: 48,
+  contentHeight: 132,
 };
 
 const GUY_ATTACK_CHAIN = [GUY_COMBO_1, GUY_COMBO_2, GUY_COMBO_3] as const;
@@ -1069,10 +1142,10 @@ const GUY_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-asa-kujaku': {
     key: 'guy-asa-kujaku',
     url: '/sprites/player/guy/asa-kujaku.png',
-    frameWidth: 58,
-    frameHeight: 54,
+    frameWidth: 170,
+    frameHeight: 157,
     frameCount: 16,
-    contentHeight: 48,
+    contentHeight: 140,
     frameRate: 14,
     durationMs: 1143,
     // Last frame only: (frameCount - 1) / frameRate * 1000
@@ -1107,49 +1180,49 @@ const INO_IDLE: SpriteSheetDef = {
   key: 'ino-idle',
   url: '/sprites/player/ino/idle.png',
   // npm run ino:idle — 6f breath; alpha-only
-  frameWidth: 24,
-  frameHeight: 51,
+  frameWidth: 62,
+  frameHeight: 130,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 123,
 };
 
 const INO_WALK: SpriteSheetDef = {
   key: 'ino-walk',
   url: '/sprites/player/ino/walk.png',
-  frameWidth: 30,
-  frameHeight: 51,
+  frameWidth: 76,
+  frameHeight: 131,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 123,
 };
 
 const INO_COMBO_1: SpriteSheetDef = {
   key: 'ino-combo1',
   url: '/sprites/player/ino/combo1.png',
   // frame_001…005 — hit 1
-  frameWidth: 55,
-  frameHeight: 52,
+  frameWidth: 141,
+  frameHeight: 134,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 123,
 };
 
 const INO_COMBO_2: SpriteSheetDef = {
   key: 'ino-combo2',
   url: '/sprites/player/ino/combo2.png',
   // frame_006…010 — hit 2
-  frameWidth: 55,
-  frameHeight: 52,
+  frameWidth: 141,
+  frameHeight: 134,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 123,
 };
 
 const INO_COMBO_3: SpriteSheetDef = {
   key: 'ino-combo3',
   url: '/sprites/player/ino/combo3.png',
   // frame_011…014 — finisher
-  frameWidth: 55,
-  frameHeight: 52,
+  frameWidth: 141,
+  frameHeight: 134,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 123,
 };
 
 const INO_ATTACK_CHAIN = [INO_COMBO_1, INO_COMBO_2, INO_COMBO_3] as const;
@@ -1158,10 +1231,10 @@ const INO_ATTACK_CHAIN = [INO_COMBO_1, INO_COMBO_2, INO_COMBO_3] as const;
 const INO_HURT: CharacterReactionAnimDef = {
   key: 'ino-hurt',
   url: '/sprites/player/ino/hurt.png',
-  frameWidth: 49,
-  frameHeight: 49,
+  frameWidth: 127,
+  frameHeight: 127,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 123,
   frameRate: 9,
 };
 
@@ -1169,10 +1242,10 @@ const INO_HURT: CharacterReactionAnimDef = {
 const INO_DEATH: CharacterReactionAnimDef = {
   key: 'ino-death',
   url: '/sprites/player/ino/death.png',
-  frameWidth: 49,
-  frameHeight: 49,
+  frameWidth: 127,
+  frameHeight: 127,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 123,
   frameRate: 8,
 };
 
@@ -1185,10 +1258,10 @@ const INO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-shinranshin': {
     key: 'ino-shinranshin',
     url: '/sprites/player/ino/shinranshin.png',
-    frameWidth: 174,
-    frameHeight: 152,
+    frameWidth: 447,
+    frameHeight: 390,
     frameCount: 17,
-    contentHeight: 48,
+    contentHeight: 123,
     frameRate: 12,
     durationMs: 1417,
     // Peak starburst late in beam expansion
@@ -1231,50 +1304,50 @@ const KAKASHI_IDLE: SpriteSheetDef = {
   key: 'kakashi-idle',
   url: '/sprites/player/kakashi/idle.png',
   // npm run kakashi:idle — 6f breath; alpha-only; nearest walk-matched; body-lock torso+feet
-  frameWidth: 31,
-  frameHeight: 48,
+  frameWidth: 103,
+  frameHeight: 160,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 160,
 };
 
 const KAKASHI_WALK: SpriteSheetDef = {
   key: 'kakashi-walk',
   url: '/sprites/player/kakashi/walk.png',
   // npm run kakashi:walk — 6f side walk; alpha-only; nearest max→48; feet+torso lock
-  frameWidth: 26,
-  frameHeight: 49,
+  frameWidth: 85,
+  frameHeight: 164,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 160,
 };
 
 const KAKASHI_COMBO_1: SpriteSheetDef = {
   key: 'kakashi-combo1',
   url: '/sprites/player/kakashi/combo1.png',
   // npm run kakashi:combo — hit 1; alpha-only; lanczos3 body-match→48 (soft HQ); 5+4+4
-  frameWidth: 56,
-  frameHeight: 57,
+  frameWidth: 185,
+  frameHeight: 191,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 160,
 };
 
 const KAKASHI_COMBO_2: SpriteSheetDef = {
   key: 'kakashi-combo2',
   url: '/sprites/player/kakashi/combo2.png',
   // hit 2
-  frameWidth: 56,
-  frameHeight: 57,
+  frameWidth: 185,
+  frameHeight: 191,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 160,
 };
 
 const KAKASHI_COMBO_3: SpriteSheetDef = {
   key: 'kakashi-combo3',
   url: '/sprites/player/kakashi/combo3.png',
   // finisher
-  frameWidth: 56,
-  frameHeight: 57,
+  frameWidth: 185,
+  frameHeight: 191,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 160,
 };
 
 const KAKASHI_ATTACK_CHAIN = [KAKASHI_COMBO_1, KAKASHI_COMBO_2, KAKASHI_COMBO_3] as const;
@@ -1283,10 +1356,10 @@ const KAKASHI_ATTACK_CHAIN = [KAKASHI_COMBO_1, KAKASHI_COMBO_2, KAKASHI_COMBO_3]
 const KAKASHI_HURT: CharacterReactionAnimDef = {
   key: 'kakashi-hurt',
   url: '/sprites/player/kakashi/hurt.png',
-  frameWidth: 68,
-  frameHeight: 51,
+  frameWidth: 228,
+  frameHeight: 171,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 160,
   frameRate: 9,
 };
 
@@ -1294,10 +1367,10 @@ const KAKASHI_HURT: CharacterReactionAnimDef = {
 const KAKASHI_DEATH: CharacterReactionAnimDef = {
   key: 'kakashi-death',
   url: '/sprites/player/kakashi/death.png',
-  frameWidth: 68,
-  frameHeight: 51,
+  frameWidth: 228,
+  frameHeight: 171,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 160,
   frameRate: 8,
 };
 
@@ -1309,10 +1382,10 @@ const KAKASHI_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-raikiri': {
     key: 'kakashi-raikiri',
     url: '/sprites/player/kakashi/raikiri.png',
-    frameWidth: 73,
-    frameHeight: 53,
+    frameWidth: 243,
+    frameHeight: 176,
     frameCount: 26,
-    contentHeight: 48,
+    contentHeight: 160,
     frameRate: 12,
     durationMs: 2167,
     // Peak VFX discharge (frame 18 / 26) — combat dash lands near peak.
@@ -1366,46 +1439,46 @@ export const NARUTO_KYUBI_CURATED_LOOK_TYPE = 9020;
 const NARUTO_KYUBI_WALK: SpriteSheetDef = {
   key: 'naruto-kyubi-walk',
   url: '/sprites/player/naruto-kyubi/walk.png',
-  frameWidth: 52,
-  frameHeight: 52,
+  frameWidth: 102,
+  frameHeight: 102,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 103,
 };
 
 const NARUTO_KYUBI_IDLE: SpriteSheetDef = {
   key: 'naruto-kyubi-idle',
   url: '/sprites/player/naruto-kyubi/idle.png',
-  frameWidth: 56,
-  frameHeight: 52,
+  frameWidth: 115,
+  frameHeight: 107,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 103,
 };
 
 const NARUTO_KYUBI_COMBO_1: SpriteSheetDef = {
   key: 'naruto-kyubi-combo1',
   url: '/sprites/player/naruto-kyubi/combo1.png',
-  frameWidth: 67,
-  frameHeight: 52,
+  frameWidth: 148,
+  frameHeight: 113,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 103,
 };
 
 const NARUTO_KYUBI_COMBO_2: SpriteSheetDef = {
   key: 'naruto-kyubi-combo2',
   url: '/sprites/player/naruto-kyubi/combo2.png',
-  frameWidth: 67,
-  frameHeight: 52,
+  frameWidth: 148,
+  frameHeight: 113,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 103,
 };
 
 const NARUTO_KYUBI_COMBO_3: SpriteSheetDef = {
   key: 'naruto-kyubi-combo3',
   url: '/sprites/player/naruto-kyubi/combo3.png',
-  frameWidth: 67,
-  frameHeight: 52,
+  frameWidth: 148,
+  frameHeight: 113,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 103,
 };
 
 const NARUTO_KYUBI_ATTACK_CHAIN = [
@@ -1417,20 +1490,20 @@ const NARUTO_KYUBI_ATTACK_CHAIN = [
 const NARUTO_KYUBI_HURT: CharacterReactionAnimDef = {
   key: 'naruto-kyubi-hurt',
   url: '/sprites/player/naruto-kyubi/hurt.png',
-  frameWidth: 54,
-  frameHeight: 52,
+  frameWidth: 124,
+  frameHeight: 107,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 103,
   frameRate: 10,
 };
 
 const NARUTO_KYUBI_DEATH: CharacterReactionAnimDef = {
   key: 'naruto-kyubi-death',
   url: '/sprites/player/naruto-kyubi/death.png',
-  frameWidth: 54,
-  frameHeight: 52,
+  frameWidth: 124,
+  frameHeight: 107,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 103,
   frameRate: 8,
 };
 
@@ -1438,10 +1511,10 @@ const NARUTO_KYUBI_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-kurama-mode': {
     key: 'naruto-kyuubi',
     url: '/sprites/player/naruto-kyubi/kyuubi.png',
-    frameWidth: 161,
-    frameHeight: 108,
-    frameCount: 36,
-    contentHeight: 48,
+    frameWidth: 136,
+    frameHeight: 136,
+    frameCount: 37,
+    contentHeight: 40,
     frameRate: 12,
     durationMs: 3000,
     hitDelayMs: 2000,
@@ -1474,50 +1547,50 @@ const UCHIHA_ITACHI_IDLE: SpriteSheetDef = {
   key: 'itachi-idle',
   url: '/sprites/player/itachi/idle.png',
   // npm run itachi:idle — 4f breath; alpha-only body-lock + walk absoluteScale
-  frameWidth: 24,
-  frameHeight: 49,
+  frameWidth: 67,
+  frameHeight: 140,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 136,
 };
 
 const UCHIHA_ITACHI_WALK: SpriteSheetDef = {
   key: 'itachi-walk',
   url: '/sprites/player/itachi/walk.png',
   // npm run itachi:walk — 6f side walk; uniform global scale (max contentH → 48)
-  frameWidth: 26,
-  frameHeight: 52,
+  frameWidth: 67,
+  frameHeight: 140,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 136,
 };
 
 const UCHIHA_ITACHI_COMBO_1: SpriteSheetDef = {
   key: 'itachi-combo1',
   url: '/sprites/player/itachi/combo1.png',
   // npm run itachi:combo — hit 1; scale matched to walk
-  frameWidth: 54,
-  frameHeight: 52,
+  frameWidth: 146,
+  frameHeight: 139,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 136,
 };
 
 const UCHIHA_ITACHI_COMBO_2: SpriteSheetDef = {
   key: 'itachi-combo2',
   url: '/sprites/player/itachi/combo2.png',
   // hit 2
-  frameWidth: 54,
-  frameHeight: 52,
+  frameWidth: 146,
+  frameHeight: 139,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 136,
 };
 
 const UCHIHA_ITACHI_COMBO_3: SpriteSheetDef = {
   key: 'itachi-combo3',
   url: '/sprites/player/itachi/combo3.png',
   // finisher
-  frameWidth: 54,
-  frameHeight: 52,
+  frameWidth: 146,
+  frameHeight: 139,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 136,
 };
 
 const UCHIHA_ITACHI_ATTACK_CHAIN = [
@@ -1530,10 +1603,10 @@ const UCHIHA_ITACHI_ATTACK_CHAIN = [
 const UCHIHA_ITACHI_HURT: CharacterReactionAnimDef = {
   key: 'itachi-hurt',
   url: '/sprites/player/itachi/hurt.png',
-  frameWidth: 59,
-  frameHeight: 51,
+  frameWidth: 167,
+  frameHeight: 144,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 136,
   frameRate: 9,
 };
 
@@ -1541,15 +1614,15 @@ const UCHIHA_ITACHI_HURT: CharacterReactionAnimDef = {
 const UCHIHA_ITACHI_DEATH: CharacterReactionAnimDef = {
   key: 'itachi-death',
   url: '/sprites/player/itachi/death.png',
-  frameWidth: 59,
-  frameHeight: 51,
+  frameWidth: 167,
+  frameHeight: 144,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 136,
   frameRate: 8,
 };
 
 /**
- * Amaterasu — 12f body cast + separate black-flame FX on target.
+ * Amaterasu — 12f body cast + separate Sharingan/black-flame FX on target.
  * npm run itachi:jutsu + itachi:amaterasu-fx
  * FX spawns at hitDelay−80 (combat-system playPackFx on target).
  */
@@ -1557,20 +1630,21 @@ const UCHIHA_ITACHI_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-amaterasu': {
     key: 'itachi-amaterasu',
     url: '/sprites/player/itachi/amaterasu.png',
-    frameWidth: 23,
-    frameHeight: 49,
+    frameWidth: 66,
+    frameHeight: 140,
     frameCount: 12,
-    contentHeight: 48,
+    contentHeight: 136,
     frameRate: 12,
     durationMs: 1000,
     hitDelayMs: 917,
     fx: {
       key: 'itachi-amaterasu-fx',
       url: '/sprites/player/itachi/amaterasu-fx.png',
-      frameWidth: 44,
-      frameHeight: 52,
-      frameCount: 19,
-      contentHeight: 52,
+      // npm run itachi:amaterasu-fx — 9f Sharingan + black flames; HQ ~1.17× idle
+      frameWidth: 169,
+      frameHeight: 159,
+      frameCount: 9,
+      contentHeight: 159,
     },
   },
 };
@@ -1585,6 +1659,773 @@ const UCHIHA_ITACHI_PACK: CharacterPack = {
   death: UCHIHA_ITACHI_DEATH,
   skillAnims: UCHIHA_ITACHI_JUTSU_ANIMS,
   hotbarSkillIds: ['skill-amaterasu'],
+};
+
+/**
+ * Uchiha Shisui — idle/walk/combo/hurt/death (sem jutsu ainda).
+ * npm run shisui:import → shisui:all
+ * Sources: Downloads/SPRITES JOGO/SHISUI or assets/naruto-source/nu/shisui/
+ * lookType 9030 — identidade client-only (catálogo de caças curado).
+ */
+export const SHISUI_CURATED_LOOK_TYPE = 9030;
+/** Identidade curada (sem monstro/outfit WONSR). */
+export const SHISUI_LOOK_TYPES = [SHISUI_CURATED_LOOK_TYPE] as const;
+
+const SHISUI_IDLE: SpriteSheetDef = {
+  key: 'shisui-idle',
+  url: '/sprites/player/shisui/idle.png',
+  // npm run shisui:all — 6f breath
+  frameWidth: 53,
+  frameHeight: 114,
+  frameCount: 6,
+  contentHeight: 110,
+};
+
+const SHISUI_WALK: SpriteSheetDef = {
+  key: 'shisui-walk',
+  url: '/sprites/player/shisui/walk.png',
+  // npm run shisui:all — 8f side walk (walk.zip correction)
+  frameWidth: 59,
+  frameHeight: 109,
+  frameCount: 8,
+  contentHeight: 110,
+};
+
+const SHISUI_COMBO_1: SpriteSheetDef = {
+  key: 'shisui-combo1',
+  url: '/sprites/player/shisui/combo1.png',
+  frameWidth: 123,
+  frameHeight: 120,
+  frameCount: 6,
+  contentHeight: 110,
+};
+
+const SHISUI_COMBO_2: SpriteSheetDef = {
+  key: 'shisui-combo2',
+  url: '/sprites/player/shisui/combo2.png',
+  frameWidth: 123,
+  frameHeight: 120,
+  frameCount: 5,
+  contentHeight: 110,
+};
+
+const SHISUI_COMBO_3: SpriteSheetDef = {
+  key: 'shisui-combo3',
+  url: '/sprites/player/shisui/combo3.png',
+  frameWidth: 123,
+  frameHeight: 120,
+  frameCount: 6,
+  contentHeight: 110,
+};
+
+const SHISUI_ATTACK_CHAIN = [SHISUI_COMBO_1, SHISUI_COMBO_2, SHISUI_COMBO_3] as const;
+
+const SHISUI_HURT: CharacterReactionAnimDef = {
+  key: 'shisui-hurt',
+  url: '/sprites/player/shisui/hurt.png',
+  frameWidth: 101,
+  frameHeight: 114,
+  frameCount: 6,
+  contentHeight: 110,
+  frameRate: 10,
+};
+
+const SHISUI_DEATH: CharacterReactionAnimDef = {
+  key: 'shisui-death',
+  url: '/sprites/player/shisui/death.png',
+  frameWidth: 101,
+  frameHeight: 114,
+  frameCount: 6,
+  contentHeight: 110,
+  frameRate: 8,
+};
+
+const SHISUI_PACK: CharacterPack = {
+  id: 'shisui',
+  walk: SHISUI_WALK,
+  idle: SHISUI_IDLE,
+  attack: SHISUI_COMBO_1,
+  attackChain: SHISUI_ATTACK_CHAIN,
+  hurt: SHISUI_HURT,
+  death: SHISUI_DEATH,
+  skillAnims: {},
+  hotbarSkillIds: [],
+};
+
+/**
+ * Naruto Shippuden — pack lateral completo (idle/walk/combo/hurt/death/rasengan).
+ * npm run naruto-shippuden:import → naruto-shippuden:all → naruto-shippuden:qa
+ * Sources: Downloads/SPRITES JOGO/NARUTO SHIPUDEN or assets/naruto-source/nu/naruto-shippuden/
+ * lookType 9031 — identidade client-only (catálogo de caças curado).
+ */
+export const NARUTO_SHIPPUDEN_CURATED_LOOK_TYPE = 9031;
+export const NARUTO_SHIPPUDEN_LOOK_TYPES = [NARUTO_SHIPPUDEN_CURATED_LOOK_TYPE] as const;
+
+const NARUTO_SHIPPUDEN_IDLE: SpriteSheetDef = {
+  key: 'naruto-shippuden-idle',
+  url: '/sprites/player/naruto-shippuden/idle.png',
+  // npm run naruto-shippuden:all — 6f breath; feet-lock
+  frameWidth: 83,
+  frameHeight: 108,
+  frameCount: 6,
+  contentHeight: 104,
+};
+
+const NARUTO_SHIPPUDEN_WALK: SpriteSheetDef = {
+  key: 'naruto-shippuden-walk',
+  url: '/sprites/player/naruto-shippuden/walk.png',
+  // npm run naruto-shippuden:all — 6f side walk; feet mass lock
+  frameWidth: 91,
+  frameHeight: 112,
+  frameCount: 6,
+  contentHeight: 104,
+};
+
+const NARUTO_SHIPPUDEN_COMBO_1: SpriteSheetDef = {
+  key: 'naruto-shippuden-combo1',
+  url: '/sprites/player/naruto-shippuden/combo1.png',
+  frameWidth: 115,
+  frameHeight: 108,
+  frameCount: 4,
+  contentHeight: 104,
+};
+
+const NARUTO_SHIPPUDEN_COMBO_2: SpriteSheetDef = {
+  key: 'naruto-shippuden-combo2',
+  url: '/sprites/player/naruto-shippuden/combo2.png',
+  frameWidth: 115,
+  frameHeight: 108,
+  frameCount: 4,
+  contentHeight: 104,
+};
+
+const NARUTO_SHIPPUDEN_COMBO_3: SpriteSheetDef = {
+  key: 'naruto-shippuden-combo3',
+  url: '/sprites/player/naruto-shippuden/combo3.png',
+  frameWidth: 115,
+  frameHeight: 108,
+  frameCount: 4,
+  contentHeight: 104,
+};
+
+const NARUTO_SHIPPUDEN_ATTACK_CHAIN = [
+  NARUTO_SHIPPUDEN_COMBO_1,
+  NARUTO_SHIPPUDEN_COMBO_2,
+  NARUTO_SHIPPUDEN_COMBO_3,
+] as const;
+
+const NARUTO_SHIPPUDEN_HURT: CharacterReactionAnimDef = {
+  key: 'naruto-shippuden-hurt',
+  url: '/sprites/player/naruto-shippuden/hurt.png',
+  frameWidth: 136,
+  frameHeight: 102,
+  frameCount: 2,
+  contentHeight: 104,
+  frameRate: 10,
+};
+
+const NARUTO_SHIPPUDEN_DEATH: CharacterReactionAnimDef = {
+  key: 'naruto-shippuden-death',
+  url: '/sprites/player/naruto-shippuden/death.png',
+  frameWidth: 136,
+  frameHeight: 102,
+  frameCount: 3,
+  contentHeight: 104,
+  frameRate: 8,
+};
+
+const NARUTO_SHIPPUDEN_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
+  'skill-oodama-rasengan': {
+    key: 'naruto-shippuden-rasengan',
+    url: '/sprites/player/naruto-shippuden/rasengan-shippuden.png',
+    // npm run naruto-shippuden:all - 38f loose JUTSU (lead-in + trailing dups trimmed); walk-scale body
+    frameWidth: 319,
+    frameHeight: 192,
+    frameCount: 38,
+    contentHeight: 104,
+    frameRate: 12,
+    durationMs: 3167,
+    hitDelayMs: 3000,
+  },
+};
+
+const NARUTO_SHIPPUDEN_PACK: CharacterPack = {
+  id: 'naruto-shippuden',
+  walk: NARUTO_SHIPPUDEN_WALK,
+  idle: NARUTO_SHIPPUDEN_IDLE,
+  attack: NARUTO_SHIPPUDEN_COMBO_1,
+  attackChain: NARUTO_SHIPPUDEN_ATTACK_CHAIN,
+  hurt: NARUTO_SHIPPUDEN_HURT,
+  death: NARUTO_SHIPPUDEN_DEATH,
+  skillAnims: NARUTO_SHIPPUDEN_JUTSU_ANIMS,
+  hotbarSkillIds: ['skill-oodama-rasengan'],
+};
+
+/**
+ * Son Goku — pack lateral completo (idle/fly/combo/hurt/death/kamehameha).
+ * Locomoção: voa (sheet `walk` = dash/voo horizontal; idle = hover no ar).
+ * npm run goku:import → goku:all
+ * Sources: Downloads/SPRITES JOGO/GOKU or assets/dragon-ball-source/nu/goku/
+ * lookType 9032 — identidade client-only (catálogo de caças curado).
+ */
+export const GOKU_CURATED_LOOK_TYPE = 9032;
+export const GOKU_LOOK_TYPES = [GOKU_CURATED_LOOK_TYPE] as const;
+
+const GOKU_IDLE: SpriteSheetDef = {
+  key: 'goku-idle',
+  url: '/sprites/player/goku/idle.png',
+  // npm run goku:all — 4f hover breath; scaleRef idle
+  frameWidth: 76,
+  frameHeight: 129,
+  frameCount: 4,
+  contentHeight: 125,
+};
+
+const GOKU_WALK: SpriteSheetDef = {
+  key: 'goku-walk',
+  url: '/sprites/player/goku/walk.png',
+  // npm run goku:all — 4f flight/dash; same density as idle
+  frameWidth: 213,
+  frameHeight: 129,
+  frameCount: 4,
+  contentHeight: 125,
+};
+
+const GOKU_COMBO_1: SpriteSheetDef = {
+  key: 'goku-combo1',
+  url: '/sprites/player/goku/combo1.png',
+  frameWidth: 147,
+  frameHeight: 129,
+  frameCount: 11,
+  contentHeight: 125,
+};
+
+const GOKU_COMBO_2: SpriteSheetDef = {
+  key: 'goku-combo2',
+  url: '/sprites/player/goku/combo2.png',
+  frameWidth: 147,
+  frameHeight: 129,
+  frameCount: 11,
+  contentHeight: 125,
+};
+
+const GOKU_COMBO_3: SpriteSheetDef = {
+  key: 'goku-combo3',
+  url: '/sprites/player/goku/combo3.png',
+  frameWidth: 147,
+  frameHeight: 129,
+  frameCount: 10,
+  contentHeight: 125,
+};
+
+const GOKU_ATTACK_CHAIN = [GOKU_COMBO_1, GOKU_COMBO_2, GOKU_COMBO_3] as const;
+
+const GOKU_HURT: CharacterReactionAnimDef = {
+  key: 'goku-hurt',
+  url: '/sprites/player/goku/hurt.png',
+  frameWidth: 205,
+  frameHeight: 129,
+  frameCount: 2,
+  contentHeight: 125,
+  frameRate: 10,
+};
+
+const GOKU_DEATH: CharacterReactionAnimDef = {
+  key: 'goku-death',
+  url: '/sprites/player/goku/death.png',
+  frameWidth: 205,
+  frameHeight: 129,
+  frameCount: 3,
+  contentHeight: 125,
+  frameRate: 8,
+};
+
+const GOKU_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
+  'skill-kamehameha': {
+    key: 'goku-kamehameha',
+    url: '/sprites/player/goku/kamehameha.png',
+    // npm run goku:all — 18f; bodyMatch early + feet lock (originX)
+    frameWidth: 366,
+    frameHeight: 132,
+    frameCount: 18,
+    contentHeight: 125,
+    originX: 0.123,
+    frameRate: 12,
+    durationMs: 1500,
+    hitDelayMs: 1083,
+  },
+};
+
+const GOKU_PACK: CharacterPack = {
+  id: 'goku',
+  walk: GOKU_WALK,
+  idle: GOKU_IDLE,
+  attack: GOKU_COMBO_1,
+  attackChain: GOKU_ATTACK_CHAIN,
+  hurt: GOKU_HURT,
+  death: GOKU_DEATH,
+  skillAnims: GOKU_JUTSU_ANIMS,
+  hotbarSkillIds: ['skill-kamehameha'],
+  locomotion: 'fly',
+  flightHoverPx: 14,
+  // Arte DB um pouco mais “baixa” que outfits WONSR no mesmo contentH.
+  displayScale: 1.28,
+};
+
+/**
+ * Freeza (Final Form) — pack lateral completo (idle/fly/combo/hurt/death/death-ball).
+ * Locomoção: voa (sheet `walk` = Fly.zip). Especial: Death Ball + VFX no alvo.
+ * npm run freeza:import → freeza:all → freeza:qa
+ * Sources: Downloads/SPRITES JOGO/freeza or assets/dragon-ball-source/nu/freeza/
+ * lookType 9033 — identidade client-only (catálogo de caças curado).
+ */
+export const FREEZA_CURATED_LOOK_TYPE = 9033;
+export const FREEZA_LOOK_TYPES = [FREEZA_CURATED_LOOK_TYPE] as const;
+
+const FREEZA_IDLE: SpriteSheetDef = {
+  key: 'freeza-idle',
+  url: '/sprites/player/freeza/idle.png',
+  // npm run freeza:all — native scale=1; contentHeight = idle body
+  frameWidth: 90,
+  frameHeight: 133,
+  frameCount: 6,
+  contentHeight: 129,
+};
+
+const FREEZA_WALK: SpriteSheetDef = {
+  key: 'freeza-walk',
+  url: '/sprites/player/freeza/walk.png',
+  // npm run freeza:all — 4f flight (Fly.zip)
+  frameWidth: 126,
+  frameHeight: 133,
+  frameCount: 4,
+  contentHeight: 129,
+};
+
+const FREEZA_COMBO_1: SpriteSheetDef = {
+  key: 'freeza-combo1',
+  url: '/sprites/player/freeza/combo1.png',
+  frameWidth: 153,
+  frameHeight: 135,
+  frameCount: 8,
+  contentHeight: 129,
+};
+
+const FREEZA_COMBO_2: SpriteSheetDef = {
+  key: 'freeza-combo2',
+  url: '/sprites/player/freeza/combo2.png',
+  frameWidth: 153,
+  frameHeight: 135,
+  frameCount: 8,
+  contentHeight: 129,
+};
+
+const FREEZA_COMBO_3: SpriteSheetDef = {
+  key: 'freeza-combo3',
+  url: '/sprites/player/freeza/combo3.png',
+  frameWidth: 153,
+  frameHeight: 135,
+  frameCount: 7,
+  contentHeight: 129,
+};
+
+const FREEZA_ATTACK_CHAIN = [FREEZA_COMBO_1, FREEZA_COMBO_2, FREEZA_COMBO_3] as const;
+
+const FREEZA_HURT: CharacterReactionAnimDef = {
+  key: 'freeza-hurt',
+  url: '/sprites/player/freeza/hurt.png',
+  frameWidth: 248,
+  frameHeight: 133,
+  frameCount: 2,
+  contentHeight: 129,
+  frameRate: 10,
+};
+
+const FREEZA_DEATH: CharacterReactionAnimDef = {
+  key: 'freeza-death',
+  url: '/sprites/player/freeza/death.png',
+  frameWidth: 248,
+  frameHeight: 133,
+  frameCount: 2,
+  contentHeight: 129,
+  frameRate: 8,
+};
+
+const FREEZA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
+  'skill-death-ball': {
+    key: 'freeza-death-ball',
+    url: '/sprites/player/freeza/death-ball.png',
+    // npm run freeza:all — Especial Death Ball.zip 10f charge→throw→point
+    frameWidth: 182,
+    frameHeight: 143,
+    frameCount: 10,
+    contentHeight: 129,
+    originX: 0.375,
+    frameRate: 12,
+    durationMs: 833,
+    // Orb leaves ~f8 (583ms); hits target ~450ms later.
+    hitDelayMs: 1033,
+    fxFlightFrameCount: 3,
+    fxReleaseMs: 583,
+    fx: {
+      key: 'freeza-death-ball-fx',
+      url: '/sprites/player/freeza/death-ball-fx.png',
+      // 3f orb flight + 5f impact burst (native scale=1)
+      frameWidth: 72,
+      frameHeight: 76,
+      frameCount: 8,
+      contentHeight: 76,
+    },
+  },
+};
+
+const FREEZA_PACK: CharacterPack = {
+  id: 'freeza',
+  walk: FREEZA_WALK,
+  idle: FREEZA_IDLE,
+  attack: FREEZA_COMBO_1,
+  attackChain: FREEZA_ATTACK_CHAIN,
+  hurt: FREEZA_HURT,
+  death: FREEZA_DEATH,
+  skillAnims: FREEZA_JUTSU_ANIMS,
+  hotbarSkillIds: ['skill-death-ball'],
+  locomotion: 'fly',
+  flightHoverPx: 12,
+  // native contentHeight 129 → world size via displayScale (peer with Piccolo/Boo)
+  displayScale: 1.22,
+};
+
+/**
+ * Gotenks — pack lateral (idle/fly/combo/hurt/death/especial).
+ * npm run gotenks:import → gotenks:all → gotenks:qa
+ * Sources: Downloads/SPRITES JOGO/Gotenks
+ * lookType 9034 — identidade client-only.
+ */
+export const GOTENKS_CURATED_LOOK_TYPE = 9034;
+export const GOTENKS_LOOK_TYPES = [GOTENKS_CURATED_LOOK_TYPE] as const;
+
+const GOTENKS_IDLE: SpriteSheetDef = {
+  key: 'gotenks-idle',
+  url: '/sprites/player/gotenks/idle.png',
+  frameWidth: 65,
+  frameHeight: 139,
+  frameCount: 4,
+  contentHeight: 135,
+};
+
+const GOTENKS_WALK: SpriteSheetDef = {
+  key: 'gotenks-walk',
+  url: '/sprites/player/gotenks/walk.png',
+  frameWidth: 206,
+  frameHeight: 139,
+  frameCount: 4,
+  contentHeight: 135,
+};
+
+const GOTENKS_COMBO_1: SpriteSheetDef = {
+  key: 'gotenks-combo1',
+  url: '/sprites/player/gotenks/combo1.png',
+  frameWidth: 137,
+  frameHeight: 132,
+  frameCount: 7,
+  contentHeight: 135,
+};
+
+const GOTENKS_COMBO_2: SpriteSheetDef = {
+  key: 'gotenks-combo2',
+  url: '/sprites/player/gotenks/combo2.png',
+  frameWidth: 137,
+  frameHeight: 132,
+  frameCount: 7,
+  contentHeight: 135,
+};
+
+const GOTENKS_COMBO_3: SpriteSheetDef = {
+  key: 'gotenks-combo3',
+  url: '/sprites/player/gotenks/combo3.png',
+  frameWidth: 137,
+  frameHeight: 132,
+  frameCount: 6,
+  contentHeight: 135,
+};
+
+const GOTENKS_ATTACK_CHAIN = [GOTENKS_COMBO_1, GOTENKS_COMBO_2, GOTENKS_COMBO_3] as const;
+
+const GOTENKS_HURT: CharacterReactionAnimDef = {
+  key: 'gotenks-hurt',
+  url: '/sprites/player/gotenks/hurt.png',
+  frameWidth: 229,
+  frameHeight: 139,
+  frameCount: 2,
+  contentHeight: 135,
+  frameRate: 10,
+};
+
+const GOTENKS_DEATH: CharacterReactionAnimDef = {
+  key: 'gotenks-death',
+  url: '/sprites/player/gotenks/death.png',
+  frameWidth: 229,
+  frameHeight: 139,
+  frameCount: 2,
+  contentHeight: 135,
+  frameRate: 8,
+};
+
+const GOTENKS_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
+  'skill-gotenks-especial': {
+    key: 'gotenks-especial',
+    url: '/sprites/player/gotenks/especial.png',
+    // npm run gotenks:all — body f1–16 (charge/ghost/point); ghost flies via FX
+    frameWidth: 156,
+    frameHeight: 167,
+    frameCount: 16,
+    contentHeight: 135,
+    originX: 0.455,
+    frameRate: 10,
+    durationMs: 1600,
+    // Ghost leaves on f14 (~1300ms); hits target ~500ms later.
+    hitDelayMs: 1800,
+    fxFlightFrameCount: 2,
+    fxReleaseMs: 1300,
+    fx: {
+      key: 'gotenks-ghost-fx',
+      url: '/sprites/player/gotenks/ghost-fx.png',
+      frameWidth: 242,
+      frameHeight: 242,
+      frameCount: 7,
+      contentHeight: 242,
+    },
+  },
+};
+
+const GOTENKS_PACK: CharacterPack = {
+  id: 'gotenks',
+  walk: GOTENKS_WALK,
+  idle: GOTENKS_IDLE,
+  attack: GOTENKS_COMBO_1,
+  attackChain: GOTENKS_ATTACK_CHAIN,
+  hurt: GOTENKS_HURT,
+  death: GOTENKS_DEATH,
+  skillAnims: GOTENKS_JUTSU_ANIMS,
+  hotbarSkillIds: ['skill-gotenks-especial'],
+  locomotion: 'fly',
+  flightHoverPx: 14,
+  displayScale: 1.28,
+};
+
+/**
+ * Majin Boo (Kid Buu) — pack lateral (idle/fly/combo/hurt/death/especial).
+ * npm run majin-boo:import → majin-boo:all → majin-boo:qa
+ * Sources: Downloads/SPRITES JOGO/MAJIN BOO
+ * lookType 9035 — identidade client-only.
+ */
+export const MAJIN_BOO_CURATED_LOOK_TYPE = 9035;
+export const MAJIN_BOO_LOOK_TYPES = [MAJIN_BOO_CURATED_LOOK_TYPE] as const;
+
+const MAJIN_BOO_IDLE: SpriteSheetDef = {
+  key: 'majin-boo-idle',
+  url: '/sprites/player/majin-boo/idle.png',
+  // npm run majin-boo:all — native scale=1; contentHeight = idle body
+  frameWidth: 98,
+  frameHeight: 119,
+  frameCount: 4,
+  contentHeight: 115,
+};
+
+const MAJIN_BOO_WALK: SpriteSheetDef = {
+  key: 'majin-boo-walk',
+  url: '/sprites/player/majin-boo/walk.png',
+  // Fly at native pixels (no downscale)
+  frameWidth: 188,
+  frameHeight: 119,
+  frameCount: 4,
+  contentHeight: 115,
+};
+
+const MAJIN_BOO_COMBO_1: SpriteSheetDef = {
+  key: 'majin-boo-combo1',
+  url: '/sprites/player/majin-boo/combo1.png',
+  frameWidth: 267,
+  frameHeight: 119,
+  frameCount: 10,
+  contentHeight: 115,
+};
+
+const MAJIN_BOO_COMBO_2: SpriteSheetDef = {
+  key: 'majin-boo-combo2',
+  url: '/sprites/player/majin-boo/combo2.png',
+  frameWidth: 267,
+  frameHeight: 119,
+  frameCount: 9,
+  contentHeight: 115,
+};
+
+const MAJIN_BOO_COMBO_3: SpriteSheetDef = {
+  key: 'majin-boo-combo3',
+  url: '/sprites/player/majin-boo/combo3.png',
+  frameWidth: 267,
+  frameHeight: 119,
+  frameCount: 9,
+  contentHeight: 115,
+};
+
+const MAJIN_BOO_ATTACK_CHAIN = [MAJIN_BOO_COMBO_1, MAJIN_BOO_COMBO_2, MAJIN_BOO_COMBO_3] as const;
+
+const MAJIN_BOO_HURT: CharacterReactionAnimDef = {
+  key: 'majin-boo-hurt',
+  url: '/sprites/player/majin-boo/hurt.png',
+  frameWidth: 180,
+  frameHeight: 124,
+  frameCount: 2,
+  contentHeight: 115,
+  frameRate: 10,
+};
+
+const MAJIN_BOO_DEATH: CharacterReactionAnimDef = {
+  key: 'majin-boo-death',
+  url: '/sprites/player/majin-boo/death.png',
+  frameWidth: 180,
+  frameHeight: 124,
+  frameCount: 2,
+  contentHeight: 115,
+  frameRate: 8,
+};
+
+const MAJIN_BOO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
+  'skill-majin-boo-especial': {
+    key: 'majin-boo-especial',
+    url: '/sprites/player/majin-boo/especial.png',
+    // npm run majin-boo:all — 3f wind-up + 6f charge(vfx1–6) + 4f throw; flight in fx
+    frameWidth: 110,
+    frameHeight: 165,
+    frameCount: 13,
+    contentHeight: 115,
+    originX: 0.336,
+    frameRate: 10,
+    durationMs: 1300,
+    // Throw ~f10 (900ms); orb hits ~450ms later.
+    hitDelayMs: 1350,
+    fxFlightFrameCount: 3,
+    fxReleaseMs: 900,
+    fx: {
+      key: 'majin-boo-especial-fx',
+      url: '/sprites/player/majin-boo/especial-fx.png',
+      // 3f orb flight (vfx f7/9/11) + 2f impact (f12–f13); native scale=1
+      frameWidth: 95,
+      frameHeight: 99,
+      frameCount: 5,
+      contentHeight: 99,
+    },
+  },
+};
+
+const MAJIN_BOO_PACK: CharacterPack = {
+  id: 'majin-boo',
+  walk: MAJIN_BOO_WALK,
+  idle: MAJIN_BOO_IDLE,
+  attack: MAJIN_BOO_COMBO_1,
+  attackChain: MAJIN_BOO_ATTACK_CHAIN,
+  hurt: MAJIN_BOO_HURT,
+  death: MAJIN_BOO_DEATH,
+  skillAnims: MAJIN_BOO_JUTSU_ANIMS,
+  hotbarSkillIds: ['skill-majin-boo-especial'],
+  locomotion: 'fly',
+  flightHoverPx: 14,
+  // native contentHeight 115 → compact Kid Boo vs Gotenks/Goku
+  displayScale: 1.15,
+};
+
+/**
+ * Piccolo — pack lateral (idle + fly + combo + hurt/death). Sem especial ainda.
+ * npm run piccolo:import → piccolo:all → piccolo:qa
+ * Namekian green preserved (no chroma punch-out). Native scale=1 (max quality).
+ * lookType 9036 — identidade client-only.
+ */
+export const PICCOLO_CURATED_LOOK_TYPE = 9036;
+export const PICCOLO_LOOK_TYPES = [PICCOLO_CURATED_LOOK_TYPE] as const;
+
+const PICCOLO_IDLE: SpriteSheetDef = {
+  key: 'piccolo-idle',
+  url: '/sprites/player/piccolo/idle.png',
+  // native scale=1 — max quality; contentHeight = idle body px
+  frameWidth: 73,
+  frameHeight: 67,
+  frameCount: 4,
+  contentHeight: 63,
+};
+
+const PICCOLO_WALK: SpriteSheetDef = {
+  key: 'piccolo-walk',
+  url: '/sprites/player/piccolo/walk.png',
+  frameWidth: 96,
+  frameHeight: 55,
+  frameCount: 4,
+  contentHeight: 63,
+};
+
+const PICCOLO_COMBO_1: SpriteSheetDef = {
+  key: 'piccolo-combo1',
+  url: '/sprites/player/piccolo/combo1.png',
+  frameWidth: 151,
+  frameHeight: 96,
+  frameCount: 7,
+  contentHeight: 63,
+};
+
+const PICCOLO_COMBO_2: SpriteSheetDef = {
+  key: 'piccolo-combo2',
+  url: '/sprites/player/piccolo/combo2.png',
+  frameWidth: 151,
+  frameHeight: 96,
+  frameCount: 7,
+  contentHeight: 63,
+};
+
+const PICCOLO_COMBO_3: SpriteSheetDef = {
+  key: 'piccolo-combo3',
+  url: '/sprites/player/piccolo/combo3.png',
+  frameWidth: 151,
+  frameHeight: 96,
+  frameCount: 7,
+  contentHeight: 63,
+};
+
+const PICCOLO_ATTACK_CHAIN = [PICCOLO_COMBO_1, PICCOLO_COMBO_2, PICCOLO_COMBO_3] as const;
+
+const PICCOLO_HURT: CharacterReactionAnimDef = {
+  key: 'piccolo-hurt',
+  url: '/sprites/player/piccolo/hurt.png',
+  frameWidth: 99,
+  frameHeight: 67,
+  frameCount: 1,
+  contentHeight: 63,
+  frameRate: 10,
+};
+
+const PICCOLO_DEATH: CharacterReactionAnimDef = {
+  key: 'piccolo-death',
+  url: '/sprites/player/piccolo/death.png',
+  frameWidth: 99,
+  frameHeight: 67,
+  frameCount: 3,
+  contentHeight: 63,
+  frameRate: 8,
+};
+
+const PICCOLO_PACK: CharacterPack = {
+  id: 'piccolo',
+  walk: PICCOLO_WALK,
+  idle: PICCOLO_IDLE,
+  attack: PICCOLO_COMBO_1,
+  attackChain: PICCOLO_ATTACK_CHAIN,
+  hurt: PICCOLO_HURT,
+  death: PICCOLO_DEATH,
+  skillAnims: {},
+  hotbarSkillIds: [],
+  locomotion: 'fly',
+  flightHoverPx: 14,
+  // contentHeight 63 → displayScale ~1.15 ≈ ~48px world (same ballpark as peers)
+  displayScale: 1.15,
 };
 
 /**
@@ -1607,50 +2448,50 @@ const JIRAIYA_IDLE: SpriteSheetDef = {
   key: 'jiraiya-idle',
   url: '/sprites/player/jiraiya/idle.png',
   // npm run jiraiya:idle — 6f breath; alpha-only; nearest walk-matched; body-lock torso+feet
-  frameWidth: 29,
-  frameHeight: 49,
+  frameWidth: 136,
+  frameHeight: 232,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 225,
 };
 
 const JIRAIYA_WALK: SpriteSheetDef = {
   key: 'jiraiya-walk',
   url: '/sprites/player/jiraiya/walk.png',
   // npm run jiraiya:walk — 6f side walk; alpha-only; nearest max→48; feet+torso lock
-  frameWidth: 28,
-  frameHeight: 49,
+  frameWidth: 133,
+  frameHeight: 229,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 225,
 };
 
 const JIRAIYA_COMBO_1: SpriteSheetDef = {
   key: 'jiraiya-combo1',
   url: '/sprites/player/jiraiya/combo1.png',
-  // npm run jiraiya:combo — hit 1; alpha-only; nearest body-match→48; 5+5+8
-  frameWidth: 53,
-  frameHeight: 59,
+  // npm run jiraiya:combo — hit 1; HQ match idle contentH=225
+  frameWidth: 247,
+  frameHeight: 278,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 225,
 };
 
 const JIRAIYA_COMBO_2: SpriteSheetDef = {
   key: 'jiraiya-combo2',
   url: '/sprites/player/jiraiya/combo2.png',
   // mid combo
-  frameWidth: 53,
-  frameHeight: 59,
+  frameWidth: 247,
+  frameHeight: 278,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 225,
 };
 
 const JIRAIYA_COMBO_3: SpriteSheetDef = {
   key: 'jiraiya-combo3',
   url: '/sprites/player/jiraiya/combo3.png',
   // overhead finisher + recovery
-  frameWidth: 53,
-  frameHeight: 59,
+  frameWidth: 247,
+  frameHeight: 278,
   frameCount: 8,
-  contentHeight: 48,
+  contentHeight: 225,
 };
 
 const JIRAIYA_ATTACK_CHAIN = [JIRAIYA_COMBO_1, JIRAIYA_COMBO_2, JIRAIYA_COMBO_3] as const;
@@ -1659,10 +2500,10 @@ const JIRAIYA_ATTACK_CHAIN = [JIRAIYA_COMBO_1, JIRAIYA_COMBO_2, JIRAIYA_COMBO_3]
 const JIRAIYA_HURT: CharacterReactionAnimDef = {
   key: 'jiraiya-hurt',
   url: '/sprites/player/jiraiya/hurt.png',
-  frameWidth: 50,
-  frameHeight: 51,
+  frameWidth: 235,
+  frameHeight: 238,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 225,
   frameRate: 9,
 };
 
@@ -1670,10 +2511,10 @@ const JIRAIYA_HURT: CharacterReactionAnimDef = {
 const JIRAIYA_DEATH: CharacterReactionAnimDef = {
   key: 'jiraiya-death',
   url: '/sprites/player/jiraiya/death.png',
-  frameWidth: 50,
-  frameHeight: 51,
+  frameWidth: 235,
+  frameHeight: 238,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 225,
   frameRate: 8,
 };
 
@@ -1685,10 +2526,10 @@ const JIRAIYA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-kuchiyose': {
     key: 'jiraiya-kuchiyose',
     url: '/sprites/player/jiraiya/kuchiyose.png',
-    frameWidth: 151,
-    frameHeight: 69,
+    frameWidth: 708,
+    frameHeight: 324,
     frameCount: 23,
-    contentHeight: 48,
+    contentHeight: 225,
     frameRate: 12,
     durationMs: 1917,
     // Flame peak ~frame 18 — combat applies hit in the last third of the cast.
@@ -1725,46 +2566,46 @@ export const ROCK_LEE_LOOK_TYPE = 9013;
 const JIROBO_IDLE: SpriteSheetDef = {
   key: 'jirobo-idle',
   url: '/sprites/player/jirobo/idle.png',
-  frameWidth: 39,
-  frameHeight: 50,
+  frameWidth: 107,
+  frameHeight: 138,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 132,
 };
 
 const JIROBO_WALK: SpriteSheetDef = {
   key: 'jirobo-walk',
   url: '/sprites/player/jirobo/walk.png',
-  frameWidth: 33,
-  frameHeight: 49,
+  frameWidth: 90,
+  frameHeight: 136,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 132,
 };
 
 const JIROBO_COMBO_1: SpriteSheetDef = {
   key: 'jirobo-combo1',
   url: '/sprites/player/jirobo/combo1.png',
-  frameWidth: 56,
-  frameHeight: 52,
+  frameWidth: 153,
+  frameHeight: 144,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 132,
 };
 
 const JIROBO_COMBO_2: SpriteSheetDef = {
   key: 'jirobo-combo2',
   url: '/sprites/player/jirobo/combo2.png',
-  frameWidth: 56,
-  frameHeight: 52,
+  frameWidth: 153,
+  frameHeight: 144,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 132,
 };
 
 const JIROBO_COMBO_3: SpriteSheetDef = {
   key: 'jirobo-combo3',
   url: '/sprites/player/jirobo/combo3.png',
-  frameWidth: 56,
-  frameHeight: 52,
+  frameWidth: 153,
+  frameHeight: 144,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 132,
 };
 
 const JIROBO_ATTACK_CHAIN = [JIROBO_COMBO_1, JIROBO_COMBO_2, JIROBO_COMBO_3] as const;
@@ -1772,20 +2613,20 @@ const JIROBO_ATTACK_CHAIN = [JIROBO_COMBO_1, JIROBO_COMBO_2, JIROBO_COMBO_3] as 
 const JIROBO_HURT: CharacterReactionAnimDef = {
   key: 'jirobo-hurt',
   url: '/sprites/player/jirobo/hurt.png',
-  frameWidth: 65,
-  frameHeight: 52,
+  frameWidth: 179,
+  frameHeight: 142,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 132,
   frameRate: 9,
 };
 
 const JIROBO_DEATH: CharacterReactionAnimDef = {
   key: 'jirobo-death',
   url: '/sprites/player/jirobo/death.png',
-  frameWidth: 65,
-  frameHeight: 52,
+  frameWidth: 179,
+  frameHeight: 142,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 132,
   frameRate: 8,
 };
 
@@ -1793,10 +2634,10 @@ const JIROBO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-doryuheki': {
     key: 'jirobo-doryuheki',
     url: '/sprites/player/jirobo/doryuheki.png',
-    frameWidth: 90,
-    frameHeight: 75,
+    frameWidth: 268,
+    frameHeight: 223,
     frameCount: 11,
-    contentHeight: 48,
+    contentHeight: 132,
     frameRate: 12,
     // Cast holds the rock overhead through ~f9; rock leaves body at f10.
     durationMs: 1000,
@@ -1809,10 +2650,10 @@ const JIROBO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     fx: {
       key: 'jirobo-doryuheki-fx',
       url: '/sprites/player/jirobo/doryuheki-fx.png',
-      frameWidth: 48,
-      frameHeight: 34,
+      frameWidth: 132,
+      frameHeight: 94,
       frameCount: 12,
-      contentHeight: 34,
+      contentHeight: 94,
     },
   },
 };
@@ -1838,46 +2679,46 @@ export const KABUTO_CURATED_LOOK_TYPE = 9014;
 const KABUTO_WALK: SpriteSheetDef = {
   key: 'kabuto-walk',
   url: '/sprites/player/kabuto/walk.png',
-  frameWidth: 40,
-  frameHeight: 52,
+  frameWidth: 78,
+  frameHeight: 128,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 124,
 };
 
 const KABUTO_IDLE: SpriteSheetDef = {
   key: 'kabuto-idle',
   url: '/sprites/player/kabuto/idle.png',
-  frameWidth: 29,
-  frameHeight: 64,
+  frameWidth: 57,
+  frameHeight: 128,
   frameCount: 13,
-  contentHeight: 48,
+  contentHeight: 124,
 };
 
 const KABUTO_COMBO_1: SpriteSheetDef = {
   key: 'kabuto-combo1',
   url: '/sprites/player/kabuto/combo1.png',
-  frameWidth: 60,
-  frameHeight: 54,
+  frameWidth: 120,
+  frameHeight: 128,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 124,
 };
 
 const KABUTO_COMBO_2: SpriteSheetDef = {
   key: 'kabuto-combo2',
   url: '/sprites/player/kabuto/combo2.png',
-  frameWidth: 60,
-  frameHeight: 54,
+  frameWidth: 120,
+  frameHeight: 128,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 124,
 };
 
 const KABUTO_COMBO_3: SpriteSheetDef = {
   key: 'kabuto-combo3',
   url: '/sprites/player/kabuto/combo3.png',
-  frameWidth: 60,
-  frameHeight: 54,
+  frameWidth: 120,
+  frameHeight: 128,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 124,
 };
 
 const KABUTO_ATTACK_CHAIN = [KABUTO_COMBO_1, KABUTO_COMBO_2, KABUTO_COMBO_3] as const;
@@ -1885,20 +2726,20 @@ const KABUTO_ATTACK_CHAIN = [KABUTO_COMBO_1, KABUTO_COMBO_2, KABUTO_COMBO_3] as 
 const KABUTO_HURT: CharacterReactionAnimDef = {
   key: 'kabuto-hurt',
   url: '/sprites/player/kabuto/hurt.png',
-  frameWidth: 51,
-  frameHeight: 50,
+  frameWidth: 130,
+  frameHeight: 128,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 124,
   frameRate: 10,
 };
 
 const KABUTO_DEATH: CharacterReactionAnimDef = {
   key: 'kabuto-death',
   url: '/sprites/player/kabuto/death.png',
-  frameWidth: 51,
-  frameHeight: 50,
+  frameWidth: 130,
+  frameHeight: 128,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 124,
   frameRate: 8,
 };
 
@@ -1906,10 +2747,10 @@ const KABUTO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-senpo-hakugeki': {
     key: 'kabuto-senpo-hakugeki',
     url: '/sprites/player/kabuto/senpo-hakugeki.png',
-    frameWidth: 70,
-    frameHeight: 64,
+    frameWidth: 163,
+    frameHeight: 130,
     frameCount: 54,
-    contentHeight: 48,
+    contentHeight: 124,
     frameRate: 14,
     durationMs: 3857,
     hitDelayMs: 3143,
@@ -1937,46 +2778,46 @@ export const TSUNADE_CURATED_LOOK_TYPE = 9015;
 const TSUNADE_WALK: SpriteSheetDef = {
   key: 'tsunade-walk',
   url: '/sprites/player/tsunade/walk.png',
-  frameWidth: 26,
-  frameHeight: 52,
+  frameWidth: 64,
+  frameHeight: 136,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 136,
 };
 
 const TSUNADE_IDLE: SpriteSheetDef = {
   key: 'tsunade-idle',
   url: '/sprites/player/tsunade/idle.png',
-  frameWidth: 28,
-  frameHeight: 53,
+  frameWidth: 75,
+  frameHeight: 140,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 136,
 };
 
 const TSUNADE_COMBO_1: SpriteSheetDef = {
   key: 'tsunade-combo1',
   url: '/sprites/player/tsunade/combo1.png',
-  frameWidth: 47,
-  frameHeight: 52,
+  frameWidth: 121,
+  frameHeight: 136,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 136,
 };
 
 const TSUNADE_COMBO_2: SpriteSheetDef = {
   key: 'tsunade-combo2',
   url: '/sprites/player/tsunade/combo2.png',
-  frameWidth: 47,
-  frameHeight: 52,
+  frameWidth: 121,
+  frameHeight: 136,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 136,
 };
 
 const TSUNADE_COMBO_3: SpriteSheetDef = {
   key: 'tsunade-combo3',
   url: '/sprites/player/tsunade/combo3.png',
-  frameWidth: 47,
-  frameHeight: 52,
+  frameWidth: 121,
+  frameHeight: 136,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 136,
 };
 
 const TSUNADE_ATTACK_CHAIN = [TSUNADE_COMBO_1, TSUNADE_COMBO_2, TSUNADE_COMBO_3] as const;
@@ -1984,20 +2825,20 @@ const TSUNADE_ATTACK_CHAIN = [TSUNADE_COMBO_1, TSUNADE_COMBO_2, TSUNADE_COMBO_3]
 const TSUNADE_HURT: CharacterReactionAnimDef = {
   key: 'tsunade-hurt',
   url: '/sprites/player/tsunade/hurt.png',
-  frameWidth: 49,
-  frameHeight: 49,
+  frameWidth: 184,
+  frameHeight: 140,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 136,
   frameRate: 10,
 };
 
 const TSUNADE_DEATH: CharacterReactionAnimDef = {
   key: 'tsunade-death',
   url: '/sprites/player/tsunade/death.png',
-  frameWidth: 49,
-  frameHeight: 49,
+  frameWidth: 184,
+  frameHeight: 140,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 136,
   frameRate: 8,
 };
 
@@ -2005,10 +2846,10 @@ const TSUNADE_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-tsutenkyaku': {
     key: 'tsunade-tsutenkyaku',
     url: '/sprites/player/tsunade/tsutenkyaku.png',
-    frameWidth: 118,
-    frameHeight: 81,
+    frameWidth: 536,
+    frameHeight: 317,
     frameCount: 20,
-    contentHeight: 48,
+    contentHeight: 136,
     frameRate: 12,
     durationMs: 1667,
     hitDelayMs: 667,
@@ -2036,46 +2877,46 @@ export const KIBA_CURATED_LOOK_TYPE = 9016;
 const KIBA_WALK: SpriteSheetDef = {
   key: 'kiba-walk',
   url: '/sprites/player/kiba/walk.png',
-  frameWidth: 40,
-  frameHeight: 52,
+  frameWidth: 128,
+  frameHeight: 170,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 166,
 };
 
 const KIBA_IDLE: SpriteSheetDef = {
   key: 'kiba-idle',
   url: '/sprites/player/kiba/idle.png',
-  frameWidth: 39,
-  frameHeight: 52,
+  frameWidth: 127,
+  frameHeight: 170,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 166,
 };
 
 const KIBA_COMBO_1: SpriteSheetDef = {
   key: 'kiba-combo1',
   url: '/sprites/player/kiba/combo1.png',
-  frameWidth: 52,
-  frameHeight: 51,
+  frameWidth: 172,
+  frameHeight: 170,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 166,
 };
 
 const KIBA_COMBO_2: SpriteSheetDef = {
   key: 'kiba-combo2',
   url: '/sprites/player/kiba/combo2.png',
-  frameWidth: 52,
-  frameHeight: 51,
+  frameWidth: 172,
+  frameHeight: 170,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 166,
 };
 
 const KIBA_COMBO_3: SpriteSheetDef = {
   key: 'kiba-combo3',
   url: '/sprites/player/kiba/combo3.png',
-  frameWidth: 52,
-  frameHeight: 51,
+  frameWidth: 172,
+  frameHeight: 170,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 166,
 };
 
 const KIBA_ATTACK_CHAIN = [KIBA_COMBO_1, KIBA_COMBO_2, KIBA_COMBO_3] as const;
@@ -2083,20 +2924,20 @@ const KIBA_ATTACK_CHAIN = [KIBA_COMBO_1, KIBA_COMBO_2, KIBA_COMBO_3] as const;
 const KIBA_HURT: CharacterReactionAnimDef = {
   key: 'kiba-hurt',
   url: '/sprites/player/kiba/hurt.png',
-  frameWidth: 59,
-  frameHeight: 51,
+  frameWidth: 223,
+  frameHeight: 170,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 166,
   frameRate: 10,
 };
 
 const KIBA_DEATH: CharacterReactionAnimDef = {
   key: 'kiba-death',
   url: '/sprites/player/kiba/death.png',
-  frameWidth: 59,
-  frameHeight: 51,
+  frameWidth: 223,
+  frameHeight: 170,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 166,
   frameRate: 8,
 };
 
@@ -2104,10 +2945,10 @@ const KIBA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-gatsuuga': {
     key: 'kiba-gatsuuga',
     url: '/sprites/player/kiba/gatsuuga.png',
-    frameWidth: 218,
-    frameHeight: 128,
+    frameWidth: 788,
+    frameHeight: 441,
     frameCount: 32,
-    contentHeight: 48,
+    contentHeight: 166,
     frameRate: 12,
     durationMs: 2667,
     hitDelayMs: 1750,
@@ -2135,46 +2976,46 @@ export const KIMIMARO_CURATED_LOOK_TYPE = 9017;
 const KIMIMARO_WALK: SpriteSheetDef = {
   key: 'kimimaro-walk',
   url: '/sprites/player/kimimaro/walk.png',
-  frameWidth: 25,
-  frameHeight: 52,
+  frameWidth: 51,
+  frameHeight: 110,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 106,
 };
 
 const KIMIMARO_IDLE: SpriteSheetDef = {
   key: 'kimimaro-idle',
   url: '/sprites/player/kimimaro/idle.png',
-  frameWidth: 27,
-  frameHeight: 52,
+  frameWidth: 56,
+  frameHeight: 110,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 106,
 };
 
 const KIMIMARO_COMBO_1: SpriteSheetDef = {
   key: 'kimimaro-combo1',
   url: '/sprites/player/kimimaro/combo1.png',
-  frameWidth: 60,
-  frameHeight: 52,
+  frameWidth: 128,
+  frameHeight: 109,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 106,
 };
 
 const KIMIMARO_COMBO_2: SpriteSheetDef = {
   key: 'kimimaro-combo2',
   url: '/sprites/player/kimimaro/combo2.png',
-  frameWidth: 60,
-  frameHeight: 52,
+  frameWidth: 128,
+  frameHeight: 109,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 106,
 };
 
 const KIMIMARO_COMBO_3: SpriteSheetDef = {
   key: 'kimimaro-combo3',
   url: '/sprites/player/kimimaro/combo3.png',
-  frameWidth: 60,
-  frameHeight: 52,
+  frameWidth: 128,
+  frameHeight: 109,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 106,
 };
 
 const KIMIMARO_ATTACK_CHAIN = [KIMIMARO_COMBO_1, KIMIMARO_COMBO_2, KIMIMARO_COMBO_3] as const;
@@ -2182,20 +3023,20 @@ const KIMIMARO_ATTACK_CHAIN = [KIMIMARO_COMBO_1, KIMIMARO_COMBO_2, KIMIMARO_COMB
 const KIMIMARO_HURT: CharacterReactionAnimDef = {
   key: 'kimimaro-hurt',
   url: '/sprites/player/kimimaro/hurt.png',
-  frameWidth: 58,
-  frameHeight: 47,
+  frameWidth: 177,
+  frameHeight: 110,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 106,
   frameRate: 10,
 };
 
 const KIMIMARO_DEATH: CharacterReactionAnimDef = {
   key: 'kimimaro-death',
   url: '/sprites/player/kimimaro/death.png',
-  frameWidth: 58,
-  frameHeight: 47,
+  frameWidth: 177,
+  frameHeight: 110,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 106,
   frameRate: 8,
 };
 
@@ -2203,10 +3044,10 @@ const KIMIMARO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-tessenka-no-mai': {
     key: 'kimimaro-tessenka-no-mai',
     url: '/sprites/player/kimimaro/tessenka-no-mai.png',
-    frameWidth: 134,
-    frameHeight: 52,
+    frameWidth: 358,
+    frameHeight: 134,
     frameCount: 17,
-    contentHeight: 48,
+    contentHeight: 106,
     frameRate: 12,
     durationMs: 1417,
     hitDelayMs: 917,
@@ -2216,10 +3057,10 @@ const KIMIMARO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     fx: {
       key: 'kimimaro-tessenka-no-mai-fx',
       url: '/sprites/player/kimimaro/tessenka-no-mai-fx.png',
-      frameWidth: 46,
-      frameHeight: 60,
+      frameWidth: 97,
+      frameHeight: 128,
       frameCount: 6,
-      contentHeight: 56,
+      contentHeight: 124,
     },
   },
 };
@@ -2245,46 +3086,46 @@ export const SASUKE_CURSED_CURATED_LOOK_TYPE = 9018;
 const SASUKE_CURSED_WALK: SpriteSheetDef = {
   key: 'sasuke-cursed-walk',
   url: '/sprites/player/sasuke-cursed/walk.png',
-  frameWidth: 36,
-  frameHeight: 52,
+  frameWidth: 71,
+  frameHeight: 103,
   frameCount: 8,
-  contentHeight: 48,
+  contentHeight: 98,
 };
 
 const SASUKE_CURSED_IDLE: SpriteSheetDef = {
   key: 'sasuke-cursed-idle',
   url: '/sprites/player/sasuke-cursed/idle.png',
-  frameWidth: 36,
-  frameHeight: 52,
+  frameWidth: 73,
+  frameHeight: 102,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 98,
 };
 
 const SASUKE_CURSED_COMBO_1: SpriteSheetDef = {
   key: 'sasuke-cursed-combo1',
   url: '/sprites/player/sasuke-cursed/combo1.png',
-  frameWidth: 55,
-  frameHeight: 52,
+  frameWidth: 111,
+  frameHeight: 105,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 98,
 };
 
 const SASUKE_CURSED_COMBO_2: SpriteSheetDef = {
   key: 'sasuke-cursed-combo2',
   url: '/sprites/player/sasuke-cursed/combo2.png',
-  frameWidth: 55,
-  frameHeight: 52,
+  frameWidth: 111,
+  frameHeight: 105,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 98,
 };
 
 const SASUKE_CURSED_COMBO_3: SpriteSheetDef = {
   key: 'sasuke-cursed-combo3',
   url: '/sprites/player/sasuke-cursed/combo3.png',
-  frameWidth: 55,
-  frameHeight: 52,
+  frameWidth: 111,
+  frameHeight: 105,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 98,
 };
 
 const SASUKE_CURSED_ATTACK_CHAIN = [
@@ -2296,20 +3137,20 @@ const SASUKE_CURSED_ATTACK_CHAIN = [
 const SASUKE_CURSED_HURT: CharacterReactionAnimDef = {
   key: 'sasuke-cursed-hurt',
   url: '/sprites/player/sasuke-cursed/hurt.png',
-  frameWidth: 44,
-  frameHeight: 51,
+  frameWidth: 100,
+  frameHeight: 101,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 98,
   frameRate: 10,
 };
 
 const SASUKE_CURSED_DEATH: CharacterReactionAnimDef = {
   key: 'sasuke-cursed-death',
   url: '/sprites/player/sasuke-cursed/death.png',
-  frameWidth: 44,
-  frameHeight: 51,
+  frameWidth: 100,
+  frameHeight: 101,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 98,
   frameRate: 8,
 };
 
@@ -2317,10 +3158,10 @@ const SASUKE_CURSED_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-chidori-nagashi': {
     key: 'sasuke-cursed-chidori-nagashi',
     url: '/sprites/player/sasuke-cursed/chidori-nagashi.png',
-    frameWidth: 75,
-    frameHeight: 59,
+    frameWidth: 223,
+    frameHeight: 125,
     frameCount: 38,
-    contentHeight: 48,
+    contentHeight: 98,
     frameRate: 12,
     durationMs: 3167,
     hitDelayMs: 2083,
@@ -2348,46 +3189,46 @@ export const OROCHIMARU_CURATED_LOOK_TYPE = 9019;
 const OROCHIMARU_WALK: SpriteSheetDef = {
   key: 'orochimaru-walk',
   url: '/sprites/player/orochimaru/walk.png',
-  frameWidth: 24,
-  frameHeight: 52,
+  frameWidth: 50,
+  frameHeight: 112,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 110,
 };
 
 const OROCHIMARU_IDLE: SpriteSheetDef = {
   key: 'orochimaru-idle',
   url: '/sprites/player/orochimaru/idle.png',
-  frameWidth: 25,
-  frameHeight: 52,
+  frameWidth: 53,
+  frameHeight: 114,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 110,
 };
 
 const OROCHIMARU_COMBO_1: SpriteSheetDef = {
   key: 'orochimaru-combo1',
   url: '/sprites/player/orochimaru/combo1.png',
-  frameWidth: 63,
-  frameHeight: 52,
+  frameWidth: 136,
+  frameHeight: 112,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 110,
 };
 
 const OROCHIMARU_COMBO_2: SpriteSheetDef = {
   key: 'orochimaru-combo2',
   url: '/sprites/player/orochimaru/combo2.png',
-  frameWidth: 63,
-  frameHeight: 52,
+  frameWidth: 136,
+  frameHeight: 112,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 110,
 };
 
 const OROCHIMARU_COMBO_3: SpriteSheetDef = {
   key: 'orochimaru-combo3',
   url: '/sprites/player/orochimaru/combo3.png',
-  frameWidth: 63,
-  frameHeight: 52,
+  frameWidth: 136,
+  frameHeight: 112,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 110,
 };
 
 const OROCHIMARU_ATTACK_CHAIN = [
@@ -2399,20 +3240,20 @@ const OROCHIMARU_ATTACK_CHAIN = [
 const OROCHIMARU_HURT: CharacterReactionAnimDef = {
   key: 'orochimaru-hurt',
   url: '/sprites/player/orochimaru/hurt.png',
-  frameWidth: 51,
-  frameHeight: 49,
+  frameWidth: 160,
+  frameHeight: 114,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 110,
   frameRate: 10,
 };
 
 const OROCHIMARU_DEATH: CharacterReactionAnimDef = {
   key: 'orochimaru-death',
   url: '/sprites/player/orochimaru/death.png',
-  frameWidth: 51,
-  frameHeight: 49,
+  frameWidth: 160,
+  frameHeight: 114,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 110,
   frameRate: 8,
 };
 
@@ -2437,46 +3278,46 @@ export const KISAME_CURATED_LOOK_TYPE = 9021;
 const KISAME_WALK: SpriteSheetDef = {
   key: 'kisame-walk',
   url: '/sprites/player/kisame/walk.png',
-  frameWidth: 28,
-  frameHeight: 52,
+  frameWidth: 59,
+  frameHeight: 114,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 110,
 };
 
 const KISAME_IDLE: SpriteSheetDef = {
   key: 'kisame-idle',
   url: '/sprites/player/kisame/idle.png',
-  frameWidth: 39,
-  frameHeight: 52,
+  frameWidth: 85,
+  frameHeight: 114,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 110,
 };
 
 const KISAME_COMBO_1: SpriteSheetDef = {
   key: 'kisame-combo1',
   url: '/sprites/player/kisame/combo1.png',
-  frameWidth: 74,
-  frameHeight: 52,
+  frameWidth: 163,
+  frameHeight: 114,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 110,
 };
 
 const KISAME_COMBO_2: SpriteSheetDef = {
   key: 'kisame-combo2',
   url: '/sprites/player/kisame/combo2.png',
-  frameWidth: 74,
-  frameHeight: 52,
+  frameWidth: 163,
+  frameHeight: 114,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 110,
 };
 
 const KISAME_COMBO_3: SpriteSheetDef = {
   key: 'kisame-combo3',
   url: '/sprites/player/kisame/combo3.png',
-  frameWidth: 74,
-  frameHeight: 52,
+  frameWidth: 163,
+  frameHeight: 114,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 110,
 };
 
 const KISAME_ATTACK_CHAIN = [KISAME_COMBO_1, KISAME_COMBO_2, KISAME_COMBO_3] as const;
@@ -2484,20 +3325,20 @@ const KISAME_ATTACK_CHAIN = [KISAME_COMBO_1, KISAME_COMBO_2, KISAME_COMBO_3] as 
 const KISAME_HURT: CharacterReactionAnimDef = {
   key: 'kisame-hurt',
   url: '/sprites/player/kisame/hurt.png',
-  frameWidth: 56,
-  frameHeight: 52,
+  frameWidth: 149,
+  frameHeight: 113,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 110,
   frameRate: 10,
 };
 
 const KISAME_DEATH: CharacterReactionAnimDef = {
   key: 'kisame-death',
   url: '/sprites/player/kisame/death.png',
-  frameWidth: 56,
-  frameHeight: 52,
+  frameWidth: 149,
+  frameHeight: 113,
   frameCount: 3,
-  contentHeight: 48,
+  contentHeight: 110,
   frameRate: 8,
 };
 
@@ -2505,10 +3346,10 @@ const KISAME_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-suiton-suiryudan': {
     key: 'kisame-suiryudan',
     url: '/sprites/player/kisame/suiryudan.png',
-    frameWidth: 68,
-    frameHeight: 110,
+    frameWidth: 159,
+    frameHeight: 256,
     frameCount: 19,
-    contentHeight: 48,
+    contentHeight: 110,
     frameRate: 12,
     durationMs: 1583,
     hitDelayMs: 1000,
@@ -2529,16 +3370,16 @@ const KISAME_PACK: CharacterPack = {
 
 /** Deidara — lookType 9022. npm run deidara:reslice (2-row content islands; batch-6b alone re-cuts badly) */
 export const DEIDARA_CURATED_LOOK_TYPE = 9022;
-const DEIDARA_WALK: SpriteSheetDef = { key: 'deidara-walk', url: '/sprites/player/deidara/walk.png', frameWidth: 29, frameHeight: 52, frameCount: 6, contentHeight: 48 };
-const DEIDARA_IDLE: SpriteSheetDef = { key: 'deidara-idle', url: '/sprites/player/deidara/idle.png', frameWidth: 26, frameHeight: 52, frameCount: 4, contentHeight: 48 };
-const DEIDARA_COMBO_1: SpriteSheetDef = { key: 'deidara-combo1', url: '/sprites/player/deidara/combo1.png', frameWidth: 55, frameHeight: 46, frameCount: 8, contentHeight: 48 };
-const DEIDARA_COMBO_2: SpriteSheetDef = { key: 'deidara-combo2', url: '/sprites/player/deidara/combo2.png', frameWidth: 55, frameHeight: 46, frameCount: 8, contentHeight: 48 };
-const DEIDARA_COMBO_3: SpriteSheetDef = { key: 'deidara-combo3', url: '/sprites/player/deidara/combo3.png', frameWidth: 55, frameHeight: 46, frameCount: 9, contentHeight: 48 };
+const DEIDARA_WALK: SpriteSheetDef = { key: 'deidara-walk', url: '/sprites/player/deidara/walk.png', frameWidth: 66, frameHeight: 125, frameCount: 6, contentHeight: 124 };
+const DEIDARA_IDLE: SpriteSheetDef = { key: 'deidara-idle', url: '/sprites/player/deidara/idle.png', frameWidth: 58, frameHeight: 128, frameCount: 4, contentHeight: 124 };
+const DEIDARA_COMBO_1: SpriteSheetDef = { key: 'deidara-combo1', url: '/sprites/player/deidara/combo1.png', frameWidth: 154, frameHeight: 128, frameCount: 8, contentHeight: 124 };
+const DEIDARA_COMBO_2: SpriteSheetDef = { key: 'deidara-combo2', url: '/sprites/player/deidara/combo2.png', frameWidth: 154, frameHeight: 128, frameCount: 8, contentHeight: 124 };
+const DEIDARA_COMBO_3: SpriteSheetDef = { key: 'deidara-combo3', url: '/sprites/player/deidara/combo3.png', frameWidth: 154, frameHeight: 128, frameCount: 9, contentHeight: 124 };
 const DEIDARA_ATTACK_CHAIN = [DEIDARA_COMBO_1, DEIDARA_COMBO_2, DEIDARA_COMBO_3] as const;
-const DEIDARA_HURT: CharacterReactionAnimDef = { key: 'deidara-hurt', url: '/sprites/player/deidara/hurt.png', frameWidth: 55, frameHeight: 47, frameCount: 2, contentHeight: 48, frameRate: 10 };
-const DEIDARA_DEATH: CharacterReactionAnimDef = { key: 'deidara-death', url: '/sprites/player/deidara/death.png', frameWidth: 55, frameHeight: 47, frameCount: 3, contentHeight: 48, frameRate: 8 };
+const DEIDARA_HURT: CharacterReactionAnimDef = { key: 'deidara-hurt', url: '/sprites/player/deidara/hurt.png', frameWidth: 193, frameHeight: 128, frameCount: 2, contentHeight: 124, frameRate: 10 };
+const DEIDARA_DEATH: CharacterReactionAnimDef = { key: 'deidara-death', url: '/sprites/player/deidara/death.png', frameWidth: 193, frameHeight: 128, frameCount: 3, contentHeight: 124, frameRate: 8 };
 const DEIDARA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
-  'skill-c2-dragon': { key: 'deidara-kijutsu', url: '/sprites/player/deidara/kijutsu.png', frameWidth: 37, frameHeight: 52, frameCount: 7, contentHeight: 48, frameRate: 12, durationMs: 583, hitDelayMs: 333 },
+  'skill-c2-dragon': { key: 'deidara-kijutsu', url: '/sprites/player/deidara/kijutsu.png', frameWidth: 91, frameHeight: 128, frameCount: 7, contentHeight: 124, frameRate: 12, durationMs: 583, hitDelayMs: 333 },
 };
 const DEIDARA_PACK: CharacterPack = {
   id: 'deidara', walk: DEIDARA_WALK, idle: DEIDARA_IDLE, attack: DEIDARA_COMBO_1, attackChain: DEIDARA_ATTACK_CHAIN,
@@ -2547,22 +3388,22 @@ const DEIDARA_PACK: CharacterPack = {
 
 /** Sakura Shippuden — lookType 9023. */
 export const SAKURA_SHIPPUDEN_CURATED_LOOK_TYPE = 9023;
-const SAKURA_SHIP_WALK: SpriteSheetDef = { key: 'sakura-shippuden-walk', url: '/sprites/player/sakura-shippuden/walk.png', frameWidth: 35, frameHeight: 52, frameCount: 6, contentHeight: 48 };
-const SAKURA_SHIP_IDLE: SpriteSheetDef = { key: 'sakura-shippuden-idle', url: '/sprites/player/sakura-shippuden/idle.png', frameWidth: 33, frameHeight: 50, frameCount: 5, contentHeight: 48 };
-const SAKURA_SHIP_COMBO_1: SpriteSheetDef = { key: 'sakura-shippuden-combo1', url: '/sprites/player/sakura-shippuden/combo1.png', frameWidth: 54, frameHeight: 52, frameCount: 4, contentHeight: 48 };
-const SAKURA_SHIP_COMBO_2: SpriteSheetDef = { key: 'sakura-shippuden-combo2', url: '/sprites/player/sakura-shippuden/combo2.png', frameWidth: 54, frameHeight: 52, frameCount: 4, contentHeight: 48 };
-const SAKURA_SHIP_COMBO_3: SpriteSheetDef = { key: 'sakura-shippuden-combo3', url: '/sprites/player/sakura-shippuden/combo3.png', frameWidth: 54, frameHeight: 52, frameCount: 5, contentHeight: 48 };
+const SAKURA_SHIP_WALK: SpriteSheetDef = { key: 'sakura-shippuden-walk', url: '/sprites/player/sakura-shippuden/walk.png', frameWidth: 66, frameHeight: 99, frameCount: 6, contentHeight: 91 };
+const SAKURA_SHIP_IDLE: SpriteSheetDef = { key: 'sakura-shippuden-idle', url: '/sprites/player/sakura-shippuden/idle.png', frameWidth: 60, frameHeight: 95, frameCount: 5, contentHeight: 91 };
+const SAKURA_SHIP_COMBO_1: SpriteSheetDef = { key: 'sakura-shippuden-combo1', url: '/sprites/player/sakura-shippuden/combo1.png', frameWidth: 98, frameHeight: 95, frameCount: 4, contentHeight: 91 };
+const SAKURA_SHIP_COMBO_2: SpriteSheetDef = { key: 'sakura-shippuden-combo2', url: '/sprites/player/sakura-shippuden/combo2.png', frameWidth: 98, frameHeight: 95, frameCount: 4, contentHeight: 91 };
+const SAKURA_SHIP_COMBO_3: SpriteSheetDef = { key: 'sakura-shippuden-combo3', url: '/sprites/player/sakura-shippuden/combo3.png', frameWidth: 98, frameHeight: 95, frameCount: 5, contentHeight: 91 };
 const SAKURA_SHIP_ATTACK_CHAIN = [SAKURA_SHIP_COMBO_1, SAKURA_SHIP_COMBO_2, SAKURA_SHIP_COMBO_3] as const;
-const SAKURA_SHIP_HURT: CharacterReactionAnimDef = { key: 'sakura-shippuden-hurt', url: '/sprites/player/sakura-shippuden/hurt.png', frameWidth: 51, frameHeight: 45, frameCount: 2, contentHeight: 48, frameRate: 10 };
-const SAKURA_SHIP_DEATH: CharacterReactionAnimDef = { key: 'sakura-shippuden-death', url: '/sprites/player/sakura-shippuden/death.png', frameWidth: 51, frameHeight: 45, frameCount: 3, contentHeight: 48, frameRate: 8 };
+const SAKURA_SHIP_HURT: CharacterReactionAnimDef = { key: 'sakura-shippuden-hurt', url: '/sprites/player/sakura-shippuden/hurt.png', frameWidth: 186, frameHeight: 95, frameCount: 2, contentHeight: 91, frameRate: 10 };
+const SAKURA_SHIP_DEATH: CharacterReactionAnimDef = { key: 'sakura-shippuden-death', url: '/sprites/player/sakura-shippuden/death.png', frameWidth: 186, frameHeight: 95, frameCount: 3, contentHeight: 91, frameRate: 8 };
 const SAKURA_SHIP_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-chou-tsubo': {
     key: 'sakura-shippuden-chou-tsubo',
     url: '/sprites/player/sakura-shippuden/chou-tsubo.png',
-    frameWidth: 42,
-    frameHeight: 87,
+    frameWidth: 98,
+    frameHeight: 170,
     frameCount: 22,
-    contentHeight: 48,
+    contentHeight: 91,
     frameRate: 12,
     durationMs: 1833,
     hitDelayMs: 1167,
@@ -2573,10 +3414,10 @@ const SAKURA_SHIP_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     fx: {
       key: 'sakura-shippuden-chou-tsubo-fx',
       url: '/sprites/player/sakura-shippuden/chou-tsubo-fx.png',
-      frameWidth: 209,
-      frameHeight: 59,
+      frameWidth: 396,
+      frameHeight: 112,
       frameCount: 13,
-      contentHeight: 56,
+      contentHeight: 106,
     },
   },
 };
@@ -2587,22 +3428,22 @@ const SAKURA_SHIPPUDEN_PACK: CharacterPack = {
 
 /** Tenten — lookType 9024. */
 export const TENTEN_CURATED_LOOK_TYPE = 9024;
-const TENTEN_WALK: SpriteSheetDef = { key: 'tenten-walk', url: '/sprites/player/tenten/walk.png', frameWidth: 30, frameHeight: 52, frameCount: 6, contentHeight: 48 };
-const TENTEN_IDLE: SpriteSheetDef = { key: 'tenten-idle', url: '/sprites/player/tenten/idle.png', frameWidth: 38, frameHeight: 49, frameCount: 6, contentHeight: 48 };
-const TENTEN_COMBO_1: SpriteSheetDef = { key: 'tenten-combo1', url: '/sprites/player/tenten/combo1.png', frameWidth: 49, frameHeight: 52, frameCount: 5, contentHeight: 48 };
-const TENTEN_COMBO_2: SpriteSheetDef = { key: 'tenten-combo2', url: '/sprites/player/tenten/combo2.png', frameWidth: 49, frameHeight: 52, frameCount: 5, contentHeight: 48 };
-const TENTEN_COMBO_3: SpriteSheetDef = { key: 'tenten-combo3', url: '/sprites/player/tenten/combo3.png', frameWidth: 49, frameHeight: 52, frameCount: 6, contentHeight: 48 };
+const TENTEN_WALK: SpriteSheetDef = { key: 'tenten-walk', url: '/sprites/player/tenten/walk.png', frameWidth: 50, frameHeight: 89, frameCount: 6, contentHeight: 80 };
+const TENTEN_IDLE: SpriteSheetDef = { key: 'tenten-idle', url: '/sprites/player/tenten/idle.png', frameWidth: 61, frameHeight: 84, frameCount: 6, contentHeight: 80 };
+const TENTEN_COMBO_1: SpriteSheetDef = { key: 'tenten-combo1', url: '/sprites/player/tenten/combo1.png', frameWidth: 78, frameHeight: 84, frameCount: 5, contentHeight: 80 };
+const TENTEN_COMBO_2: SpriteSheetDef = { key: 'tenten-combo2', url: '/sprites/player/tenten/combo2.png', frameWidth: 78, frameHeight: 84, frameCount: 5, contentHeight: 80 };
+const TENTEN_COMBO_3: SpriteSheetDef = { key: 'tenten-combo3', url: '/sprites/player/tenten/combo3.png', frameWidth: 78, frameHeight: 84, frameCount: 6, contentHeight: 80 };
 const TENTEN_ATTACK_CHAIN = [TENTEN_COMBO_1, TENTEN_COMBO_2, TENTEN_COMBO_3] as const;
-const TENTEN_HURT: CharacterReactionAnimDef = { key: 'tenten-hurt', url: '/sprites/player/tenten/hurt.png', frameWidth: 54, frameHeight: 48, frameCount: 2, contentHeight: 48, frameRate: 10 };
-const TENTEN_DEATH: CharacterReactionAnimDef = { key: 'tenten-death', url: '/sprites/player/tenten/death.png', frameWidth: 54, frameHeight: 48, frameCount: 4, contentHeight: 48, frameRate: 8 };
+const TENTEN_HURT: CharacterReactionAnimDef = { key: 'tenten-hurt', url: '/sprites/player/tenten/hurt.png', frameWidth: 116, frameHeight: 82, frameCount: 2, contentHeight: 80, frameRate: 10 };
+const TENTEN_DEATH: CharacterReactionAnimDef = { key: 'tenten-death', url: '/sprites/player/tenten/death.png', frameWidth: 116, frameHeight: 82, frameCount: 4, contentHeight: 80, frameRate: 8 };
 const TENTEN_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-soushuriken': {
     key: 'tenten-soushuriken',
     url: '/sprites/player/tenten/soushuriken.png',
-    frameWidth: 107,
-    frameHeight: 206,
+    frameWidth: 223,
+    frameHeight: 290,
     frameCount: 31,
-    contentHeight: 48,
+    contentHeight: 80,
     frameRate: 12,
     durationMs: 2583,
     hitDelayMs: 1583,
@@ -2613,10 +3454,10 @@ const TENTEN_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     fx: {
       key: 'tenten-soushuriken-fx',
       url: '/sprites/player/tenten/soushuriken-fx.png',
-      frameWidth: 35,
-      frameHeight: 42,
+      frameWidth: 59,
+      frameHeight: 71,
       frameCount: 21,
-      contentHeight: 40,
+      contentHeight: 67,
     },
   },
 };
@@ -2627,22 +3468,22 @@ const TENTEN_PACK: CharacterPack = {
 
 /** Temari — lookType 9025. */
 export const TEMARI_CURATED_LOOK_TYPE = 9025;
-const TEMARI_WALK: SpriteSheetDef = { key: 'temari-walk', url: '/sprites/player/temari/walk.png', frameWidth: 42, frameHeight: 52, frameCount: 8, contentHeight: 48 };
-const TEMARI_IDLE: SpriteSheetDef = { key: 'temari-idle', url: '/sprites/player/temari/idle.png', frameWidth: 44, frameHeight: 52, frameCount: 6, contentHeight: 48 };
-const TEMARI_COMBO_1: SpriteSheetDef = { key: 'temari-combo1', url: '/sprites/player/temari/combo1.png', frameWidth: 50, frameHeight: 52, frameCount: 5, contentHeight: 48 };
-const TEMARI_COMBO_2: SpriteSheetDef = { key: 'temari-combo2', url: '/sprites/player/temari/combo2.png', frameWidth: 50, frameHeight: 52, frameCount: 5, contentHeight: 48 };
-const TEMARI_COMBO_3: SpriteSheetDef = { key: 'temari-combo3', url: '/sprites/player/temari/combo3.png', frameWidth: 50, frameHeight: 52, frameCount: 6, contentHeight: 48 };
+const TEMARI_WALK: SpriteSheetDef = { key: 'temari-walk', url: '/sprites/player/temari/walk.png', frameWidth: 74, frameHeight: 92, frameCount: 8, contentHeight: 95 };
+const TEMARI_IDLE: SpriteSheetDef = { key: 'temari-idle', url: '/sprites/player/temari/idle.png', frameWidth: 85, frameHeight: 99, frameCount: 6, contentHeight: 95 };
+const TEMARI_COMBO_1: SpriteSheetDef = { key: 'temari-combo1', url: '/sprites/player/temari/combo1.png', frameWidth: 102, frameHeight: 106, frameCount: 5, contentHeight: 95 };
+const TEMARI_COMBO_2: SpriteSheetDef = { key: 'temari-combo2', url: '/sprites/player/temari/combo2.png', frameWidth: 102, frameHeight: 106, frameCount: 5, contentHeight: 95 };
+const TEMARI_COMBO_3: SpriteSheetDef = { key: 'temari-combo3', url: '/sprites/player/temari/combo3.png', frameWidth: 102, frameHeight: 106, frameCount: 6, contentHeight: 95 };
 const TEMARI_ATTACK_CHAIN = [TEMARI_COMBO_1, TEMARI_COMBO_2, TEMARI_COMBO_3] as const;
-const TEMARI_HURT: CharacterReactionAnimDef = { key: 'temari-hurt', url: '/sprites/player/temari/hurt.png', frameWidth: 61, frameHeight: 49, frameCount: 2, contentHeight: 48, frameRate: 10 };
-const TEMARI_DEATH: CharacterReactionAnimDef = { key: 'temari-death', url: '/sprites/player/temari/death.png', frameWidth: 61, frameHeight: 49, frameCount: 3, contentHeight: 48, frameRate: 8 };
+const TEMARI_HURT: CharacterReactionAnimDef = { key: 'temari-hurt', url: '/sprites/player/temari/hurt.png', frameWidth: 148, frameHeight: 99, frameCount: 2, contentHeight: 95, frameRate: 10 };
+const TEMARI_DEATH: CharacterReactionAnimDef = { key: 'temari-death', url: '/sprites/player/temari/death.png', frameWidth: 148, frameHeight: 99, frameCount: 3, contentHeight: 95, frameRate: 8 };
 const TEMARI_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-kamaitachi': {
     key: 'temari-kamaitachi',
     url: '/sprites/player/temari/kamaitachi.png',
-    frameWidth: 78,
-    frameHeight: 59,
+    frameWidth: 182,
+    frameHeight: 107,
     frameCount: 14,
-    contentHeight: 48,
+    contentHeight: 95,
     frameRate: 12,
     durationMs: 1167,
     hitDelayMs: 750,
@@ -2652,10 +3493,10 @@ const TEMARI_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     fx: {
       key: 'temari-kamaitachi-fx',
       url: '/sprites/player/temari/kamaitachi-fx.png',
-      frameWidth: 88,
-      frameHeight: 52,
+      frameWidth: 171,
+      frameHeight: 99,
       frameCount: 13,
-      contentHeight: 48,
+      contentHeight: 95,
     },
   },
 };
@@ -2666,22 +3507,22 @@ const TEMARI_PACK: CharacterPack = {
 
 /** Tayuya — lookType 9026. */
 export const TAYUYA_CURATED_LOOK_TYPE = 9026;
-const TAYUYA_WALK: SpriteSheetDef = { key: 'tayuya-walk', url: '/sprites/player/tayuya/walk.png', frameWidth: 39, frameHeight: 52, frameCount: 8, contentHeight: 48 };
-const TAYUYA_IDLE: SpriteSheetDef = { key: 'tayuya-idle', url: '/sprites/player/tayuya/idle.png', frameWidth: 42, frameHeight: 50, frameCount: 6, contentHeight: 48 };
-const TAYUYA_COMBO_1: SpriteSheetDef = { key: 'tayuya-combo1', url: '/sprites/player/tayuya/combo1.png', frameWidth: 54, frameHeight: 50, frameCount: 5, contentHeight: 48 };
-const TAYUYA_COMBO_2: SpriteSheetDef = { key: 'tayuya-combo2', url: '/sprites/player/tayuya/combo2.png', frameWidth: 54, frameHeight: 50, frameCount: 5, contentHeight: 48 };
-const TAYUYA_COMBO_3: SpriteSheetDef = { key: 'tayuya-combo3', url: '/sprites/player/tayuya/combo3.png', frameWidth: 54, frameHeight: 50, frameCount: 5, contentHeight: 48 };
+const TAYUYA_WALK: SpriteSheetDef = { key: 'tayuya-walk', url: '/sprites/player/tayuya/walk.png', frameWidth: 73, frameHeight: 98, frameCount: 8, contentHeight: 91 };
+const TAYUYA_IDLE: SpriteSheetDef = { key: 'tayuya-idle', url: '/sprites/player/tayuya/idle.png', frameWidth: 75, frameHeight: 95, frameCount: 6, contentHeight: 91 };
+const TAYUYA_COMBO_1: SpriteSheetDef = { key: 'tayuya-combo1', url: '/sprites/player/tayuya/combo1.png', frameWidth: 103, frameHeight: 95, frameCount: 5, contentHeight: 91 };
+const TAYUYA_COMBO_2: SpriteSheetDef = { key: 'tayuya-combo2', url: '/sprites/player/tayuya/combo2.png', frameWidth: 103, frameHeight: 95, frameCount: 5, contentHeight: 91 };
+const TAYUYA_COMBO_3: SpriteSheetDef = { key: 'tayuya-combo3', url: '/sprites/player/tayuya/combo3.png', frameWidth: 103, frameHeight: 95, frameCount: 5, contentHeight: 91 };
 const TAYUYA_ATTACK_CHAIN = [TAYUYA_COMBO_1, TAYUYA_COMBO_2, TAYUYA_COMBO_3] as const;
-const TAYUYA_HURT: CharacterReactionAnimDef = { key: 'tayuya-hurt', url: '/sprites/player/tayuya/hurt.png', frameWidth: 55, frameHeight: 51, frameCount: 2, contentHeight: 48, frameRate: 10 };
-const TAYUYA_DEATH: CharacterReactionAnimDef = { key: 'tayuya-death', url: '/sprites/player/tayuya/death.png', frameWidth: 55, frameHeight: 51, frameCount: 3, contentHeight: 48, frameRate: 8 };
+const TAYUYA_HURT: CharacterReactionAnimDef = { key: 'tayuya-hurt', url: '/sprites/player/tayuya/hurt.png', frameWidth: 147, frameHeight: 95, frameCount: 2, contentHeight: 91, frameRate: 10 };
+const TAYUYA_DEATH: CharacterReactionAnimDef = { key: 'tayuya-death', url: '/sprites/player/tayuya/death.png', frameWidth: 147, frameHeight: 95, frameCount: 3, contentHeight: 91, frameRate: 8 };
 const TAYUYA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-magen-mateki': {
     key: 'tayuya-magen-mateki',
     url: '/sprites/player/tayuya/magen-mateki.png',
-    frameWidth: 90,
-    frameHeight: 95,
+    frameWidth: 174,
+    frameHeight: 167,
     frameCount: 18,
-    contentHeight: 48,
+    contentHeight: 91,
     frameRate: 12,
     durationMs: 1500,
     hitDelayMs: 917,
@@ -2691,10 +3532,10 @@ const TAYUYA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     fx: {
       key: 'tayuya-magen-mateki-fx',
       url: '/sprites/player/tayuya/magen-mateki-fx.png',
-      frameWidth: 34,
-      frameHeight: 44,
+      frameWidth: 60,
+      frameHeight: 80,
       frameCount: 4,
-      contentHeight: 40,
+      contentHeight: 76,
     },
   },
 };
@@ -2705,22 +3546,22 @@ const TAYUYA_PACK: CharacterPack = {
 
 /** Shino Aburame — lookType 9027. */
 export const SHINO_CURATED_LOOK_TYPE = 9027;
-const SHINO_WALK: SpriteSheetDef = { key: 'shino-walk', url: '/sprites/player/shino/walk.png', frameWidth: 25, frameHeight: 52, frameCount: 6, contentHeight: 48 };
-const SHINO_IDLE: SpriteSheetDef = { key: 'shino-idle', url: '/sprites/player/shino/idle.png', frameWidth: 25, frameHeight: 51, frameCount: 7, contentHeight: 48 };
-const SHINO_COMBO_1: SpriteSheetDef = { key: 'shino-combo1', url: '/sprites/player/shino/combo1.png', frameWidth: 56, frameHeight: 54, frameCount: 5, contentHeight: 48 };
-const SHINO_COMBO_2: SpriteSheetDef = { key: 'shino-combo2', url: '/sprites/player/shino/combo2.png', frameWidth: 56, frameHeight: 54, frameCount: 5, contentHeight: 48 };
-const SHINO_COMBO_3: SpriteSheetDef = { key: 'shino-combo3', url: '/sprites/player/shino/combo3.png', frameWidth: 56, frameHeight: 54, frameCount: 6, contentHeight: 48 };
+const SHINO_WALK: SpriteSheetDef = { key: 'shino-walk', url: '/sprites/player/shino/walk.png', frameWidth: 71, frameHeight: 154, frameCount: 6, contentHeight: 147 };
+const SHINO_IDLE: SpriteSheetDef = { key: 'shino-idle', url: '/sprites/player/shino/idle.png', frameWidth: 68, frameHeight: 151, frameCount: 7, contentHeight: 147 };
+const SHINO_COMBO_1: SpriteSheetDef = { key: 'shino-combo1', url: '/sprites/player/shino/combo1.png', frameWidth: 200, frameHeight: 151, frameCount: 5, contentHeight: 147, originX: 0.36 };
+const SHINO_COMBO_2: SpriteSheetDef = { key: 'shino-combo2', url: '/sprites/player/shino/combo2.png', frameWidth: 200, frameHeight: 151, frameCount: 5, contentHeight: 147, originX: 0.36 };
+const SHINO_COMBO_3: SpriteSheetDef = { key: 'shino-combo3', url: '/sprites/player/shino/combo3.png', frameWidth: 200, frameHeight: 151, frameCount: 6, contentHeight: 147, originX: 0.36 };
 const SHINO_ATTACK_CHAIN = [SHINO_COMBO_1, SHINO_COMBO_2, SHINO_COMBO_3] as const;
-const SHINO_HURT: CharacterReactionAnimDef = { key: 'shino-hurt', url: '/sprites/player/shino/hurt.png', frameWidth: 51, frameHeight: 49, frameCount: 2, contentHeight: 48, frameRate: 10 };
-const SHINO_DEATH: CharacterReactionAnimDef = { key: 'shino-death', url: '/sprites/player/shino/death.png', frameWidth: 51, frameHeight: 49, frameCount: 3, contentHeight: 48, frameRate: 8 };
+const SHINO_HURT: CharacterReactionAnimDef = { key: 'shino-hurt', url: '/sprites/player/shino/hurt.png', frameWidth: 158, frameHeight: 144, frameCount: 2, contentHeight: 147, frameRate: 10 };
+const SHINO_DEATH: CharacterReactionAnimDef = { key: 'shino-death', url: '/sprites/player/shino/death.png', frameWidth: 158, frameHeight: 144, frameCount: 3, contentHeight: 147, frameRate: 8 };
 const SHINO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-kikaichu': {
     key: 'shino-kikaichu',
     url: '/sprites/player/shino/kikaichu.png',
-    frameWidth: 57,
-    frameHeight: 52,
+    frameWidth: 170,
+    frameHeight: 151,
     frameCount: 13,
-    contentHeight: 48,
+    contentHeight: 147,
     frameRate: 12,
     durationMs: 1083,
     hitDelayMs: 667,
@@ -2730,10 +3571,10 @@ const SHINO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     fx: {
       key: 'shino-kikaichu-fx',
       url: '/sprites/player/shino/kikaichu-fx.png',
-      frameWidth: 67,
-      frameHeight: 60,
+      frameWidth: 198,
+      frameHeight: 176,
       frameCount: 18,
-      contentHeight: 56,
+      contentHeight: 172,
     },
   },
 };
@@ -2744,22 +3585,22 @@ const SHINO_PACK: CharacterPack = {
 
 /** Momo Hinamori — lookType 9028. */
 export const MOMO_HINAMORI_CURATED_LOOK_TYPE = 9028;
-const MOMO_WALK: SpriteSheetDef = { key: 'momo-hinamori-walk', url: '/sprites/player/momo-hinamori/walk.png', frameWidth: 46, frameHeight: 52, frameCount: 5, contentHeight: 48 };
-const MOMO_IDLE: SpriteSheetDef = { key: 'momo-hinamori-idle', url: '/sprites/player/momo-hinamori/idle.png', frameWidth: 51, frameHeight: 51, frameCount: 8, contentHeight: 48 };
-const MOMO_COMBO_1: SpriteSheetDef = { key: 'momo-hinamori-combo1', url: '/sprites/player/momo-hinamori/combo1.png', frameWidth: 59, frameHeight: 62, frameCount: 4, contentHeight: 48 };
-const MOMO_COMBO_2: SpriteSheetDef = { key: 'momo-hinamori-combo2', url: '/sprites/player/momo-hinamori/combo2.png', frameWidth: 59, frameHeight: 62, frameCount: 4, contentHeight: 48 };
-const MOMO_COMBO_3: SpriteSheetDef = { key: 'momo-hinamori-combo3', url: '/sprites/player/momo-hinamori/combo3.png', frameWidth: 59, frameHeight: 62, frameCount: 3, contentHeight: 48 };
+const MOMO_WALK: SpriteSheetDef = { key: 'momo-hinamori-walk', url: '/sprites/player/momo-hinamori/walk.png', frameWidth: 94, frameHeight: 107, frameCount: 5, contentHeight: 100 };
+const MOMO_IDLE: SpriteSheetDef = { key: 'momo-hinamori-idle', url: '/sprites/player/momo-hinamori/idle.png', frameWidth: 102, frameHeight: 104, frameCount: 8, contentHeight: 100 };
+const MOMO_COMBO_1: SpriteSheetDef = { key: 'momo-hinamori-combo1', url: '/sprites/player/momo-hinamori/combo1.png', frameWidth: 98, frameHeight: 104, frameCount: 4, contentHeight: 100 };
+const MOMO_COMBO_2: SpriteSheetDef = { key: 'momo-hinamori-combo2', url: '/sprites/player/momo-hinamori/combo2.png', frameWidth: 98, frameHeight: 104, frameCount: 4, contentHeight: 100 };
+const MOMO_COMBO_3: SpriteSheetDef = { key: 'momo-hinamori-combo3', url: '/sprites/player/momo-hinamori/combo3.png', frameWidth: 98, frameHeight: 104, frameCount: 3, contentHeight: 100 };
 const MOMO_ATTACK_CHAIN = [MOMO_COMBO_1, MOMO_COMBO_2, MOMO_COMBO_3] as const;
-const MOMO_HURT: CharacterReactionAnimDef = { key: 'momo-hinamori-hurt', url: '/sprites/player/momo-hinamori/hurt.png', frameWidth: 74, frameHeight: 52, frameCount: 2, contentHeight: 48, frameRate: 10 };
-const MOMO_DEATH: CharacterReactionAnimDef = { key: 'momo-hinamori-death', url: '/sprites/player/momo-hinamori/death.png', frameWidth: 74, frameHeight: 52, frameCount: 5, contentHeight: 48, frameRate: 8 };
+const MOMO_HURT: CharacterReactionAnimDef = { key: 'momo-hinamori-hurt', url: '/sprites/player/momo-hinamori/hurt.png', frameWidth: 167, frameHeight: 104, frameCount: 2, contentHeight: 100, frameRate: 10 };
+const MOMO_DEATH: CharacterReactionAnimDef = { key: 'momo-hinamori-death', url: '/sprites/player/momo-hinamori/death.png', frameWidth: 167, frameHeight: 104, frameCount: 5, contentHeight: 100, frameRate: 8 };
 const MOMO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-tobiume': {
     key: 'momo-hinamori-tobiume',
     url: '/sprites/player/momo-hinamori/tobiume.png',
-    frameWidth: 171,
-    frameHeight: 55,
+    frameWidth: 379,
+    frameHeight: 119,
     frameCount: 12,
-    contentHeight: 48,
+    contentHeight: 100,
     frameRate: 12,
     durationMs: 1000,
     hitDelayMs: 500,
@@ -2775,76 +3616,76 @@ export const HITSUGAYA_CURATED_LOOK_TYPE = 9029;
 const HITSUGAYA_WALK: SpriteSheetDef = {
   key: 'hitsugaya-walk',
   url: '/sprites/player/hitsugaya/walk.png',
-  frameWidth: 98,
-  frameHeight: 52,
+  frameWidth: 276,
+  frameHeight: 133,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 152,
   // Heavy blade / long stride — default 12 looks rushed.
   frameRate: 8,
 };
 const HITSUGAYA_IDLE: SpriteSheetDef = {
   key: 'hitsugaya-idle',
   url: '/sprites/player/hitsugaya/idle.png',
-  frameWidth: 60,
-  frameHeight: 52,
+  frameWidth: 176,
+  frameHeight: 156,
   frameCount: 6,
-  contentHeight: 48,
+  contentHeight: 152,
   frameRate: 6,
 };
 const HITSUGAYA_COMBO_1: SpriteSheetDef = {
   key: 'hitsugaya-combo1',
   url: '/sprites/player/hitsugaya/combo1.png',
-  frameWidth: 107,
-  frameHeight: 94,
+  frameWidth: 320,
+  frameHeight: 245,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 152,
   frameRate: 8,
 };
 const HITSUGAYA_COMBO_2: SpriteSheetDef = {
   key: 'hitsugaya-combo2',
   url: '/sprites/player/hitsugaya/combo2.png',
-  frameWidth: 107,
-  frameHeight: 94,
+  frameWidth: 320,
+  frameHeight: 245,
   frameCount: 5,
-  contentHeight: 48,
+  contentHeight: 152,
   frameRate: 8,
 };
 const HITSUGAYA_COMBO_3: SpriteSheetDef = {
   key: 'hitsugaya-combo3',
   url: '/sprites/player/hitsugaya/combo3.png',
-  frameWidth: 107,
-  frameHeight: 94,
+  frameWidth: 320,
+  frameHeight: 245,
   frameCount: 4,
-  contentHeight: 48,
+  contentHeight: 152,
   frameRate: 8,
 };
 const HITSUGAYA_ATTACK_CHAIN = [HITSUGAYA_COMBO_1, HITSUGAYA_COMBO_2, HITSUGAYA_COMBO_3] as const;
 const HITSUGAYA_HURT: CharacterReactionAnimDef = {
   key: 'hitsugaya-hurt',
   url: '/sprites/player/hitsugaya/hurt.png',
-  frameWidth: 101,
-  frameHeight: 67,
+  frameWidth: 293,
+  frameHeight: 173,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 152,
   frameRate: 10,
 };
 const HITSUGAYA_DEATH: CharacterReactionAnimDef = {
   key: 'hitsugaya-death',
   url: '/sprites/player/hitsugaya/death.png',
-  frameWidth: 101,
-  frameHeight: 67,
+  frameWidth: 293,
+  frameHeight: 173,
   frameCount: 2,
-  contentHeight: 48,
+  contentHeight: 152,
   frameRate: 8,
 };
 const HITSUGAYA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-daiguren-hyorinmaru': {
     key: 'hitsugaya-daiguren-hyorinmaru',
     url: '/sprites/player/hitsugaya/daiguren-hyorinmaru.png',
-    frameWidth: 100,
-    frameHeight: 104,
+    frameWidth: 262,
+    frameHeight: 273,
     frameCount: 7,
-    contentHeight: 48,
+    contentHeight: 152,
     frameRate: 10,
     durationMs: 700,
     hitDelayMs: 400,
@@ -2854,10 +3695,10 @@ const HITSUGAYA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     fx: {
       key: 'hitsugaya-daiguren-hyorinmaru-fx',
       url: '/sprites/player/hitsugaya/daiguren-hyorinmaru-fx.png',
-      frameWidth: 38,
-      frameHeight: 68,
+      frameWidth: 112,
+      frameHeight: 207,
       frameCount: 5,
-      contentHeight: 64,
+      contentHeight: 203,
     },
   },
 };
@@ -2873,6 +3714,395 @@ const HITSUGAYA_PACK: CharacterPack = {
   hotbarSkillIds: ['skill-daiguren-hyorinmaru'],
   // Long blade + haori footprint is much wider than Naruto packs; slight X squish.
   displayScaleX: 0.88,
+};
+
+/**
+ * Asta (Black Clover, Time Skip) — idle + walk + combo + 4 especiais MUGEN.
+ * npm run asta:all — SFF v2 → public/sprites/player/asta/
+ * lookType 9037 identidade client-only.
+ */
+export const ASTA_CURATED_LOOK_TYPE = 9037;
+
+const ASTA_IDLE: SpriteSheetDef = {
+  key: 'asta-idle',
+  url: '/sprites/player/asta/idle.png',
+  frameWidth: 62,
+  frameHeight: 54,
+  frameCount: 4,
+  contentHeight: 50,
+  frameRate: 8,
+  originX: 0.355,
+};
+
+const ASTA_WALK: SpriteSheetDef = {
+  key: 'asta-walk',
+  url: '/sprites/player/asta/walk.png',
+  frameWidth: 114,
+  frameHeight: 64,
+  frameCount: 7,
+  contentHeight: 50,
+  frameRate: 12,
+  originX: 0.623,
+};
+
+const ASTA_COMBO_1: SpriteSheetDef = {
+  key: 'asta-combo1',
+  url: '/sprites/player/asta/combo1.png',
+  frameWidth: 104,
+  frameHeight: 73,
+  frameCount: 3,
+  contentHeight: 50,
+  originX: 0.538,
+};
+
+const ASTA_COMBO_2: SpriteSheetDef = {
+  key: 'asta-combo2',
+  url: '/sprites/player/asta/combo2.png',
+  frameWidth: 94,
+  frameHeight: 55,
+  frameCount: 4,
+  contentHeight: 50,
+  originX: 0.564,
+};
+
+const ASTA_COMBO_3: SpriteSheetDef = {
+  key: 'asta-combo3',
+  url: '/sprites/player/asta/combo3.png',
+  frameWidth: 142,
+  frameHeight: 88,
+  frameCount: 4,
+  contentHeight: 50,
+  originX: 0.394,
+};
+
+const ASTA_ATTACK_CHAIN = [ASTA_COMBO_1, ASTA_COMBO_2, ASTA_COMBO_3] as const;
+
+const ASTA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
+  'skill-black-slash': {
+    key: 'asta-black-slash',
+    url: '/sprites/player/asta/black-slash.png',
+    frameWidth: 138,
+    frameHeight: 88,
+    frameCount: 14,
+    contentHeight: 50,
+    originX: 0.399,
+    frameRate: 15,
+    durationMs: 933,
+    hitDelayMs: 267,
+    fxReleaseMs: 267,
+    fxAttach: 'caster',
+    fx: {
+      key: 'asta-black-slash-fx',
+      url: '/sprites/player/asta/black-slash-fx.png',
+      frameWidth: 245,
+      frameHeight: 236,
+      frameCount: 9,
+      contentHeight: 232,
+    },
+  },
+  'skill-black-strong': {
+    key: 'asta-black-strong',
+    url: '/sprites/player/asta/black-strong.png',
+    frameWidth: 142,
+    frameHeight: 66,
+    frameCount: 8,
+    contentHeight: 50,
+    originX: 0.394,
+    frameRate: 8,
+    durationMs: 950,
+    hitDelayMs: 683,
+    fxReleaseMs: 683,
+    fxAttach: 'caster',
+    fxGround: true,
+    fx: {
+      key: 'asta-black-strong-fx',
+      url: '/sprites/player/asta/black-strong-fx.png',
+      frameWidth: 279,
+      frameHeight: 165,
+      frameCount: 10,
+      contentHeight: 161,
+    },
+  },
+  'skill-bull-thrust': {
+    key: 'asta-bull-thrust',
+    url: '/sprites/player/asta/bull-thrust.png',
+    frameWidth: 125,
+    frameHeight: 78,
+    frameCount: 15,
+    contentHeight: 50,
+    originX: 0.608,
+    frameRate: 8,
+    durationMs: 2067,
+    hitDelayMs: 1350,
+    fxReleaseMs: 1350,
+    fxAttach: 'target',
+    fxGround: true,
+    fx: {
+      key: 'asta-bull-thrust-fx',
+      url: '/sprites/player/asta/bull-thrust-fx.png',
+      frameWidth: 194,
+      frameHeight: 304,
+      frameCount: 10,
+      contentHeight: 300,
+    },
+  },
+  'skill-black-combo': {
+    key: 'asta-black-combo',
+    url: '/sprites/player/asta/black-combo.png',
+    frameWidth: 139,
+    frameHeight: 64,
+    frameCount: 16,
+    contentHeight: 50,
+    originX: 0.381,
+    frameRate: 21,
+    durationMs: 767,
+    hitDelayMs: 333,
+    fxReleaseMs: 333,
+    fxAttach: 'caster',
+    fx: {
+      key: 'asta-black-combo-fx',
+      url: '/sprites/player/asta/black-combo-fx.png',
+      frameWidth: 261,
+      frameHeight: 132,
+      frameCount: 6,
+      contentHeight: 128,
+    },
+  },
+};
+
+const ASTA_PACK: CharacterPack = {
+  id: 'asta',
+  walk: ASTA_WALK,
+  idle: ASTA_IDLE,
+  attack: ASTA_COMBO_1,
+  attackChain: ASTA_ATTACK_CHAIN,
+  skillAnims: ASTA_JUTSU_ANIMS,
+  hotbarSkillIds: [
+    'skill-black-slash',
+    'skill-black-strong',
+    'skill-bull-thrust',
+    'skill-black-combo',
+  ],
+};
+
+/**
+ * Monkey D. Luffy (One Piece) — idle + walk + combo + hurt/death + Gomu Gomu no Gatling.
+ * npm run luffy:all — assets/one-piece-source/nu/luffy/
+ * lookType 9038 identidade client-only.
+ * HQ: idle scale=1; walk/combo/jutsu matched to idle contentHeight 77.
+ */
+export const LUFFY_CURATED_LOOK_TYPE = 9038;
+export const LUFFY_LOOK_TYPES = [LUFFY_CURATED_LOOK_TYPE] as const;
+
+const LUFFY_IDLE: SpriteSheetDef = {
+  key: 'luffy-idle',
+  url: '/sprites/player/luffy/idle.png',
+  frameWidth: 44,
+  frameHeight: 81,
+  frameCount: 4,
+  contentHeight: 77,
+  frameRate: 8,
+  originX: 0.477,
+};
+
+const LUFFY_WALK: SpriteSheetDef = {
+  key: 'luffy-walk',
+  url: '/sprites/player/luffy/walk.png',
+  frameWidth: 108,
+  frameHeight: 81,
+  frameCount: 8,
+  contentHeight: 77,
+  frameRate: 12,
+  originX: 0.546,
+};
+
+const LUFFY_COMBO_1: SpriteSheetDef = {
+  key: 'luffy-combo1',
+  url: '/sprites/player/luffy/combo1.png',
+  frameWidth: 100,
+  frameHeight: 84,
+  frameCount: 6,
+  contentHeight: 77,
+  originX: 0.26,
+};
+
+const LUFFY_COMBO_2: SpriteSheetDef = {
+  key: 'luffy-combo2',
+  url: '/sprites/player/luffy/combo2.png',
+  frameWidth: 100,
+  frameHeight: 84,
+  frameCount: 6,
+  contentHeight: 77,
+  originX: 0.26,
+};
+
+const LUFFY_COMBO_3: SpriteSheetDef = {
+  key: 'luffy-combo3',
+  url: '/sprites/player/luffy/combo3.png',
+  frameWidth: 100,
+  frameHeight: 84,
+  frameCount: 7,
+  contentHeight: 77,
+  originX: 0.26,
+};
+
+const LUFFY_ATTACK_CHAIN = [LUFFY_COMBO_1, LUFFY_COMBO_2, LUFFY_COMBO_3] as const;
+
+const LUFFY_HURT: CharacterReactionAnimDef = {
+  key: 'luffy-hurt',
+  url: '/sprites/player/luffy/hurt.png',
+  frameWidth: 98,
+  frameHeight: 81,
+  frameCount: 3,
+  contentHeight: 77,
+  frameRate: 10,
+  originX: 0.449,
+};
+
+const LUFFY_DEATH: CharacterReactionAnimDef = {
+  key: 'luffy-death',
+  url: '/sprites/player/luffy/death.png',
+  frameWidth: 98,
+  frameHeight: 81,
+  frameCount: 1,
+  contentHeight: 77,
+  frameRate: 8,
+  originX: 0.449,
+};
+
+const LUFFY_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
+  'skill-gomu-gatling': {
+    key: 'luffy-gomu-gatling',
+    url: '/sprites/player/luffy/gomu-gatling.png',
+    frameWidth: 168,
+    frameHeight: 81,
+    frameCount: 14,
+    contentHeight: 77,
+    originX: 0.476,
+    frameRate: 12,
+    durationMs: 1167,
+    hitDelayMs: 500,
+    fxAttach: 'caster',
+  },
+};
+
+const LUFFY_PACK: CharacterPack = {
+  id: 'luffy',
+  walk: LUFFY_WALK,
+  idle: LUFFY_IDLE,
+  attack: LUFFY_COMBO_1,
+  attackChain: LUFFY_ATTACK_CHAIN,
+  hurt: LUFFY_HURT,
+  death: LUFFY_DEATH,
+  skillAnims: LUFFY_JUTSU_ANIMS,
+  hotbarSkillIds: ['skill-gomu-gatling'],
+};
+
+/**
+ * Kenshin Himura — idle + walk + combo + hurt/death + Ryūtsuisen.
+ * npm run kenshin:all — assets/kenshin-source/nu/kenshin/
+ */
+export const KENSHIN_CURATED_LOOK_TYPE = 9072;
+
+const KENSHIN_IDLE: SpriteSheetDef = {
+  key: 'kenshin-idle',
+  url: '/sprites/player/kenshin/idle.png',
+  frameWidth: 58,
+  frameHeight: 94,
+  frameCount: 4,
+  contentHeight: 90,
+  frameRate: 8,
+  originX: 0.466,
+};
+
+const KENSHIN_WALK: SpriteSheetDef = {
+  key: 'kenshin-walk',
+  url: '/sprites/player/kenshin/walk.png',
+  frameWidth: 81,
+  frameHeight: 94,
+  frameCount: 8,
+  contentHeight: 90,
+  frameRate: 12,
+  originX: 0.5,
+};
+
+const KENSHIN_COMBO_1: SpriteSheetDef = {
+  key: 'kenshin-combo1',
+  url: '/sprites/player/kenshin/combo1.png',
+  frameWidth: 188,
+  frameHeight: 117,
+  frameCount: 9,
+  contentHeight: 90,
+  originX: 0.463,
+};
+
+const KENSHIN_COMBO_2: SpriteSheetDef = {
+  key: 'kenshin-combo2',
+  url: '/sprites/player/kenshin/combo2.png',
+  frameWidth: 188,
+  frameHeight: 117,
+  frameCount: 9,
+  contentHeight: 90,
+  originX: 0.463,
+};
+
+const KENSHIN_COMBO_3: SpriteSheetDef = {
+  key: 'kenshin-combo3',
+  url: '/sprites/player/kenshin/combo3.png',
+  frameWidth: 188,
+  frameHeight: 117,
+  frameCount: 9,
+  contentHeight: 90,
+  originX: 0.463,
+};
+
+const KENSHIN_ATTACK_CHAIN = [KENSHIN_COMBO_1, KENSHIN_COMBO_2, KENSHIN_COMBO_3] as const;
+
+const KENSHIN_HURT: CharacterReactionAnimDef = {
+  key: 'kenshin-hurt',
+  url: '/sprites/player/kenshin/hurt.png',
+  frameWidth: 114,
+  frameHeight: 94,
+  frameCount: 1,
+  contentHeight: 90,
+  frameRate: 10,
+};
+
+const KENSHIN_DEATH: CharacterReactionAnimDef = {
+  key: 'kenshin-death',
+  url: '/sprites/player/kenshin/death.png',
+  frameWidth: 114,
+  frameHeight: 94,
+  frameCount: 3,
+  contentHeight: 90,
+  frameRate: 8,
+};
+
+const KENSHIN_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
+  'skill-ryusuisen': {
+    key: 'kenshin-ryusuisen',
+    url: '/sprites/player/kenshin/ryusuisen.png',
+    frameWidth: 173,
+    frameHeight: 96,
+    frameCount: 24,
+    contentHeight: 90,
+    frameRate: 12,
+    durationMs: 2000,
+    hitDelayMs: 917,
+    originX: 0.416,
+  },
+};
+
+const KENSHIN_PACK: CharacterPack = {
+  id: 'kenshin',
+  walk: KENSHIN_WALK,
+  idle: KENSHIN_IDLE,
+  attack: KENSHIN_COMBO_1,
+  attackChain: KENSHIN_ATTACK_CHAIN,
+  hurt: KENSHIN_HURT,
+  death: KENSHIN_DEATH,
+  skillAnims: KENSHIN_JUTSU_ANIMS,
+  hotbarSkillIds: ['skill-ryusuisen'],
 };
 
 const PACKS: Record<StarterCharacterId, CharacterPack> = {
@@ -2909,6 +4139,18 @@ const CURATED_BY_SLUG: Record<string, CharacterPack> = {
   'naruto-sennin': NARUTO_SENNIN_PACK,
   itachi: UCHIHA_ITACHI_PACK,
   'uchiha-itachi': UCHIHA_ITACHI_PACK,
+  shisui: SHISUI_PACK,
+  'uchiha-shisui': SHISUI_PACK,
+  'naruto-shippuden': NARUTO_SHIPPUDEN_PACK,
+  'uzumaki-naruto-shippuden': NARUTO_SHIPPUDEN_PACK,
+  goku: GOKU_PACK,
+  'son-goku': GOKU_PACK,
+  freeza: FREEZA_PACK,
+  frieza: FREEZA_PACK,
+  'final-form-frieza': FREEZA_PACK,
+  gotenks: GOTENKS_PACK,
+  'majin-boo': MAJIN_BOO_PACK,
+  piccolo: PICCOLO_PACK,
   jiraiya: JIRAIYA_PACK,
   jiraya: JIRAIYA_PACK,
   jirobo: JIROBO_PACK,
@@ -2939,6 +4181,28 @@ const CURATED_BY_SLUG: Record<string, CharacterPack> = {
   hitsugaya: HITSUGAYA_PACK,
   'toshiro-hitsugaya': HITSUGAYA_PACK,
   toshiro: HITSUGAYA_PACK,
+  asta: ASTA_PACK,
+  luffy: LUFFY_PACK,
+  'monkey-d-luffy': LUFFY_PACK,
+  'monkey d luffy': LUFFY_PACK,
+  ...BLACK_CLOVER_BY_SLUG,
+  ...JUJUTSU_KAISEN_BY_SLUG,
+  yuji: JUJUTSU_KAISEN_BY_SLUG.itadori,
+  'yuji-itadori': JUJUTSU_KAISEN_BY_SLUG.itadori,
+  'gojo-satoru': JUJUTSU_KAISEN_BY_SLUG.gojo,
+  satoru: JUJUTSU_KAISEN_BY_SLUG.gojo,
+  'maki-zenin': JUJUTSU_KAISEN_BY_SLUG.maki,
+  zenin: JUJUTSU_KAISEN_BY_SLUG.maki,
+  ryomen: JUJUTSU_KAISEN_BY_SLUG.sukuna,
+  'ryomen-sukuna': JUJUTSU_KAISEN_BY_SLUG.sukuna,
+  'toji-fushiguro': JUJUTSU_KAISEN_BY_SLUG.toji,
+  kenshin: KENSHIN_PACK,
+  himura: KENSHIN_PACK,
+  'kenshin-himura': KENSHIN_PACK,
+  'himura-kenshin': KENSHIN_PACK,
+  ...JUMP_FORCE_BY_SLUG,
+  'ichigo-kurosaki': JUMP_FORCE_BY_SLUG.ichigo,
+  kurosaki: JUMP_FORCE_BY_SLUG.ichigo,
 };
 
 const CURATED_BY_LOOK_TYPE: Record<number, CharacterPack> = {
@@ -2957,6 +4221,13 @@ const CURATED_BY_LOOK_TYPE: Record<number, CharacterPack> = {
   [KAKASHI_CURATED_LOOK_TYPE]: KAKASHI_PACK,
   [NARUTO_SENNIN_LOOK_TYPE]: NARUTO_SENNIN_PACK,
   [UCHIHA_ITACHI_LOOK_TYPE]: UCHIHA_ITACHI_PACK,
+  ...Object.fromEntries(SHISUI_LOOK_TYPES.map((look) => [look, SHISUI_PACK])),
+  ...Object.fromEntries(NARUTO_SHIPPUDEN_LOOK_TYPES.map((look) => [look, NARUTO_SHIPPUDEN_PACK])),
+  ...Object.fromEntries(GOKU_LOOK_TYPES.map((look) => [look, GOKU_PACK])),
+  ...Object.fromEntries(FREEZA_LOOK_TYPES.map((look) => [look, FREEZA_PACK])),
+  ...Object.fromEntries(GOTENKS_LOOK_TYPES.map((look) => [look, GOTENKS_PACK])),
+  ...Object.fromEntries(MAJIN_BOO_LOOK_TYPES.map((look) => [look, MAJIN_BOO_PACK])),
+  ...Object.fromEntries(PICCOLO_LOOK_TYPES.map((look) => [look, PICCOLO_PACK])),
   ...Object.fromEntries(JIRAIYA_LOOK_TYPES.map((look) => [look, JIRAIYA_PACK])),
   ...Object.fromEntries(JIROBO_LOOK_TYPES.map((look) => [look, JIROBO_PACK])),
   [KABUTO_CURATED_LOOK_TYPE]: KABUTO_PACK,
@@ -2975,6 +4246,12 @@ const CURATED_BY_LOOK_TYPE: Record<number, CharacterPack> = {
   [SHINO_CURATED_LOOK_TYPE]: SHINO_PACK,
   [MOMO_HINAMORI_CURATED_LOOK_TYPE]: MOMO_HINAMORI_PACK,
   [HITSUGAYA_CURATED_LOOK_TYPE]: HITSUGAYA_PACK,
+  [ASTA_CURATED_LOOK_TYPE]: ASTA_PACK,
+  [LUFFY_CURATED_LOOK_TYPE]: LUFFY_PACK,
+  ...BLACK_CLOVER_BY_LOOK_TYPE,
+  ...JUJUTSU_KAISEN_BY_LOOK_TYPE,
+  ...JUMP_FORCE_BY_LOOK_TYPE,
+  [KENSHIN_CURATED_LOOK_TYPE]: KENSHIN_PACK,
 };
 
 export function getCharacterPack(starterId: StarterCharacterId): CharacterPack {
@@ -2995,13 +4272,44 @@ export function getCuratedPackByLookType(lookType: number): CharacterPack | null
 /**
  * Escala do personagem no mundo (walk → jutsus).
  * Y = altura padrão; X = Y × displayScaleX (esmaga silhuetas largas).
+ * Packs que voam usam o idle (pose em pé) como régua — a sheet de voo
+ * é mais baixa no eixo Y e não deve definir a densidade do corpo.
  */
 export function characterDisplayScale(pack: CharacterPack): { x: number; y: number } {
-  const height = pack.walk.contentHeight ?? pack.walk.frameHeight;
+  const ref =
+    pack.locomotion === 'fly' && pack.idle ? pack.idle : pack.walk;
+  const height = ref.contentHeight ?? ref.frameHeight;
   const y =
     (height > 0 ? CHARACTER_DISPLAY_HEIGHT / height : 1) * (pack.displayScale ?? 1);
   const x = y * (pack.displayScaleX ?? 1);
   return { x, y };
+}
+
+/** Elevação visual (px mundo) para packs que voam. */
+export function characterFlightHoverPx(pack: CharacterPack): number {
+  if (pack.locomotion !== 'fly') return 0;
+  return pack.flightHoverPx ?? 14;
+}
+
+/**
+ * Origin lateral (sem outfit WONSR). `fly` sobe o sprite: originY > 1
+ * deixa o ponto de colisão no chão e o corpo flutuando.
+ * `sheet.originX` trava folhas largas (beam) nos pés.
+ */
+export function characterLateralOrigin(
+  pack: CharacterPack,
+  sheet?: SpriteSheetDef | null,
+): { x: number; y: number } {
+  const hover = characterFlightHoverPx(pack);
+  const displayH = CHARACTER_DISPLAY_HEIGHT * (pack.displayScale ?? 1);
+  const originY = hover <= 0 ? 1 : 1 + hover / Math.max(displayH, 1);
+  const originX = sheet?.originX ?? 0.5;
+  return { x: originX, y: originY };
+}
+
+/** Offset Y do nameplate a partir de `sprite.y` (topo da cabeça + gap). */
+export function characterNameplateLift(pack: CharacterPack): number {
+  return CHARACTER_DISPLAY_HEIGHT * (pack.displayScale ?? 1) + characterFlightHoverPx(pack);
 }
 
 /** Escala uniforme legada (média X/Y se diferem). Preferir `characterDisplayScale`. */
@@ -3032,7 +4340,14 @@ export function preloadCharacterPack(scene: Phaser.Scene, pack: CharacterPack): 
 export function listPackSheets(pack: CharacterPack): SpriteSheetDef[] {
   const sheets: SpriteSheetDef[] = [pack.walk, pack.attack];
   if (pack.idle) sheets.push(pack.idle);
-  if (pack.attackChain) sheets.push(...pack.attackChain);
+  if (pack.attackChain) {
+    for (const sheet of pack.attackChain) {
+      sheets.push(sheet);
+      if (sheet.fx) sheets.push(sheet.fx);
+    }
+  } else if (pack.attack.fx) {
+    sheets.push(pack.attack.fx);
+  }
   if (pack.hurt) sheets.push(pack.hurt);
   if (pack.death) sheets.push(pack.death);
   for (const anim of Object.values(pack.skillAnims)) {
@@ -3082,6 +4397,17 @@ export function loadCharacterPack(
         existing.height === sheet.frameHeight;
       if (sameSize) continue;
       scene.textures.remove(sheet.key);
+      // Phaser types mark AnimationManager.anims as protected; Map is public at runtime.
+      const animsMap = (
+        scene.anims as unknown as {
+          anims: Map<string, Phaser.Animations.Animation>;
+        }
+      ).anims;
+      for (const anim of animsMap.values()) {
+        if (anim.frames.some((f) => f.textureKey === sheet.key)) {
+          scene.anims.remove(anim.key);
+        }
+      }
     }
 
     queued.add(sheet.key);

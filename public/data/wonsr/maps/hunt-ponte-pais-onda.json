@@ -1,0 +1,28 @@
+{
+  "mapKey": "huntPontePaisOnda",
+  "slug": "hunt-ponte-pais-onda",
+  "label": "Ponte da Névoa",
+  "image": "/maps/hunt-ponte-pais-onda.png",
+  "foreground": "/maps/hunt-ponte-pais-onda-fg.png",
+  "tmx": "/maps/hunt-ponte-pais-onda.tmx",
+  "width": 3840,
+  "height": 2160,
+  "cols": 240,
+  "rows": 135,
+  "lateralFloorY": 1470,
+  "layoutScale": 6.75,
+  "spawn": {
+    "x": 1920,
+    "y": 1470
+  },
+  "enemySpawns": [
+    {
+      "x": 3680,
+      "y": 1470
+    },
+    {
+      "x": 160,
+      "y": 1470
+    }
+  ]
+}

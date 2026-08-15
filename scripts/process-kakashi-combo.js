@@ -27,6 +27,11 @@ const {
   bbox,
   isChromaGreen,
 } = require('./lib/alpha-frame-pack');
+const {
+  preferNativeScale,
+  readIdleContentHeight,
+  hqLinearScale,
+} = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'kakashi', 'combo');
@@ -275,7 +280,7 @@ function normalizeBodyLock(frames, widths, heights, pad = PAD) {
 }
 
 /** Soft HQ downscale (lanczos3). Never nearest — keeps test-art smoothness. */
-async function scaleLockedCells(frames, fw, fh, absoluteScale) {
+async function scaleLockedCells(frames, fw, fh, absoluteScale, rulerContentH = TARGET_BODY_H) {
   const skipResize = Math.abs(absoluteScale - 1) < 1e-6;
   const outW = skipResize ? fw : Math.max(1, Math.round(fw * absoluteScale));
   const outH = skipResize ? fh : Math.max(1, Math.round(fh * absoluteScale));
@@ -317,7 +322,7 @@ async function scaleLockedCells(frames, fw, fh, absoluteScale) {
     frames: out,
     frameWidth: outW,
     frameHeight: outH,
-    contentHeight: TARGET_BODY_H,
+    contentHeight: rulerContentH,
     scale: absoluteScale,
   };
 }
@@ -387,12 +392,18 @@ function resolveWalkScale() {
         return {
           scale: w.scale,
           source: 'meta.json kakashi-walk',
-          walkMaxContentH: w.maxContentH ?? null,
+          walkMaxContentH: w.maxContentH ?? w.contentHeight ?? null,
+          contentHeight: w.contentHeight ?? null,
         };
       }
       const idle = meta['kakashi-idle'];
       if (idle && typeof idle.scale === 'number' && idle.scale > 0) {
-        return { scale: idle.scale, source: 'meta.json kakashi-idle', walkMaxContentH: null };
+        return {
+          scale: idle.scale,
+          source: 'meta.json kakashi-idle',
+          walkMaxContentH: idle.contentHeight ?? null,
+          contentHeight: idle.contentHeight ?? null,
+        };
       }
     } catch {
       /* fall through */
@@ -413,9 +424,28 @@ async function measureWalkSourceScale() {
 }
 
 /**
- * Prefer walk scale if standing body lands near 48; else body-match lanczos3.
+ * HQ: match idle/walk ruler contentHeight. Same-rip stays native;
+ * different-zoom combo rips upsample so standing body matches idle.
  */
 function resolveAbsoluteScale(standingContentH, walkScaleInfo) {
+  const idleH =
+    (walkScaleInfo &&
+      (walkScaleInfo.contentHeight || walkScaleInfo.bodyH || walkScaleInfo.walkMaxContentH)) ||
+    readIdleContentHeight(META_JSON, 'kakashi-idle') ||
+    TARGET_BODY_H;
+
+  if (walkScaleInfo && Math.abs(walkScaleInfo.scale - 1) < 1e-6) {
+    const raw = idleH / Math.max(1, standingContentH);
+    const scale = preferNativeScale(raw);
+    return {
+      scale,
+      source: scale === 1 ? 'hq-native-walk-1:1' : `hq-match-idle→${idleH}`,
+      projectedBodyH: standingContentH * scale,
+      bodyMatch: raw,
+      kernel: 'nearest',
+      rulerContentH: idleH,
+    };
+  }
   const bodyMatch = TARGET_BODY_H / Math.max(1, standingContentH);
   if (walkScaleInfo) {
     const projected = standingContentH * walkScaleInfo.scale;
@@ -426,6 +456,7 @@ function resolveAbsoluteScale(standingContentH, walkScaleInfo) {
         projectedBodyH: projected,
         bodyMatch,
         kernel: 'lanczos3',
+        rulerContentH: TARGET_BODY_H,
       };
     }
     console.log(
@@ -440,6 +471,7 @@ function resolveAbsoluteScale(standingContentH, walkScaleInfo) {
     bodyMatch,
     walkScale: walkScaleInfo ? walkScaleInfo.scale : null,
     kernel: 'lanczos3',
+    rulerContentH: TARGET_BODY_H,
   };
 }
 
@@ -489,6 +521,7 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     scaleInfo.scale,
+    scaleInfo.rulerContentH || walkScaleInfo.contentHeight || TARGET_BODY_H,
   );
 
   const afterH = scaled.frames.map((f) => bbox(f, scaled.frameWidth, scaled.frameHeight).height);
@@ -500,9 +533,9 @@ async function main() {
     scaled.frameWidth,
     scaled.frames.length,
     {
-      requireSingleComponent: true,
-      // Kunai/slash motion trails leave a few satellite flecks after soft↓
-      maxMinorComponent: 48,
+      // HQ native: slash/kunai VFX leave larger satellite flecks than the 48px pack.
+      requireSingleComponent: false,
+      maxMinorComponent: 120,
       // Lanczos3 softens pure #000 into dark greys — no pixel-art black quota
       minBlackPerFrame: 0,
       minOlivePerFrame: 0,
@@ -573,8 +606,8 @@ async function main() {
       scaled.frameWidth,
       frames.length,
       {
-        requireSingleComponent: true,
-        maxMinorComponent: 48,
+        requireSingleComponent: false,
+        maxMinorComponent: 120,
         minBlackPerFrame: 0,
         minOlivePerFrame: 0,
         minBluePerFrame: 0,

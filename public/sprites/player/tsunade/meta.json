@@ -1,29 +1,29 @@
 {
   "tsunade-walk": {
     "image": "/sprites/player/tsunade/walk.png",
-    "frameWidth": 26,
-    "frameHeight": 52,
+    "frameWidth": 64,
+    "frameHeight": 136,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.36363636363636365,
+    "contentHeight": 136,
+    "scale": 1,
     "residualGreen": 0,
-    "pureBlack": 1118
+    "pureBlack": 8325
   },
   "tsunade-idle": {
     "image": "/sprites/player/tsunade/idle.png",
-    "frameWidth": 28,
-    "frameHeight": 53,
+    "frameWidth": 75,
+    "frameHeight": 140,
     "frameCount": 6,
-    "contentHeight": 48,
-    "scale": 0.36363636363636365
+    "contentHeight": 136,
+    "scale": 1
   },
   "tsunade-combo1": {
     "image": "/sprites/player/tsunade/combo1.png",
-    "frameWidth": 47,
-    "frameHeight": 52,
+    "frameWidth": 121,
+    "frameHeight": 136,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.36363636363636365,
+    "contentHeight": 136,
+    "scale": 1,
     "range": [
       0,
       5
@@ -31,11 +31,11 @@
   },
   "tsunade-combo2": {
     "image": "/sprites/player/tsunade/combo2.png",
-    "frameWidth": 47,
-    "frameHeight": 52,
+    "frameWidth": 121,
+    "frameHeight": 136,
     "frameCount": 5,
-    "contentHeight": 48,
-    "scale": 0.36363636363636365,
+    "contentHeight": 136,
+    "scale": 1,
     "range": [
       5,
       10
@@ -43,11 +43,11 @@
   },
   "tsunade-combo3": {
     "image": "/sprites/player/tsunade/combo3.png",
-    "frameWidth": 47,
-    "frameHeight": 52,
+    "frameWidth": 121,
+    "frameHeight": 136,
     "frameCount": 4,
-    "contentHeight": 48,
-    "scale": 0.36363636363636365,
+    "contentHeight": 136,
+    "scale": 1,
     "range": [
       10,
       14
@@ -55,46 +55,48 @@
   },
   "tsunade-hurt": {
     "image": "/sprites/player/tsunade/hurt.png",
-    "frameWidth": 49,
-    "frameHeight": 49,
+    "frameWidth": 184,
+    "frameHeight": 140,
     "frameCount": 2,
-    "contentHeight": 48,
+    "contentHeight": 136,
     "frameRate": 10,
-    "scale": 0.36363636363636365
+    "scale": 1.1056910569105691
   },
   "tsunade-death": {
     "image": "/sprites/player/tsunade/death.png",
-    "frameWidth": 49,
-    "frameHeight": 49,
+    "frameWidth": 184,
+    "frameHeight": 140,
     "frameCount": 3,
-    "contentHeight": 48,
+    "contentHeight": 136,
     "frameRate": 8,
-    "scale": 0.36363636363636365
+    "scale": 1.1056910569105691
   },
   "tsunade-tsutenkyaku": {
     "image": "/sprites/player/tsunade/tsutenkyaku.png",
-    "frameWidth": 118,
-    "frameHeight": 81,
+    "frameWidth": 536,
+    "frameHeight": 317,
     "frameCount": 20,
-    "contentHeight": 48,
-    "scale": 0.36363636363636365,
+    "contentHeight": 136,
+    "scale": 1.4782608695652173,
     "frameRate": 12,
     "durationMs": 1667,
     "hitDelayMs": 667,
     "residualGreen": 0,
-    "pureBlack": 5608
+    "pureBlack": 90759,
+    "originX": 0.2835820895522388
   },
   "skill-tsutenkyaku": {
     "image": "/sprites/player/tsunade/tsutenkyaku.png",
-    "frameWidth": 118,
-    "frameHeight": 81,
+    "frameWidth": 536,
+    "frameHeight": 317,
     "frameCount": 20,
-    "contentHeight": 48,
-    "scale": 0.36363636363636365,
+    "contentHeight": 136,
+    "scale": 1.4782608695652173,
     "frameRate": 12,
     "durationMs": 1667,
     "hitDelayMs": 667,
     "residualGreen": 0,
-    "pureBlack": 5608
+    "pureBlack": 90759,
+    "originX": 0.2835820895522388
   }
 }

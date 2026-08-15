@@ -22,13 +22,14 @@ const {
   writePng,
   bbox,
 } = require('./lib/alpha-frame-pack');
+const { hqAreaScale } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'shikamaru', 'combo');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'shikamaru');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'shikamaru');
-const TARGET_BODY_H = 48;
+const HQ = { hq: { mode: 'match', metaPath: META_JSON, idleKey: 'shikamaru-idle' } };
 const FRAME_RATE = 12;
 const EXPECTED = 15;
 
@@ -220,8 +221,9 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     norm.contentHeight,
-    TARGET_BODY_H,
+    HQ,
   );
+  const areaScale = hqAreaScale(scaled.contentHeight);
 
   // Combo may briefly have floating VFX pixels — allow tiny speckles only
   const fullSheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
@@ -238,6 +240,7 @@ async function main() {
       minOlivePerFrame: 12,
       minBluePerFrame: 2,
       minOpaquePerFrame: 70,
+      areaScale,
     },
   );
 
@@ -306,6 +309,7 @@ async function main() {
         minOlivePerFrame: 12,
         minBluePerFrame: 2,
         minOpaquePerFrame: 70,
+        areaScale,
       },
     );
     if (qa.residualGreen > 0) {

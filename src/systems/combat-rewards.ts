@@ -2,12 +2,14 @@ import { SHOP_CURRENCY_ITEM_ID } from '@/constants/sealing';
 import { copperRewardForKill } from '@/data/anime-loot';
 import type { Enemy } from '@/entities/enemy';
 import { grantPlayerXp } from '@/lib/grant-player-xp';
+import { captureStore } from '@/stores/capture-store';
+import { helperStore } from '@/stores/helper-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { huntAnalyzerStore } from '@/stores/hunt-analyzer-store';
 import { questStore } from '@/stores/quest-store';
 import { villageStore } from '@/stores/village-store';
 import type { LootManager } from '@/systems/loot-manager';
-import { trySealEnemy } from '@/systems/sealing';
+import { recordSealAnalytics, trySealEnemy } from '@/systems/sealing';
 
 /**
  * Recompensas e progresso ao matar um inimigo (XP, cobre, vila, quest, loot, selamento).
@@ -23,7 +25,7 @@ export function handleEnemyKill(
   villageStore.onEnemyKilled();
   const xpGranted = grantPlayerXp(enemy.xp);
 
-  // Cobre garantido (não depende de roll de chão / chance).
+  // Cobre (Ryo tabela 100%) — sempre ao matar; quantidade escala com nível.
   const copper = copperRewardForKill(enemy.level);
   if (copper > 0) {
     inventoryStore.addItem(SHOP_CURRENCY_ITEM_ID, copper);
@@ -32,11 +34,14 @@ export function handleEnemyKill(
   huntAnalyzerStore.recordKill({ xp: xpGranted, copper });
 
   lootManager.spawnFromEnemyAt(enemy, dropX, dropY);
-  const seal = trySealEnemy(enemy.definition);
-  if (seal.kind !== 'skipped') {
-    huntAnalyzerStore.recordSealAttempt(true);
+
+  if (!helperStore.getSnapshot().autoSeal && enemy.definition.sealable) {
+    captureStore.offer(
+      enemy.definition,
+      enemy.definition.sealable?.level ?? enemy.stats.level,
+    );
+    return;
   }
-  if (seal.kind === 'success') {
-    huntAnalyzerStore.recordSealSuccess(seal.name);
-  }
+
+  recordSealAnalytics(trySealEnemy(enemy.definition));
 }

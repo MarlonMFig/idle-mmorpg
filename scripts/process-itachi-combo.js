@@ -2,8 +2,8 @@
  * Uchiha Itachi combo attack — alpha-only frames (13f → 5+5+3).
  * Clean transparent sources: NO black flood/peel. Never key pure black hair.
  *
- * Scale policy matches walk: uniform global scale (same absolute density as
- * walk pack). Do NOT force crouch/prep bboxes to targetBodyH independently.
+ * HQ: nativePixels — one uniform global scale mapping the max frame body height
+ * onto the idle contentHeight ruler, so crouch/prep poses keep walk density.
  *
  * npm run itachi:combo
  * Input:  assets/naruto-source/nu/itachi/combo/frame_001..013.png
@@ -21,14 +21,19 @@ const {
   writePng,
   bbox,
 } = require('./lib/alpha-frame-pack');
+const { hqAreaScale } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'itachi', 'combo');
-const WALK_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'itachi', 'walk');
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'itachi');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'itachi');
-const TARGET_BODY_H = 48;
+const HQ = { mode: 'match', metaPath: META_JSON, idleKey: 'itachi-idle' };
+/**
+ * Thrown shuriken/kunai legitimately leave the silhouette mid-combo, so the
+ * detached-pixel budget has to cover them (area-scaled to the native body).
+ */
+const MAX_DETACHED = 32;
 const FRAME_RATE = 12;
 const EXPECTED = 13;
 
@@ -43,43 +48,6 @@ function measureContentHeights(frames, fw, fh) {
   return frames.map((frame) => bbox(frame, fw, fh).height);
 }
 
-/**
- * Walk global scale (max contentH → TARGET_BODY_H). Prefer meta after walk pack;
- * else recompute from walk sources so combo can run alone.
- */
-function resolveWalkScale() {
-  if (fs.existsSync(META_JSON)) {
-    try {
-      const meta = JSON.parse(fs.readFileSync(META_JSON, 'utf8'));
-      const w = meta['itachi-walk'];
-      if (w && typeof w.scale === 'number' && w.scale > 0) {
-        return {
-          scale: w.scale,
-          source: 'meta.json itachi-walk',
-          walkMaxContentH:
-            w.maxContentH ??
-            (w.scale > 0 ? Math.round(TARGET_BODY_H / w.scale) : null),
-        };
-      }
-    } catch {
-      /* fall through */
-    }
-  }
-  return null;
-}
-
-async function measureWalkSourceScale() {
-  const walkKeyed = await loadAlphaFrames(WALK_DIR, 6);
-  const heights = walkKeyed.map((k) => k.box.height);
-  const maxH = Math.max(...heights);
-  return {
-    scale: TARGET_BODY_H / Math.max(1, maxH),
-    source: 'walk source max contentH',
-    walkMaxContentH: maxH,
-    walkHeights: heights,
-  };
-}
-
 async function main() {
   const keyed = await loadAlphaFrames(INPUT_DIR, EXPECTED);
 
@@ -89,24 +57,15 @@ async function main() {
       `(min=${Math.min(...beforeH)} max=${Math.max(...beforeH)} Δ=${Math.max(...beforeH) - Math.min(...beforeH)})`,
   );
 
-  let walkScaleInfo = resolveWalkScale();
-  if (!walkScaleInfo) {
-    walkScaleInfo = await measureWalkSourceScale();
-  }
-  const absoluteScale = walkScaleInfo.scale;
-  console.log(
-    `walk-matched absoluteScale=${absoluteScale.toFixed(6)} (${walkScaleInfo.source}` +
-      (walkScaleInfo.walkMaxContentH != null
-        ? `, walkMaxContentH≈${walkScaleInfo.walkMaxContentH}`
-        : '') +
-      `)`,
-  );
-
   const packed = await packUniformGlobalScale(
     keyed.map((k) => k.frame),
     keyed.map((k) => k.width),
     keyed.map((k) => k.height),
-    { targetBodyH: TARGET_BODY_H, pad: 2, absoluteScale },
+    { hq: HQ, pad: 2 },
+  );
+  const absoluteScale = packed.scale;
+  console.log(
+    `HQ combo scale=${absoluteScale.toFixed(6)} from maxContentH=${packed.maxContentH} → idle ruler=${packed.targetBodyH}`,
   );
 
   const afterH = measureContentHeights(packed.frames, packed.frameWidth, packed.frameHeight);
@@ -128,7 +87,8 @@ async function main() {
     packed.frames.length,
     {
       requireSingleComponent: true,
-      maxMinorComponent: 16,
+      maxMinorComponent: MAX_DETACHED,
+      areaScale: hqAreaScale(packed.contentHeight),
       minBlackPerFrame: 40,
       minOlivePerFrame: 0,
       minBluePerFrame: 0,
@@ -185,7 +145,8 @@ async function main() {
       frames.length,
       {
         requireSingleComponent: true,
-        maxMinorComponent: 16,
+        maxMinorComponent: MAX_DETACHED,
+        areaScale: hqAreaScale(packed.contentHeight),
         minBlackPerFrame: 40,
         minOlivePerFrame: 0,
         minBluePerFrame: 0,
@@ -240,9 +201,9 @@ async function main() {
     source: 'assets/naruto-source/nu/itachi/combo/frame_001..013.png',
     residualGreen: fullQa.residualGreen,
     pureBlack: fullQa.pureBlack,
-    walkMatchedScale: absoluteScale,
+    nativePixels: true,
     contentHeights: afterH,
-    note: `full combo strip (${packed.frames.length}f); 5+5+3 splits; alpha-only; scale=${absoluteScale.toFixed(4)} matched walk`,
+    note: `full combo strip (${packed.frames.length}f); 5+5+3 splits; alpha-only; HQ nativePixels scale=${absoluteScale.toFixed(4)} → idle contentH`,
   });
 
   console.log(

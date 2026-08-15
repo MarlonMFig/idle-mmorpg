@@ -1,0 +1,143 @@
+{
+  "black-asta-combo1": {
+    "image": "/sprites/player/black-asta/combo1.png",
+    "frameWidth": 116,
+    "frameHeight": 68,
+    "frameCount": 3,
+    "contentHeight": 65,
+    "scale": 1,
+    "originX": 0.4459986987638256,
+    "frameRate": 12
+  },
+  "black-asta-combo2": {
+    "image": "/sprites/player/black-asta/combo2.png",
+    "frameWidth": 128,
+    "frameHeight": 68,
+    "frameCount": 4,
+    "contentHeight": 65,
+    "scale": 1,
+    "originX": 0.4796006944444445,
+    "frameRate": 12
+  },
+  "black-asta-combo3": {
+    "image": "/sprites/player/black-asta/combo3.png",
+    "frameWidth": 135,
+    "frameHeight": 68,
+    "frameCount": 5,
+    "contentHeight": 65,
+    "scale": 1,
+    "originX": 0.44682040531097134,
+    "frameRate": 12
+  },
+  "black-asta-idle": {
+    "image": "/sprites/player/black-asta/idle.png",
+    "frameWidth": 96,
+    "frameHeight": 69,
+    "frameCount": 4,
+    "contentHeight": 65,
+    "scale": 1,
+    "originX": 0.5,
+    "frameRate": 8
+  },
+  "black-asta-walk": {
+    "image": "/sprites/player/black-asta/walk.png",
+    "frameWidth": 86,
+    "frameHeight": 65,
+    "frameCount": 8,
+    "contentHeight": 65,
+    "scale": 1,
+    "originX": 0.615840280824923,
+    "frameRate": 12
+  },
+  "black-asta-hurt": {
+    "image": "/sprites/player/black-asta/hurt.png",
+    "frameWidth": 47,
+    "frameHeight": 53,
+    "frameCount": 3,
+    "contentHeight": 65,
+    "scale": 1,
+    "originX": 0.425531914893617,
+    "frameRate": 10
+  },
+  "black-asta-death": {
+    "image": "/sprites/player/black-asta/death.png",
+    "frameWidth": 83,
+    "frameHeight": 18,
+    "frameCount": 1,
+    "contentHeight": 65,
+    "scale": 1,
+    "originX": 0.3614457831325301,
+    "frameRate": 8
+  },
+  "black-asta-special1": {
+    "image": "/sprites/player/black-asta/special1.png",
+    "frameWidth": 123,
+    "frameHeight": 85,
+    "frameCount": 16,
+    "contentHeight": 65,
+    "scale": 1,
+    "originX": 0.45528455284552843,
+    "durationMs": 567,
+    "hitDelayMs": 133,
+    "frameRate": 18,
+    "skillId": "skill-black-asta-1",
+    "skillName": "Sword combo start",
+    "actionId": 1400
+  },
+  "black-asta-special2": {
+    "image": "/sprites/player/black-asta/special2.png",
+    "frameWidth": 116,
+    "frameHeight": 54,
+    "frameCount": 3,
+    "contentHeight": 65,
+    "scale": 1,
+    "originX": 0.3448275862068966,
+    "durationMs": 2233,
+    "hitDelayMs": 2050,
+    "frameRate": 8,
+    "skillId": "skill-black-asta-2",
+    "skillName": "Ultimate - start",
+    "actionId": 3000
+  },
+  "black-asta-special2-fx": {
+    "image": "/sprites/player/black-asta/special2-fx.png",
+    "frameWidth": 401,
+    "frameHeight": 64,
+    "frameCount": 10,
+    "contentHeight": 60,
+    "scale": 1,
+    "originX": 0.5,
+    "frameRate": 11,
+    "durationMs": 2967
+  },
+  "black-asta-special3": {
+    "image": "/sprites/player/black-asta/special3.png",
+    "frameWidth": 106,
+    "frameHeight": 54,
+    "frameCount": 8,
+    "contentHeight": 65,
+    "scale": 1,
+    "originX": 0.49056603773584906,
+    "durationMs": 467,
+    "hitDelayMs": 267,
+    "frameRate": 17,
+    "skillId": "skill-black-asta-3",
+    "skillName": "Sword spin",
+    "actionId": 1100
+  },
+  "black-asta-special4": {
+    "image": "/sprites/player/black-asta/special4.png",
+    "frameWidth": 57,
+    "frameHeight": 54,
+    "frameCount": 5,
+    "contentHeight": 65,
+    "scale": 1,
+    "originX": 0.3333333333333333,
+    "durationMs": 867,
+    "hitDelayMs": 200,
+    "frameRate": 8,
+    "skillId": "skill-black-asta-4",
+    "skillName": "acceleration start",
+    "actionId": 1000
+  }
+}

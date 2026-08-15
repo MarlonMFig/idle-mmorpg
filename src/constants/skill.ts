@@ -4,7 +4,7 @@ export const SKILL_HOTBAR_SIZE = 4;
 
 /** Progressão padrão das quatro técnicas de cada personagem. */
 export const CHARACTER_SKILL_LEVELS = [1, 5, 15, 30] as const;
-export const CHARACTER_SKILL_COOLDOWNS_MS = [2000, 2800, 4800, 8000] as const;
+export const CHARACTER_SKILL_COOLDOWNS_MS = [5500, 7000, 9000, 12000] as const;
 export const CHARACTER_SKILL_DAMAGE = [24, 36, 58, 88] as const;
 export const CHARACTER_SKILL_AREA_RADIUS = 96;
 

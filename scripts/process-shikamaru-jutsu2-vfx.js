@@ -21,6 +21,7 @@ const {
   isChromaGreen,
   bbox,
 } = require('./lib/alpha-frame-pack');
+const { resolveHqFxTargetMaxSide } = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'shikamaru', 'jutsu2-vfx');
@@ -29,12 +30,8 @@ const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'shikamaru');
 const EXPECTED = 18;
 const FRAME_RATE = 12;
-/**
- * Max side after packing.
- * playPackFx uses player.scaleX * 1.15 (body contentH→DISPLAY_H), not fx contentHeight.
- * At 96 ≈ 2.3× char height; aim ~48–56 so on-screen ~1.2–1.4× char (gokakyu-fx is ~60h).
- */
-const TARGET_MAX_SIDE = 52;
+/** Legacy max side when body was ~48 — HQ multiplies by idle/48. */
+const LEGACY_FX_MAX_SIDE = 52;
 const PAD = 2;
 
 function placeCentered(src, sw, sh, dw, dh) {
@@ -157,8 +154,14 @@ async function main() {
   const cellH = maxH + PAD * 2;
   const cells = crops.map(({ crop, bw, bh }) => placeCentered(crop, bw, bh, cellW, cellH));
 
-  // Scale so largest side ≈ TARGET_MAX_SIDE (impactful but not body-dwarfing).
-  const scale = Math.min(1, TARGET_MAX_SIDE / Math.max(cellW, cellH));
+  // Scale so largest side ≈ HQ target (playPackFx uses player.scale × texture).
+  const TARGET_MAX_SIDE = resolveHqFxTargetMaxSide(
+    META_JSON,
+    'shikamaru-idle',
+    LEGACY_FX_MAX_SIDE,
+  );
+  console.log(`HQ FX targetMaxSide=${TARGET_MAX_SIDE} (legacy ${LEGACY_FX_MAX_SIDE})`);
+  const scale = TARGET_MAX_SIDE / Math.max(1, cellW, cellH);
   const outW = Math.max(1, Math.round(cellW * scale));
   const outH = Math.max(1, Math.round(cellH * scale));
 

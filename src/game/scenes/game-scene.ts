@@ -1,12 +1,17 @@
 import * as Phaser from 'phaser';
+import { refreshWorldTextResolution } from '@/constants/nameplate';
+import { HUB_CHARACTER_SCALE } from '@/constants/sprites';
 import { loadCharacterPack } from '@/data/character-packs';
 import {
   filterOutfitLookTypes,
   getCuratedMapPack,
 } from '@/data/curated-map-sprites';
-import { getKonohaHub } from '@/data/hub-backgrounds';
+import { getActiveHub } from '@/data/hub-backgrounds';
 import { getNpcsForMap } from '@/data/npcs';
-import { getWonsrRenderedMap } from '@/data/wonsr-rendered-maps';
+import {
+  combatLayoutScale,
+  getWonsrRenderedMap,
+} from '@/data/wonsr-rendered-maps';
 import {
   loadOutfitSheets,
   type WonsrSpriteIndex,
@@ -15,6 +20,7 @@ import { getHubNpcs } from '@/data/wonsr-hub-npcs';
 import { Player } from '@/entities';
 import { getPlayerSession } from '@/game/registry';
 import { getActiveCharacterPack } from '@/lib/active-character';
+import { emitChatMessage, emitSystemMessage } from '@/lib/system-log';
 import type { HuntCatalog } from '@/types/hunt';
 import { MapLoader, MAP_KEYS, type MapKey } from '@/maps';
 import { createMultiplayerClient } from '@/services/multiplayer-client';
@@ -75,11 +81,12 @@ export class GameScene extends Phaser.Scene {
   private buildSeq = 0;
   /** Enquanto false, os sistemas ainda apontam para objetos da cena anterior. */
   private worldReady = false;
+  private updateErrorReported = false;
   private worldW = 0;
   private worldH = 0;
-  /** Layout da câmera: cover = fundo hub estático; follow = tilemap/combate. */
-  private cameraLayout: 'cover' | 'follow' | 'follow-combat' = 'follow';
-  private combatUsesRenderedMap = false;
+  /** Layout da câmera: cover/contain-hub = arte da vila; contain-combat = arena inteira; follow = tilemap. */
+  private cameraLayout: 'cover' | 'contain-hub' | 'follow' | 'follow-combat' | 'contain-combat' =
+    'follow';
   private unsubLocation: (() => void) | null = null;
   private readonly multiplayer = createMultiplayerClient();
 
@@ -115,7 +122,14 @@ export class GameScene extends Phaser.Scene {
       }
       if (buildSeq !== this.buildSeq || !this.sys.isActive()) return;
       this.buildWorld(data);
-    })();
+    })().catch((error) => {
+      // Sem isto a falha virava rejection silenciosa: mundo desenhado pela
+      // metade, `worldReady` false e tudo parado sem nenhum aviso.
+      console.error('[GameScene] falha ao montar o mundo', error);
+      emitSystemMessage(
+        `Falha ao montar o mapa (${this.mapKey}): ${error instanceof Error ? error.message : String(error)}`,
+      );
+    });
   }
 
   /** lookTypes visíveis nesta cena: NPCs do mapa/hub + alvos da caça. */
@@ -178,6 +192,16 @@ export class GameScene extends Phaser.Scene {
 
     locationStore.sync(this.mode, this.mapKey, this.huntId);
 
+    // Assinado antes de montar o mundo: se a montagem abortar, "Voltar" e as
+    // demais viagens continuam reiniciando a cena em vez de travar o jogo.
+    this.unsubLocation?.();
+    this.unsubLocation = locationStore.subscribe(() => {
+      const next = locationStore.getSnapshot();
+      if (next.travelSeq === this.travelSeq) return;
+      this.travelSeq = next.travelSeq;
+      this.scene.restart({ mapKey: next.mapKey, mode: next.mode, huntId: next.huntId });
+    });
+
     this.npcManager = new NPCManager(this);
     this.enemyManager = new EnemyManager(this);
     this.lootManager = new LootManager(this);
@@ -188,7 +212,7 @@ export class GameScene extends Phaser.Scene {
     let worldH: number;
     let combatCollisionLayer: Phaser.Tilemaps.TilemapLayer | null = null;
 
-    const hub = getKonohaHub();
+    const hub = getActiveHub();
     const hubUsesTilemap = this.mode === 'hub' && hub.tilemapKey != null;
 
     if (this.mode === 'hub' && !hubUsesTilemap) {
@@ -198,6 +222,7 @@ export class GameScene extends Phaser.Scene {
       }
 
       const bg = this.add.image(0, 0, hub.key).setOrigin(0, 0).setDepth(0);
+      bg.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
       bg.setDisplaySize(hub.width, hub.height);
 
       worldW = hub.width;
@@ -209,7 +234,7 @@ export class GameScene extends Phaser.Scene {
       this.cameras.main.setBounds(0, 0, worldW, worldH);
       this.worldW = worldW;
       this.worldH = worldH;
-      this.cameraLayout = 'cover';
+      this.cameraLayout = hub.cameraMode === 'contain' ? 'contain-hub' : 'cover';
       this.applyCameraLayout();
     } else if (hubUsesTilemap) {
       const maps = new MapLoader(this);
@@ -229,7 +254,9 @@ export class GameScene extends Phaser.Scene {
 
       worldW = hub.tilemapWidth ?? 3072;
       worldH = hub.tilemapHeight ?? 3072;
-      this.add.image(0, 0, imageKey).setOrigin(0, 0).setDepth(0);
+      const hubBg = this.add.image(0, 0, imageKey).setOrigin(0, 0).setDepth(0);
+      // Ilustração pintada: linear. pixelArt/nearest fica só nos sprites.
+      hubBg.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
 
       const { layers } = maps.createLayers(hubMapKey);
       const ground = layers.find((layer) => layer.layer.name === 'ground');
@@ -248,13 +275,17 @@ export class GameScene extends Phaser.Scene {
       this.cameras.main.setBounds(0, 0, worldW, worldH);
       this.worldW = worldW;
       this.worldH = worldH;
-      // Hubs ilustrados (16:9) usam cover; mapas grandes WONSR usam follow.
-      this.cameraLayout = hub.cameraMode === 'follow' ? 'follow' : 'cover';
+      this.cameraLayout =
+        hub.cameraMode === 'follow'
+          ? 'follow'
+          : hub.cameraMode === 'contain'
+            ? 'contain-hub'
+            : 'cover';
       this.applyCameraLayout();
     } else {
       const maps = new MapLoader(this);
       if (!maps.has(this.mapKey)) {
-        console.warn(`[GameScene] mapa ausente no cache: ${this.mapKey}`);
+        this.recoverToHub(`mapa ausente no cache: ${this.mapKey}`);
         return;
       }
 
@@ -264,7 +295,7 @@ export class GameScene extends Phaser.Scene {
 
       if (rendered) {
         if (!this.textures.exists(rendered.imageKey)) {
-          console.warn(`[GameScene] imagem do mapa ausente: ${rendered.imageKey}`);
+          this.recoverToHub(`imagem do mapa ausente: ${rendered.imageKey}`);
           return;
         }
 
@@ -272,14 +303,45 @@ export class GameScene extends Phaser.Scene {
         worldH = rendered.height;
         spawnX = rendered.spawn.x;
         spawnY = rendered.spawn.y;
-        this.add.image(0, 0, rendered.imageKey).setOrigin(0, 0).setDepth(0);
+        const mapBg = this.add.image(0, 0, rendered.imageKey).setOrigin(0, 0).setDepth(0);
+        mapBg.texture.setFilter(
+          rendered.foregroundKey
+            ? Phaser.Textures.FilterMode.NEAREST
+            : Phaser.Textures.FilterMode.LINEAR,
+        );
+        if (rendered.videoKey && this.cache.video.exists(rendered.videoKey)) {
+          try {
+            const mapVideo = this.add.video(0, 0, rendered.videoKey);
+            mapVideo.setOrigin(0, 0);
+            mapVideo.setDepth(0.5);
+            mapVideo.setMute(true);
+            mapVideo.setPauseOnBlur(false);
+            mapVideo.setDisplaySize(rendered.width, rendered.height);
+            mapVideo.play(true);
+          } catch (error) {
+            console.warn('[GameScene] falha ao tocar vídeo do mapa', error);
+          }
+        }
 
-        const { layers } = maps.createLayers(this.mapKey);
+        let layers: Phaser.Tilemaps.TilemapLayer[] = [];
+        try {
+          layers = maps.createLayers(this.mapKey).layers;
+        } catch (error) {
+          console.warn(`[GameScene] colisão TMX falhou (${this.mapKey})`, error);
+        }
         const collision = layers.find((layer) => layer.layer.name === 'collision');
         for (const layer of layers) layer.setVisible(false);
         if (collision) {
           collision.setCollisionByExclusion([-1]);
           collisionLayer = collision;
+        }
+        if (rendered.foregroundKey && this.textures.exists(rendered.foregroundKey)) {
+          const mapFg = this.add
+            .image(0, 0, rendered.foregroundKey)
+            .setOrigin(0, 0)
+            .setDepth(36)
+            .setScrollFactor(1);
+          mapFg.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         }
       } else {
         const { map, layers } = maps.createLayers(this.mapKey);
@@ -317,18 +379,20 @@ export class GameScene extends Phaser.Scene {
         y: spawnY,
         pack,
         displayName: session?.nickname,
+        worldScale: combatLayoutScale(this.mapKey),
       });
       if (collisionLayer) {
         this.physics.add.collider(this.player.sprite, collisionLayer);
         combatCollisionLayer = collisionLayer;
       }
 
-      this.combatUsesRenderedMap = Boolean(rendered);
       this.worldW = worldW;
       this.worldH = worldH;
-      this.cameraLayout = 'follow-combat';
+      this.cameraLayout = rendered ? 'contain-combat' : 'follow-combat';
       this.applyCameraLayout();
-      this.cameras.main.startFollow(this.player.sprite, true, 1, 1);
+      if (!rendered) {
+        this.cameras.main.startFollow(this.player.sprite, true, 1, 1);
+      }
     }
 
     if (this.mode === 'hub') {
@@ -337,6 +401,7 @@ export class GameScene extends Phaser.Scene {
         y: spawnY,
         pack,
         displayName: session?.nickname,
+        worldScale: HUB_CHARACTER_SCALE,
       });
       this.npcManager.loadHub();
 
@@ -363,7 +428,9 @@ export class GameScene extends Phaser.Scene {
     this.lootPickup = new LootPickupSystem(this.lootManager);
 
     if (this.mode === 'hub') {
-      this.playerInput = new PlayerInputSystem(this, this.player);
+      this.playerInput = new PlayerInputSystem(this, this.player, {
+        lateral: hub.lateralFloorY != null,
+      });
       this.playerInput.setEnabled(true);
       this.combatSystem = null;
       this.idleAi = null;
@@ -382,17 +449,13 @@ export class GameScene extends Phaser.Scene {
       );
     }
 
-    this.remotePlayers = new RemotePlayerManager(this);
+    this.remotePlayers = new RemotePlayerManager(
+      this,
+      this.mode === 'hub' ? HUB_CHARACTER_SCALE : combatLayoutScale(this.mapKey),
+    );
     this.playerSync = new PlayerSyncSystem(this.multiplayer, this.player, this.remotePlayers);
 
     void this.connectMultiplayer(this.mapKey);
-
-    this.unsubLocation = locationStore.subscribe(() => {
-      const next = locationStore.getSnapshot();
-      if (next.travelSeq === this.travelSeq) return;
-      this.travelSeq = next.travelSeq;
-      this.scene.restart({ mapKey: next.mapKey, mode: next.mode, huntId: next.huntId });
-    });
 
     this.worldReady = true;
 
@@ -406,6 +469,16 @@ export class GameScene extends Phaser.Scene {
       this.remotePlayers.clear();
       multiplayerStore.setDisconnected();
     });
+  }
+
+  /**
+   * Asset de caça ausente: volta ao hub em vez de deixar a cena sem mundo.
+   * Antes o jogo parecia travado — HUD viva, nenhum player e nenhuma saída.
+   */
+  private recoverToHub(reason: string): void {
+    console.warn(`[GameScene] ${reason} — retornando ao hub`);
+    if (this.mode === 'hub') return;
+    this.time.delayedCall(0, () => locationStore.enterHub());
   }
 
   /** Canvas RESIZE: viewport e zoom acompanham o tamanho do parent (100vw × 100dvh). */
@@ -426,27 +499,44 @@ export class GameScene extends Phaser.Scene {
       const zoom = Math.max(w / this.worldW, h / this.worldH);
       cam.setZoom(zoom);
       cam.centerOn(this.worldW / 2, this.worldH / 2);
-      return;
-    }
-
-    if (this.cameraLayout === 'follow-combat') {
-      // Cover preenche o viewport (sem pilares pretos laterais). Mapas
-      // renderizados ainda exigem zoom ≥ 2.25 para legibilidade em combat.
-      const coverZoom = Math.max(w / this.worldW, h / this.worldH);
-      const zoom = this.combatUsesRenderedMap
-        ? Math.max(2.25, coverZoom)
-        : coverZoom;
+    } else if (this.cameraLayout === 'contain-hub') {
+      const zoom = Math.min(w / this.worldW, h / this.worldH);
+      cam.stopFollow();
       cam.setZoom(zoom);
-      return;
+      cam.centerOn(this.worldW / 2, this.worldH / 2);
+    } else if (this.cameraLayout === 'contain-combat') {
+      // Cover: preenche o viewport. Contain + setBounds(0,0,world)
+      // travava o scroll em 0 e empurrava a tarja preta só para a direita.
+      const zoom = Math.max(w / this.worldW, h / this.worldH);
+      cam.stopFollow();
+      cam.setZoom(zoom);
+      cam.centerOn(this.worldW / 2, this.worldH / 2);
+    } else if (this.cameraLayout === 'follow-combat') {
+      const coverZoom = Math.max(w / this.worldW, h / this.worldH);
+      cam.setZoom(coverZoom);
+    } else {
+      // Hub 4K: cover preenche a tela. Em 1080p o zoom sai da altura (0.5), então
+      // a arte cabe inteira na vertical e a câmera só desliza os 256px extras de
+      // largura do mundo 4096. Floor 2 esticava o PNG 1024.
+      const coverZoom = Math.max(w / this.worldW, h / this.worldH);
+      cam.setZoom(coverZoom);
     }
-
-    // Hub tilemap: zoom fixo, follow do player.
-    cam.setZoom(2);
+    refreshWorldTextResolution(this);
   }
 
   update(time: number): void {
     if (!this.worldReady) return;
 
+    // O Phaser agenda o próximo frame depois do update: uma exceção aqui
+    // derrubava o loop inteiro e o mapa congelava com a HUD viva.
+    try {
+      this.stepWorld(time);
+    } catch (error) {
+      this.reportUpdateError(error);
+    }
+  }
+
+  private stepWorld(time: number): void {
     this.dialogueInteractor?.update();
     this.playerInput?.update();
     this.idleAi?.update();
@@ -454,10 +544,40 @@ export class GameScene extends Phaser.Scene {
     this.lootManager?.update(time);
     this.lootPickup?.update();
     this.playerSync?.update(time);
+    this.clampLateralFloor();
     this.player?.syncPresentation();
 
     if (dialogueStore.isOpen()) {
       this.player?.stop();
+    }
+  }
+
+  /** Só a primeira falha vira log/chat; as seguintes seriam ruído a 60 fps. */
+  private reportUpdateError(error: unknown): void {
+    if (this.updateErrorReported) return;
+    this.updateErrorReported = true;
+    console.error('[GameScene] erro no update', error);
+    const detail = error instanceof Error ? error.message : String(error);
+    emitSystemMessage(`Falha no mapa (${this.mapKey}): ${detail}`);
+  }
+
+  /** Visão lateral: pés do jogador e inimigos na linha do chão. */
+  private clampLateralFloor(): void {
+    const floorY =
+      this.mode === 'hub'
+        ? getActiveHub().lateralFloorY
+        : getWonsrRenderedMap(this.mapKey)?.lateralFloorY;
+    if (floorY == null || !this.player) return;
+    if (Math.abs(this.player.sprite.y - floorY) > 0.5) {
+      this.player.sprite.setY(floorY);
+      this.player.sprite.setVelocityY(0);
+    }
+    for (const enemy of this.enemyManager.values()) {
+      if (!enemy.isAlive) continue;
+      if (Math.abs(enemy.sprite.y - floorY) > 0.5) {
+        enemy.sprite.setY(floorY);
+        enemy.sprite.setVelocityY(0);
+      }
     }
   }
 
@@ -466,17 +586,39 @@ export class GameScene extends Phaser.Scene {
     const playerId = session?.playerId ?? `local-${Date.now()}`;
     const nickname = session?.nickname ?? 'Shinobi';
     const villageId = session?.villageId ?? 'konoha';
+    const characterId =
+      teamStore.getActive()?.id ?? session?.starterCharacterId ?? 'naruto-classic';
 
-    this.playerSync.setIdentity({ playerId, nickname, villageId, mapKey });
+    this.playerSync.setIdentity({
+      playerId,
+      nickname,
+      villageId,
+      mapKey,
+      characterId,
+    });
     multiplayerStore.setConnecting(this.multiplayer.getTransportName());
+
+    this.multiplayer.setHandlers({
+      onChat: ({ nickname: nick, text }) => {
+        emitChatMessage(nick, text);
+      },
+    });
 
     try {
       await this.multiplayer.connect({ playerId, nickname, villageId, mapKey });
-      multiplayerStore.setConnected(playerId, this.multiplayer.getTransportName());
+      multiplayerStore.setConnected(
+        playerId,
+        this.multiplayer.getTransportName(),
+        nickname,
+      );
+      multiplayerStore.registerChatSender((text) => {
+        this.multiplayer.sendChat(text, nickname);
+      });
       this.playerSync.publishJoin();
     } catch (error) {
-      console.error('[GameScene] falha ao conectar multiplayer stub', error);
+      console.error('[GameScene] falha ao conectar multiplayer', error);
       multiplayerStore.setError();
+      multiplayerStore.registerChatSender(null);
     }
   }
 }

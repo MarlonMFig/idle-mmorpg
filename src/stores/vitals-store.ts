@@ -38,6 +38,37 @@ export const vitalsStore = {
     store.setState({ ...state, hp: state.hpMax });
   },
 
+  /** Cura HP (clamp em hpMax). Retorna o valor efetivamente curado. */
+  heal(amount: number): number {
+    if (amount <= 0) return 0;
+    const state = store.getSnapshot();
+    if (state.hp <= 0 || state.hp >= state.hpMax) return 0;
+    const next = Math.min(state.hpMax, state.hp + Math.floor(amount));
+    const healed = next - state.hp;
+    if (healed <= 0) return 0;
+    store.setState({ ...state, hp: next });
+    return healed;
+  },
+
+  /**
+   * Aplica dano ao HP. Defesa reduz o golpe (mínimo 1).
+   * Retorna o dano efetivo e se o jogador morreu.
+   */
+  applyDamage(rawAmount: number, defense = 0): { damage: number; died: boolean } {
+    if (rawAmount <= 0) return { damage: 0, died: false };
+    const state = store.getSnapshot();
+    if (state.hp <= 0) return { damage: 0, died: true };
+
+    const mitigated = Math.max(1, Math.floor(rawAmount - defense * 0.35));
+    const hp = Math.max(0, state.hp - mitigated);
+    store.setState({ ...state, hp });
+    return { damage: mitigated, died: hp <= 0 };
+  },
+
+  isDead(): boolean {
+    return store.getSnapshot().hp <= 0;
+  },
+
   addXp(amount: number): boolean {
     if (amount <= 0) return false;
 

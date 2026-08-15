@@ -2,16 +2,22 @@ import * as Phaser from 'phaser';
 import {
   PLAYER_ATTACK_COOLDOWN_MS,
   PLAYER_ATTACK_RANGE,
+  PLAYER_DEATH_RESPAWN_MS,
+  PLAYER_JUTSU_GAP_MS,
 } from '@/constants/combat';
 import { SKILL_DEFAULT_RANGE } from '@/constants/skill';
+import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
 import { getSkill } from '@/data/skills';
 import type { Player } from '@/entities/player';
+import type { Enemy } from '@/entities/enemy';
 import { STAR_3_SPECIAL_DAMAGE_BONUS } from '@/constants/character-progression';
 import { attributesStore } from '@/stores/attributes-store';
 import { teamStore } from '@/stores/team-store';
 import { dialogueStore } from '@/stores/dialogue-store';
+import { helperStore } from '@/stores/helper-store';
 import { skillsStore } from '@/stores/skills-store';
 import { vitalsStore } from '@/stores/vitals-store';
+import { autoHelperSystem } from '@/systems/auto-helper-system';
 import { handleEnemyKill } from '@/systems/combat-rewards';
 import type { EnemyManager } from '@/systems/enemy-manager';
 import { findNearestAliveEnemy } from '@/systems/find-nearest-enemy';
@@ -22,6 +28,7 @@ import type { SkillDefinition } from '@/types/skill';
 
 /**
  * Combate idle: ataque básico; jutsus da hotbar quando existirem.
+ * Inimigos perseguem e golpeiam o jogador dentro de `chaseRadius`.
  * VFX de effects/missiles WONSR ficam desligados — só animação do personagem
  * e o SkillVfx genérico quando não há sheet de jutsu.
  */
@@ -30,6 +37,9 @@ export class CombatSystem {
   /** Próximo índice da rotação na hotbar. */
   private step = 0;
   private lastActionAt = 0;
+  private lastJutsuAt = 0;
+  /** Quando o jogador pode reviver após a morte (ms scene). */
+  private playerRespawnAt = 0;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -41,14 +51,32 @@ export class CombatSystem {
   }
 
   update(time: number): void {
-    this.enemyManager.update(time);
+    if (this.player.isDead() || vitalsStore.isDead()) {
+      this.enemyManager.update(time);
+      // Ligou Auto Revive depois de morrer: agenda tentativa.
+      if (
+        this.playerRespawnAt <= 0 &&
+        helperStore.getSnapshot().autoRevive
+      ) {
+        this.playerRespawnAt = time + PLAYER_DEATH_RESPAWN_MS;
+      }
+      this.tryPlayerRespawn(time);
+      return;
+    }
+
+    const enemyHits = this.enemyManager.update(time, this.player.x, this.player.y);
+    for (const raw of enemyHits) {
+      this.applyEnemyHit(raw);
+      if (this.player.isDead() || vitalsStore.isDead()) return;
+    }
+
     skillsStore.consumePendingCast();
 
     if (dialogueStore.isOpen()) return;
     if (this.player.isBusy()) return;
     if (time - this.lastActionAt < 140) return;
 
-    const level = vitalsStore.getLevel();
+    const level = Math.max(1, teamStore.getActive()?.level || 1);
     const hotbar = skillsStore.getSnapshot().hotbar;
     const filled = hotbar.filter((id): id is string => {
       if (!id) return false;
@@ -56,7 +84,7 @@ export class CombatSystem {
       return Boolean(skill && level >= (skill.requiredLevel ?? 1));
     });
 
-    if (filled.length === 0) {
+    if (filled.length === 0 || time - this.lastJutsuAt < PLAYER_JUTSU_GAP_MS) {
       this.tryBasicAttack(time);
       return;
     }
@@ -72,6 +100,57 @@ export class CombatSystem {
     this.tryJutsu(time, this.step + readyOffset, filled);
   }
 
+  private applyEnemyHit(rawDamage: number): void {
+    if (rawDamage <= 0 || this.player.isDead()) return;
+
+    const { damage, died } = vitalsStore.applyDamage(
+      rawDamage,
+      attributesStore.getDefense(),
+    );
+    if (damage <= 0) return;
+
+    if (died) {
+      this.player.playDeath();
+      if (helperStore.getSnapshot().autoRevive) {
+        this.playerRespawnAt = this.scene.time.now + PLAYER_DEATH_RESPAWN_MS;
+      } else {
+        this.playerRespawnAt = 0;
+      }
+      return;
+    }
+
+    this.player.playHurt();
+    if (!this.player.isCastingSkill()) {
+      playPlayerPulse(this.scene, this.player.sprite, 0.92, 1.04, 70);
+      this.player.sprite.setTintFill(0xff6b6b);
+      this.scene.time.delayedCall(70, () => {
+        if (!this.player.isDead() && !this.player.isCastingSkill()) {
+          this.player.sprite.clearTint();
+        }
+      });
+    }
+  }
+
+  private tryPlayerRespawn(time: number): void {
+    if (this.playerRespawnAt <= 0 || time < this.playerRespawnAt) return;
+
+    if (!helperStore.getSnapshot().autoRevive) {
+      this.playerRespawnAt = 0;
+      return;
+    }
+
+    if (!autoHelperSystem.tryConsumeRevive(time)) {
+      // Sem item: tenta de novo em breve (ex.: comprou no market enquanto morto).
+      this.playerRespawnAt = time + 1000;
+      return;
+    }
+
+    this.playerRespawnAt = 0;
+    vitalsStore.healFull();
+    this.player.clearDeath();
+    this.player.sprite.clearTint();
+  }
+
   private tryBasicAttack(time: number): void {
     if (time - this.lastActionAt < PLAYER_ATTACK_COOLDOWN_MS) return;
 
@@ -79,7 +158,7 @@ export class CombatSystem {
       this.enemyManager,
       this.player.x,
       this.player.y,
-      PLAYER_ATTACK_RANGE,
+      PLAYER_ATTACK_RANGE * this.player.worldScale,
     );
     if (!target) return;
 
@@ -88,14 +167,35 @@ export class CombatSystem {
     const hitDelay = this.player.playAttack();
     if (hitDelay <= 0) return;
 
+    const attackSheet = this.player.getCurrentAttackSheet();
+    if (attackSheet?.fx) {
+      const releaseAt =
+        attackSheet.fxReleaseMs ?? Math.max(0, Math.floor(hitDelay * 0.55));
+      const attach = attackSheet.fxAttach ?? 'caster';
+      const fromX = this.player.x;
+      const fromY = this.player.y;
+      const fxX = attach === 'caster' ? fromX : target.sprite.x;
+      const fxY = attach === 'caster' ? fromY : target.sprite.y;
+      this.scene.time.delayedCall(releaseAt, () => {
+        this.playPackFx(attackSheet.fx!.key, fxX, fxY, {
+          ground: attackSheet.fxGround ?? attach === 'caster',
+          bodyH: attackSheet.contentHeight,
+          fxH: attackSheet.fx!.contentHeight ?? attackSheet.fx!.frameHeight,
+          blend: attackSheet.fxBlend,
+          scaleMult: attackSheet.fxScale,
+        });
+      });
+    }
+
     this.scene.time.delayedCall(hitDelay, () => {
       if (!target.isAlive) return;
-      const damage = 8 + Math.floor(attributesStore.getStrength() * 0.85);
       const dropX = target.sprite.x;
       const dropY = target.sprite.y;
+      this.vfx.playComboHit(dropX, dropY, this.player.sprite.scaleX * 0.95);
+      const damage = 8 + Math.floor(attributesStore.getStrength() * 0.85);
       const killed = target.takeDamage(damage);
       if (killed) {
-        handleEnemyKill(target, this.lootManager, dropX, dropY);
+        this.onKill(target, dropX, dropY);
       }
     });
   }
@@ -111,7 +211,7 @@ export class CombatSystem {
       return;
     }
 
-    const range = skill.range ?? SKILL_DEFAULT_RANGE;
+    const range = (skill.range ?? SKILL_DEFAULT_RANGE) * this.player.worldScale;
     const target = findNearestAliveEnemy(
       this.enemyManager,
       this.player.x,
@@ -121,6 +221,7 @@ export class CombatSystem {
     if (!target) return;
 
     this.lastActionAt = time;
+    this.lastJutsuAt = time;
     this.cast(skill, target.sprite.x, target.sprite.y, () => {
       let damage = skill.damage + Math.floor(attributesStore.getStrength() * 0.35);
       const active = teamStore.getActive();
@@ -144,14 +245,14 @@ export class CombatSystem {
           const dropX = enemy.sprite.x;
           const dropY = enemy.sprite.y;
           if (enemy.takeDamage(damage)) {
-            handleEnemyKill(enemy, this.lootManager, dropX, dropY);
+            this.onKill(enemy, dropX, dropY);
           }
         }
       } else if (target.isAlive) {
         const dropX = target.sprite.x;
         const dropY = target.sprite.y;
         if (target.takeDamage(damage)) {
-          handleEnemyKill(target, this.lootManager, dropX, dropY);
+          this.onKill(target, dropX, dropY);
         }
       }
     });
@@ -189,15 +290,25 @@ export class CombatSystem {
             // Chega no (ou logo antes do) hitDelay — sem estourar o impact cedo no alvo.
             const travelMs = Math.max(140, hitDelay - releaseAt);
             this.scene.time.delayedCall(releaseAt, () => {
-              this.playPackThrowFx(
-                skillAnim.fx!,
-                flightN,
-                fromX,
-                fromY,
-                toX,
-                toY,
-                travelMs,
-              );
+              try {
+                this.playPackThrowFx(
+                  skillAnim.fx!,
+                  flightN,
+                  fromX,
+                  fromY,
+                  toX,
+                  toY,
+                  travelMs,
+                  {
+                    rotate: skillAnim.fxFlightRotate !== false && !skillAnim.fxFlightFlip,
+                    flip: Boolean(skillAnim.fxFlightFlip),
+                    bodyH: skillAnim.contentHeight,
+                    fxH: skillAnim.fx!.contentHeight ?? skillAnim.fx!.frameHeight,
+                  },
+                );
+              } catch (error) {
+                console.warn('[CombatSystem] falha no FX de projétil', error);
+              }
             });
           } else {
             const releaseAt =
@@ -208,6 +319,8 @@ export class CombatSystem {
             this.scene.time.delayedCall(releaseAt, () => {
               this.playPackFx(skillAnim.fx!.key, fxX, fxY, {
                 ground: skillAnim.fxGround ?? attach === 'caster',
+                bodyH: skillAnim.contentHeight,
+                fxH: skillAnim.fx!.contentHeight ?? skillAnim.fx!.frameHeight,
               });
             });
           }
@@ -222,6 +335,10 @@ export class CombatSystem {
             const fxY = attach === 'caster' ? this.player.y : toY;
             this.playPackFx(skillAnim.fxSecondary!.key, fxX, fxY, {
               ground: attach === 'caster',
+              bodyH: skillAnim.contentHeight,
+              fxH:
+                skillAnim.fxSecondary!.contentHeight ??
+                skillAnim.fxSecondary!.frameHeight,
             });
           });
         }
@@ -253,7 +370,8 @@ export class CombatSystem {
     hitDelayMs: number,
     skill: SkillDefinition,
   ): void {
-    const contact = skill.contactRange ?? PLAYER_ATTACK_RANGE * 0.85;
+    const contact =
+      (skill.contactRange ?? PLAYER_ATTACK_RANGE * 0.85) * this.player.worldScale;
     const fromX = this.player.x;
     const fromY = this.player.y;
     const dist = Phaser.Math.Distance.Between(fromX, fromY, toX, toY);
@@ -300,21 +418,50 @@ export class CombatSystem {
     });
   }
 
+  private onKill(enemy: Enemy, dropX: number, dropY: number): void {
+    handleEnemyKill(enemy, this.lootManager, dropX, dropY);
+    this.enemyManager.onEnemyKilled(enemy.id);
+  }
+
   private playPackFx(
     textureKey: string,
     x: number,
     y: number,
-    opts?: { ground?: boolean },
+    opts?: {
+      ground?: boolean;
+      bodyH?: number;
+      fxH?: number;
+      blend?: 'normal' | 'add';
+      scaleMult?: number;
+    },
   ): void {
     const animKey = `fx-${textureKey}`;
     if (!this.scene.textures.exists(textureKey)) return;
 
     const ground = opts?.ground === true;
+    // Native FX sheets stay 1:1 pixels; fit to the character body so a 200px
+    // burst does not tower over a 50px Asta (Phaser nearest, no sheet downsample).
+    const bodyH = opts?.bodyH ?? 0;
+    const fxH = opts?.fxH ?? 0;
+    const tex = this.scene.textures.get(textureKey);
+    const frame = tex.get(0);
+    const fxW = frame && typeof frame.width === 'number' ? frame.width : 0;
+    const fitH =
+      bodyH > 0 && fxH > bodyH * 1.35 ? Math.min(1, (bodyH * 1.85) / fxH) : 1;
+    const fitW =
+      bodyH > 0 && fxW > bodyH * 4 ? Math.min(1, (bodyH * 5.5) / fxW) : 1;
+    const fit = Math.min(fitH, fitW);
+    const scaleMult = opts?.scaleMult && opts.scaleMult > 0 ? opts.scaleMult : 1;
     // Ground kick dust / rock slam sits at feet (origin bottom); flash is mid-body.
-    const fx = this.scene.add.sprite(x, ground ? y : y - 20, textureKey, 0);
+    const bodyLift = this.bodyLift();
+    const fx = this.scene.add.sprite(x, ground ? y : y - bodyLift * 0.5, textureKey, 0);
     fx.setOrigin(0.5, ground ? 1 : 0.5);
     fx.setDepth(22);
-    fx.setScale(this.player.sprite.scaleX * (ground ? 1.05 : 1.15));
+    fx.setScale(this.player.sprite.scaleX * (ground ? 1.05 : 1.15) * fit * scaleMult);
+    if (!ground) this.clampAboveFloor(fx, y, bodyLift);
+    if (opts?.blend === 'add') {
+      fx.setBlendMode(Phaser.BlendModes.ADD);
+    }
 
     if (this.scene.anims.exists(animKey)) {
       fx.play(animKey);
@@ -359,6 +506,7 @@ export class CombatSystem {
     toX: number,
     toY: number,
     travelMs: number,
+    opts?: { rotate?: boolean; flip?: boolean; bodyH?: number; fxH?: number },
   ): void {
     const textureKey = fxDef.key;
     if (!this.scene.textures.exists(textureKey)) return;
@@ -367,58 +515,54 @@ export class CombatSystem {
     const flightAnimKey = `fx-${textureKey}-flight`;
     const impactAnimKey = `fx-${textureKey}-impact`;
 
-    if (!this.scene.anims.exists(flightAnimKey) && flightEnd >= 0) {
-      this.scene.anims.create({
-        key: flightAnimKey,
-        frames: this.scene.anims.generateFrameNumbers(textureKey, {
-          start: 0,
-          end: flightEnd,
-        }),
-        frameRate: 10,
-        repeat: -1,
-      });
-    }
-    if (
-      !this.scene.anims.exists(impactAnimKey) &&
-      flightFrameCount < fxDef.frameCount
-    ) {
-      this.scene.anims.create({
-        key: impactAnimKey,
-        frames: this.scene.anims.generateFrameNumbers(textureKey, {
-          start: flightFrameCount,
-          end: fxDef.frameCount - 1,
-        }),
-        frameRate: 12,
-        repeat: 0,
-      });
+    this.ensureSpriteAnim(flightAnimKey, textureKey, 0, flightEnd, 10, -1);
+    if (flightFrameCount < fxDef.frameCount) {
+      this.ensureSpriteAnim(
+        impactAnimKey,
+        textureKey,
+        flightFrameCount,
+        fxDef.frameCount - 1,
+        12,
+        0,
+      );
     }
 
+    const bodyLift = this.bodyLift();
     const startX = fromX + (toX >= fromX ? 10 : -10);
-    const startY = fromY - 18;
+    const startY = fromY - bodyLift * 0.5;
     const endX = toX;
-    const endY = toY - 16;
+    const endY = toY - bodyLift * 0.45;
+
+    const bodyH = opts?.bodyH ?? 0;
+    const fxH = opts?.fxH ?? 0;
+    const fit =
+      bodyH > 0 && fxH > bodyH * 1.35 ? Math.min(1, (bodyH * 1.85) / fxH) : 1;
 
     const rock = this.scene.add.sprite(startX, startY, textureKey, 0);
     rock.setOrigin(0.5, 0.5);
     rock.setDepth(22);
-    rock.setScale(this.player.sprite.scaleX * 1.2);
-    const angle = Phaser.Math.Angle.Between(startX, startY, endX, endY);
-    rock.setRotation(angle);
-
-    if (this.scene.anims.exists(flightAnimKey)) {
-      rock.play(flightAnimKey);
+    rock.setScale(this.player.sprite.scaleX * 1.2 * fit);
+    this.clampAboveFloor(rock, fromY, bodyLift);
+    const landingY = Math.min(endY, toY + bodyLift * 0.1 - rock.displayHeight / 2);
+    if (opts?.flip) {
+      rock.setFlipX(endX < startX);
+    } else if (opts?.rotate !== false) {
+      const angle = Phaser.Math.Angle.Between(startX, startY, endX, endY);
+      rock.setRotation(angle);
     }
+
+    this.safePlay(rock, flightAnimKey);
 
     this.scene.tweens.add({
       targets: rock,
       x: endX,
-      y: endY,
+      y: landingY,
       duration: travelMs,
       ease: 'Cubic.easeIn',
       onComplete: () => {
+        if (!rock.active) return;
         rock.setRotation(0);
-        if (this.scene.anims.exists(impactAnimKey)) {
-          rock.play(impactAnimKey);
+        if (this.safePlay(rock, impactAnimKey)) {
           rock.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => rock.destroy());
         } else {
           this.scene.tweens.add({
@@ -430,5 +574,64 @@ export class CombatSystem {
         }
       },
     });
+  }
+
+  /** Altura do corpo do jogador em px de mundo (acompanha o layoutScale do mapa). */
+  private bodyLift(): number {
+    return CHARACTER_DISPLAY_HEIGHT * this.player.worldScale;
+  }
+
+  /**
+   * Sobe o FX até a base encostar no piso. Sem isto um efeito grande — a escala
+   * segue o `layoutScale` do mapa — nasce centrado nos pés e some no chão.
+   */
+  private clampAboveFloor(
+    fx: Phaser.GameObjects.Sprite,
+    feetY: number,
+    bodyLift: number,
+  ): void {
+    const maxCenterY = feetY + bodyLift * 0.1 - fx.displayHeight / 2;
+    fx.y = Math.min(fx.y, maxCenterY);
+  }
+
+  /**
+   * Cria a animação só com frames reais. `generateFrameNumbers` vazio ainda
+   * registra a key no Phaser — e `play()` estoura em `duration` undefined.
+   */
+  private ensureSpriteAnim(
+    key: string,
+    textureKey: string,
+    start: number,
+    end: number,
+    frameRate: number,
+    repeat: number,
+  ): boolean {
+    if (end < start) return false;
+    const frames = this.scene.anims.generateFrameNumbers(textureKey, { start, end });
+    if (!frames.length) {
+      if (this.scene.anims.exists(key)) this.scene.anims.remove(key);
+      return false;
+    }
+    if (this.scene.anims.exists(key)) {
+      const existing = this.scene.anims.get(key);
+      if (existing && existing.frames.length > 0) return true;
+      this.scene.anims.remove(key);
+    }
+    this.scene.anims.create({ key, frames, frameRate, repeat });
+    return true;
+  }
+
+  /** Toca animação só se ela tiver frames; nunca deixa o update do combate cair. */
+  private safePlay(sprite: Phaser.GameObjects.Sprite, animKey: string): boolean {
+    const anim = this.scene.anims.get(animKey);
+    if (!anim || anim.frames.length === 0) return false;
+    try {
+      sprite.play(animKey);
+      return true;
+    } catch (error) {
+      console.warn(`[CombatSystem] animação inválida: ${animKey}`, error);
+      if (this.scene.anims.exists(animKey)) this.scene.anims.remove(animKey);
+      return false;
+    }
   }
 }

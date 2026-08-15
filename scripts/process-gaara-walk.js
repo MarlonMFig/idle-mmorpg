@@ -27,7 +27,7 @@ const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'gaara', 'wal
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'gaara');
 const META_JSON = path.join(OUT_DIR, 'meta.json');
 const QA_DIR = path.join(ROOT, 'assets-src', '_qa', 'gaara');
-const TARGET_BODY_H = 48;
+const HQ = { hq: { mode: 'match', metaPath: META_JSON, idleKey: 'gaara-idle' } };
 const FRAME_RATE = 10;
 const EXPECTED = 6;
 
@@ -71,7 +71,7 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     norm.contentHeight,
-    TARGET_BODY_H,
+    HQ,
   );
   const sheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
   const qa = qaSheet(

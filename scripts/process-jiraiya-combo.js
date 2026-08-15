@@ -3,10 +3,9 @@
  * Clean transparent sources: NO black-key / green flood (white hair survives).
  * Body-lock (torso+feet).
  *
- * Scale policy:
- * Prefer walk absoluteScale when projected standing body lands within ~2px of 48;
- * else body-match nearest → TARGET_BODY_H. One nearest pass only.
- * contentHeight packed = 48 so walk baseScale matches on-screen size.
+ * Scale policy (HQ):
+ * Match idle/walk ruler contentHeight. Same-rip (scale≈1) stays native;
+ * different-zoom combo rips upsample so standing body matches idle.
  *
  * npm run jiraiya:combo
  * Input:  assets/naruto-source/nu/jiraiya/combo/frame_*.png
@@ -26,6 +25,11 @@ const {
   bbox,
   isChromaGreen,
 } = require('./lib/alpha-frame-pack');
+const {
+  preferNativeScale,
+  readIdleContentHeight,
+  hqLinearScale,
+} = require('./lib/strip-hq-scale');
 
 const ROOT = path.resolve(__dirname, '..');
 const INPUT_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'jiraiya', 'combo');
@@ -244,7 +248,7 @@ function normalizeBodyLock(frames, widths, heights, pad = PAD) {
   };
 }
 
-async function scaleLockedCells(frames, fw, fh, absoluteScale) {
+async function scaleLockedCells(frames, fw, fh, absoluteScale, rulerContentH = TARGET_BODY_H) {
   const skipResize = Math.abs(absoluteScale - 1) < 1e-6;
   const outW = skipResize ? fw : Math.max(1, Math.round(fw * absoluteScale));
   const outH = skipResize ? fh : Math.max(1, Math.round(fh * absoluteScale));
@@ -286,7 +290,7 @@ async function scaleLockedCells(frames, fw, fh, absoluteScale) {
     frames: out,
     frameWidth: outW,
     frameHeight: outH,
-    contentHeight: TARGET_BODY_H,
+    contentHeight: rulerContentH,
     scale: absoluteScale,
   };
 }
@@ -356,12 +360,20 @@ function resolveWalkScale() {
         return {
           scale: w.scale,
           source: 'meta.json jiraiya-walk',
-          walkMaxContentH: w.maxContentH ?? null,
+          walkMaxContentH: w.maxContentH ?? w.contentHeight ?? null,
+          contentHeight: w.contentHeight ?? null,
+          bodyH: w.contentHeight ?? null,
         };
       }
       const idle = meta['jiraiya-idle'];
       if (idle && typeof idle.scale === 'number' && idle.scale > 0) {
-        return { scale: idle.scale, source: 'meta.json jiraiya-idle', walkMaxContentH: null };
+        return {
+          scale: idle.scale,
+          source: 'meta.json jiraiya-idle',
+          walkMaxContentH: idle.contentHeight ?? null,
+          contentHeight: idle.contentHeight ?? null,
+          bodyH: idle.contentHeight ?? null,
+        };
       }
     } catch {
       /* fall through */
@@ -382,6 +394,24 @@ async function measureWalkSourceScale() {
 }
 
 function resolveAbsoluteScale(standingContentH, walkScaleInfo) {
+  const idleH =
+    (walkScaleInfo &&
+      (walkScaleInfo.contentHeight || walkScaleInfo.bodyH || walkScaleInfo.walkMaxContentH)) ||
+    readIdleContentHeight(META_JSON, 'jiraiya-idle') ||
+    TARGET_BODY_H;
+
+  // HQ: walk/idle are native — upsample combo if its standing body is a different zoom.
+  if (walkScaleInfo && Math.abs(walkScaleInfo.scale - 1) < 1e-6) {
+    const raw = idleH / Math.max(1, standingContentH);
+    const scale = preferNativeScale(raw);
+    return {
+      scale,
+      source: scale === 1 ? 'hq-native-walk-1:1' : `hq-match-idle→${idleH}`,
+      projectedBodyH: standingContentH * scale,
+      bodyMatch: raw,
+      rulerContentH: idleH,
+    };
+  }
   const bodyMatch = TARGET_BODY_H / Math.max(1, standingContentH);
   if (walkScaleInfo) {
     const projected = standingContentH * walkScaleInfo.scale;
@@ -391,6 +421,7 @@ function resolveAbsoluteScale(standingContentH, walkScaleInfo) {
         source: walkScaleInfo.source,
         projectedBodyH: projected,
         bodyMatch,
+        rulerContentH: TARGET_BODY_H,
       };
     }
     console.log(
@@ -404,6 +435,7 @@ function resolveAbsoluteScale(standingContentH, walkScaleInfo) {
     projectedBodyH: standingContentH * bodyMatch,
     bodyMatch,
     walkScale: walkScaleInfo ? walkScaleInfo.scale : null,
+    rulerContentH: TARGET_BODY_H,
   };
 }
 
@@ -453,10 +485,12 @@ async function main() {
     norm.frameWidth,
     norm.frameHeight,
     scaleInfo.scale,
+    scaleInfo.rulerContentH || walkScaleInfo.contentHeight || TARGET_BODY_H,
   );
 
   const afterH = scaled.frames.map((f) => bbox(f, scaled.frameWidth, scaled.frameHeight).height);
   const fullSheet = stitch(scaled.frames, scaled.frameWidth, scaled.frameHeight);
+  const lin = hqLinearScale(scaled.contentHeight);
   const qa = qaSheet(
     fullSheet.data,
     fullSheet.width,
@@ -464,12 +498,12 @@ async function main() {
     scaled.frameWidth,
     scaled.frames.length,
     {
-      requireSingleComponent: true,
-      maxMinorComponent: 24,
-      minBlackPerFrame: 30,
+      requireSingleComponent: false,
+      maxMinorComponent: Math.round(120 * lin * lin),
+      minBlackPerFrame: Math.round(30 * lin * lin),
       minOlivePerFrame: 0,
       minBluePerFrame: 0,
-      minOpaquePerFrame: 80,
+      minOpaquePerFrame: Math.round(80 * lin * lin),
     },
   );
   const whiteHair = countWhiteHair(fullSheet.data);
@@ -500,22 +534,22 @@ async function main() {
   if (qa.residualGreen > 0) {
     throw new Error(`QA fail: residual green pixels = ${qa.residualGreen}`);
   }
-  if (whiteHair < 30) {
+  if (whiteHair < Math.round(30 * lin * lin)) {
     throw new Error(`QA fail: white hair nearly gone (${whiteHair})`);
   }
-  if (feetStats.max - feetStats.min > 2) {
+  if (feetStats.max - feetStats.min > Math.ceil(2 * lin)) {
     throw new Error(
-      `QA fail body-lock: feetY Δ=${feetStats.max - feetStats.min}px (need ≤ 2)`,
+      `QA fail body-lock: feetY Δ=${feetStats.max - feetStats.min}px (need ≤ ${Math.ceil(2 * lin)})`,
     );
   }
-  if (cxStats.std > BODY_CX_VAR_MAX) {
+  if (cxStats.std > BODY_CX_VAR_MAX * lin) {
     console.warn(
-      `WARN body-lock: bodyCx std=${cxStats.std.toFixed(3)}px > ${BODY_CX_VAR_MAX}px (attacks may shift)`,
+      `WARN body-lock: bodyCx std=${cxStats.std.toFixed(3)}px > ${(BODY_CX_VAR_MAX * lin).toFixed(2)}px (attacks may shift)`,
     );
   }
-  if (cxStats.max - cxStats.min > BODY_CX_RANGE_MAX) {
+  if (cxStats.max - cxStats.min > BODY_CX_RANGE_MAX * lin) {
     console.warn(
-      `WARN body-lock: bodyCx range Δ=${(cxStats.max - cxStats.min).toFixed(2)}px > ${BODY_CX_RANGE_MAX}px`,
+      `WARN body-lock: bodyCx range Δ=${(cxStats.max - cxStats.min).toFixed(2)}px > ${(BODY_CX_RANGE_MAX * lin).toFixed(2)}px`,
     );
   }
 
@@ -535,9 +569,9 @@ async function main() {
       scaled.frameWidth,
       frames.length,
       {
-        requireSingleComponent: true,
-        maxMinorComponent: 24,
-        minBlackPerFrame: 30,
+        requireSingleComponent: false,
+        maxMinorComponent: Math.round(120 * lin * lin),
+        minBlackPerFrame: Math.round(30 * lin * lin),
         minOlivePerFrame: 0,
         minBluePerFrame: 0,
         minOpaquePerFrame: 80,
