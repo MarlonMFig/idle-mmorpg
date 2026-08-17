@@ -17,6 +17,8 @@ import { HuntAnalyzerPanel } from '@/ui/hunt-analyzer';
 import { HelperPanel } from '@/ui/helper';
 import { MedicPanel } from '@/ui/medic';
 import { CapturaPanel } from '@/ui/captura';
+import { VipPanel } from '@/ui/vip';
+import { PremiumShopPanel } from '@/ui/premium';
 
 export interface GameHudProps {
   player: HudPlayerInfo;
@@ -62,6 +64,8 @@ export function GameHud({ player }: GameHudProps) {
       <HelperPanel />
       <MedicPanel />
       <CapturaPanel />
+      <VipPanel />
+      <PremiumShopPanel />
 
       <div className="game-hud__bottom-center">
         <SkillHotbar />

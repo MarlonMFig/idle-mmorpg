@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Orbitron, Rajdhani } from 'next/font/google';
 import './globals.css';
+import './premium-shop.css';
+import './team-progression.css';
 
 const display = Orbitron({
   variable: '--font-display',

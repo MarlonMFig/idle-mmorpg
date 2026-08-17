@@ -2,6 +2,10 @@ import { SHOP_CURRENCY_ITEM_ID } from '@/constants/sealing';
 import { copperRewardForKill } from '@/data/anime-loot';
 import type { Enemy } from '@/entities/enemy';
 import { grantPlayerXp } from '@/lib/grant-player-xp';
+import { guildCopperBonusMultiplier } from '@/lib/progression-bonuses';
+import { potentialFortunaMultiplier } from '@/lib/potential';
+import { gemStore } from '@/stores/gem-store';
+import { teamStore } from '@/stores/team-store';
 import { captureStore } from '@/stores/capture-store';
 import { helperStore } from '@/stores/helper-store';
 import { inventoryStore } from '@/stores/inventory-store';
@@ -24,9 +28,11 @@ export function handleEnemyKill(
   questStore.onEnemyKilled(enemy.definition.id, enemy.definition.name);
   villageStore.onEnemyKilled();
   const xpGranted = grantPlayerXp(enemy.xp);
+  gemStore.recordKill();
 
-  // Cobre (Ryo tabela 100%) — sempre ao matar; quantidade escala com nível.
-  const copper = copperRewardForKill(enemy.level);
+  const active = teamStore.getActive();
+  const fortuna = potentialFortunaMultiplier(active?.potential);
+  const copper = Math.floor(copperRewardForKill(enemy.level) * guildCopperBonusMultiplier() * fortuna);
   if (copper > 0) {
     inventoryStore.addItem(SHOP_CURRENCY_ITEM_ID, copper);
   }

@@ -6,6 +6,8 @@ const { JUMP_FORCE_ROSTER } = require('./lib/jump-force-roster');
 
 const ROOT = path.resolve(__dirname, '..');
 const OUT = path.join(ROOT, 'src', 'data', 'jump-force-packs.ts');
+// Rotação atual: apenas Naruto e Dragon Ball. Ichigo fica preservado no roster/assets.
+const ACTIVE_ROSTER = JUMP_FORCE_ROSTER.filter((row) => row.id !== 'ichigo');
 
 /** Âncora / timing / range que o wire.json não expressa. */
 const FX_OVERRIDES = {
@@ -49,6 +51,7 @@ function comboSheetTs(id, index, entry) {
       frameHeight: ${entry.fx.frameHeight},
       frameCount: ${entry.fx.frameCount},
       contentHeight: ${entry.fx.contentHeight},
+      originX: ${num(entry.fx.originX)},
     }`
     : '';
   return `{
@@ -65,7 +68,7 @@ function comboSheetTs(id, index, entry) {
 
 function main() {
   const wires = [];
-  for (const row of JUMP_FORCE_ROSTER) {
+  for (const row of ACTIVE_ROSTER) {
     const file = path.join(ROOT, 'public', 'sprites', 'player', row.id, 'wire.json');
     if (!fs.existsSync(file)) {
       console.warn('missing wire', row.id);
@@ -90,7 +93,7 @@ function main() {
     lookConst.push(`export const ${lookConstName} = ${w.lookType};`);
 
     const omitSkills = new Set(
-      (JUMP_FORCE_ROSTER.find((row) => row.id === w.id)?.omitSkillIndexes ?? []).map(Number),
+      (ACTIVE_ROSTER.find((row) => row.id === w.id)?.omitSkillIndexes ?? []).map(Number),
     );
     const skillAnims = [];
     const hotbar = [];
@@ -126,6 +129,7 @@ function main() {
         frameHeight: ${sk.fx.frameHeight},
         frameCount: ${sk.fx.frameCount},
         contentHeight: ${sk.fx.contentHeight},
+        originX: ${num(sk.fx.originX)},
       }`
         : '';
       skillAnims.push(`    '${skillId}': {

@@ -20,6 +20,10 @@ export const PLAYER_DEATH_RESPAWN_MS = 2800;
 
 /** Inimigos reaparecem rapidamente para manter o fluxo da caça idle. */
 export const ENEMY_RESPAWN_MS = 2800;
+/** Mapas laterais (spawn esquerda/direita): renascimento mais rápido. */
+export const LATERAL_SIDE_ENEMY_RESPAWN_MS = 1800;
+/** Velocidade extra dos inimigos nos mapas laterais de caça. */
+export const LATERAL_SIDE_ENEMY_SPEED_MULT = 1.3;
 /** Corpo caído some antes do respawn (estilo idle MMO do vídeo ref.). */
 export const ENEMY_CORPSE_MS = 900;
 /**
@@ -65,24 +69,32 @@ export function huntEnemyStatsForLevel(level: number): {
 }
 
 /**
- * Rewrites all hunt + target levels when FORCE_HUNT_LEVEL is set.
- * Pure (returns a new catalog); no-op when the flag is null.
+ * TEST ONLY: multiplica o HP de todo alvo de caça (easy revert: set `1`).
+ * Aplicado junto de `applyForcedHuntLevels`, então vale para UI e spawns.
+ */
+export const TEST_ENEMY_HP_MULTIPLIER: number = 2;
+
+/**
+ * Rewrites all hunt + target levels when FORCE_HUNT_LEVEL is set and applies
+ * TEST_ENEMY_HP_MULTIPLIER. Pure (returns a new catalog); no-op when neither
+ * test flag is active.
  */
 export function applyForcedHuntLevels(catalog: HuntCatalog): HuntCatalog {
   const forced = FORCE_HUNT_LEVEL;
-  if (forced == null) return catalog;
-  const stats = huntEnemyStatsForLevel(forced);
+  const hpMul = TEST_ENEMY_HP_MULTIPLIER;
+  if (forced == null && hpMul === 1) return catalog;
+  const stats = forced == null ? null : huntEnemyStatsForLevel(forced);
   return {
     ...catalog,
     hunts: catalog.hunts.map((hunt) => ({
       ...hunt,
-      requiredLevel: forced,
+      requiredLevel: forced ?? hunt.requiredLevel,
       targets: hunt.targets.map((target) => ({
         ...target,
-        requiredLevel: forced,
-        level: stats.level,
-        hp: stats.hp,
-        xp: stats.xp,
+        requiredLevel: forced ?? target.requiredLevel,
+        level: stats?.level ?? target.level,
+        hp: Math.round((stats?.hp ?? target.hp) * hpMul),
+        xp: stats?.xp ?? target.xp,
       })),
     })),
   };

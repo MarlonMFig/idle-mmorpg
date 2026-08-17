@@ -108,16 +108,13 @@ export class Enemy {
       definition.spriteFrame ?? 0,
     );
     // Sem `spriteFit` (atlas de fallback) cai na moldura, que ali é justa.
-    const fit =
-      definition.spriteFit ??
-      {
-        scale: this.sprite.height > 0 ? CHARACTER_DISPLAY_HEIGHT / this.sprite.height : 1,
-        originX: 0.5,
-        originY: 1,
-      };
+    const fit = definition.spriteFit ?? {
+      scale: this.sprite.height > 0 ? CHARACTER_DISPLAY_HEIGHT / this.sprite.height : 1,
+      originX: 0.5,
+      originY: 1,
+    };
     this.spriteTopLift =
-      (CHARACTER_DISPLAY_HEIGHT +
-        Math.max(0, (fit.originY - 1) * CHARACTER_DISPLAY_HEIGHT)) *
+      (CHARACTER_DISPLAY_HEIGHT + Math.max(0, (fit.originY - 1) * CHARACTER_DISPLAY_HEIGHT)) *
       this.layoutScale;
     this.sprite.setOrigin(fit.originX, fit.originY);
     const extra = definition.spriteFit ? 1 : this.layoutScale;
@@ -163,12 +160,8 @@ export class Enemy {
       .rectangle(0, 0, borderW, borderH, 0x1a1510, 0.95)
       .setOrigin(0.5)
       .setStrokeStyle(Math.max(1, s), 0x3a3228, 0.85);
-    this.hpBarBg = scene.add
-      .rectangle(0, 0, barW, barH, 0x0c0c0e, 0.92)
-      .setOrigin(0.5);
-    this.hpBarFill = scene.add
-      .rectangle(0, 0, barW, barH, 0x4ecf70, 1)
-      .setOrigin(0, 0.5);
+    this.hpBarBg = scene.add.rectangle(0, 0, barW, barH, 0x0c0c0e, 0.92).setOrigin(0.5);
+    this.hpBarFill = scene.add.rectangle(0, 0, barW, barH, 0x4ecf70, 1).setOrigin(0, 0.5);
     this.hpBarGloss = scene.add
       .rectangle(0, 0, barW, ENEMY_HP_BAR_GLOSS_H * s, 0xffffff, 0.28)
       .setOrigin(0, 0.5);
@@ -265,11 +258,7 @@ export class Enemy {
       }
     }
 
-    if (
-      playerX != null &&
-      playerY != null &&
-      this.definition.chaseRadius > 0
-    ) {
+    if (playerX != null && playerY != null && this.definition.chaseRadius > 0) {
       const started = this.updateCombatAi(time, playerX, playerY);
       if (hitDamage == null) hitDamage = started;
     } else if (time >= this.reactingUntil) {
@@ -346,9 +335,7 @@ export class Enemy {
 
     const walk = this.definition.walk;
     const keys = walk?.attackAnimKeys;
-    const idx = keys && keys.length > 0
-      ? (this.comboStep - 1 + keys.length) % keys.length
-      : 0;
+    const idx = keys && keys.length > 0 ? (this.comboStep - 1 + keys.length) % keys.length : 0;
     const animKey = keys?.[idx];
     const anim = animKey ? this.scene.anims.get(animKey) : null;
     const durationMs = anim
@@ -432,7 +419,7 @@ export class Enemy {
     this.nameLabel.setVisible(false);
     this.respawnAt = this.definition.noRespawn
       ? Number.POSITIVE_INFINITY
-      : this.scene.time.now + ENEMY_RESPAWN_MS;
+      : this.scene.time.now + (this.definition.respawnMs ?? ENEMY_RESPAWN_MS);
 
     const playedDeath = this.playDeathAnim();
     if (!playedDeath) {
@@ -465,13 +452,7 @@ export class Enemy {
     this.sprite.clearTint();
     this.sprite.setVisible(true);
     this.sprite.setAlpha(1);
-    this.sprite.enableBody(
-      true,
-      this.definition.spawn.x,
-      this.definition.spawn.y,
-      true,
-      true,
-    );
+    this.sprite.enableBody(true, this.definition.spawn.x, this.definition.spawn.y, true, true);
     this.sprite.setVelocity(0, 0);
     this.nameLabel.setVisible(true);
     this.setHpBarVisible(true);
@@ -618,8 +599,16 @@ export class Enemy {
     if (!layer) {
       const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
       this.patrolTarget = {
-        x: Phaser.Math.Clamp(this.sprite.x + Math.cos(angle) * 32, 16, this.scene.physics.world.bounds.width - 16),
-        y: Phaser.Math.Clamp(this.sprite.y + Math.sin(angle) * 32, 16, this.scene.physics.world.bounds.height - 16),
+        x: Phaser.Math.Clamp(
+          this.sprite.x + Math.cos(angle) * 32,
+          16,
+          this.scene.physics.world.bounds.width - 16,
+        ),
+        y: Phaser.Math.Clamp(
+          this.sprite.y + Math.sin(angle) * 32,
+          16,
+          this.scene.physics.world.bounds.height - 16,
+        ),
       };
       return;
     }
@@ -705,8 +694,7 @@ export class Enemy {
       NAMEPLATE_BAR_GAP_PX * s -
       (ENEMY_HP_BAR_HEIGHT * s) / 2;
     const left = this.sprite.x - (ENEMY_HP_BAR_WIDTH * s) / 2;
-    const glossY =
-      barY - (ENEMY_HP_BAR_HEIGHT * s) / 2 + ENEMY_HP_BAR_GLOSS_H * s;
+    const glossY = barY - (ENEMY_HP_BAR_HEIGHT * s) / 2 + ENEMY_HP_BAR_GLOSS_H * s;
 
     this.hpBarBorder.setPosition(this.sprite.x, barY);
     this.hpBarBorder.setDepth(depth + 1);

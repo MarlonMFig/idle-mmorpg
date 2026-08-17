@@ -89,6 +89,8 @@ export class PreloadScene extends Phaser.Scene {
       .queue(MAP_KEYS.huntTorneioArtesMarciais)
       .queue(MAP_KEYS.huntSalaDoTempo)
       .queue(MAP_KEYS.huntDesertoSaiyajin)
+      .queue(MAP_KEYS.huntTesteEquipe)
+      .queue(MAP_KEYS.huntTesteFarmWonsr)
       .queue(MAP_KEYS.academy)
       .preload();
   }

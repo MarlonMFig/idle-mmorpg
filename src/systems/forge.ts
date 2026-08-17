@@ -1,4 +1,5 @@
-import { forgeMaterialCost, MAX_CHARACTER_STARS } from '@/constants/character-progression';
+import { maxStarsForQuality } from '@/constants/aiw-quality';
+import { forgeMaterialCost } from '@/constants/character-progression';
 import type { SealedCharacter } from '@/types/team';
 
 export type ForgeEligibilityReason =
@@ -51,7 +52,7 @@ export function planForgeStar(params: {
     return { reason: 'quality-not-configured', target, materialIds: [], cost: 0 };
   }
 
-  if (target.stars >= MAX_CHARACTER_STARS) {
+  if (target.stars >= maxStarsForQuality(target.quality)) {
     return { reason: 'max-stars', target, materialIds: [], cost };
   }
 

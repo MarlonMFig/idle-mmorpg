@@ -1,4 +1,9 @@
-import { COMBAT_MAP_LAYOUT_SCALE } from '@/constants/sprites';
+import { COMBAT_MAP_LAYOUT_SCALE, HUB_CHARACTER_SCALE } from '@/constants/sprites';
+import {
+  ENEMY_RESPAWN_MS,
+  LATERAL_SIDE_ENEMY_RESPAWN_MS,
+  LATERAL_SIDE_ENEMY_SPEED_MULT,
+} from '@/constants/combat';
 import { MAP_KEYS, type MapKey } from '@/maps/map-registry';
 
 /**
@@ -38,6 +43,32 @@ export interface WonsrRenderedMap {
   /** Fundo em vídeo (loop). O PNG `imageKey` fica atrás até o primeiro frame. */
   videoKey?: string;
   videoUrl?: string;
+  /**
+   * Mundo maior que a tela: a câmera segue o jogador em vez de enquadrar a
+   * arena inteira. Só assim andar para cima revela outra parte do mapa.
+   */
+  cameraFollow?: boolean;
+  /** Zoom fixo no modo `cameraFollow` (1 = pixels do PNG na escala nativa). */
+  cameraZoom?: number;
+  /**
+   * Enquadra a arte inteira no viewport (como abrir o PNG no visualizador).
+   * Sem isto, `cameraZoom: 1` em um mapa 5000² recorta e parece zoom enorme.
+   */
+  cameraFit?: 'contain';
+  /** Traz os outros membros da equipe como aliados controlados pela IA. */
+  teamParty?: boolean;
+  /**
+   * Cópias por ponto de spawn (mapa de teste farm). Default global = 1.
+   * No vídeo de referência há ~8–10 alvos no enquadramento; 2 por ponto
+   * com passo largo aproxima essa densidade sem amontoar labels.
+   */
+  enemiesPerSpawn?: number;
+  /** Respawn dos monstros só neste mapa (ms). Sem isto usa ENEMY_RESPAWN_MS. */
+  enemyRespawnMs?: number;
+  /** Multiplicador da velocidade do líder e dos aliados neste mapa. */
+  moveSpeedMult?: number;
+  /** Multiplicador da speed de patrulha/perseguição dos monstros neste mapa. */
+  enemySpeedMult?: number;
 }
 
 export const COMBAT_MAP_NATIVE_WIDTH = 3840;
@@ -302,10 +333,7 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
     lateralFloorY: 1396,
     layoutScale: 5.75,
   },
-  [MAP_KEYS.huntKonohaDestruida]: artArena(
-    MAP_KEYS.huntKonohaDestruida,
-    'hunt-konoha-destruida',
-  ),
+  [MAP_KEYS.huntKonohaDestruida]: artArena(MAP_KEYS.huntKonohaDestruida, 'hunt-konoha-destruida'),
   [MAP_KEYS.huntValeDoFimLateral]: {
     mapKey: MAP_KEYS.huntValeDoFimLateral,
     imageKey: 'map-hunt-vale-do-fim-lateral',
@@ -404,7 +432,95 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
     lateralFloorY: 1424,
     layoutScale: 5.75,
   },
+  // Teste top-down: mundo 3072² percorrível, sprites em escala nativa (pequenos
+  // perto do mapa) e câmera colada no líder da equipe.
+  [MAP_KEYS.huntTesteEquipe]: {
+    mapKey: MAP_KEYS.huntTesteEquipe,
+    // Mesma key do tileset do TMX: o PNG de 7 MB é baixado uma vez só.
+    imageKey: 'wonsr-konoha',
+    imageUrl: '/maps/wonsr-konoha.png',
+    width: 3072,
+    height: 3072,
+    spawn: { x: 1776, y: 1840 },
+    // Todos no mesmo componente conexo da colisão do TMX (pátios murados ficam
+    // de fora): sem isso a equipe nasce trancada e a câmera nunca sai do lugar.
+    enemySpawns: [
+      { x: 1072, y: 752 },
+      { x: 2928, y: 560 },
+      { x: 976, y: 1616 },
+      { x: 2736, y: 1552 },
+      { x: 2928, y: 2256 },
+      { x: 2320, y: 2608 },
+      { x: 1584, y: 3024 },
+      { x: 3024, y: 3024 },
+    ],
+    layoutScale: 1,
+    cameraFollow: true,
+    cameraZoom: 1,
+    teamParty: true,
+  },
+  // Clareira de treinamento (arte 4096×2160 original, mesma resolução do hub,
+  // copiada sem resize). Colisão e spawns saem da própria imagem via
+  // scripts/install-teste-clareira-map.js. Sprites na escala do hub para
+  // não contrastar com a arte 4K.
+  [MAP_KEYS.huntTesteFarmWonsr]: {
+    mapKey: MAP_KEYS.huntTesteFarmWonsr,
+    imageKey: 'hunt-teste-clareira',
+    imageUrl: '/maps/hunt-teste-clareira.png?v=clareira2160',
+    width: 4096,
+    height: 2160,
+    spawn: { x: 2040, y: 1080 },
+    enemySpawns: [
+      { x: 1528, y: 360 },
+      { x: 2472, y: 376 },
+      { x: 1768, y: 552 },
+      { x: 2136, y: 616 },
+      { x: 1336, y: 648 },
+      { x: 2472, y: 792 },
+      { x: 2888, y: 888 },
+      { x: 1464, y: 984 },
+      { x: 1208, y: 1272 },
+      { x: 2552, y: 1288 },
+      { x: 1608, y: 1368 },
+      { x: 2264, y: 1400 },
+      { x: 2808, y: 1448 },
+      { x: 1944, y: 1592 },
+      { x: 1608, y: 1784 },
+      { x: 2232, y: 1800 },
+    ],
+    layoutScale: HUB_CHARACTER_SCALE,
+    cameraFollow: true,
+    cameraFit: 'contain',
+    teamParty: true,
+    enemiesPerSpawn: 2,
+    enemyRespawnMs: 3500,
+    moveSpeedMult: 2.2,
+    enemySpeedMult: 1.6,
+  },
 };
+
+/** Mapa lateral com dois spawns nas bordas esquerda/direita. */
+export function isLateralSideSpawnMap(map: WonsrRenderedMap): boolean {
+  if (map.lateralFloorY == null || map.enemySpawns.length !== 2) return false;
+  const xs = map.enemySpawns.map((spawn) => spawn.x);
+  const leftX = Math.min(...xs);
+  const rightX = Math.max(...xs);
+  return leftX <= map.width * 0.15 && rightX >= map.width * 0.85;
+}
+
+export function enemyRespawnMsForMap(map: WonsrRenderedMap | undefined): number {
+  if (!map) return ENEMY_RESPAWN_MS;
+  if (map.enemyRespawnMs != null) return map.enemyRespawnMs;
+  if (isLateralSideSpawnMap(map)) return LATERAL_SIDE_ENEMY_RESPAWN_MS;
+  return ENEMY_RESPAWN_MS;
+}
+
+export function enemySpeedMultForMap(map: WonsrRenderedMap | undefined): number {
+  if (!map) return 1;
+  if (map.enemySpeedMult != null) return map.enemySpeedMult;
+  if (isLateralSideSpawnMap(map)) return LATERAL_SIDE_ENEMY_SPEED_MULT;
+  return 1;
+}
 
 export function getWonsrRenderedMap(mapKey: MapKey): WonsrRenderedMap | undefined {
   return WONSR_RENDERED_MAPS[mapKey];

@@ -11,6 +11,7 @@ import type {
   AttributeValues,
   PlayerAttributes,
 } from '@/types/attributes';
+import type { CharacterPotential } from '@/types/potential';
 import { applyStarBonusToBase } from '@/utils/star-bonus';
 
 export function emptyModifiers(): AttributeModifiers {
@@ -73,12 +74,13 @@ export function sumBuffModifiers(buffs: readonly AttributeBuff[], now = Date.now
 export function computePlayerAttributes(input: {
   level: number;
   stars?: number;
+  potential?: CharacterPotential;
   buffs?: readonly AttributeBuff[];
   now?: number;
 }): PlayerAttributes {
   const baseRaw = cloneValues(BASE_ATTRIBUTES);
   const stars = input.stars ?? 0;
-  const base = applyStarBonusToBase(baseRaw, stars);
+  const base = applyStarBonusToBase(baseRaw, stars, input.potential);
   const level = levelModifiersFor(input.level);
   const buffList = input.buffs ?? [];
   const buffs = sumBuffModifiers(buffList, input.now);

@@ -7,7 +7,7 @@ import { buildAnimeHuntLoot } from '@/data/anime-loot';
 import { characterLateralOrigin } from '@/data/character-packs';
 import { getCuratedMapPack } from '@/data/curated-map-sprites';
 import { getEnemiesForMap } from '@/data/enemies';
-import { combatLayoutScale, getWonsrRenderedMap } from '@/data/wonsr-rendered-maps';
+import { combatLayoutScale, enemyRespawnMsForMap, enemySpeedMultForMap, getWonsrRenderedMap } from '@/data/wonsr-rendered-maps';
 import {
   ensureOutfitWalkAnims,
   outfitIdleFrame,
@@ -189,9 +189,7 @@ export class EnemyManager {
     mapKey: MapKey,
   ): EnemyDefinition {
     const spawn =
-      this.duelSide === 0
-        ? (this.duelRight ?? this.duelLeft)
-        : (this.duelLeft ?? this.duelRight);
+      this.duelSide === 0 ? (this.duelRight ?? this.duelLeft) : (this.duelLeft ?? this.duelRight);
     const targetIndex = this.duelTargetIndex % hunt.targets.length;
     const instanceIndex = this.duelSpawnSeq;
     this.duelTargetIndex = (this.duelTargetIndex + 1) % hunt.targets.length;
@@ -238,9 +236,7 @@ export class EnemyManager {
 
     const rendered = getWonsrRenderedMap(mapKey);
     const basePositions =
-      rendered && rendered.enemySpawns.length
-        ? rendered.enemySpawns
-        : EnemyManager.FALLBACK_SPAWNS;
+      rendered && rendered.enemySpawns.length ? rendered.enemySpawns : EnemyManager.FALLBACK_SPAWNS;
 
     // Duelo lateral: entra pela direita; depois pela esquerda; em ciclo.
     if (hunt.sequentialTargets) {
@@ -271,9 +267,8 @@ export class EnemyManager {
 
     this.clearDuel();
 
-    const positions = basePositions.flatMap((spawn) =>
-      this.expandSpawn(spawn, rendered ? ENEMIES_PER_SPAWN : 1),
-    );
+    const perSpawn = rendered ? Math.max(1, rendered.enemiesPerSpawn ?? ENEMIES_PER_SPAWN) : 1;
+    const positions = basePositions.flatMap((spawn) => this.expandSpawn(spawn, perSpawn));
 
     return positions.map((spawn, index) =>
       this.buildHuntEnemyDefinition(
@@ -300,8 +295,7 @@ export class EnemyManager {
     const target = hunt.targets[targetIndex];
     const curated = this.resolveCurated(target.lookType);
     const spriteIndex = this.scene.cache.json.get(WONSR_SPRITE_INDEX_KEY) as
-      | WonsrSpriteIndex
-      | undefined;
+      WonsrSpriteIndex | undefined;
     const outfit = curated ?? this.resolveOutfit(spriteIndex, target.lookType);
     const stats = { level: target.level, hp: target.hp, xp: target.xp };
     const animeId = resolveAnimeId({
@@ -323,6 +317,7 @@ export class EnemyManager {
       renderedMap?.lateralFloorY != null && renderedMap.width > 0
         ? Math.max(baseChase, renderedMap.width)
         : baseChase;
+    const enemySpeedMult = enemySpeedMultForMap(renderedMap);
     return {
       id: noRespawn
         ? `${hunt.id}-${target.id}-${instanceIndex}-d${Date.now() % 1_000_000}`
@@ -335,13 +330,11 @@ export class EnemyManager {
         lookType: target.lookType,
       }),
       spawn,
-      speed: target.speed * layout,
+      speed: target.speed * layout * enemySpeedMult,
       chaseRadius,
-      sprite:
-        outfit?.textureKey ??
-        (target.hasSprite ? WONSR_HUNT_ATLAS_KEY : ENEMY_TEXTURE_KEY),
-      spriteFrame:
-        outfit?.idleFrame ?? (target.hasSprite ? `look-${target.lookType}` : undefined),
+      respawnMs: enemyRespawnMsForMap(renderedMap),
+      sprite: outfit?.textureKey ?? (target.hasSprite ? WONSR_HUNT_ATLAS_KEY : ENEMY_TEXTURE_KEY),
+      spriteFrame: outfit?.idleFrame ?? (target.hasSprite ? `look-${target.lookType}` : undefined),
       walk: outfit?.walk,
       spriteFit: fit,
       mapKey,
@@ -571,12 +564,7 @@ export class EnemyManager {
     if (!layer) return true;
     const tileX = layer.worldToTileX(worldX, true);
     const tileY = layer.worldToTileY(worldY, true);
-    if (
-      tileX < 0 ||
-      tileY < 0 ||
-      tileX >= layer.layer.width ||
-      tileY >= layer.layer.height
-    ) {
+    if (tileX < 0 || tileY < 0 || tileX >= layer.layer.width || tileY >= layer.layer.height) {
       return false;
     }
     const tile = layer.getTileAt(tileX, tileY);

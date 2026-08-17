@@ -12,6 +12,7 @@ import { xpRequiredForLevel } from '@/data/xp-stages';
 import { MAP_KEYS, type MapKey } from '@/maps/map-registry';
 import { accountStore } from '@/stores/account-store';
 import { attributesStore } from '@/stores/attributes-store';
+import { gemStore } from '@/stores/gem-store';
 import { guildStore } from '@/stores/guild-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { locationStore, type GameMode } from '@/stores/location-store';
@@ -28,8 +29,8 @@ import { isCharacterClanId, normalizeSealedCharacter } from '@/utils/character-i
 export const SESSION_STORAGE_KEY = 'idle-mmorpg:session-v1';
 
 /** Schema atual (v3: guild + playerId). */
-const SESSION_VERSION = 3 as const;
-const LEGACY_SESSION_VERSIONS = new Set([1, 2, 3]);
+const SESSION_VERSION = 4 as const;
+const LEGACY_SESSION_VERSIONS = new Set([1, 2, 3, 4]);
 const SAVE_DEBOUNCE_MS = 250;
 
 const STARTER_IDS = new Set<string>(STARTERS.map((entry) => entry.id));
@@ -65,6 +66,17 @@ export interface PersistedGuild {
   missionProgress?: Record<string, number>;
   bossDamage?: number;
   bossAttacks?: number;
+  fragmentShopDay?: string | null;
+  fragmentShopPurchases?: number;
+}
+
+export interface PersistedGems {
+  balance: number;
+  lastLoginDay: string | null;
+  claimedAchievements: Record<string, boolean>;
+  totalKills: number;
+  weeklyCrystalWeek: string | null;
+  weeklyCrystalPurchases: number;
 }
 
 export interface PersistedSession {
@@ -75,6 +87,7 @@ export interface PersistedSession {
   vitals: PersistedVitals;
   account: PersistedAccount;
   guild: PersistedGuild;
+  gems?: PersistedGems;
 }
 
 let trackedPlayer: PlayerCreation | null = null;
@@ -181,6 +194,37 @@ export function parsePersistedSession(raw: unknown): PersistedSession | null {
       ? (guildRaw.missionProgress as Record<string, number>)
       : undefined;
 
+  const gemsRaw = data.gems as Record<string, unknown> | undefined;
+  const gems: PersistedGems | undefined = gemsRaw
+    ? {
+        balance:
+          typeof gemsRaw.balance === 'number' && Number.isFinite(gemsRaw.balance)
+            ? Math.max(0, Math.floor(gemsRaw.balance))
+            : 0,
+        lastLoginDay:
+          typeof gemsRaw.lastLoginDay === 'string' || gemsRaw.lastLoginDay === null
+            ? (gemsRaw.lastLoginDay as string | null)
+            : null,
+        claimedAchievements:
+          gemsRaw.claimedAchievements && typeof gemsRaw.claimedAchievements === 'object'
+            ? (gemsRaw.claimedAchievements as Record<string, boolean>)
+            : {},
+        totalKills:
+          typeof gemsRaw.totalKills === 'number' && Number.isFinite(gemsRaw.totalKills)
+            ? Math.max(0, Math.floor(gemsRaw.totalKills))
+            : 0,
+        weeklyCrystalWeek:
+          typeof gemsRaw.weeklyCrystalWeek === 'string' || gemsRaw.weeklyCrystalWeek === null
+            ? (gemsRaw.weeklyCrystalWeek as string | null)
+            : null,
+        weeklyCrystalPurchases:
+          typeof gemsRaw.weeklyCrystalPurchases === 'number' &&
+          Number.isFinite(gemsRaw.weeklyCrystalPurchases)
+            ? Math.max(0, Math.floor(gemsRaw.weeklyCrystalPurchases))
+            : 0,
+      }
+    : undefined;
+
   return {
     version: SESSION_VERSION,
     player: {
@@ -208,6 +252,7 @@ export function parsePersistedSession(raw: unknown): PersistedSession | null {
       bossAttacks:
         typeof guildRaw?.bossAttacks === 'number' ? guildRaw.bossAttacks : undefined,
     },
+    gems,
   };
 }
 
@@ -241,6 +286,7 @@ function ensureAutoSave(): void {
     vitalsStore.subscribe(scheduleSessionSave),
     accountStore.subscribe(scheduleSessionSave),
     guildStore.subscribe(scheduleSessionSave),
+    gemStore.subscribe(scheduleSessionSave),
   ];
   unsubAutoSave = () => {
     for (const unsub of unsubs) unsub();
@@ -281,6 +327,18 @@ function snapshotAccount(): PersistedAccount {
   return { clanId: accountStore.getClanId() };
 }
 
+function snapshotGems(): PersistedGems {
+  const g = gemStore.getSnapshot();
+  return {
+    balance: g.balance,
+    lastLoginDay: g.lastLoginDay,
+    claimedAchievements: g.claimedAchievements,
+    totalKills: g.totalKills,
+    weeklyCrystalWeek: g.weeklyCrystalWeek,
+    weeklyCrystalPurchases: g.weeklyCrystalPurchases,
+  };
+}
+
 function snapshotGuild(): PersistedGuild {
   const { playerId, guildId, progress } = guildStore.getSnapshot();
   return {
@@ -292,6 +350,8 @@ function snapshotGuild(): PersistedGuild {
     missionProgress: progress.missionProgress,
     bossDamage: progress.bossDamage,
     bossAttacks: progress.bossAttacks,
+    fragmentShopDay: progress.fragmentShopDay,
+    fragmentShopPurchases: progress.fragmentShopPurchases,
   };
 }
 
@@ -306,6 +366,7 @@ export function savePersistedSession(): void {
     vitals: snapshotVitals(),
     account: snapshotAccount(),
     guild: snapshotGuild(),
+    gems: snapshotGems(),
   };
 
   try {
@@ -354,9 +415,14 @@ export function applyPersistedSession(session: PersistedSession): PlayerCreation
           missionProgress: session.guild.missionProgress,
           bossDamage: session.guild.bossDamage,
           bossAttacks: session.guild.bossAttacks,
+          fragmentShopDay: session.guild.fragmentShopDay,
+          fragmentShopPurchases: session.guild.fragmentShopPurchases,
         }
       : null,
   });
+  if (session.gems) {
+    gemStore.hydrate(session.gems);
+  }
 
   const teamOk = teamStore.hydrate(session.team);
   if (!teamOk) {

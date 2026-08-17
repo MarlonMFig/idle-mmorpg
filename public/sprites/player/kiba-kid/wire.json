@@ -1,0 +1,208 @@
+{
+  "id": "kiba-kid",
+  "name": "Kiba Inuzuka (Kid)",
+  "lookType": 9075,
+  "contentHeight": 51,
+  "idle": {
+    "image": "/sprites/player/kiba-kid/idle.png",
+    "frameWidth": 42,
+    "frameHeight": 55,
+    "frameCount": 6,
+    "contentHeight": 51,
+    "scale": 1,
+    "originX": 0.38095238095238093,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/kiba-kid/walk.png",
+    "frameWidth": 45,
+    "frameHeight": 58,
+    "frameCount": 6,
+    "contentHeight": 51,
+    "scale": 1,
+    "originX": 0.4666666666666667,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/kiba-kid/combo1.png",
+      "frameWidth": 60,
+      "frameHeight": 54,
+      "frameCount": 4,
+      "contentHeight": 51,
+      "scale": 1,
+      "originX": 0.26666666666666666,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/kiba-kid/combo2.png",
+      "frameWidth": 57,
+      "frameHeight": 55,
+      "frameCount": 4,
+      "contentHeight": 51,
+      "scale": 1,
+      "originX": 0.2807017543859649,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/kiba-kid/combo3.png",
+      "frameWidth": 66,
+      "frameHeight": 57,
+      "frameCount": 6,
+      "contentHeight": 51,
+      "scale": 1,
+      "originX": 0.3939393939393939,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/kiba-kid/hurt.png",
+    "frameWidth": 37,
+    "frameHeight": 56,
+    "frameCount": 1,
+    "contentHeight": 51,
+    "scale": 1,
+    "originX": 0.4594594594594595,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/kiba-kid/death.png",
+    "frameWidth": 45,
+    "frameHeight": 44,
+    "frameCount": 1,
+    "contentHeight": 51,
+    "scale": 1,
+    "originX": 0.4222222222222222,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-kiba-kid-1",
+      "skillName": "Stand Medium Punch",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/kiba-kid/special1.png",
+        "frameWidth": 57,
+        "frameHeight": 55,
+        "frameCount": 4,
+        "contentHeight": 51,
+        "scale": 1,
+        "originX": 0.2807017543859649,
+        "durationMs": 280,
+        "hitDelayMs": 150,
+        "frameRate": 17,
+        "skillId": "skill-kiba-kid-1",
+        "skillName": "Stand Medium Punch",
+        "actionId": 210
+      },
+      "fx": {
+        "image": "/sprites/player/kiba-kid/special1-fx.png",
+        "frameWidth": 65,
+        "frameHeight": 63,
+        "frameCount": 3,
+        "contentHeight": 59,
+        "scale": 1,
+        "originX": 0.4461538461538462,
+        "frameRate": 15,
+        "durationMs": 280
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-kiba-kid-2",
+      "skillName": "Stand Strong Punch",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/kiba-kid/special2.png",
+        "frameWidth": 66,
+        "frameHeight": 57,
+        "frameCount": 6,
+        "contentHeight": 51,
+        "scale": 1,
+        "originX": 0.3939393939393939,
+        "durationMs": 283,
+        "hitDelayMs": 200,
+        "frameRate": 18,
+        "skillId": "skill-kiba-kid-2",
+        "skillName": "Stand Strong Punch",
+        "actionId": 220
+      },
+      "fx": {
+        "image": "/sprites/player/kiba-kid/special2-fx.png",
+        "frameWidth": 85,
+        "frameHeight": 59,
+        "frameCount": 4,
+        "contentHeight": 55,
+        "scale": 1,
+        "originX": 0.4470588235294118,
+        "frameRate": 18,
+        "durationMs": 280
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-kiba-kid-3",
+      "skillName": "Counter",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/kiba-kid/special3.png",
+        "frameWidth": 64,
+        "frameHeight": 63,
+        "frameCount": 12,
+        "contentHeight": 51,
+        "scale": 1,
+        "originX": 0.515625,
+        "durationMs": 617,
+        "hitDelayMs": 117,
+        "frameRate": 18,
+        "skillId": "skill-kiba-kid-3",
+        "skillName": "Counter",
+        "actionId": 300
+      },
+      "fx": {
+        "image": "/sprites/player/kiba-kid/special3-fx.png",
+        "frameWidth": 90,
+        "frameHeight": 69,
+        "frameCount": 3,
+        "contentHeight": 65,
+        "scale": 1,
+        "originX": 0.3333333333333333,
+        "frameRate": 18,
+        "durationMs": 280
+      },
+      "index": 2
+    },
+    {
+      "skillId": "skill-kiba-kid-4",
+      "skillName": "Soco abaixado 2",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/kiba-kid/special4.png",
+        "frameWidth": 56,
+        "frameHeight": 49,
+        "frameCount": 4,
+        "contentHeight": 51,
+        "scale": 1,
+        "originX": 0.2857142857142857,
+        "durationMs": 280,
+        "hitDelayMs": 167,
+        "frameRate": 16,
+        "skillId": "skill-kiba-kid-4",
+        "skillName": "Soco abaixado 2",
+        "actionId": 440
+      },
+      "fx": {
+        "image": "/sprites/player/kiba-kid/special4-fx.png",
+        "frameWidth": 56,
+        "frameHeight": 56,
+        "frameCount": 3,
+        "contentHeight": 52,
+        "scale": 1,
+        "originX": 0.2857142857142857,
+        "frameRate": 16,
+        "durationMs": 280
+      },
+      "index": 3
+    }
+  ]
+}

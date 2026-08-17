@@ -38,7 +38,12 @@ export function SkillHotbar() {
   if (filled.length === 0) return null;
 
   return (
-    <HudPanel title="Jutsus" badge="auto" ariaLabel="Habilidades automáticas" className="hud-skills">
+    <HudPanel
+      title="Jutsus"
+      badge="auto"
+      ariaLabel="Habilidades automáticas"
+      className="hud-skills"
+    >
       <div className="hud-skills__bar" role="list" aria-label="Jutsus automáticos">
         {hotbar.map((skillId, index) => {
           const skill = skillId ? getSkill(skillId) : undefined;
@@ -59,7 +64,11 @@ export function SkillHotbar() {
                 skill
                   ? `${skill.name} · Nv. ${skill.requiredLevel ?? 1} · ${
                       SKILL_ELEMENT_LABELS[skill.element]
-                    } · ${skill.damage} DMG${skill.areaRadius ? ' · Área' : ''} (automático)`
+                    } · ${
+                      skill.effect === 'heal'
+                        ? `Cura ${Math.round((skill.healPercent ?? 0) * 100)}% HP`
+                        : `${skill.damage} DMG${skill.areaRadius ? ' · Área' : ''}`
+                    } (automático)`
                   : `Slot ${index + 1} vazio`
               }
               aria-label={

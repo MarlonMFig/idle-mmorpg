@@ -1,4 +1,5 @@
 import type { CharacterClanId, CharacterQuality, CharacterStars } from '@/types/character-meta';
+import type { CharacterPotential } from '@/types/potential';
 import type { StarterCharacterId } from '@/types/player-creation';
 
 /** Personagem na coleção (starter ou selado em caça). Instância única. */
@@ -20,8 +21,10 @@ export interface SealedCharacter {
   previewUrl: string;
   /** Qualidade natural imutável. */
   quality: CharacterQuality;
-  /** Estrelas 0–5 (forja). */
+  /** Estrelas 0–8 (teto por qualidade). */
   stars: CharacterStars;
+  /** Potencial (IVs) rolado no desbloqueio. */
+  potential?: CharacterPotential;
   /** Afinidade de clã fixa do personagem. */
   clanId: CharacterClanId;
   /** Nível próprio (selado herda o da caça; starter começa em 1). */

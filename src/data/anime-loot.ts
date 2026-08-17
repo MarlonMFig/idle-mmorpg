@@ -10,6 +10,7 @@ import {
   type NarutoLootTier,
 } from '@/data/naruto-loot-tiers';
 import { resolveAnimeId } from '@/data/anime';
+import { vipEmptyLootRerollChance, guildLootBonusMultiplier } from '@/lib/progression-bonuses';
 import type { AnimeId } from '@/types/anime';
 import type { ItemRarity, LootDropEntry, RolledLoot } from '@/types/loot';
 
@@ -63,27 +64,28 @@ export function rollNarutoCharacterLoot(
   const tier: NarutoLootTier = getNarutoCharacterTier(characterId) ?? 1;
   const drops: RolledLoot[] = [];
 
-  // Fragmento do personagem (mais raro nos fortes).
+  // Fragmento — chance base sem inflar raridade (VIP só reroll de kill vazio).
   if (characterId && getNarutoCharacterTier(characterId) != null) {
-    if (rng() < getNarutoFragmentChance(tier)) {
+    const chance = getNarutoFragmentChance(tier) * guildLootBonusMultiplier();
+    if (rng() < chance || (rng() < vipEmptyLootRerollChance() && rng() < chance)) {
       const frag = toRolled(narutoFragmentItemId(characterId));
       if (frag) drops.push(frag);
     }
-  } else if (rng() < getNarutoFragmentChance(1)) {
-    const frag = toRolled('item-anime-naruto-fragmento-personagem');
-    if (frag) drops.push(frag);
+  } else {
+    const chance = getNarutoFragmentChance(1) * guildLootBonusMultiplier();
+    if (rng() < chance || (rng() < vipEmptyLootRerollChance() && rng() < chance)) {
+      const frag = toRolled('item-anime-naruto-fragmento-personagem');
+      if (frag) drops.push(frag);
+    }
   }
 
-  // Uma rolagem de raridade → um item.
-  const rarity = rollNarutoMaterialRarity(tier, rng);
+  // Uma rolagem de raridade → um item. VIP: reroll se vazio (não escala Lendário/Mítico).
+  let rarity = rollNarutoMaterialRarity(tier, rng);
+  if (!rarity && vipEmptyLootRerollChance() > 0 && rng() < vipEmptyLootRerollChance()) {
+    rarity = rollNarutoMaterialRarity(tier, rng);
+  }
   if (rarity) {
-    const itemId = pickNarutoMaterialItem(
-      characterId,
-      tier,
-      rarity,
-      itemRarityOf,
-      rng,
-    );
+    const itemId = pickNarutoMaterialItem(characterId, tier, rarity, itemRarityOf, rng);
     if (itemId) {
       const material = toRolled(itemId);
       if (material) drops.push(material);

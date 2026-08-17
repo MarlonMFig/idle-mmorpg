@@ -8,7 +8,7 @@ export interface PlayerInputOptions {
 }
 
 /**
- * Movimento manual WASD / setas — ativo só no hub.
+ * Movimento manual WASD / setas — hub e mapas de exploração.
  */
 export class PlayerInputSystem {
   private readonly cursors: Phaser.Types.Input.Keyboard.CursorKeys | null;
@@ -17,6 +17,7 @@ export class PlayerInputSystem {
   private readonly keyS: Phaser.Input.Keyboard.Key | null;
   private readonly keyD: Phaser.Input.Keyboard.Key | null;
   private enabled = true;
+  private wasMoving = false;
   private readonly lateral: boolean;
 
   constructor(
@@ -47,10 +48,12 @@ export class PlayerInputSystem {
     if (!enabled) this.player.stop();
   }
 
-  update(): void {
+  /** @returns true enquanto alguma tecla de direção estiver pressionada. */
+  update(): boolean {
     if (!this.enabled || dialogueStore.isOpen()) {
       if (dialogueStore.isOpen()) this.player.stop();
-      return;
+      this.wasMoving = false;
+      return false;
     }
 
     let dx = 0;
@@ -63,6 +66,11 @@ export class PlayerInputSystem {
       if (this.keyS?.isDown || this.cursors?.down.isDown) dy += 1;
     }
 
-    this.player.applyMoveInput(dx, dy);
+    // Sem tecla pressionada o controle é devolvido (só um frame de parada), para
+    // não disputar a velocity com a IA idle nos mapas que têm as duas coisas.
+    const moving = dx !== 0 || dy !== 0;
+    if (moving || this.wasMoving) this.player.applyMoveInput(dx, dy);
+    this.wasMoving = moving;
+    return moving;
   }
 }

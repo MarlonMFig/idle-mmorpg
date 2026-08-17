@@ -43,7 +43,7 @@ const HUB_BUILDING_BASE = 1489;
 export const HUB_INTERACTABLES: readonly HubInteractableDef[] = [
   {
     id: 'hub-shop',
-    label: 'Mercado',
+    label: 'Loja',
     action: 'shop',
     color: 0x7cc0ff,
     position: { x: 372, y: HUB_DOOR_Y },

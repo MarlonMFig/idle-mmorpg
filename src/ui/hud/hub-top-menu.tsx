@@ -13,13 +13,16 @@ import { medicStore } from '@/stores/medic-store';
 import { accountStore } from '@/stores/account-store';
 import { guildStore } from '@/stores/guild-store';
 import { teamStore } from '@/stores/team-store';
+import { gemStore } from '@/stores/gem-store';
+import { vipStore } from '@/stores/vip-store';
 import { toggleTeamManager } from '@/ui/team';
 
 type HubMenuId =
   | 'equipe'
   | 'inventario'
   | 'medico'
-  | 'anime-coins'
+  | 'vip'
+  | 'gemas'
   | 'cla'
   | 'guild'
   | 'ranking'
@@ -59,11 +62,18 @@ const HUB_MENU_ITEMS: readonly HubMenuItem[] = [
     title: 'Centro de Cura Ninja',
   },
   {
-    id: 'anime-coins',
-    label: 'Anime Coins',
+    id: 'vip',
+    label: 'VIP',
     iconSrc: '/ui/hub-menu/anime-coins.png',
     tone: '#e8b84a',
-    comingSoon: true,
+    title: 'VIP Shinobi',
+  },
+  {
+    id: 'gemas',
+    label: 'Gemas',
+    iconSrc: '/ui/hub-menu/ranking.png',
+    tone: '#b06dff',
+    title: 'Loja Geral',
   },
   {
     id: 'cla',
@@ -121,6 +131,8 @@ export function HubTopMenu() {
   const analyzerOpen = useStore(huntAnalyzerStore, (s) => s.isOpen);
   const helperOpen = useStore(helperStore, (s) => s.isOpen);
   const medicOpen = useStore(medicStore, (s) => s.isOpen);
+  const vipOpen = useStore(vipStore, (s) => s.isOpen);
+  const gemOpen = useStore(gemStore, (s) => s.isOpen);
   const [toast, setToast] = useState<string | null>(null);
 
   const flash = useCallback((message: string) => {
@@ -154,8 +166,11 @@ export function HubTopMenu() {
         case 'medico':
           medicStore.toggleOpen();
           return;
-        case 'anime-coins':
-          flash('Anime Coins — em breve');
+        case 'vip':
+          vipStore.toggleOpen();
+          return;
+        case 'gemas':
+          gemStore.toggleOpen();
           return;
         case 'guild':
           guildStore.toggleOpen();
@@ -179,7 +194,9 @@ export function HubTopMenu() {
             (item.id === 'guild' && guildOpen) ||
             (item.id === 'hunt-analyzer' && analyzerOpen) ||
             (item.id === 'helper' && helperOpen) ||
-            (item.id === 'medico' && medicOpen);
+            (item.id === 'medico' && medicOpen) ||
+            (item.id === 'vip' && vipOpen) ||
+            (item.id === 'gemas' && gemOpen);
 
           return (
             <button

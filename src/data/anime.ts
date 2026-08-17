@@ -1,23 +1,4 @@
-import { BLACK_CLOVER_LOOK_TYPES } from '@/data/black-clover-packs';
-import { JUJUTSU_KAISEN_LOOK_TYPES } from '@/data/jujutsu-kaisen-packs';
-import { ICHIGO_LOOK_TYPE } from '@/data/jump-force-packs';
-import {
-  ASTA_CURATED_LOOK_TYPE,
-  HITSUGAYA_CURATED_LOOK_TYPE,
-  LUFFY_CURATED_LOOK_TYPE,
-  MOMO_HINAMORI_CURATED_LOOK_TYPE,
-} from '@/data/character-packs';
 import { ANIME_IDS, type AnimeId } from '@/types/anime';
-
-/**
- * lookTypes Bleach / Shinigami (demais lookTypes curados → Naruto por padrão).
- * Ampliar quando packs de outras franquias entrarem.
- */
-const BLEACH_LOOK_TYPES = new Set<number>([
-  HITSUGAYA_CURATED_LOOK_TYPE,
-  MOMO_HINAMORI_CURATED_LOOK_TYPE,
-  ICHIGO_LOOK_TYPE,
-]);
 
 /** Tokens em source / sourceId → anime. */
 const SOURCE_HINTS: Array<{ anime: AnimeId; tokens: readonly string[] }> = [
@@ -58,23 +39,12 @@ const SOURCE_HINTS: Array<{ anime: AnimeId; tokens: readonly string[] }> = [
       'goku',
       'vegeta',
       'gohan',
+      'bardock',
+      'beerus',
+      'broly',
       'piccolo',
       'freeza',
       'frieza',
-      'asta',
-      'black-clover',
-      'blackclover',
-      'mereoleona',
-      'vanica',
-      'zenon',
-      'noelle',
-      'yuno',
-      'yami',
-      'julius',
-      'langris',
-      'gauche',
-      'zagred',
-      'dorothy',
     ],
   },
   {
@@ -136,27 +106,6 @@ export function resolveAnimeId(input: {
   if (input.sourceId) {
     const fromId = matchSourceHint(input.sourceId);
     if (fromId) return fromId;
-  }
-  if (input.lookType != null && BLEACH_LOOK_TYPES.has(input.lookType)) {
-    return 'bleach';
-  }
-  if (input.lookType === ASTA_CURATED_LOOK_TYPE) {
-    return 'dragon-ball';
-  }
-  if (
-    input.lookType != null &&
-    (BLACK_CLOVER_LOOK_TYPES as readonly number[]).includes(input.lookType)
-  ) {
-    return 'dragon-ball';
-  }
-  if (input.lookType === LUFFY_CURATED_LOOK_TYPE) {
-    return 'one-piece';
-  }
-  if (
-    input.lookType != null &&
-    (JUJUTSU_KAISEN_LOOK_TYPES as readonly number[]).includes(input.lookType)
-  ) {
-    return 'jujutsu';
   }
   return 'naruto';
 }

@@ -1,11 +1,24 @@
+import {
+  FRAGMENTS_PER_STAR,
+  maxStarsForQuality,
+  starAttributeMultiplier,
+  startingStarsForQuality,
+  STAR_BONUS_PER_STAR,
+} from '@/constants/aiw-quality';
 import type { CharacterClanId, CharacterQuality, CharacterStars } from '@/types/character-meta';
 import { CHARACTER_CLAN_IDS } from '@/types/character-meta';
 
-/** Estrelas máximas por personagem. */
-export const MAX_CHARACTER_STARS = 5 as const;
+/** @deprecated use maxStarsForQuality */
+export const MAX_CHARACTER_STARS = 8 as const;
 
-/** Bônus linear por estrela nos atributos base (não composto). */
-export const STAR_BONUS_PER_STAR = 0.02;
+/** Reexport spec: +8% por estrela e helpers de qualidade. */
+export {
+  STAR_BONUS_PER_STAR,
+  FRAGMENTS_PER_STAR,
+  maxStarsForQuality,
+  startingStarsForQuality,
+  starAttributeMultiplier,
+} from '@/constants/aiw-quality';
 
 /**
  * Melhoria de dano da habilidade especial em 3★.
@@ -75,15 +88,15 @@ export const CHARACTER_CLAN_LABELS: Record<CharacterClanId, string> = {
   guerreiro: 'Guerreiro',
 };
 
-/** Cores de borda/badge por qualidade (UI). */
+/** Cores de borda/badge por qualidade (spec AIW). */
 export const CHARACTER_QUALITY_COLORS: Record<CharacterQuality, string> = {
-  D: '#8b95a1',
-  C: '#4caf6a',
-  B: '#4a9fff',
-  A: '#b06dff',
-  S: '#e8b84a',
-  SS: '#ff6b9d',
-  SSS: '#ff5a4a',
+  D: '#9aa3ad',
+  C: '#5fb85f',
+  B: '#4a90d9',
+  A: '#a86ede',
+  S: '#f0932b',
+  SS: '#e34a4a',
+  SSS: '#e34a4a',
 };
 
 /** Cor tema do clã (UI). */
@@ -116,14 +129,10 @@ export const CHARACTER_CLAN_ICONS: Record<CharacterClanId, string> = {
   guerreiro: '/ui/clans/guerreiro.png',
 };
 
-/** Multiplicador de atributos base: 1 + stars × 0.02 */
-export function starAttributeMultiplier(stars: number): number {
-  const clamped = Math.max(0, Math.min(MAX_CHARACTER_STARS, Math.floor(stars)));
-  return 1 + clamped * STAR_BONUS_PER_STAR;
-}
 
-export function clampStars(value: number): CharacterStars {
-  const n = Math.max(0, Math.min(MAX_CHARACTER_STARS, Math.floor(value)));
+export function clampStars(value: number, quality: CharacterQuality = 'D'): CharacterStars {
+  const cap = maxStarsForQuality(quality);
+  const n = Math.max(0, Math.min(cap, Math.floor(value)));
   return n as CharacterStars;
 }
 

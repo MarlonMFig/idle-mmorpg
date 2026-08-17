@@ -6,7 +6,6 @@ import {
   PLAYER_JUTSU_GAP_MS,
 } from '@/constants/combat';
 import { SKILL_DEFAULT_RANGE } from '@/constants/skill';
-import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
 import { getSkill } from '@/data/skills';
 import type { Player } from '@/entities/player';
 import type { Enemy } from '@/entities/enemy';
@@ -20,10 +19,12 @@ import { vitalsStore } from '@/stores/vitals-store';
 import { autoHelperSystem } from '@/systems/auto-helper-system';
 import { handleEnemyKill } from '@/systems/combat-rewards';
 import type { EnemyManager } from '@/systems/enemy-manager';
-import { findNearestAliveEnemy } from '@/systems/find-nearest-enemy';
+import { findNearestAliveEnemy, findUnclaimedEnemy } from '@/systems/find-nearest-enemy';
 import type { LootManager } from '@/systems/loot-manager';
+import { playPackFx, scheduleSkillFx } from '@/systems/pack-fx';
 import { playPlayerPulse } from '@/systems/player-feedback';
 import { SkillVfx } from '@/systems/skill-vfx';
+import { LEADER_CLAIM_ID, type TargetClaims } from '@/systems/target-claims';
 import type { SkillDefinition } from '@/types/skill';
 
 /**
@@ -46,6 +47,8 @@ export class CombatSystem {
     private readonly player: Player,
     private readonly enemyManager: EnemyManager,
     private readonly lootManager: LootManager,
+    /** Reserva de alvos da equipe: o líder não briga pelo alvo dos aliados. */
+    private readonly claims: TargetClaims | null = null,
   ) {
     this.vfx = new SkillVfx(scene);
   }
@@ -54,10 +57,7 @@ export class CombatSystem {
     if (this.player.isDead() || vitalsStore.isDead()) {
       this.enemyManager.update(time);
       // Ligou Auto Revive depois de morrer: agenda tentativa.
-      if (
-        this.playerRespawnAt <= 0 &&
-        helperStore.getSnapshot().autoRevive
-      ) {
+      if (this.playerRespawnAt <= 0 && helperStore.getSnapshot().autoRevive) {
         this.playerRespawnAt = time + PLAYER_DEATH_RESPAWN_MS;
       }
       this.tryPlayerRespawn(time);
@@ -69,6 +69,8 @@ export class CombatSystem {
       this.applyEnemyHit(raw);
       if (this.player.isDead() || vitalsStore.isDead()) return;
     }
+
+    autoHelperSystem.tick(time);
 
     skillsStore.consumePendingCast();
 
@@ -103,10 +105,7 @@ export class CombatSystem {
   private applyEnemyHit(rawDamage: number): void {
     if (rawDamage <= 0 || this.player.isDead()) return;
 
-    const { damage, died } = vitalsStore.applyDamage(
-      rawDamage,
-      attributesStore.getDefense(),
-    );
+    const { damage, died } = vitalsStore.applyDamage(rawDamage, attributesStore.getDefense());
     if (damage <= 0) return;
 
     if (died) {
@@ -154,14 +153,17 @@ export class CombatSystem {
   private tryBasicAttack(time: number): void {
     if (time - this.lastActionAt < PLAYER_ATTACK_COOLDOWN_MS) return;
 
-    const target = findNearestAliveEnemy(
+    const target = findUnclaimedEnemy(
       this.enemyManager,
       this.player.x,
       this.player.y,
       PLAYER_ATTACK_RANGE * this.player.worldScale,
+      this.claims,
+      LEADER_CLAIM_ID,
     );
     if (!target) return;
 
+    this.claims?.claim(LEADER_CLAIM_ID, target.id);
     this.lastActionAt = time;
     this.player.faceToward(target.sprite.x, target.sprite.y);
     const hitDelay = this.player.playAttack();
@@ -169,20 +171,20 @@ export class CombatSystem {
 
     const attackSheet = this.player.getCurrentAttackSheet();
     if (attackSheet?.fx) {
-      const releaseAt =
-        attackSheet.fxReleaseMs ?? Math.max(0, Math.floor(hitDelay * 0.55));
+      const releaseAt = attackSheet.fxReleaseMs ?? Math.max(0, Math.floor(hitDelay * 0.55));
       const attach = attackSheet.fxAttach ?? 'caster';
       const fromX = this.player.x;
       const fromY = this.player.y;
       const fxX = attach === 'caster' ? fromX : target.sprite.x;
       const fxY = attach === 'caster' ? fromY : target.sprite.y;
       this.scene.time.delayedCall(releaseAt, () => {
-        this.playPackFx(attackSheet.fx!.key, fxX, fxY, {
+        playPackFx(this.scene, this.player, attackSheet.fx!.key, fxX, fxY, {
           ground: attackSheet.fxGround ?? attach === 'caster',
           bodyH: attackSheet.contentHeight,
           fxH: attackSheet.fx!.contentHeight ?? attackSheet.fx!.frameHeight,
           blend: attackSheet.fxBlend,
           scaleMult: attackSheet.fxScale,
+          originX: attackSheet.fx!.originX,
         });
       });
     }
@@ -211,13 +213,28 @@ export class CombatSystem {
       return;
     }
 
+    if (skill.effect === 'heal') {
+      const vitals = vitalsStore.getSnapshot();
+      if (vitals.hp >= vitals.hpMax) {
+        this.step = (index + 1) % filled.length;
+        this.tryBasicAttack(time);
+        return;
+      }
+
+      this.lastActionAt = time;
+      this.lastJutsuAt = time;
+      this.cast(skill, this.player.x, this.player.y, () => {
+        const current = vitalsStore.getSnapshot();
+        const amount = Math.max(1, Math.floor(current.hpMax * (skill.healPercent ?? 0)));
+        const healed = vitalsStore.heal(amount);
+        if (healed > 0) this.vfx.healNumber(this.player.x, this.player.y, healed);
+      });
+      this.step = (index + 1) % filled.length;
+      return;
+    }
+
     const range = (skill.range ?? SKILL_DEFAULT_RANGE) * this.player.worldScale;
-    const target = findNearestAliveEnemy(
-      this.enemyManager,
-      this.player.x,
-      this.player.y,
-      range,
-    );
+    const target = findNearestAliveEnemy(this.enemyManager, this.player.x, this.player.y, range);
     if (!target) return;
 
     this.lastActionAt = time;
@@ -225,11 +242,7 @@ export class CombatSystem {
     this.cast(skill, target.sprite.x, target.sprite.y, () => {
       let damage = skill.damage + Math.floor(attributesStore.getStrength() * 0.35);
       const active = teamStore.getActive();
-      if (
-        active &&
-        active.stars >= 3 &&
-        STAR_3_SPECIAL_DAMAGE_BONUS != null
-      ) {
+      if (active && active.stars >= 3 && STAR_3_SPECIAL_DAMAGE_BONUS != null) {
         damage = Math.floor(damage * (1 + STAR_3_SPECIAL_DAMAGE_BONUS));
       }
       if (skill.areaRadius != null) {
@@ -280,67 +293,15 @@ export class CombatSystem {
         if (skill.dashToTarget) {
           this.dashPlayerToTarget(toX, toY, hitDelay, skill);
         }
-        if (skillAnim?.fx) {
-          const flightN = skillAnim.fxFlightFrameCount ?? 0;
-          if (flightN > 0) {
-            // Projétil só sai no frame de arremesso (nunca no wind-up / levantar).
-            const releaseAt =
-              skillAnim.fxReleaseMs ??
-              Math.max(0, Math.floor(hitDelay * 0.72));
-            // Chega no (ou logo antes do) hitDelay — sem estourar o impact cedo no alvo.
-            const travelMs = Math.max(140, hitDelay - releaseAt);
-            this.scene.time.delayedCall(releaseAt, () => {
-              try {
-                this.playPackThrowFx(
-                  skillAnim.fx!,
-                  flightN,
-                  fromX,
-                  fromY,
-                  toX,
-                  toY,
-                  travelMs,
-                  {
-                    rotate: skillAnim.fxFlightRotate !== false && !skillAnim.fxFlightFlip,
-                    flip: Boolean(skillAnim.fxFlightFlip),
-                    bodyH: skillAnim.contentHeight,
-                    fxH: skillAnim.fx!.contentHeight ?? skillAnim.fx!.frameHeight,
-                  },
-                );
-              } catch (error) {
-                console.warn('[CombatSystem] falha no FX de projétil', error);
-              }
-            });
-          } else {
-            const releaseAt =
-              skillAnim.fxReleaseMs ?? Math.max(0, hitDelay - 80);
-            const attach = skillAnim.fxAttach ?? 'target';
-            const fxX = attach === 'caster' ? fromX : toX;
-            const fxY = attach === 'caster' ? fromY : toY;
-            this.scene.time.delayedCall(releaseAt, () => {
-              this.playPackFx(skillAnim.fx!.key, fxX, fxY, {
-                ground: skillAnim.fxGround ?? attach === 'caster',
-                bodyH: skillAnim.contentHeight,
-                fxH: skillAnim.fx!.contentHeight ?? skillAnim.fx!.frameHeight,
-              });
-            });
-          }
-        }
-        if (skillAnim?.fxSecondary) {
-          const releaseAt =
-            skillAnim.fxSecondaryReleaseMs ?? hitDelay;
-          const attach = skillAnim.fxSecondaryAttach ?? 'caster';
-          // Re-read live feet at impact (Lee may have dashed/moved during air time).
-          this.scene.time.delayedCall(releaseAt, () => {
-            const fxX = attach === 'caster' ? this.player.x : toX;
-            const fxY = attach === 'caster' ? this.player.y : toY;
-            this.playPackFx(skillAnim.fxSecondary!.key, fxX, fxY, {
-              ground: attach === 'caster',
-              bodyH: skillAnim.contentHeight,
-              fxH:
-                skillAnim.fxSecondary!.contentHeight ??
-                skillAnim.fxSecondary!.frameHeight,
-            });
-          });
+        if (skillAnim) {
+          scheduleSkillFx(
+            this.scene,
+            this.player,
+            skillAnim,
+            hitDelay,
+            { x: fromX, y: fromY },
+            { x: toX, y: toY },
+          );
         }
         this.scene.time.delayedCall(hitDelay, onHit);
         return;
@@ -370,8 +331,7 @@ export class CombatSystem {
     hitDelayMs: number,
     skill: SkillDefinition,
   ): void {
-    const contact =
-      (skill.contactRange ?? PLAYER_ATTACK_RANGE * 0.85) * this.player.worldScale;
+    const contact = (skill.contactRange ?? PLAYER_ATTACK_RANGE * 0.85) * this.player.worldScale;
     const fromX = this.player.x;
     const fromY = this.player.y;
     const dist = Phaser.Math.Distance.Between(fromX, fromY, toX, toY);
@@ -421,217 +381,5 @@ export class CombatSystem {
   private onKill(enemy: Enemy, dropX: number, dropY: number): void {
     handleEnemyKill(enemy, this.lootManager, dropX, dropY);
     this.enemyManager.onEnemyKilled(enemy.id);
-  }
-
-  private playPackFx(
-    textureKey: string,
-    x: number,
-    y: number,
-    opts?: {
-      ground?: boolean;
-      bodyH?: number;
-      fxH?: number;
-      blend?: 'normal' | 'add';
-      scaleMult?: number;
-    },
-  ): void {
-    const animKey = `fx-${textureKey}`;
-    if (!this.scene.textures.exists(textureKey)) return;
-
-    const ground = opts?.ground === true;
-    // Native FX sheets stay 1:1 pixels; fit to the character body so a 200px
-    // burst does not tower over a 50px Asta (Phaser nearest, no sheet downsample).
-    const bodyH = opts?.bodyH ?? 0;
-    const fxH = opts?.fxH ?? 0;
-    const tex = this.scene.textures.get(textureKey);
-    const frame = tex.get(0);
-    const fxW = frame && typeof frame.width === 'number' ? frame.width : 0;
-    const fitH =
-      bodyH > 0 && fxH > bodyH * 1.35 ? Math.min(1, (bodyH * 1.85) / fxH) : 1;
-    const fitW =
-      bodyH > 0 && fxW > bodyH * 4 ? Math.min(1, (bodyH * 5.5) / fxW) : 1;
-    const fit = Math.min(fitH, fitW);
-    const scaleMult = opts?.scaleMult && opts.scaleMult > 0 ? opts.scaleMult : 1;
-    // Ground kick dust / rock slam sits at feet (origin bottom); flash is mid-body.
-    const bodyLift = this.bodyLift();
-    const fx = this.scene.add.sprite(x, ground ? y : y - bodyLift * 0.5, textureKey, 0);
-    fx.setOrigin(0.5, ground ? 1 : 0.5);
-    fx.setDepth(22);
-    fx.setScale(this.player.sprite.scaleX * (ground ? 1.05 : 1.15) * fit * scaleMult);
-    if (!ground) this.clampAboveFloor(fx, y, bodyLift);
-    if (opts?.blend === 'add') {
-      fx.setBlendMode(Phaser.BlendModes.ADD);
-    }
-
-    if (this.scene.anims.exists(animKey)) {
-      fx.play(animKey);
-      const tex = this.scene.textures.get(textureKey);
-      const sheetFrames = tex
-        .getFrameNames()
-        .filter((name) => name !== '__BASE').length;
-      // Single-frame hold/fade; multi-frame plays through then destroys.
-      if (sheetFrames <= 1) {
-        this.scene.tweens.add({
-          targets: fx,
-          alpha: 0,
-          scaleX: fx.scaleX * 1.12,
-          scaleY: fx.scaleY * 1.12,
-          duration: 320,
-          delay: ground ? 40 : 90,
-          onComplete: () => fx.destroy(),
-        });
-      } else {
-        fx.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => fx.destroy());
-      }
-    } else {
-      this.scene.tweens.add({
-        targets: fx,
-        alpha: 0,
-        scale: 1.2,
-        duration: 280,
-        onComplete: () => fx.destroy(),
-      });
-    }
-  }
-
-  /**
-   * Projétil com frames de voo em loop, depois strip de impacto no alvo.
-   * Usado no arremesso de pedra do Jirobo (fxFlightFrameCount).
-   */
-  private playPackThrowFx(
-    fxDef: { key: string; frameCount: number },
-    flightFrameCount: number,
-    fromX: number,
-    fromY: number,
-    toX: number,
-    toY: number,
-    travelMs: number,
-    opts?: { rotate?: boolean; flip?: boolean; bodyH?: number; fxH?: number },
-  ): void {
-    const textureKey = fxDef.key;
-    if (!this.scene.textures.exists(textureKey)) return;
-
-    const flightEnd = Math.max(0, Math.min(flightFrameCount, fxDef.frameCount) - 1);
-    const flightAnimKey = `fx-${textureKey}-flight`;
-    const impactAnimKey = `fx-${textureKey}-impact`;
-
-    this.ensureSpriteAnim(flightAnimKey, textureKey, 0, flightEnd, 10, -1);
-    if (flightFrameCount < fxDef.frameCount) {
-      this.ensureSpriteAnim(
-        impactAnimKey,
-        textureKey,
-        flightFrameCount,
-        fxDef.frameCount - 1,
-        12,
-        0,
-      );
-    }
-
-    const bodyLift = this.bodyLift();
-    const startX = fromX + (toX >= fromX ? 10 : -10);
-    const startY = fromY - bodyLift * 0.5;
-    const endX = toX;
-    const endY = toY - bodyLift * 0.45;
-
-    const bodyH = opts?.bodyH ?? 0;
-    const fxH = opts?.fxH ?? 0;
-    const fit =
-      bodyH > 0 && fxH > bodyH * 1.35 ? Math.min(1, (bodyH * 1.85) / fxH) : 1;
-
-    const rock = this.scene.add.sprite(startX, startY, textureKey, 0);
-    rock.setOrigin(0.5, 0.5);
-    rock.setDepth(22);
-    rock.setScale(this.player.sprite.scaleX * 1.2 * fit);
-    this.clampAboveFloor(rock, fromY, bodyLift);
-    const landingY = Math.min(endY, toY + bodyLift * 0.1 - rock.displayHeight / 2);
-    if (opts?.flip) {
-      rock.setFlipX(endX < startX);
-    } else if (opts?.rotate !== false) {
-      const angle = Phaser.Math.Angle.Between(startX, startY, endX, endY);
-      rock.setRotation(angle);
-    }
-
-    this.safePlay(rock, flightAnimKey);
-
-    this.scene.tweens.add({
-      targets: rock,
-      x: endX,
-      y: landingY,
-      duration: travelMs,
-      ease: 'Cubic.easeIn',
-      onComplete: () => {
-        if (!rock.active) return;
-        rock.setRotation(0);
-        if (this.safePlay(rock, impactAnimKey)) {
-          rock.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => rock.destroy());
-        } else {
-          this.scene.tweens.add({
-            targets: rock,
-            alpha: 0,
-            duration: 200,
-            onComplete: () => rock.destroy(),
-          });
-        }
-      },
-    });
-  }
-
-  /** Altura do corpo do jogador em px de mundo (acompanha o layoutScale do mapa). */
-  private bodyLift(): number {
-    return CHARACTER_DISPLAY_HEIGHT * this.player.worldScale;
-  }
-
-  /**
-   * Sobe o FX até a base encostar no piso. Sem isto um efeito grande — a escala
-   * segue o `layoutScale` do mapa — nasce centrado nos pés e some no chão.
-   */
-  private clampAboveFloor(
-    fx: Phaser.GameObjects.Sprite,
-    feetY: number,
-    bodyLift: number,
-  ): void {
-    const maxCenterY = feetY + bodyLift * 0.1 - fx.displayHeight / 2;
-    fx.y = Math.min(fx.y, maxCenterY);
-  }
-
-  /**
-   * Cria a animação só com frames reais. `generateFrameNumbers` vazio ainda
-   * registra a key no Phaser — e `play()` estoura em `duration` undefined.
-   */
-  private ensureSpriteAnim(
-    key: string,
-    textureKey: string,
-    start: number,
-    end: number,
-    frameRate: number,
-    repeat: number,
-  ): boolean {
-    if (end < start) return false;
-    const frames = this.scene.anims.generateFrameNumbers(textureKey, { start, end });
-    if (!frames.length) {
-      if (this.scene.anims.exists(key)) this.scene.anims.remove(key);
-      return false;
-    }
-    if (this.scene.anims.exists(key)) {
-      const existing = this.scene.anims.get(key);
-      if (existing && existing.frames.length > 0) return true;
-      this.scene.anims.remove(key);
-    }
-    this.scene.anims.create({ key, frames, frameRate, repeat });
-    return true;
-  }
-
-  /** Toca animação só se ela tiver frames; nunca deixa o update do combate cair. */
-  private safePlay(sprite: Phaser.GameObjects.Sprite, animKey: string): boolean {
-    const anim = this.scene.anims.get(animKey);
-    if (!anim || anim.frames.length === 0) return false;
-    try {
-      sprite.play(animKey);
-      return true;
-    } catch (error) {
-      console.warn(`[CombatSystem] animação inválida: ${animKey}`, error);
-      if (this.scene.anims.exists(animKey)) this.scene.anims.remove(animKey);
-      return false;
-    }
   }
 }

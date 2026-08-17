@@ -74,6 +74,8 @@ export interface EnemyDefinition {
   sealable?: EnemySealableIdentity;
   /** Sem auto-respawn (duelo sequencial). */
   noRespawn?: boolean;
+  /** Override do ENEMY_RESPAWN_MS (ex.: mapa de teste farm). */
+  respawnMs?: number;
 }
 
 export interface EnemyRuntimeStats {

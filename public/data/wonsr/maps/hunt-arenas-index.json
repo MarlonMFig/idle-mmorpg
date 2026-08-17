@@ -7,23 +7,23 @@
       "label": "Floresta da Morte",
       "image": "/maps/hunt-forest-clearing.png",
       "tmx": "/maps/hunt-forest-clearing.tmx",
-      "width": 3840,
+      "width": 4096,
       "height": 2160,
-      "cols": 240,
+      "cols": 256,
       "rows": 135,
       "lateralFloorY": 1400,
-      "layoutScale": 6.75,
+      "layoutScale": 2.1,
       "spawn": {
-        "x": 1920,
+        "x": 2048,
         "y": 1400
       },
       "enemySpawns": [
         {
-          "x": 3680,
+          "x": 3808,
           "y": 1400
         },
         {
-          "x": 160,
+          "x": 288,
           "y": 1400
         }
       ]
@@ -34,23 +34,23 @@
       "label": "Vale do Fim",
       "image": "/maps/hunt-vale-do-fim.png",
       "tmx": "/maps/hunt-vale-do-fim.tmx",
-      "width": 3840,
+      "width": 4096,
       "height": 2160,
-      "cols": 240,
+      "cols": 256,
       "rows": 135,
       "lateralFloorY": 1384,
-      "layoutScale": 6.75,
+      "layoutScale": 2.1,
       "spawn": {
-        "x": 1920,
+        "x": 2048,
         "y": 1384
       },
       "enemySpawns": [
         {
-          "x": 3680,
+          "x": 3808,
           "y": 1384
         },
         {
-          "x": 160,
+          "x": 288,
           "y": 1384
         }
       ]
@@ -61,24 +61,24 @@
       "label": "Campo de Treinamento",
       "image": "/maps/hunt-campo-treinamento.png",
       "tmx": "/maps/hunt-campo-treinamento.tmx",
-      "width": 3840,
+      "width": 4096,
       "height": 2160,
-      "cols": 240,
+      "cols": 256,
       "rows": 135,
-      "lateralFloorY": 1400,
-      "layoutScale": 6.75,
+      "lateralFloorY": 1386,
+      "layoutScale": 2.1,
       "spawn": {
-        "x": 1920,
-        "y": 1400
+        "x": 2048,
+        "y": 1386
       },
       "enemySpawns": [
         {
-          "x": 3680,
-          "y": 1400
+          "x": 3808,
+          "y": 1386
         },
         {
-          "x": 160,
-          "y": 1400
+          "x": 288,
+          "y": 1386
         }
       ]
     },
@@ -88,23 +88,23 @@
       "label": "Ponte da Névoa",
       "image": "/maps/hunt-ponte-pais-onda.png",
       "tmx": "/maps/hunt-ponte-pais-onda.tmx",
-      "width": 3840,
+      "width": 4096,
       "height": 2160,
-      "cols": 240,
+      "cols": 256,
       "rows": 135,
       "lateralFloorY": 1470,
-      "layoutScale": 6.75,
+      "layoutScale": 2.1,
       "spawn": {
-        "x": 1920,
+        "x": 2048,
         "y": 1470
       },
       "enemySpawns": [
         {
-          "x": 3680,
+          "x": 3808,
           "y": 1470
         },
         {
-          "x": 160,
+          "x": 288,
           "y": 1470
         }
       ]
@@ -115,23 +115,23 @@
       "label": "Caverna Akatsuki",
       "image": "/maps/hunt-esconderijo-akatsuki.png",
       "tmx": "/maps/hunt-esconderijo-akatsuki.tmx",
-      "width": 3840,
+      "width": 4096,
       "height": 2160,
-      "cols": 240,
+      "cols": 256,
       "rows": 135,
       "lateralFloorY": 1400,
-      "layoutScale": 6.75,
+      "layoutScale": 2.1,
       "spawn": {
-        "x": 1920,
+        "x": 2048,
         "y": 1400
       },
       "enemySpawns": [
         {
-          "x": 3680,
+          "x": 3808,
           "y": 1400
         },
         {
-          "x": 160,
+          "x": 288,
           "y": 1400
         }
       ]
@@ -142,23 +142,23 @@
       "label": "Esconderijo Orochimaru",
       "image": "/maps/hunt-lab-orochimaru.png",
       "tmx": "/maps/hunt-lab-orochimaru.tmx",
-      "width": 3840,
+      "width": 4096,
       "height": 2160,
-      "cols": 240,
+      "cols": 256,
       "rows": 135,
       "lateralFloorY": 1400,
-      "layoutScale": 6.75,
+      "layoutScale": 2.1,
       "spawn": {
-        "x": 1920,
+        "x": 2048,
         "y": 1400
       },
       "enemySpawns": [
         {
-          "x": 3680,
+          "x": 3808,
           "y": 1400
         },
         {
-          "x": 160,
+          "x": 288,
           "y": 1400
         }
       ]
@@ -169,24 +169,24 @@
       "label": "Deserto da Areia",
       "image": "/maps/hunt-pais-do-vento.png",
       "tmx": "/maps/hunt-pais-do-vento.tmx",
-      "width": 3840,
+      "width": 4096,
       "height": 2160,
-      "cols": 240,
+      "cols": 256,
       "rows": 135,
-      "lateralFloorY": 1400,
-      "layoutScale": 6.75,
+      "lateralFloorY": 1387,
+      "layoutScale": 2.1,
       "spawn": {
-        "x": 1920,
-        "y": 1400
+        "x": 2048,
+        "y": 1387
       },
       "enemySpawns": [
         {
-          "x": 3680,
-          "y": 1400
+          "x": 3808,
+          "y": 1387
         },
         {
-          "x": 160,
-          "y": 1400
+          "x": 288,
+          "y": 1387
         }
       ]
     },
@@ -196,23 +196,23 @@
       "label": "País do Ferro",
       "image": "/maps/hunt-arena-exame-chunnin.png",
       "tmx": "/maps/hunt-arena-exame-chunnin.tmx",
-      "width": 3840,
+      "width": 4096,
       "height": 2160,
-      "cols": 240,
+      "cols": 256,
       "rows": 135,
       "lateralFloorY": 1400,
-      "layoutScale": 6.75,
+      "layoutScale": 2.1,
       "spawn": {
-        "x": 1920,
+        "x": 2048,
         "y": 1400
       },
       "enemySpawns": [
         {
-          "x": 3680,
+          "x": 3808,
           "y": 1400
         },
         {
-          "x": 160,
+          "x": 288,
           "y": 1400
         }
       ]
@@ -223,23 +223,23 @@
       "label": "Monte Myoboku",
       "image": "/maps/hunt-monte-myoboku.png",
       "tmx": "/maps/hunt-monte-myoboku.tmx",
-      "width": 3840,
+      "width": 4096,
       "height": 2160,
-      "cols": 240,
+      "cols": 256,
       "rows": 135,
       "lateralFloorY": 1440,
-      "layoutScale": 5.75,
+      "layoutScale": 2.1,
       "spawn": {
-        "x": 1920,
+        "x": 2048,
         "y": 1440
       },
       "enemySpawns": [
         {
-          "x": 3680,
+          "x": 3808,
           "y": 1440
         },
         {
-          "x": 160,
+          "x": 288,
           "y": 1440
         }
       ]
@@ -250,23 +250,23 @@
       "label": "Arena Exame Chunin",
       "image": "/maps/hunt-arena-exame-chunin.png",
       "tmx": "/maps/hunt-arena-exame-chunin.tmx",
-      "width": 3840,
+      "width": 4096,
       "height": 2160,
-      "cols": 240,
+      "cols": 256,
       "rows": 135,
       "lateralFloorY": 1500,
-      "layoutScale": 5.75,
+      "layoutScale": 2.1,
       "spawn": {
-        "x": 1920,
+        "x": 2048,
         "y": 1500
       },
       "enemySpawns": [
         {
-          "x": 3680,
+          "x": 3808,
           "y": 1500
         },
         {
-          "x": 160,
+          "x": 288,
           "y": 1500
         }
       ]
@@ -277,23 +277,23 @@
       "label": "Distrito Uchiha",
       "image": "/maps/hunt-distrito-uchiha.png",
       "tmx": "/maps/hunt-distrito-uchiha.tmx",
-      "width": 3840,
+      "width": 4096,
       "height": 2160,
-      "cols": 240,
+      "cols": 256,
       "rows": 135,
       "lateralFloorY": 1420,
-      "layoutScale": 5.75,
+      "layoutScale": 2.1,
       "spawn": {
-        "x": 1920,
+        "x": 2048,
         "y": 1420
       },
       "enemySpawns": [
         {
-          "x": 3680,
+          "x": 3808,
           "y": 1420
         },
         {
-          "x": 160,
+          "x": 288,
           "y": 1420
         }
       ]
@@ -304,23 +304,23 @@
       "label": "Campo de Guerra Ninja",
       "image": "/maps/hunt-campo-guerra-ninja.png",
       "tmx": "/maps/hunt-campo-guerra-ninja.tmx",
-      "width": 3840,
+      "width": 4096,
       "height": 2160,
-      "cols": 240,
+      "cols": 256,
       "rows": 135,
       "lateralFloorY": 1390,
-      "layoutScale": 5.75,
+      "layoutScale": 2.1,
       "spawn": {
-        "x": 1920,
+        "x": 2048,
         "y": 1390
       },
       "enemySpawns": [
         {
-          "x": 3680,
+          "x": 3808,
           "y": 1390
         },
         {
-          "x": 160,
+          "x": 288,
           "y": 1390
         }
       ]
@@ -331,23 +331,23 @@
       "label": "Planeta Namekusei",
       "image": "/maps/hunt-namekusei.png",
       "tmx": "/maps/hunt-namekusei.tmx",
-      "width": 3840,
+      "width": 4096,
       "height": 2160,
-      "cols": 240,
+      "cols": 256,
       "rows": 135,
       "lateralFloorY": 1384,
-      "layoutScale": 5.75,
+      "layoutScale": 2.1,
       "spawn": {
-        "x": 1920,
+        "x": 2048,
         "y": 1384
       },
       "enemySpawns": [
         {
-          "x": 3680,
+          "x": 3808,
           "y": 1384
         },
         {
-          "x": 160,
+          "x": 288,
           "y": 1384
         }
       ]
@@ -358,23 +358,23 @@
       "label": "Torneio de Artes Marciais",
       "image": "/maps/hunt-torneio-artes-marciais.png",
       "tmx": "/maps/hunt-torneio-artes-marciais.tmx",
-      "width": 3840,
+      "width": 4096,
       "height": 2160,
-      "cols": 240,
+      "cols": 256,
       "rows": 135,
       "lateralFloorY": 1460,
-      "layoutScale": 5.75,
+      "layoutScale": 2.1,
       "spawn": {
-        "x": 1920,
+        "x": 2048,
         "y": 1460
       },
       "enemySpawns": [
         {
-          "x": 3680,
+          "x": 3808,
           "y": 1460
         },
         {
-          "x": 160,
+          "x": 288,
           "y": 1460
         }
       ]
@@ -385,23 +385,23 @@
       "label": "Sala do Tempo",
       "image": "/maps/hunt-sala-do-tempo.png",
       "tmx": "/maps/hunt-sala-do-tempo.tmx",
-      "width": 3840,
+      "width": 4096,
       "height": 2160,
-      "cols": 240,
+      "cols": 256,
       "rows": 135,
       "lateralFloorY": 1464,
-      "layoutScale": 5.75,
+      "layoutScale": 2.1,
       "spawn": {
-        "x": 1920,
+        "x": 2048,
         "y": 1464
       },
       "enemySpawns": [
         {
-          "x": 3680,
+          "x": 3808,
           "y": 1464
         },
         {
-          "x": 160,
+          "x": 288,
           "y": 1464
         }
       ]
@@ -412,23 +412,23 @@
       "label": "Deserto Rochoso Saiyajin",
       "image": "/maps/hunt-deserto-saiyajin.png",
       "tmx": "/maps/hunt-deserto-saiyajin.tmx",
-      "width": 3840,
+      "width": 4096,
       "height": 2160,
-      "cols": 240,
+      "cols": 256,
       "rows": 135,
       "lateralFloorY": 1424,
-      "layoutScale": 5.75,
+      "layoutScale": 2.1,
       "spawn": {
-        "x": 1920,
+        "x": 2048,
         "y": 1424
       },
       "enemySpawns": [
         {
-          "x": 3680,
+          "x": 3808,
           "y": 1424
         },
         {
-          "x": 160,
+          "x": 288,
           "y": 1424
         }
       ]

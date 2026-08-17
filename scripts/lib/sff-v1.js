@@ -78,18 +78,20 @@ function openSffV1(filePath) {
   if (buf.toString('ascii', 0, 11) !== 'ElecbyteSpr') {
     throw new Error(`Not an SFF: ${filePath}`);
   }
-  const nSprites = buf.readUInt32LE(0x10);
-  let offset = buf.readUInt32LE(0x14);
-  const altOff = buf.readUInt32LE(0x18);
+  // Header v1: 0x10 = nº de grupos, 0x14 = nº de imagens, 0x18 = 1º subfile.
+  // Ler a contagem de 0x10 enumera só os primeiros N sprites (Asuma: 96 de 1110)
+  // e todo o resto do personagem — combos, specials e FX — some.
+  const nSprites = buf.readUInt32LE(0x14);
+  let offset = buf.readUInt32LE(0x18);
   const looksValid = (off) => {
     if (off < 32 || off + 32 > buf.length) return false;
     const next = buf.readUInt32LE(off);
     return next > off && next <= buf.length;
   };
-  if (!looksValid(offset) && looksValid(altOff)) offset = altOff;
   if (!looksValid(offset) && looksValid(512)) offset = 512;
   const sprites = [];
   for (let i = 0; i < nSprites; i += 1) {
+    if (offset < 32 || offset + 32 > buf.length) break;
     const next = buf.readUInt32LE(offset);
     const dataLen = buf.readUInt32LE(offset + 4);
     sprites.push({

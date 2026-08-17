@@ -222,19 +222,28 @@ function bakePalFx(rgba, pal) {
 }
 
 /** Reduz FX nativo gigante (AfterFX 700px+) pra caber no corpo do personagem. */
-function downscaleFxPacked(packed, maxH) {
-  if (!packed?.frames?.length || !maxH || packed.frameHeight <= maxH) return packed;
-  const scale = maxH / packed.frameHeight;
+function downscaleFxPacked(packed, maxH, maxW) {
+  if (!packed?.frames?.length) return packed;
+  const scale = Math.min(
+    maxH ? maxH / packed.frameHeight : 1,
+    maxW ? maxW / packed.frameWidth : 1,
+  );
+  if (!(scale < 1)) return packed;
   const nw = Math.max(1, Math.round(packed.frameWidth * scale));
   const nh = Math.max(1, Math.round(packed.frameHeight * scale));
+  // O padding nativo de 2px também encolhe. Reponha-o depois da redução para
+  // nenhum pixel luminoso tocar a borda da célula e parecer recortado no atlas.
+  const pad = 2;
+  const fw = nw + pad * 2;
+  const fh = nh + pad * 2;
   const frames = packed.frames.map((frame) => {
-    const out = Buffer.alloc(nw * nh * 4);
+    const out = Buffer.alloc(fw * fh * 4);
     for (let y = 0; y < nh; y += 1) {
       const sy = Math.min(packed.frameHeight - 1, Math.floor(y / scale));
       for (let x = 0; x < nw; x += 1) {
         const sx = Math.min(packed.frameWidth - 1, Math.floor(x / scale));
         const si = (sy * packed.frameWidth + sx) * 4;
-        const di = (y * nw + x) * 4;
+        const di = ((y + pad) * fw + x + pad) * 4;
         out[di] = frame[si];
         out[di + 1] = frame[si + 1];
         out[di + 2] = frame[si + 2];
@@ -243,7 +252,14 @@ function downscaleFxPacked(packed, maxH) {
     }
     return out;
   });
-  return { ...packed, frames, frameWidth: nw, frameHeight: nh };
+  const originPx = (packed.originX ?? 0.5) * packed.frameWidth * scale;
+  return {
+    ...packed,
+    frames,
+    frameWidth: fw,
+    frameHeight: fh,
+    originX: (originPx + pad) / fw,
+  };
 }
 
 /**
@@ -347,6 +363,45 @@ function clipBelowAxis(sprites, footSlack = 2) {
     }
     return { ...s, rgba, height: h };
   });
+}
+
+/**
+ * VFX no eixo do MUGEN. Centrar cada frame por bbox faz um jato de fogo
+ * "nascer" no meio do personagem e tremer entre frames; o eixo é o ponto de
+ * emissão real (boca / mão), então fica fixo e o `originX` resultante diz ao
+ * renderer onde encostar o efeito no caster.
+ */
+function packFxOnAxis(sprites, { softAlpha = false } = {}) {
+  const trimmed = trimSharedEmpty(compositeOnAxis(sprites));
+  const pad = 2;
+  const w = trimmed[0].width;
+  const h = trimmed[0].height;
+  const fw = w + pad * 2;
+  const fh = h + pad * 2;
+  const cut = softAlpha ? ALPHA_KEEP : 128;
+  const frames = trimmed.map((s) => {
+    const canvas = Buffer.alloc(fw * fh * 4);
+    for (let y = 0; y < h; y += 1) {
+      for (let x = 0; x < w; x += 1) {
+        const si = (y * w + x) * 4;
+        if (s.rgba[si + 3] < cut) continue;
+        const di = ((y + pad) * fw + (x + pad)) * 4;
+        canvas[di] = s.rgba[si];
+        canvas[di + 1] = s.rgba[si + 1];
+        canvas[di + 2] = s.rgba[si + 2];
+        canvas[di + 3] = softAlpha ? s.rgba[si + 3] : 255;
+      }
+    }
+    return canvas;
+  });
+  return {
+    frames,
+    frameWidth: fw,
+    frameHeight: fh,
+    originX: (trimmed[0].axisX + pad) / Math.max(1, fw),
+    scale: 1,
+    contentHeight: measureBodyH(frames, fw, fh),
+  };
 }
 
 function packAxisLocked(sprites) {
@@ -526,6 +581,10 @@ function dropAirborneWalk(sprites) {
 async function packSprites(sprites, { fx = false, additive = false } = {}) {
   if (fx) {
     if (!additive) for (const sprite of sprites) maybeKnockoutFxBlack(sprite.rgba);
+    const hasFxAxis = sprites.every(
+      (s) => Number.isFinite(s.axisX) && Number.isFinite(s.axisY),
+    );
+    if (hasFxAxis) return packFxOnAxis(sprites, { softAlpha: additive });
     return packUniformGlobalScale(
       sprites.map((s) => s.rgba),
       sprites.map((s) => s.width),
@@ -874,14 +933,16 @@ async function packMugenCharacter(cfg) {
   const air = readAir(airPath);
   console.log(`\n=== ${cfg.name} (${id}) sff=v${sff.version} ===`);
 
-  const idleRefs = actionClips(air, 0);
+  const idleActionId = cfg.idleActionId ?? 0;
+  const idleRefs = actionClips(air, idleActionId);
   if (idleRefs.length < 1) throw new Error(`${id}: no idle`);
   const idleSeq = await packSequence(sff, idleRefs, outDir, srcDir, 'idle');
   if (!idleSeq) throw new Error(`${id}: idle sprites missing`);
   let idlePacked = await packSprites(idleSeq.sprites);
 
-  let walkRefs = actionClips(air, 20);
-  if (walkRefs.length < 2) walkRefs = actionClips(air, 21);
+  const walkActionIds = cfg.walkActionIds || [20, 21];
+  let walkRefs = actionClips(air, walkActionIds[0]);
+  if (walkRefs.length < 2) walkRefs = actionClips(air, walkActionIds[1]);
   if (walkRefs.length < 2) walkRefs = idleRefs;
   const walkSeq = await packSequence(sff, walkRefs, outDir, srcDir, 'walk', {
     keepAllBody: true,
@@ -1095,12 +1156,18 @@ async function packMugenCharacter(cfg) {
     for (const groupSpec of fxGroupSpecs) {
       groupFx.push(...(await extractGroupRefs(sff, groupSpec)));
     }
+    const fxIdOverride = Array.isArray(cfg.specialFxIds?.[spec.id])
+      ? cfg.specialFxIds[spec.id]
+      : [];
+    // Chave presente em specialFxIds = FX curado (mesmo se [] = sem overlay).
+    // Evita que leftoverFx misture o corpo no VFX.
+    const curatedFx =
+      groupFx.length >= 2 ||
+      (cfg.specialFxIds != null && Object.prototype.hasOwnProperty.call(cfg.specialFxIds, spec.id));
     const fxRefs = uniqueRefs([
-      ...(groupFx.length >= 2 ? [] : leftoverFx),
+      ...(curatedFx ? [] : leftoverFx),
       ...groupFx,
-      ...fxActionIds(spec.id, air, cfg.specialFxIds?.[spec.id]).flatMap((fxId) =>
-        actionClips(air, fxId),
-      ),
+      ...fxActionIds(spec.id, air, fxIdOverride).flatMap((fxId) => actionClips(air, fxId)),
     ]);
     let fxEntry = null;
     if (fxRefs.length >= 2) {
@@ -1113,16 +1180,20 @@ async function packMugenCharacter(cfg) {
         { fx: true, additive: Boolean(cfg.fxAdditive) },
       );
       if (fxSeq && fxSeq.sprites.length >= 2) {
-        // Grupos escolhidos à mão já são só VFX — as heurísticas de
-        // "corpo/flash sólido" descartariam frames válidos.
-        const fxSprites =
-          groupFx.length >= 2
-            ? fxSeq.sprites
-            : dropSolidFillFx(dropBodySizedFx(fxSeq.sprites, contentHeight));
+        const specialPalFx = cfg.specialFxPalFx?.[spec.id];
+        if (specialPalFx) {
+          for (const spr of fxSeq.sprites) bakePalFx(spr.rgba, specialPalFx);
+        }
+        // FX curado dispensa o filtro por tamanho (jutsu pode ser menor que o
+        // corpo), mas o descarte de canvas sólido continua valendo: rip aditivo
+        // vem com fundo preto opaco.
+        const fxSprites = curatedFx
+          ? dropSolidFillFx(fxSeq.sprites)
+          : dropSolidFillFx(dropBodySizedFx(fxSeq.sprites, contentHeight));
         if (fxSprites.length < 2) {
           console.log(`  ${file}-fx skipped: body-sized only`);
         } else {
-          const fxPacked = await packSprites(capFxSprites(fxSprites), {
+          let fxPacked = await packSprites(capFxSprites(fxSprites), {
             fx: true,
             additive: Boolean(cfg.fxAdditive),
           });
@@ -1131,6 +1202,12 @@ async function packMugenCharacter(cfg) {
             console.log(`  ${file}-fx skipped: empty after knockout`);
           } else {
             fxPacked.frames = opaqueFrames;
+            // Jutsu pode ser maior que um combo, mas sem virar tela cheia.
+            fxPacked = downscaleFxPacked(
+              fxPacked,
+              Math.max(128, Math.round(contentHeight * 3.2)),
+              Math.max(160, Math.round(contentHeight * 4)),
+            );
             const fxH = measureBodyH(fxPacked.frames, fxPacked.frameWidth, fxPacked.frameHeight);
             const fxTimes = timing(fxSeq.refs);
             fxEntry = await writeSheet(

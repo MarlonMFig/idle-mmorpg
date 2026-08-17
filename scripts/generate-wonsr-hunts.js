@@ -53,11 +53,11 @@ function spriteIndex(meta, w, h, l, x, y, z, a) {
   const layers = meta.layers || 1;
   const width = meta.w || 1;
   const height = meta.h || 1;
-  return ((((((a % phases) * patternZ + z) * patternY + y) * patternX + x) * layers + l) *
-    height +
-    h) *
-    width +
-    w;
+  return (
+    ((((((a % phases) * patternZ + z) * patternY + y) * patternX + x) * layers + l) * height + h) *
+      width +
+    w
+  );
 }
 
 function sourcePower(monster) {
@@ -88,6 +88,15 @@ function normalizedStats(level, source) {
  * Personagens curados (sprites laterais) — única fonte de caças/selamento.
  * Sem vocations/monstros brutos do WONSR.
  */
+function isActiveCharacterLookType(lookType) {
+  // Rotação atual: Naruto (incluindo o novo lote NUN5) e Dragon Ball.
+  return (
+    lookType <= 9027 ||
+    (lookType >= 9030 && lookType <= 9036) ||
+    (lookType >= 9074 && lookType <= 9086)
+  );
+}
+
 function buildCuratedExtraCharacters() {
   return [
     {
@@ -520,7 +529,7 @@ function buildCuratedExtraCharacters() {
       hasSprite: false,
       sourceMonster: null,
     })),
-  ];
+  ].filter((character) => isActiveCharacterLookType(character.lookType));
 }
 
 /**
@@ -724,6 +733,73 @@ function buildHunts(characters) {
   return hunts;
 }
 
+/**
+ * Caça de teste: mapa top-down grande (Konoha 3072²), câmera seguindo o
+ * personagem e a equipe de 3 em campo. Sempre no nível 1 e no topo da lista.
+ */
+function buildTestHunt(characters) {
+  const wanted = ['Kiba Inuzuka', 'Shino Aburame', 'Kimimaro'];
+  const picked = wanted
+    .map((name) => characters.find((character) => cleanName(character.name) === name))
+    .filter(Boolean);
+  const roster = picked.length ? picked : characters.slice(0, 3);
+  const level = 1;
+  const targets = roster.map((character) => ({
+    id: character.id,
+    sourceId: character.sourceId,
+    name: character.name,
+    category: character.category,
+    source: character.source,
+    lookType: character.lookType,
+    hasSprite: character.hasSprite,
+    requiredLevel: level,
+    ...normalizedStats(level, character.sourceMonster),
+    loot: character.sourceMonster?.loot || [],
+  }));
+
+  return {
+    id: 'hunt-teste-equipe',
+    name: 'Teste: Konoha (equipe)',
+    requiredLevel: level,
+    mapKey: 'huntTesteEquipe',
+    description:
+      'Mapa de teste top-down: mundo grande, personagens pequenos e os 3 da equipe em campo.',
+    targets,
+  };
+}
+
+/** Clareira de treinamento (arte 4096×2160) usada como segundo mapa de teste. */
+function buildFarmTestHunt(characters) {
+  const wanted = ['Asuma Sarutobi', 'Kiba Inuzuka', 'Shino Aburame'];
+  const picked = wanted
+    .map((name) => characters.find((character) => cleanName(character.name) === name))
+    .filter(Boolean);
+  const roster = picked.length ? picked : characters.slice(0, 3);
+  const level = 1;
+  const targets = roster.map((character) => ({
+    id: character.id,
+    sourceId: character.sourceId,
+    name: character.name,
+    category: character.category,
+    source: character.source,
+    lookType: character.lookType,
+    hasSprite: character.hasSprite,
+    requiredLevel: level,
+    ...normalizedStats(level, character.sourceMonster),
+    loot: character.sourceMonster?.loot || [],
+  }));
+
+  return {
+    id: 'hunt-teste-farm-wonsr',
+    name: 'Teste: Clareira de Treinamento',
+    requiredLevel: level,
+    mapKey: 'huntTesteFarmWonsr',
+    description:
+      'Clareira de treinamento 4096×2160: mesma resolução do hub, câmera enquadrando o mapa e equipe completa.',
+    targets,
+  };
+}
+
 async function buildAtlas(lookTypes, creatureIndex) {
   fs.mkdirSync(ATLAS_DIR, { recursive: true });
   // Packs laterais usam hasSprite=false — atlas vazio (UI usa previews curados).
@@ -778,8 +854,7 @@ async function buildAtlas(lookTypes, creatureIndex) {
 
     for (let h = 0; h < (meta?.h || 1); h++) {
       for (let w = 0; w < (meta?.w || 1); w++) {
-        const spriteId =
-          meta?.sprites[spriteIndex(meta, w, h, 0, SOUTH, 0, 0, 0)] || 0;
+        const spriteId = meta?.sprites[spriteIndex(meta, w, h, 0, SOUTH, 0, 0, 0)] || 0;
         const input = path.join(SOURCE_SPRITES, `${spriteId}.png`);
         if (!spriteId || !fs.existsSync(input)) continue;
         tileComposites.push({
@@ -866,12 +941,14 @@ async function main() {
   const baseCharacters = buildBaseCharacters();
   const monsterCharacters = buildMonsterCharacters();
   const characters = [...baseCharacters, ...monsterCharacters];
-  const hunts = buildHunts(characters);
+  const hunts = [
+    buildFarmTestHunt(characters),
+    buildTestHunt(characters),
+    ...buildHunts(characters),
+  ];
   const lookTypes = [
     ...new Set(
-      characters
-        .filter((character) => character.hasSprite)
-        .map((character) => character.lookType),
+      characters.filter((character) => character.hasSprite).map((character) => character.lookType),
     ),
   ];
   const atlas = await buildAtlas(lookTypes, creatureIndex);
@@ -903,10 +980,7 @@ async function main() {
 
   fs.writeFileSync(HUNTS_FILE, JSON.stringify(output, null, 2));
   console.log('Caças geradas (só packs curados):', output.counts);
-  console.log(
-    'Personagens:',
-    characters.map((c) => `${c.name} (${c.lookType})`).join(', '),
-  );
+  console.log('Personagens:', characters.map((c) => `${c.name} (${c.lookType})`).join(', '));
   console.log('Atlas:', atlas);
   console.log('Saída:', path.relative(ROOT, HUNTS_FILE));
 }

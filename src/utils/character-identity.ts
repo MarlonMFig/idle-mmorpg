@@ -1,5 +1,7 @@
 import { DEFAULT_OBTAIN_QUALITY } from '@/constants/character-progression';
+import { startingStarsForQuality } from '@/constants/aiw-quality';
 import { resolveCharacterClan } from '@/data/character-clans';
+import { rollCharacterPotential, normalizePotential } from '@/lib/potential';
 import type { CharacterClanId, CharacterQuality, CharacterStars } from '@/types/character-meta';
 import { CHARACTER_CLAN_IDS, CHARACTER_QUALITIES } from '@/types/character-meta';
 import type { StarterCharacterId } from '@/types/player-creation';
@@ -27,9 +29,11 @@ export function isCharacterClanId(value: unknown): value is CharacterClanId {
   return typeof value === 'string' && (CHARACTER_CLAN_IDS as readonly string[]).includes(value);
 }
 
-export function clampCharacterStars(value: unknown): CharacterStars {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return 0;
-  const n = Math.max(0, Math.min(5, Math.floor(value)));
+export function clampCharacterStars(value: unknown, quality: CharacterQuality = 'D'): CharacterStars {
+  if (typeof value !== 'number' || !Number.isFinite(value)) {
+    return startingStarsForQuality(quality) as CharacterStars;
+  }
+  const n = Math.max(0, Math.min(8, Math.floor(value)));
   return n as CharacterStars;
 }
 
@@ -59,8 +63,10 @@ export function buildSealedCharacter(input: {
   isFavorite?: boolean;
   isLocked?: boolean;
   characterKey?: string;
+  potential?: import('@/types/potential').CharacterPotential;
 }): Omit<SealedCharacter, 'previewUrl'> & { previewUrl?: string } {
   const lookType = input.lookType;
+  const quality = input.quality ?? DEFAULT_OBTAIN_QUALITY;
   return {
     id: input.id ?? createCharacterInstanceId(),
     characterKey: input.characterKey ?? characterKeyFromLookType(lookType),
@@ -69,8 +75,9 @@ export function buildSealedCharacter(input: {
     sourceId: input.sourceId,
     starterId: input.starterId,
     previewUrl: input.previewUrl,
-    quality: input.quality ?? DEFAULT_OBTAIN_QUALITY,
-    stars: input.stars ?? 0,
+    quality,
+    stars: input.stars ?? (startingStarsForQuality(quality) as CharacterStars),
+    potential: input.potential ?? rollCharacterPotential(),
     clanId: input.clanId ?? resolveCharacterClan({ lookType, starterId: input.starterId }),
     level: Math.max(1, clampCharacterLevel(input.level, 1)),
     xp: clampCharacterXp(input.xp),
@@ -118,7 +125,11 @@ export function normalizeSealedCharacter(raw: unknown): SealedCharacter | null {
         ? entry.characterKey
         : undefined,
     quality: isCharacterQuality(entry.quality) ? entry.quality : DEFAULT_OBTAIN_QUALITY,
-    stars: clampCharacterStars(entry.stars),
+    stars: clampCharacterStars(
+      entry.stars,
+      isCharacterQuality(entry.quality) ? entry.quality : DEFAULT_OBTAIN_QUALITY,
+    ),
+    potential: normalizePotential(entry.potential) ?? rollCharacterPotential(),
     clanId: isCharacterClanId(entry.clanId)
       ? entry.clanId
       : resolveCharacterClan({ lookType: entry.lookType, starterId }),

@@ -101,6 +101,12 @@ async function main() {
     const fw = frames[0].w;
     const fh = frames[0].h;
     const isFx = key.endsWith('-fx');
+    // Quedas, dano e especiais mudam deliberadamente a altura/posição da pose.
+    // Pés e altura uniforme só são invariantes no locomotion/combate básico.
+    const requiresStableBody =
+      key.endsWith('-idle') ||
+      key.endsWith('-walk') ||
+      /-combo\d+$/.test(key);
     const clipped = [];
     const feet = [];
     const bodyH = [];
@@ -119,7 +125,9 @@ async function main() {
       if (b.minY === 0) edges.push('T');
       if (b.maxY === fh - 1) edges.push('B');
       if (edges.length) clipped.push(`f${i}:${edges.join('')}`);
-      if (!isFx) {
+      // Especiais/dano podem ter armas, membros em blur ou projéteis separados.
+      // Ilhas minúsculas só indicam lixo com segurança nas folhas básicas.
+      if (!isFx && requiresStableBody) {
         const isl = islands(f.data, fw, fh);
         stray += isl.small.length;
       }
@@ -128,8 +136,8 @@ async function main() {
     const hSpread = Math.max(...bodyH) - Math.min(...bodyH);
     const flags = [];
     if (clipped.length) flags.push(`CLIP[${clipped.join(' ')}]`);
-    if (!isFx && spread > 3) flags.push(`FEET_SPREAD=${spread}`);
-    if (!isFx && hSpread > Math.round(wire.contentHeight * 0.45)) {
+    if (!isFx && requiresStableBody && spread > 3) flags.push(`FEET_SPREAD=${spread}`);
+    if (!isFx && requiresStableBody && hSpread > Math.round(wire.contentHeight * 0.45)) {
       flags.push(`BODY_H_SPREAD=${hSpread}`);
     }
     if (stray) flags.push(`STRAY_ISLANDS=${stray}`);

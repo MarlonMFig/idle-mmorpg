@@ -1,26 +1,13 @@
 /** Elementos de jutsu / habilidade. */
 export type SkillElement =
-  | 'fire'
-  | 'water'
-  | 'wind'
-  | 'earth'
-  | 'lightning'
-  | 'yin'
-  | 'yang'
-  | 'neutral';
+  'fire' | 'water' | 'wind' | 'earth' | 'lightning' | 'yin' | 'yang' | 'neutral';
 
 /**
  * Tipo de animação visual no Phaser.
  * Novos jutsus reutilizam estas chaves ou adicionam handlers em SkillVfx.
  */
 export type SkillAnimationKind =
-  | 'burst'
-  | 'projectile'
-  | 'slash'
-  | 'aura'
-  | 'beam'
-  | 'character'
-  | 'sprite';
+  'burst' | 'projectile' | 'slash' | 'aura' | 'beam' | 'character' | 'heal' | 'sprite';
 
 export interface SkillAnimationDef {
   kind: SkillAnimationKind;
@@ -42,12 +29,16 @@ export interface SkillDefinition {
   id: string;
   name: string;
   element: SkillElement;
+  /** Efeito principal. Ausente mantém o comportamento legado de dano. */
+  effect?: 'damage' | 'heal';
   /** Nível do jogador necessário para usar a habilidade. */
   requiredLevel?: number;
   /** Cooldown em milissegundos. */
   cooldownMs: number;
   /** Dano base da habilidade. */
   damage: number;
+  /** Fração do HP máximo restaurada quando `effect` for `heal` (0–1). */
+  healPercent?: number;
   /** Caminho do ícone (public/). */
   icon: string;
   animation: SkillAnimationDef;

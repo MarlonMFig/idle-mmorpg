@@ -6,9 +6,17 @@ import {
   CHARACTER_QUALITY_COLORS,
   CHARACTER_QUALITY_LABELS,
 } from '@/constants/character-progression';
+import { FRAGMENTS_PER_STAR, maxStarsForQuality } from '@/constants/aiw-quality';
+import {
+  POTENTIAL_ATTRIBUTE_LABELS,
+  type PotentialAttributeId,
+} from '@/constants/aiw-potential';
 import { TEAM_SLOT_COUNT } from '@/constants/sealing';
+import { getCuratedPackByLookType } from '@/data/character-packs';
+import { narutoFragmentItemId } from '@/data/naruto-loot-tiers';
 import { useStore } from '@/hooks/use-store';
 import { switchActiveCharacter } from '@/lib/active-character';
+import { overallPotentialGrade } from '@/lib/potential';
 import { forgeStore } from '@/stores/forge-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { teamStore } from '@/stores/team-store';
@@ -64,6 +72,7 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
   const teamIds = useStore(teamStore, (s) => s.teamIds);
   const activeId = useStore(teamStore, (s) => s.activeId);
   const vitals = useStore(vitalsStore, (s) => s);
+  const inventorySlots = useStore(inventoryStore, (s) => s.slots);
 
   const [query, setQuery] = useState('');
   const [qualityFilter, setQualityFilter] = useState<CharacterQuality | 'all'>('all');
@@ -119,6 +128,23 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
     collection.find((entry) => entry.id === selectedId) ??
     collection.find((entry) => entry.id === activeId) ??
     null;
+
+  const selectedFragmentId = selected
+    ? (() => {
+        const charId =
+          selected.sourceId ?? getCuratedPackByLookType(selected.lookType)?.id ?? null;
+        return charId
+          ? narutoFragmentItemId(charId)
+          : 'item-anime-naruto-fragmento-personagem';
+      })()
+    : null;
+  const selectedFragmentCount = selectedFragmentId
+    ? inventorySlots.reduce(
+        (total, slot) =>
+          slot?.itemId === selectedFragmentId ? total + slot.quantity : total,
+        0,
+      )
+    : 0;
 
   function select(id: string): void {
     setSelectedId(id);
@@ -338,6 +364,28 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
       </div>
 
       <footer className="team-mgr__foot">
+        {selected?.potential ? (
+          <div className="team-mgr__potential" aria-label="Potencial do personagem">
+            <p className="team-mgr__potential-head">
+              Potencial geral: <strong>{overallPotentialGrade(selected.potential)}</strong>
+            </p>
+            <ul className="team-mgr__potential-list">
+              {(['poder', 'sorte', 'fortuna'] as PotentialAttributeId[]).map((key) => (
+                <li key={key}>
+                  <span>{POTENTIAL_ATTRIBUTE_LABELS[key]}</span>
+                  <strong>{selected.potential![key].grade}</strong>
+                  <button
+                    type="button"
+                    className="team-mgr__btn team-mgr__btn--ghost team-mgr__btn--tiny"
+                    onClick={() => teamStore.refinePotential(selected.id, key)}
+                  >
+                    Refinar
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
         <div className="team-mgr__actions">
           <button
             type="button"
@@ -351,6 +399,17 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
           </button>
           {selected ? (
             <>
+              {selected.stars < maxStarsForQuality(selected.quality) ? (
+                <button
+                  type="button"
+                  className="team-mgr__btn team-mgr__btn--gold"
+                  disabled={selectedFragmentCount < FRAGMENTS_PER_STAR}
+                  title={`${selectedFragmentCount}/${FRAGMENTS_PER_STAR} fragmentos`}
+                  onClick={() => teamStore.upgradeStarWithFragments(selected.id)}
+                >
+                  +1★ ({selectedFragmentCount}/{FRAGMENTS_PER_STAR})
+                </button>
+              ) : null}
               {!teamIds.includes(selected.id) ? (
                 <button
                   type="button"

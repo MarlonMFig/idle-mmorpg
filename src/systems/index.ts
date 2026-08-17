@@ -10,4 +10,6 @@ export { RemotePlayerManager } from '@/systems/remote-player-manager';
 export { PlayerSyncSystem } from '@/systems/player-sync-system';
 export { PlayerInputSystem } from '@/systems/player-input-system';
 export { HubInteractableManager } from '@/systems/hub-interactable-manager';
+export { TeamCompanionSystem } from '@/systems/team-companion-system';
+export { TargetClaims, LEADER_CLAIM_ID } from '@/systems/target-claims';
 export { rollDropTable } from '@/systems/loot-table';

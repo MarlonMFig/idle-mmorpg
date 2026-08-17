@@ -1,15 +1,8 @@
 import * as Phaser from 'phaser';
 import { NAMEPLATE_GAP_PX } from '@/constants/combat';
 import { addNameplate, PLAYER_NAMEPLATE_STYLE, worldDepthForY } from '@/constants/nameplate';
-import {
-  directionFacesLeft,
-  PLAYER_DIRECTIONS,
-  type PlayerDirection,
-} from '@/constants/player';
-import {
-  CHARACTER_BODY_HEIGHT,
-  CHARACTER_BODY_WIDTH,
-} from '@/constants/sprites';
+import { directionFacesLeft, PLAYER_DIRECTIONS, type PlayerDirection } from '@/constants/player';
+import { CHARACTER_BODY_HEIGHT, CHARACTER_BODY_WIDTH } from '@/constants/sprites';
 import {
   characterDisplayScale,
   characterLateralOrigin,
@@ -82,21 +75,14 @@ export class Player {
         ? options.pack.outfit.directions.map((direction) =>
             outfitAnimKey(options.pack, 'attack', direction),
           )
-        : packAttackSheets(options.pack).map((sheet) =>
-            chainAttackAnimKey(options.pack, sheet),
-          ),
+        : packAttackSheets(options.pack).map((sheet) => chainAttackAnimKey(options.pack, sheet)),
     );
     this.hurtAnimKey = packHurtAnimKey(options.pack);
     this.deathAnimKey = packDeathAnimKey(options.pack);
 
     Player.ensureAnimations(scene, options.pack);
 
-    this.sprite = scene.physics.add.sprite(
-      options.x,
-      options.y,
-      options.pack.walk.key,
-      0,
-    );
+    this.sprite = scene.physics.add.sprite(options.x, options.y, options.pack.walk.key, 0);
     if (options.pack.outfit) {
       const { content } = options.pack.outfit;
       this.sprite.setOrigin(
@@ -120,32 +106,31 @@ export class Player {
       : null;
     this.nameLabel?.setScale(this.worldScale);
 
-    this.sprite.on(Phaser.Animations.Events.ANIMATION_COMPLETE, (anim: Phaser.Animations.Animation) => {
-      if (this.dead) return;
-      if (this.deathAnimKey && anim.key === this.deathAnimKey) {
-        // Segura o último quadro da morte (sem voltar a idle).
-        this.busyUntil = Number.POSITIVE_INFINITY;
-        return;
-      }
-      const isHurt = this.hurtAnimKey != null && anim.key === this.hurtAnimKey;
-      const isSkill = this.skillAnimKeys.has(anim.key);
-      if (
-        !isHurt &&
-        !this.attackAnimKeys.has(anim.key) &&
-        !isSkill
-      ) {
-        return;
-      }
-      if (isSkill && this.scene.time.now < this.busyUntil) {
-        const last = anim.frames[anim.frames.length - 1];
-        this.sprite.anims.stop();
-        this.sprite.setTexture(last.textureKey as string, last.textureFrame as number);
-        const remaining = this.busyUntil - this.scene.time.now;
-        this.scene.time.delayedCall(remaining, () => this.finishSkillHold());
-        return;
-      }
-      this.finishSkillHold();
-    });
+    this.sprite.on(
+      Phaser.Animations.Events.ANIMATION_COMPLETE,
+      (anim: Phaser.Animations.Animation) => {
+        if (this.dead) return;
+        if (this.deathAnimKey && anim.key === this.deathAnimKey) {
+          // Segura o último quadro da morte (sem voltar a idle).
+          this.busyUntil = Number.POSITIVE_INFINITY;
+          return;
+        }
+        const isHurt = this.hurtAnimKey != null && anim.key === this.hurtAnimKey;
+        const isSkill = this.skillAnimKeys.has(anim.key);
+        if (!isHurt && !this.attackAnimKeys.has(anim.key) && !isSkill) {
+          return;
+        }
+        if (isSkill && this.scene.time.now < this.busyUntil) {
+          const last = anim.frames[anim.frames.length - 1];
+          this.sprite.anims.stop();
+          this.sprite.setTexture(last.textureKey as string, last.textureFrame as number);
+          const remaining = this.busyUntil - this.scene.time.now;
+          this.scene.time.delayedCall(remaining, () => this.finishSkillHold());
+          return;
+        }
+        this.finishSkillHold();
+      },
+    );
 
     this.applyFacingFlip();
     this.playIdle();
@@ -478,10 +463,7 @@ export class Player {
     const bodyW = CHARACTER_BODY_WIDTH / this.scaleX;
     const bodyH = CHARACTER_BODY_HEIGHT / this.scaleY;
     body.setSize(bodyW, bodyH, false);
-    body.setOffset(
-      this.sprite.displayOriginX - bodyW / 2,
-      this.sprite.displayOriginY - bodyH,
-    );
+    body.setOffset(this.sprite.displayOriginX - bodyW / 2, this.sprite.displayOriginY - bodyH);
   }
 
   private idleFrame(): number {
@@ -579,7 +561,11 @@ export class Player {
           frameRate: sheet.frameRate ?? 12,
           repeat: 0,
         });
-        if (sheet.fx && scene.textures.exists(sheet.fx.key) && !scene.anims.exists(`fx-${sheet.fx.key}`)) {
+        if (
+          sheet.fx &&
+          scene.textures.exists(sheet.fx.key) &&
+          !scene.anims.exists(`fx-${sheet.fx.key}`)
+        ) {
           scene.anims.create({
             key: `fx-${sheet.fx.key}`,
             frames: scene.anims.generateFrameNumbers(sheet.fx.key, {
@@ -615,7 +601,7 @@ export class Player {
             start: 0,
             end: def.fx.frameCount - 1,
           }),
-          frameRate: 12,
+          frameRate: def.fx.frameRate ?? 12,
           repeat: 0,
         });
         const flightN = def.fxFlightFrameCount ?? 0;

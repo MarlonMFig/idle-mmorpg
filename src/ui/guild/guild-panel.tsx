@@ -14,11 +14,7 @@ import {
   GUILD_TAG_MAX,
   guildExpForLevel,
 } from '@/constants/guild';
-import {
-  GUILD_MISSION_DEFS,
-  GUILD_SHOP_DEFS,
-  GUILD_SKILL_DEFS,
-} from '@/data/guild-content';
+import { GUILD_MISSION_DEFS, GUILD_SHOP_DEFS, GUILD_SKILL_DEFS } from '@/data/guild-content';
 import { useStore } from '@/hooks/use-store';
 import {
   guildStore,
@@ -27,6 +23,7 @@ import {
   normalizeGuildName,
   normalizeGuildTag,
 } from '@/stores/guild-store';
+import { vipStore } from '@/stores/vip-store';
 import { vitalsStore } from '@/stores/vitals-store';
 import type { Guild, GuildTabId } from '@/types/guild';
 import { GUILD_ROLE_LABEL, isLeadershipRole } from '@/types/guild';
@@ -47,24 +44,9 @@ function crestGlow(color: string): string {
   return `radial-gradient(circle, ${color}88 0%, ${color}2b 45%, transparent 72%)`;
 }
 
-function GuildEmblem({
-  value,
-  className = '',
-}: {
-  value: string;
-  className?: string;
-}) {
+function GuildEmblem({ value, className = '' }: { value: string; className?: string }) {
   if (!value.startsWith('/')) return <span className={className}>{value}</span>;
-  return (
-    <Image
-      src={value}
-      alt=""
-      width={160}
-      height={210}
-      className={className}
-      unoptimized
-    />
-  );
+  return <Image src={value} alt="" width={160} height={210} className={className} unoptimized />;
 }
 
 const TABS: { id: GuildTabId; label: string; icon: string; manageOnly?: boolean }[] = [
@@ -89,7 +71,9 @@ export function GuildPanel() {
   const registryTick = useStore(guildStore, (s) => s.registryTick);
   const progress = useStore(guildStore, (s) => s.progress);
   const level = useStore(vitalsStore, (s) => s.level);
-  const unlocked = level >= GUILD_CREATE_MIN_LEVEL;
+  const vipActive = useStore(vipStore, (s) => s.active);
+  const canJoin = level >= GUILD_CREATE_MIN_LEVEL;
+  const canCreate = canJoin && vipActive;
 
   const [tab, setTab] = useState<GuildTabId>('members');
   const [fullscreen, setFullscreen] = useState(false);
@@ -138,9 +122,9 @@ export function GuildPanel() {
       setTab('members');
       setNoticeDraft(myGuild.notice);
     } else {
-      setLobbyMode(unlocked ? 'create' : 'join');
+      setLobbyMode(canCreate ? 'create' : 'join');
     }
-  }, [isOpen, myGuild?.id, unlocked]);
+  }, [isOpen, myGuild?.id, canCreate]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -157,9 +141,7 @@ export function GuildPanel() {
   if (!isOpen) return null;
 
   const expMax = myGuild ? guildExpForLevel(myGuild.level) : 1;
-  const expPct = myGuild
-    ? Math.min(100, Math.round((myGuild.exp / expMax) * 100))
-    : 0;
+  const expPct = myGuild ? Math.min(100, Math.round((myGuild.exp / expMax) * 100)) : 0;
 
   return (
     <div
@@ -182,8 +164,10 @@ export function GuildPanel() {
             <span className="guild-win__version">v1.2</span>
           </div>
           <div className="guild-win__titlebar-actions">
-            {!unlocked ? (
+            {!canJoin ? (
               <span className="guild-win__lock-chip">Nv. {GUILD_CREATE_MIN_LEVEL}+</span>
+            ) : !canCreate ? (
+              <span className="guild-win__lock-chip">VIP</span>
             ) : null}
             <button
               type="button"
@@ -207,7 +191,8 @@ export function GuildPanel() {
 
         {!myGuild ? (
           <LobbyView
-            unlocked={unlocked}
+            canJoin={canJoin}
+            canCreate={canCreate}
             level={level}
             mode={lobbyMode}
             setMode={setLobbyMode}
@@ -231,10 +216,7 @@ export function GuildPanel() {
                     className="guild-win__crest"
                     style={{ background: crestGlow(myGuild.emblemBg) }}
                   >
-                    <GuildEmblem
-                      value={myGuild.emblemIcon}
-                      className="guild-win__crest-icon"
-                    />
+                    <GuildEmblem value={myGuild.emblemIcon} className="guild-win__crest-icon" />
                     <span className="guild-win__crest-lv">Lv.{myGuild.level}</span>
                   </div>
                   <div>
@@ -254,8 +236,8 @@ export function GuildPanel() {
                     <p className="guild-win__meta">
                       Líder:{' '}
                       <strong>
-                        {myGuild.members.find((m) => m.playerId === myGuild.leaderId)
-                          ?.nickname ?? '—'}
+                        {myGuild.members.find((m) => m.playerId === myGuild.leaderId)?.nickname ??
+                          '—'}
                       </strong>
                       <span className="guild-win__dot">•</span>
                       Membros:{' '}
@@ -314,9 +296,7 @@ export function GuildPanel() {
               </div>
 
               <div className="guild-win__exp-row">
-                <span className="guild-win__exp-label">
-                  Progresso Nv. {myGuild.level}:
-                </span>
+                <span className="guild-win__exp-label">Progresso Nv. {myGuild.level}:</span>
                 <span className="guild-win__exp-nums">
                   {fmt(myGuild.exp)} / {fmt(expMax)} EXP ({expPct}%)
                 </span>
@@ -368,12 +348,8 @@ export function GuildPanel() {
                   setDonateAmt={setDonateAmt}
                 />
               ) : null}
-              {tab === 'ranking' ? (
-                <RankingBody guilds={guilds} myId={myGuild.id} />
-              ) : null}
-              {tab === 'missions' ? (
-                <MissionsBody progress={progress} />
-              ) : null}
+              {tab === 'ranking' ? <RankingBody guilds={guilds} myId={myGuild.id} /> : null}
+              {tab === 'missions' ? <MissionsBody progress={progress} /> : null}
               {tab === 'boss' ? (
                 <BossBody
                   guild={myGuild}
@@ -385,9 +361,7 @@ export function GuildPanel() {
               {tab === 'skills' ? (
                 <SkillsBody guild={myGuild} coins={progress.guildCoins} canLead={canLead} />
               ) : null}
-              {tab === 'shop' ? (
-                <ShopBody guild={myGuild} coins={progress.guildCoins} />
-              ) : null}
+              {tab === 'shop' ? <ShopBody guild={myGuild} coins={progress.guildCoins} /> : null}
               {tab === 'manage' && canLead ? (
                 <ManageBody
                   guild={myGuild}
@@ -404,7 +378,8 @@ export function GuildPanel() {
 }
 
 function LobbyView({
-  unlocked,
+  canJoin,
+  canCreate,
   level,
   mode,
   setMode,
@@ -418,7 +393,8 @@ function LobbyView({
   emblemColor,
   setEmblemColor,
 }: {
-  unlocked: boolean;
+  canJoin: boolean;
+  canCreate: boolean;
   level: number;
   mode: 'join' | 'create';
   setMode: (m: 'join' | 'create') => void;
@@ -437,22 +413,20 @@ function LobbyView({
   return (
     <div className="guild-win__lobby">
       <div className="guild-win__lobby-hero">
-        <Image
-          src="/ui/hub-menu/guild.png"
-          alt=""
-          width={48}
-          height={48}
-          unoptimized
-        />
+        <Image src="/ui/hub-menu/guild.png" alt="" width={48} height={48} unoptimized />
         <div>
           <h2>Guildas do Servidor</h2>
           <p>
-            Crie ou entre em uma guild (máx. {GUILD_MAX_MEMBERS} membros). Disponível a
-            partir do nível {GUILD_CREATE_MIN_LEVEL}.
+            Entre a partir do nível {GUILD_CREATE_MIN_LEVEL}. Criar guild é exclusivo VIP (máx.{' '}
+            {GUILD_MAX_MEMBERS} membros).
           </p>
           <p className="guild-win__lobby-lv">
             Seu nível: <strong>{level}</strong>
-            {!unlocked ? ` — faltam ${GUILD_CREATE_MIN_LEVEL - level}` : ' — liberado'}
+            {!canJoin
+              ? ` — faltam ${GUILD_CREATE_MIN_LEVEL - level}`
+              : canCreate
+                ? ' — criar e entrar liberados'
+                : ' — entrar liberado · criar exige VIP'}
           </p>
         </div>
       </div>
@@ -468,7 +442,6 @@ function LobbyView({
         <button
           type="button"
           className={mode === 'create' ? 'is-active' : ''}
-          disabled={!unlocked}
           onClick={() => setMode('create')}
         >
           Criar
@@ -566,9 +539,16 @@ function LobbyView({
             Preview: [{normalizeGuildTag(createTag) || 'TAG'}]{' '}
             {normalizeGuildName(createName) || 'Nome'}
           </p>
-          <button type="submit" className="guild-win__btn-gold" disabled={!unlocked}>
-            Criar guilda
+          <button type="submit" className="guild-win__btn-gold" disabled={!canCreate}>
+            {canCreate ? 'Criar guilda' : 'Criar guilda (VIP)'}
           </button>
+          {!canCreate ? (
+            <p className="guild-win__lobby-lv">
+              {canJoin
+                ? 'Ative o VIP no menu superior para criar uma guild.'
+                : `Criar exige VIP e nível ${GUILD_CREATE_MIN_LEVEL}.`}
+            </p>
+          ) : null}
         </form>
       ) : (
         <ul className="guild-win__browse">
@@ -591,14 +571,13 @@ function LobbyView({
                       [{g.tag}] {g.name}
                     </strong>
                     <span>
-                      Lv.{g.level} · {g.members.length}/{g.maxMembers} · Fundos{' '}
-                      {fmt(g.funds)}
+                      Lv.{g.level} · {g.members.length}/{g.maxMembers} · Fundos {fmt(g.funds)}
                     </span>
                   </div>
                   <button
                     type="button"
                     className="guild-win__btn-green"
-                    disabled={!unlocked || full}
+                    disabled={!canJoin || full}
                     onClick={() => guildStore.joinGuild(g.id)}
                   >
                     {full ? 'Cheia' : 'Entrar'}
@@ -676,17 +655,12 @@ function MembersBody({
 function RankingBody({ guilds, myId }: { guilds: Guild[]; myId: string }) {
   return (
     <div className="guild-win__ranking">
-      <p className="guild-win__hint">
-        Ranking local por nível e fundos da guilda.
-      </p>
+      <p className="guild-win__hint">Ranking local por nível e fundos da guilda.</p>
       <ol className="guild-win__rank-list">
         {guilds.map((g, i) => (
           <li key={g.id} className={g.id === myId ? 'is-mine' : ''}>
             <span className="guild-win__rank-pos">#{i + 1}</span>
-            <span
-              className="guild-win__browse-crest"
-              style={{ background: crestGlow(g.emblemBg) }}
-            >
+            <span className="guild-win__browse-crest" style={{ background: crestGlow(g.emblemBg) }}>
               <GuildEmblem value={g.emblemIcon} />
             </span>
             <div>
@@ -746,8 +720,8 @@ function MissionsBody({
               </div>
               <footer>
                 <span>
-                  {fmt(Math.min(cur, m.target))}/{fmt(m.target)} · +{m.rewardCoins}🪙 +
-                  {m.rewardExp} EXP
+                  {fmt(Math.min(cur, m.target))}/{fmt(m.target)} · +{m.rewardCoins}🪙 +{m.rewardExp}{' '}
+                  EXP
                 </span>
                 <button
                   type="button"
@@ -789,9 +763,7 @@ function BossBody({
         <div>
           <h3>Kurama — Nove Caudas</h3>
           <p className="guild-win__hint">Besta com Cauda · Nível 80 · Fogo / Chakra</p>
-          <p className={dead ? 'is-green' : 'is-gold'}>
-            {dead ? 'DERROTADO' : 'DISPONÍVEL'}
-          </p>
+          <p className={dead ? 'is-green' : 'is-gold'}>{dead ? 'DERROTADO' : 'DISPONÍVEL'}</p>
           <div className="guild-win__boss-hp">
             <span style={{ width: `${pct}%` }} />
           </div>
@@ -819,15 +791,7 @@ function BossBody({
   );
 }
 
-function SkillsBody({
-  guild,
-  coins,
-  canLead,
-}: {
-  guild: Guild;
-  coins: number;
-  canLead: boolean;
-}) {
+function SkillsBody({ guild, coins, canLead }: { guild: Guild; coins: number; canLead: boolean }) {
   return (
     <div className="guild-win__skills">
       {!canLead ? (
@@ -874,11 +838,40 @@ function SkillsBody({
 }
 
 function ShopBody({ guild, coins }: { guild: Guild; coins: number }) {
+  const fragmentOffer = guildStore.getDailyFragmentOffer();
+
   return (
     <div className="guild-win__shop">
       <p className="guild-win__hint">
-        Compre com moedas de guilda. Alguns itens devolvem cobre ao inventário (v1).
+        Compre com Selos de Aliança. Fragmento rotativo muda todo dia (máx. 2/dia).
       </p>
+
+      {fragmentOffer ? (
+        <article className="guild-win__shop-card guild-win__shop-card--featured">
+          <header>
+            <span>🧩</span>
+            <div>
+              <strong>Fragmento do dia — {fragmentOffer.label}</strong>
+              <em>Rotativo</em>
+            </div>
+          </header>
+          <p>1 fragmento para evolução por estrela (+1★ = 10 fragmentos).</p>
+          <footer>
+            <span>
+              🪙 {fmt(fragmentOffer.priceCoins)} · {fragmentOffer.purchasesLeft} compras restantes
+            </span>
+            <button
+              type="button"
+              className="guild-win__btn-gold"
+              disabled={fragmentOffer.purchasesLeft <= 0 || coins < fragmentOffer.priceCoins}
+              onClick={() => guildStore.buyDailyFragment()}
+            >
+              Comprar fragmento
+            </button>
+          </footer>
+        </article>
+      ) : null}
+
       <div className="guild-win__shop-grid">
         {GUILD_SHOP_DEFS.map((item) => {
           const stock = guild.shopStock[item.id] ?? 0;
@@ -951,9 +944,7 @@ function ManageBody({
             <button
               key={em.label}
               type="button"
-              className={`guild-win__emblem-btn${
-                guild.emblemIcon === em.icon ? ' is-on' : ''
-              }`}
+              className={`guild-win__emblem-btn${guild.emblemIcon === em.icon ? ' is-on' : ''}`}
               title={em.label}
               aria-label={em.label}
               aria-pressed={guild.emblemIcon === em.icon}
@@ -982,9 +973,7 @@ function ManageBody({
             <input
               type="color"
               value={guild.emblemBg}
-              onChange={(event) =>
-                guildStore.updateEmblem(guild.emblemIcon, event.target.value)
-              }
+              onChange={(event) => guildStore.updateEmblem(guild.emblemIcon, event.target.value)}
               aria-label="Escolher outra cor"
             />
             <span>+</span>
@@ -995,8 +984,8 @@ function ManageBody({
       <div className="guild-win__danger-zone">
         <h4>Zona de risco</h4>
         <p>
-          Sair da guilda. Se for o único membro, a guilda é dissolvida. Se for líder
-          com membros, a liderança é transferida.
+          Sair da guilda. Se for o único membro, a guilda é dissolvida. Se for líder com membros, a
+          liderança é transferida.
         </p>
         <button
           type="button"

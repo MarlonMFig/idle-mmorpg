@@ -50,3 +50,6 @@ next-env.d.ts
 /assets-src/
 /tmp/
 /tools/opentibia-tools/
+
+.vercel
+.env*

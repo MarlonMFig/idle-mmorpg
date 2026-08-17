@@ -1,0 +1,132 @@
+{
+  "konohamaru-combo1": {
+    "image": "/sprites/player/konohamaru/combo1.png",
+    "frameWidth": 55,
+    "frameHeight": 48,
+    "frameCount": 2,
+    "contentHeight": 44,
+    "scale": 1,
+    "originX": 0.5636363636363636,
+    "frameRate": 12
+  },
+  "konohamaru-combo2": {
+    "image": "/sprites/player/konohamaru/combo2.png",
+    "frameWidth": 55,
+    "frameHeight": 53,
+    "frameCount": 3,
+    "contentHeight": 44,
+    "scale": 1,
+    "originX": 0.38181818181818183,
+    "frameRate": 12
+  },
+  "konohamaru-combo3": {
+    "image": "/sprites/player/konohamaru/combo3.png",
+    "frameWidth": 50,
+    "frameHeight": 48,
+    "frameCount": 4,
+    "contentHeight": 44,
+    "scale": 1,
+    "originX": 0.44,
+    "frameRate": 12
+  },
+  "konohamaru-idle": {
+    "image": "/sprites/player/konohamaru/idle.png",
+    "frameWidth": 28,
+    "frameHeight": 48,
+    "frameCount": 4,
+    "contentHeight": 44,
+    "scale": 1,
+    "originX": 0.5,
+    "frameRate": 8
+  },
+  "konohamaru-walk": {
+    "image": "/sprites/player/konohamaru/walk.png",
+    "frameWidth": 43,
+    "frameHeight": 48,
+    "frameCount": 6,
+    "contentHeight": 44,
+    "scale": 1,
+    "originX": 0.6744186046511628,
+    "frameRate": 12
+  },
+  "konohamaru-hurt": {
+    "image": "/sprites/player/konohamaru/hurt.png",
+    "frameWidth": 55,
+    "frameHeight": 46,
+    "frameCount": 3,
+    "contentHeight": 44,
+    "scale": 1,
+    "originX": 0.4727272727272727,
+    "frameRate": 10
+  },
+  "konohamaru-death": {
+    "image": "/sprites/player/konohamaru/death.png",
+    "frameWidth": 53,
+    "frameHeight": 37,
+    "frameCount": 3,
+    "contentHeight": 44,
+    "scale": 1,
+    "originX": 0.5094339622641509,
+    "frameRate": 8
+  },
+  "konohamaru-special1": {
+    "image": "/sprites/player/konohamaru/special1.png",
+    "frameWidth": 55,
+    "frameHeight": 53,
+    "frameCount": 3,
+    "contentHeight": 44,
+    "scale": 1,
+    "originX": 0.38181818181818183,
+    "durationMs": 280,
+    "hitDelayMs": 83,
+    "frameRate": 12,
+    "skillId": "skill-konohamaru-1",
+    "skillName": "Standing strong punch",
+    "actionId": 210
+  },
+  "konohamaru-special2": {
+    "image": "/sprites/player/konohamaru/special2.png",
+    "frameWidth": 50,
+    "frameHeight": 48,
+    "frameCount": 4,
+    "contentHeight": 44,
+    "scale": 1,
+    "originX": 0.44,
+    "durationMs": 333,
+    "hitDelayMs": 167,
+    "frameRate": 12,
+    "skillId": "skill-konohamaru-2",
+    "skillName": "Standing light kick",
+    "actionId": 230
+  },
+  "konohamaru-special3": {
+    "image": "/sprites/player/konohamaru/special3.png",
+    "frameWidth": 47,
+    "frameHeight": 54,
+    "frameCount": 5,
+    "contentHeight": 44,
+    "scale": 1,
+    "originX": 0.48936170212765956,
+    "durationMs": 833,
+    "hitDelayMs": 383,
+    "frameRate": 8,
+    "skillId": "skill-konohamaru-3",
+    "skillName": "Taunt",
+    "actionId": 195
+  },
+  "konohamaru-special4": {
+    "image": "/sprites/player/konohamaru/special4.png",
+    "frameWidth": 55,
+    "frameHeight": 49,
+    "frameCount": 6,
+    "contentHeight": 44,
+    "scale": 1,
+    "originX": 0.45454545454545453,
+    "durationMs": 800,
+    "hitDelayMs": 367,
+    "frameRate": 8,
+    "skillId": "skill-konohamaru-4",
+    "skillName": "Run forwards",
+    "actionId": 100
+  }
+}

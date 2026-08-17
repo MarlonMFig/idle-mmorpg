@@ -1991,6 +1991,202 @@ input {
   }
 }
 
+/* —— VIP Shinobi —— */
+.vip-panel {
+  pointer-events: auto;
+  position: fixed;
+  top: 4.4rem;
+  right: 0.75rem;
+  left: auto;
+  z-index: 83;
+  width: min(20.5rem, calc(100vw - 1.2rem));
+  max-height: calc(100vh - 5.2rem);
+  overflow: auto;
+  border-radius: 0.7rem;
+  border: 1.5px solid rgba(232, 184, 74, 0.5);
+  background: linear-gradient(180deg, rgba(28, 22, 12, 0.98) 0%, rgba(10, 8, 6, 0.99) 100%);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.5) inset,
+    0 18px 44px rgba(0, 0, 0, 0.55);
+  color: rgba(236, 240, 246, 0.94);
+  padding: 0;
+  scrollbar-width: thin;
+  animation: rise-in 140ms ease-out both;
+}
+
+.vip-panel.is-dragging {
+  box-shadow:
+    0 0 0 1px rgba(232, 184, 74, 0.45),
+    0 22px 50px rgba(0, 0, 0, 0.6);
+  user-select: none;
+}
+
+.vip-panel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.65rem 0.7rem 0.5rem;
+  border-bottom: 1px solid rgba(232, 184, 74, 0.18);
+}
+
+.vip-panel__head--drag {
+  cursor: grab;
+}
+
+.vip-panel__head--drag:active {
+  cursor: grabbing;
+}
+
+.vip-panel__head-main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.vip-panel__logo {
+  width: 1.75rem;
+  height: 1.75rem;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.vip-panel__eyebrow {
+  margin: 0;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(232, 184, 74, 0.78);
+}
+
+.vip-panel__title {
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #f3d27a;
+}
+
+.vip-panel__icon-btn {
+  appearance: none;
+  width: 1.7rem;
+  height: 1.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.35rem;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(236, 240, 246, 0.85);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.vip-panel__icon-btn:hover {
+  border-color: rgba(232, 184, 74, 0.55);
+}
+
+.vip-panel__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.7rem 0.75rem 0.85rem;
+}
+
+.vip-panel__status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.45rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.vip-panel__status strong {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+}
+
+.vip-panel__status span {
+  font-size: 0.72rem;
+  color: rgba(220, 224, 232, 0.7);
+}
+
+.vip-panel__status.is-on {
+  border-color: rgba(232, 184, 74, 0.45);
+  background: rgba(232, 184, 74, 0.12);
+}
+
+.vip-panel__status.is-on strong {
+  color: #f3d27a;
+}
+
+.vip-panel__benefits {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.vip-panel__benefits li {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: 0.4rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.vip-panel__benefits strong {
+  font-size: 0.78rem;
+  color: #f3d27a;
+}
+
+.vip-panel__benefits span {
+  font-size: 0.72rem;
+  color: rgba(220, 224, 232, 0.72);
+  line-height: 1.35;
+}
+
+.vip-panel__activate {
+  appearance: none;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.45rem;
+  border: 1px solid rgba(232, 184, 74, 0.55);
+  background: linear-gradient(180deg, #e8b84a 0%, #b88720 100%);
+  color: #1a1204;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.vip-panel__activate:hover {
+  filter: brightness(1.08);
+}
+
+.vip-panel__hint {
+  margin: 0;
+  font-size: 0.72rem;
+  color: rgba(220, 224, 232, 0.62);
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .vip-panel {
+    top: 3.5rem;
+    right: 0.45rem;
+    width: min(20.5rem, calc(100vw - 0.9rem));
+  }
+}
+
 /* —— Captura (selamento manual) —— */
 .captura {
   pointer-events: auto;

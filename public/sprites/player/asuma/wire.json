@@ -1,0 +1,208 @@
+{
+  "id": "asuma",
+  "name": "Asuma Sarutobi",
+  "lookType": 9080,
+  "contentHeight": 80,
+  "idle": {
+    "image": "/sprites/player/asuma/idle.png",
+    "frameWidth": 54,
+    "frameHeight": 84,
+    "frameCount": 6,
+    "contentHeight": 80,
+    "scale": 1,
+    "originX": 0.3333333333333333,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/asuma/walk.png",
+    "frameWidth": 73,
+    "frameHeight": 73,
+    "frameCount": 6,
+    "contentHeight": 80,
+    "scale": 1,
+    "originX": 0.3835616438356164,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/asuma/combo1.png",
+      "frameWidth": 82,
+      "frameHeight": 79,
+      "frameCount": 4,
+      "contentHeight": 80,
+      "scale": 1,
+      "originX": 0.4024390243902439,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/asuma/combo2.png",
+      "frameWidth": 84,
+      "frameHeight": 79,
+      "frameCount": 4,
+      "contentHeight": 80,
+      "scale": 1,
+      "originX": 0.39285714285714285,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/asuma/combo3.png",
+      "frameWidth": 89,
+      "frameHeight": 86,
+      "frameCount": 5,
+      "contentHeight": 80,
+      "scale": 1,
+      "originX": 0.4044943820224719,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/asuma/hurt.png",
+    "frameWidth": 72,
+    "frameHeight": 82,
+    "frameCount": 3,
+    "contentHeight": 80,
+    "scale": 1,
+    "originX": 0.4027777777777778,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/asuma/death.png",
+    "frameWidth": 69,
+    "frameHeight": 79,
+    "frameCount": 3,
+    "contentHeight": 80,
+    "scale": 1,
+    "originX": 0.5217391304347826,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-asuma-1",
+      "skillName": "Katon Gokakyu no Jutsu - Start",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/asuma/special1.png",
+        "frameWidth": 54,
+        "frameHeight": 81,
+        "frameCount": 4,
+        "contentHeight": 80,
+        "scale": 1,
+        "originX": 0.35185185185185186,
+        "durationMs": 1667,
+        "hitDelayMs": 750,
+        "frameRate": 8,
+        "skillId": "skill-asuma-1",
+        "skillName": "Katon Gokakyu no Jutsu - Start",
+        "actionId": 1200
+      },
+      "fx": {
+        "image": "/sprites/player/asuma/special1-fx.png",
+        "frameWidth": 264,
+        "frameHeight": 256,
+        "frameCount": 12,
+        "contentHeight": 253,
+        "scale": 1,
+        "originX": 0.49812734082397003,
+        "frameRate": 18,
+        "durationMs": 280
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-asuma-2",
+      "skillName": "Hien - Start",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/asuma/special2.png",
+        "frameWidth": 56,
+        "frameHeight": 79,
+        "frameCount": 3,
+        "contentHeight": 80,
+        "scale": 1,
+        "originX": 0.375,
+        "durationMs": 1583,
+        "hitDelayMs": 583,
+        "frameRate": 8,
+        "skillId": "skill-asuma-2",
+        "skillName": "Hien - Start",
+        "actionId": 1300
+      },
+      "fx": {
+        "image": "/sprites/player/asuma/special2-fx.png",
+        "frameWidth": 126,
+        "frameHeight": 256,
+        "frameCount": 16,
+        "contentHeight": 251,
+        "scale": 1,
+        "originX": 0.589041095890411,
+        "frameRate": 18,
+        "durationMs": 400
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-asuma-3",
+      "skillName": "Chakra Trench Knife - Start",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/asuma/special3.png",
+        "frameWidth": 64,
+        "frameHeight": 99,
+        "frameCount": 5,
+        "contentHeight": 80,
+        "scale": 1,
+        "originX": 0.515625,
+        "durationMs": 1133,
+        "hitDelayMs": 517,
+        "frameRate": 8,
+        "skillId": "skill-asuma-3",
+        "skillName": "Chakra Trench Knife - Start",
+        "actionId": 1400
+      },
+      "fx": {
+        "image": "/sprites/player/asuma/special3-fx.png",
+        "frameWidth": 291,
+        "frameHeight": 196,
+        "frameCount": 17,
+        "contentHeight": 192,
+        "scale": 1,
+        "originX": 0.42955326460481097,
+        "frameRate": 18,
+        "durationMs": 667
+      },
+      "index": 2
+    },
+    {
+      "skillId": "skill-asuma-4",
+      "skillName": "Katon Gokakyu no Jutsu - Start",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/asuma/special4.png",
+        "frameWidth": 54,
+        "frameHeight": 81,
+        "frameCount": 3,
+        "contentHeight": 80,
+        "scale": 1,
+        "originX": 0.35185185185185186,
+        "durationMs": 1333,
+        "hitDelayMs": 600,
+        "frameRate": 8,
+        "skillId": "skill-asuma-4",
+        "skillName": "Katon Gokakyu no Jutsu - Start",
+        "actionId": 1100
+      },
+      "fx": {
+        "image": "/sprites/player/asuma/special4-fx.png",
+        "frameWidth": 320,
+        "frameHeight": 156,
+        "frameCount": 8,
+        "contentHeight": 150,
+        "scale": 1,
+        "originX": -0.013215859030837005,
+        "frameRate": 18,
+        "durationMs": 300
+      },
+      "index": 3
+    }
+  ]
+}

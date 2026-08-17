@@ -230,6 +230,12 @@ export const ANIME_LOOT_ITEMS: Record<string, ItemDefinition> = {
     'mythic',
     'fragmento_personagem.svg',
   ),
+  'item-cristal-refinamento': animeItem(
+    'item-cristal-refinamento',
+    'Cristal de Refinamento',
+    'epic',
+    'pergaminho_proibido.svg',
+  ),
 
   // Fragmentos por personagem (tier define %; personagem define o item)
   ...Object.fromEntries(

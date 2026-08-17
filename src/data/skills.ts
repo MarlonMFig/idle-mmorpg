@@ -5,9 +5,8 @@ import {
   CHARACTER_SKILL_COOLDOWNS_MS,
   CHARACTER_SKILL_DAMAGE,
   CHARACTER_SKILL_LEVELS,
+  FORCE_ALL_SKILLS_LEVEL_1,
 } from '@/constants/skill';
-import { BLACK_CLOVER_SKILLS } from '@/data/black-clover-packs';
-import { JUJUTSU_KAISEN_SKILLS } from '@/data/jujutsu-kaisen-packs';
 import { JUMP_FORCE_SKILLS } from '@/data/jump-force-packs';
 import { getCharacterPack } from '@/data/character-packs';
 import { CHARACTER_PROGRESSION_SKILL_DEFINITIONS } from '@/data/character-skill-progression';
@@ -113,6 +112,31 @@ const SKILL_LIST: SkillDefinition[] = [
     animation: { kind: 'character', durationMs: 1583, scale: 1 },
     range: 96,
     description: 'Dragão de água. (NTO: Suiton Suiryudan no Jutsu)',
+  },
+  {
+    id: 'skill-kisame-suiryu-tatsumaki',
+    name: 'Suiton: Suiryū Tatsumaki',
+    element: 'water',
+    requiredLevel: 120,
+    cooldownMs: 9500,
+    damage: 62,
+    icon: '/sprites/skills/water.svg',
+    animation: { kind: 'character', durationMs: 583, scale: 1 },
+    range: 118,
+    areaRadius: 56,
+    description: 'Tornado de água do Kisame: puxa e dilacera todos ao redor do alvo.',
+  },
+  {
+    id: 'skill-kisame-mizu-kanketsusen',
+    name: 'Suiton: Mizu Kanketsusen',
+    element: 'water',
+    requiredLevel: 160,
+    cooldownMs: 8000,
+    damage: 54,
+    icon: '/sprites/skills/water.svg',
+    animation: { kind: 'character', durationMs: 583, scale: 1 },
+    range: 112,
+    description: 'Gêiser de chakra aquático que estoura sob os pés do alvo.',
   },
   {
     id: 'skill-fuuton-arizukokku',
@@ -360,6 +384,43 @@ const SKILL_LIST: SkillDefinition[] = [
       'Amaterasu — Itachi invoca as chamas negras do Mangekyō Sharingan. (NTO: Amaterasu)',
   },
   {
+    id: 'skill-itachi-tsukuyomi',
+    name: 'Enton: Tsukuyomi',
+    element: 'yin',
+    requiredLevel: 250,
+    cooldownMs: 9000,
+    damage: 58,
+    icon: '/sprites/skills/yin.svg',
+    animation: { kind: 'character', durationMs: 1000, scale: 1 },
+    range: 115,
+    description: 'Genjutsu do Mangekyō de Itachi, com o efeito 274 original do WONSR.',
+  },
+  {
+    id: 'skill-itachi-hosenka',
+    name: 'Katon: Hōsenka',
+    element: 'fire',
+    requiredLevel: 300,
+    cooldownMs: 10500,
+    damage: 66,
+    icon: '/sprites/skills/fire.svg',
+    animation: { kind: 'character', durationMs: 1000, scale: 1 },
+    range: 120,
+    areaRadius: 58,
+    description: 'Chamas da Fênix de Itachi, com o efeito 896 original do WONSR.',
+  },
+  {
+    id: 'skill-itachi-susano-kogeki',
+    name: 'Enton: Susanoo Kōgeki',
+    element: 'yin',
+    requiredLevel: 350,
+    cooldownMs: 13000,
+    damage: 76,
+    icon: '/sprites/skills/yin.svg',
+    animation: { kind: 'character', durationMs: 1000, scale: 1 },
+    range: 125,
+    description: 'Ataque do Susanoo de Itachi, com o efeito 335 original do WONSR.',
+  },
+  {
     id: 'skill-kuchiyose',
     name: 'Kuchiyose no Jutsu',
     element: 'yang',
@@ -412,8 +473,7 @@ const SKILL_LIST: SkillDefinition[] = [
     animation: { kind: 'character', durationMs: 1667, scale: 1 },
     range: 72,
     areaRadius: 56,
-    description:
-      'Pé Celeste — chute de chakra superhumano de Tsunade. (NTO: Tsutenkyaku)',
+    description: 'Pé Celeste — chute de chakra superhumano de Tsunade. (NTO: Tsutenkyaku)',
   },
   {
     id: 'skill-gatsuuga',
@@ -426,8 +486,7 @@ const SKILL_LIST: SkillDefinition[] = [
     animation: { kind: 'character', durationMs: 2667, scale: 1 },
     range: 80,
     areaRadius: 56,
-    description:
-      'Gatsuuga — investida de dentes e garras de Kiba. (NTO: Gatsuuga)',
+    description: 'Gatsuuga — investida de dentes e garras de Kiba. (NTO: Gatsuuga)',
   },
   {
     id: 'skill-tessenka-no-mai',
@@ -440,8 +499,7 @@ const SKILL_LIST: SkillDefinition[] = [
     animation: { kind: 'character', durationMs: 1417, scale: 1 },
     range: 96,
     areaRadius: 64,
-    description:
-      'Dança da Camélia — ossos-lâmina de Kimimaro. (NTO: Tessenka no Mai)',
+    description: 'Dança da Camélia — ossos-lâmina de Kimimaro. (NTO: Tessenka no Mai)',
   },
   {
     id: 'skill-c2-dragon',
@@ -466,6 +524,48 @@ const SKILL_LIST: SkillDefinition[] = [
     animation: { kind: 'character', durationMs: 1833, scale: 1 },
     range: 80,
     description: 'Golpe de superforça de Sakura Shippuden.',
+  },
+  {
+    id: 'skill-sakura-saikan-chuushutsu',
+    name: 'Saikan Chūshutsu no Jutsu',
+    element: 'yang',
+    requiredLevel: 175,
+    cooldownMs: 7000,
+    damage: 0,
+    effect: 'heal',
+    healPercent: 0.18,
+    icon: '/sprites/skills/yang.svg',
+    animation: { kind: 'heal', tint: 0x7dffb2, durationMs: 620, scale: 1.15 },
+    range: 0,
+    description: 'Ninjutsu médico da Sakura: restaura 18% do HP máximo.',
+  },
+  {
+    id: 'skill-sakura-chiyute',
+    name: 'Chiyute no Jutsu',
+    element: 'yang',
+    requiredLevel: 225,
+    cooldownMs: 12000,
+    damage: 0,
+    effect: 'heal',
+    healPercent: 0.32,
+    icon: '/sprites/skills/yang.svg',
+    animation: { kind: 'heal', tint: 0x43f59a, durationMs: 760, scale: 1.4 },
+    range: 0,
+    description: 'Cura concentrada da Sakura: restaura 32% do HP máximo.',
+  },
+  {
+    id: 'skill-sakura-shousen',
+    name: 'Shōsen no Jutsu',
+    element: 'yang',
+    requiredLevel: 370,
+    cooldownMs: 20000,
+    damage: 0,
+    effect: 'heal',
+    healPercent: 0.55,
+    icon: '/sprites/skills/yang.svg',
+    animation: { kind: 'heal', tint: 0xb4ffd6, durationMs: 980, scale: 1.75 },
+    range: 0,
+    description: 'Cura médica avançada da Sakura: restaura 55% do HP máximo.',
   },
   {
     id: 'skill-soushuriken',
@@ -662,20 +762,24 @@ const SKILL_LIST: SkillDefinition[] = [
     animation: { kind: 'character', durationMs: 2000, scale: 1 },
     range: 96,
     areaRadius: 64,
-    description: 'Battōjutsu — corte relâmpago de Kenshin Himura. (Hiten Mitsurugi-ryū: Ryūtsuisen)',
+    description:
+      'Battōjutsu — corte relâmpago de Kenshin Himura. (Hiten Mitsurugi-ryū: Ryūtsuisen)',
   },
 ];
 
 export type SkillId = (typeof SKILL_LIST)[number]['id'];
 
-export const SKILL_DEFINITIONS: readonly SkillDefinition[] = [
+const ALL_SKILL_DEFINITIONS: readonly SkillDefinition[] = [
   ...SKILL_LIST,
-  ...BLACK_CLOVER_SKILLS,
-  ...JUJUTSU_KAISEN_SKILLS,
   ...JUMP_FORCE_SKILLS,
   ...CHARACTER_PROGRESSION_SKILL_DEFINITIONS,
   ...WONSR_SKILL_DEFINITIONS.filter((skill) => !SKILL_LIST.some((base) => base.id === skill.id)),
 ];
+
+// TEST: FORCE_ALL_SKILLS_LEVEL_1 zera o gate de nível de todos os jutsus.
+export const SKILL_DEFINITIONS: readonly SkillDefinition[] = FORCE_ALL_SKILLS_LEVEL_1
+  ? ALL_SKILL_DEFINITIONS.map((skill) => ({ ...skill, requiredLevel: 1 }))
+  : ALL_SKILL_DEFINITIONS;
 
 export const SKILLS: Record<string, SkillDefinition> = Object.fromEntries(
   SKILL_DEFINITIONS.map((skill) => [skill.id, skill]),
@@ -689,9 +793,7 @@ export const STARTER_KNOWN_SKILL_IDS: readonly string[] = SKILL_DEFINITIONS.map(
   (skill) => skill.id,
 );
 
-export function getHotbarSkillIdsForStarter(
-  starterId: StarterCharacterId,
-): readonly string[] {
+export function getHotbarSkillIdsForStarter(starterId: StarterCharacterId): readonly string[] {
   return getCharacterPack(starterId).hotbarSkillIds;
 }
 

@@ -20,6 +20,19 @@ export const COMBO_HIT_FX = {
 } as const;
 
 /**
+ * Cruzes de cura do próprio WONSR (efeito 845, usado nos jutsus médicos da
+ * Tsunade/Sakura no servidor original).
+ */
+export const HEAL_FX = {
+  key: 'fx-heal-cross',
+  url: '/sprites/wonsr/effects/845.png',
+  frameWidth: 32,
+  frameHeight: 32,
+  frameCount: 5,
+  animKey: 'fx-heal-cross-anim',
+} as const;
+
+/**
  * Animações reutilizáveis por `animation.kind`.
  * Novos jutsus só escolhem kind + tint/scale/duration.
  */
@@ -30,6 +43,10 @@ export class SkillVfx {
     scene.load.spritesheet(COMBO_HIT_FX.key, COMBO_HIT_FX.url, {
       frameWidth: COMBO_HIT_FX.frameWidth,
       frameHeight: COMBO_HIT_FX.frameHeight,
+    });
+    scene.load.spritesheet(HEAL_FX.key, HEAL_FX.url, {
+      frameWidth: HEAL_FX.frameWidth,
+      frameHeight: HEAL_FX.frameHeight,
     });
   }
 
@@ -75,6 +92,9 @@ export class SkillVfx {
         break;
       case 'aura':
         this.playAura(points, tint, duration, scale);
+        break;
+      case 'heal':
+        this.playHeal(points, tint, duration, scale);
         break;
       case 'sprite':
         this.playSprite(
@@ -143,12 +163,7 @@ export class SkillVfx {
       duration,
       ease: 'Cubic.easeOut',
       onComplete: () => {
-        this.playBurst(
-          { ...points, fromX: points.toX, fromY: points.toY },
-          tint,
-          180,
-          scale * 0.8,
-        );
+        this.playBurst({ ...points, fromX: points.toX, fromY: points.toY }, tint, 180, scale * 0.8);
         orb.destroy();
       },
     });
@@ -201,6 +216,96 @@ export class SkillVfx {
       duration,
       ease: 'Sine.easeOut',
       onComplete: () => ring.destroy(),
+    });
+  }
+
+  /**
+   * Cura: anel de chakra nos pés + cruzes médicas subindo pelo corpo.
+   * As cruzes vêm do efeito 845 do WONSR, recoloridas pelo tint do jutsu.
+   */
+  private playHeal(points: SkillVfxPoints, tint: number, duration: number, scale: number): void {
+    const x = points.toX;
+    const y = points.toY;
+
+    const ring = this.scene.add.ellipse(x, y, 30 * scale, 12 * scale, tint, 0.18);
+    ring.setStrokeStyle(2, tint, 0.85);
+    ring.setDepth(6);
+    this.scene.tweens.add({
+      targets: ring,
+      scaleX: 2.1,
+      scaleY: 2.1,
+      alpha: 0,
+      duration,
+      ease: 'Sine.easeOut',
+      onComplete: () => ring.destroy(),
+    });
+
+    if (!this.scene.textures.exists(HEAL_FX.key)) return;
+
+    if (!this.scene.anims.exists(HEAL_FX.animKey)) {
+      this.scene.anims.create({
+        key: HEAL_FX.animKey,
+        frames: this.scene.anims.generateFrameNumbers(HEAL_FX.key, {
+          start: 0,
+          end: HEAL_FX.frameCount - 1,
+        }),
+        frameRate: 10,
+        repeat: -1,
+      });
+    }
+
+    const count = Math.max(4, Math.round(5 * scale));
+    for (let index = 0; index < count; index += 1) {
+      const offsetX = Phaser.Math.Between(-16, 16) * scale;
+      const cross = this.scene.add
+        .sprite(x + offsetX, y - Phaser.Math.Between(0, 14), HEAL_FX.key, 0)
+        .setDepth(23)
+        .setScale(0.55 * scale)
+        .setTint(tint)
+        .setAlpha(0);
+      cross.play(HEAL_FX.animKey);
+
+      this.scene.tweens.add({
+        targets: cross,
+        y: cross.y - (34 + 14 * scale),
+        alpha: { from: 0, to: 1 },
+        duration: duration * 0.55,
+        delay: index * 70,
+        ease: 'Sine.easeOut',
+        onComplete: () => {
+          this.scene.tweens.add({
+            targets: cross,
+            y: cross.y - 12,
+            alpha: 0,
+            duration: duration * 0.45,
+            onComplete: () => cross.destroy(),
+          });
+        },
+      });
+    }
+  }
+
+  /** "+N" verde subindo do jogador curado (igual ao texto animado do WONSR). */
+  healNumber(x: number, y: number, amount: number): void {
+    const floater = this.scene.add
+      .text(x, y - 26, `+${Math.round(amount)}`, {
+        fontFamily: 'Tahoma, "Segoe UI", sans-serif',
+        fontSize: '12px',
+        fontStyle: 'bold',
+        color: '#7dffb2',
+        stroke: '#06210f',
+        strokeThickness: 3,
+      })
+      .setOrigin(0.5)
+      .setDepth(30);
+
+    this.scene.tweens.add({
+      targets: floater,
+      y: floater.y - 28,
+      alpha: 0,
+      duration: 750,
+      ease: 'Cubic.easeOut',
+      onComplete: () => floater.destroy(),
     });
   }
 

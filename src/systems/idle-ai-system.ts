@@ -1,15 +1,20 @@
 import * as Phaser from 'phaser';
-import {
-  IDLE_AGGRO_RANGE,
-  PLAYER_ATTACK_RANGE,
-} from '@/constants/combat';
+import { IDLE_AGGRO_RANGE, PLAYER_ATTACK_RANGE } from '@/constants/combat';
 import type { Player } from '@/entities/player';
 import { dialogueStore } from '@/stores/dialogue-store';
 import type { EnemyManager } from '@/systems/enemy-manager';
-import { findNearestAliveEnemy } from '@/systems/find-nearest-enemy';
+import { findUnclaimedEnemy } from '@/systems/find-nearest-enemy';
+import { LEADER_CLAIM_ID, type TargetClaims } from '@/systems/target-claims';
 
 const PATH_RECALCULATE_MS = 600;
 const WAYPOINT_REACHED_PX = 6;
+
+export interface IdleAiOptions {
+  /** Reserva de alvos da equipe; sem isto a IA usa sempre o mais próximo. */
+  claims?: TargetClaims | null;
+  /** Identidade deste caçador na reserva de alvos. */
+  claimantId?: string;
+}
 
 /**
  * IA idle: procura inimigos e navega pela grade de colisão até o alcance.
@@ -21,11 +26,18 @@ export class IdleAiSystem {
   private targetId: string | null = null;
   private nextPathAt = 0;
 
+  private readonly claims: TargetClaims | null;
+  private readonly claimantId: string;
+
   constructor(
     private readonly player: Player,
     private readonly enemyManager: EnemyManager,
     private readonly collisionLayer: Phaser.Tilemaps.TilemapLayer | null = null,
-  ) {}
+    options: IdleAiOptions = {},
+  ) {
+    this.claims = options.claims ?? null;
+    this.claimantId = options.claimantId ?? LEADER_CLAIM_ID;
+  }
 
   update(): void {
     if (dialogueStore.isOpen()) {
@@ -34,22 +46,28 @@ export class IdleAiSystem {
     }
 
     if (this.player.isBusy() || this.player.isDead()) {
+      // Morto não segura reserva: o alvo volta a valer para o resto da equipe.
+      if (this.player.isDead()) this.claims?.release(this.claimantId);
       this.player.sprite.setVelocity(0, 0);
       return;
     }
 
-    const target = findNearestAliveEnemy(
+    const target = findUnclaimedEnemy(
       this.enemyManager,
       this.player.x,
       this.player.y,
       IDLE_AGGRO_RANGE,
+      this.claims,
+      this.claimantId,
     );
 
     if (!target) {
+      this.claims?.release(this.claimantId);
       this.clearPath();
       this.player.stop();
       return;
     }
+    this.claims?.claim(this.claimantId, target.id);
 
     const scale = this.player.worldScale;
     const attackDistance = PLAYER_ATTACK_RANGE * 0.9 * scale;
@@ -72,15 +90,14 @@ export class IdleAiSystem {
     }
 
     const now = this.player.sprite.scene.time.now;
-    if (target.id !== this.targetId || now >= this.nextPathAt || this.pathIndex >= this.path.length) {
+    if (
+      target.id !== this.targetId ||
+      now >= this.nextPathAt ||
+      this.pathIndex >= this.path.length
+    ) {
       this.targetId = target.id;
       this.nextPathAt = now + PATH_RECALCULATE_MS;
-      this.path = this.findPath(
-        this.player.x,
-        this.player.y,
-        target.sprite.x,
-        target.sprite.y,
-      );
+      this.path = this.findPath(this.player.x, this.player.y, target.sprite.x, target.sprite.y);
       this.pathIndex = 0;
     }
 
@@ -114,7 +131,12 @@ export class IdleAiSystem {
    * Busca em largura na grade 4-direções. Como cada passo custa o mesmo, ela
    * encontra a rota mais curta sem cortar quinas através de árvores/paredes.
    */
-  private findPath(fromX: number, fromY: number, toX: number, toY: number): { x: number; y: number }[] {
+  private findPath(
+    fromX: number,
+    fromY: number,
+    toX: number,
+    toY: number,
+  ): { x: number; y: number }[] {
     const layer = this.collisionLayer;
     if (!layer) return [];
 
@@ -213,10 +235,7 @@ export class IdleAiSystem {
     return tile != null && tile.index !== -1;
   }
 
-  private findNearestWalkable(
-    tileX: number,
-    tileY: number,
-  ): { x: number; y: number } | null {
+  private findNearestWalkable(tileX: number, tileY: number): { x: number; y: number } | null {
     const layer = this.collisionLayer;
     if (!layer) return null;
     const width = layer.layer.width;

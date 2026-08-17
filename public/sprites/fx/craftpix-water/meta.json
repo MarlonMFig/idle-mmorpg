@@ -1,0 +1,22 @@
+{
+  "source": "user-provided CraftPix-style preview screenshot",
+  "extractedAt": "2026-08-17T16:01:28.626Z",
+  "waterHurricane": {
+    "key": "fx-water-hurricane",
+    "url": "/sprites/fx/craftpix-water/water-hurricane.png",
+    "frameWidth": 154,
+    "frameHeight": 90,
+    "frameCount": 13,
+    "contentHeight": 86,
+    "growFrames": 8,
+    "fadeFrames": 5
+  },
+  "geyser": {
+    "key": "fx-geyser",
+    "url": "/sprites/fx/craftpix-water/geyser.png",
+    "frameWidth": 72,
+    "frameHeight": 93,
+    "frameCount": 7,
+    "contentHeight": 89
+  }
+}

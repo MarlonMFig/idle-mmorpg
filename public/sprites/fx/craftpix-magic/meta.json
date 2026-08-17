@@ -1,0 +1,36 @@
+{
+  "source": "user-provided CraftPix Magic Sprite Effects screenshots",
+  "extractedAt": "2026-08-17T16:54:38.936Z",
+  "shield": {
+    "key": "fx-shield",
+    "url": "/sprites/fx/craftpix-magic/shield.png",
+    "frameWidth": 101,
+    "frameHeight": 100,
+    "frameCount": 8,
+    "contentHeight": 94
+  },
+  "blackHole": {
+    "key": "fx-black-hole",
+    "url": "/sprites/fx/craftpix-magic/black-hole.png",
+    "frameWidth": 87,
+    "frameHeight": 87,
+    "frameCount": 3,
+    "contentHeight": 81
+  },
+  "lightning": {
+    "key": "fx-lightning",
+    "url": "/sprites/fx/craftpix-magic/lightning.png",
+    "frameWidth": 92,
+    "frameHeight": 59,
+    "frameCount": 12,
+    "contentHeight": 53
+  },
+  "lightningBolt": {
+    "key": "fx-lightning-bolt",
+    "url": "/sprites/fx/craftpix-magic/lightning-bolt.png",
+    "frameWidth": 76,
+    "frameHeight": 108,
+    "frameCount": 12,
+    "contentHeight": 102
+  }
+}

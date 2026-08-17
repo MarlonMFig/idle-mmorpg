@@ -2,26 +2,19 @@ import * as Phaser from 'phaser';
 import { refreshWorldTextResolution } from '@/constants/nameplate';
 import { HUB_CHARACTER_SCALE } from '@/constants/sprites';
 import { loadCharacterPack } from '@/data/character-packs';
-import {
-  filterOutfitLookTypes,
-  getCuratedMapPack,
-} from '@/data/curated-map-sprites';
+import { filterOutfitLookTypes, getCuratedMapPack } from '@/data/curated-map-sprites';
 import { getActiveHub } from '@/data/hub-backgrounds';
 import { getNpcsForMap } from '@/data/npcs';
-import {
-  combatLayoutScale,
-  getWonsrRenderedMap,
-} from '@/data/wonsr-rendered-maps';
-import {
-  loadOutfitSheets,
-  type WonsrSpriteIndex,
-} from '@/data/wonsr-sprites';
+import { combatLayoutScale, getWonsrRenderedMap } from '@/data/wonsr-rendered-maps';
+import { loadOutfitSheets, type WonsrSpriteIndex } from '@/data/wonsr-sprites';
 import { getHubNpcs } from '@/data/wonsr-hub-npcs';
+import { resolveCharacterPack } from '@/data/resolve-character-pack';
 import { Player } from '@/entities';
 import { getPlayerSession } from '@/game/registry';
 import { getActiveCharacterPack } from '@/lib/active-character';
 import { emitChatMessage, emitSystemMessage } from '@/lib/system-log';
 import type { HuntCatalog } from '@/types/hunt';
+import type { SealedCharacter } from '@/types/team';
 import { MapLoader, MAP_KEYS, type MapKey } from '@/maps';
 import { createMultiplayerClient } from '@/services/multiplayer-client';
 import {
@@ -36,11 +29,15 @@ import {
   PlayerInputSystem,
   PlayerSyncSystem,
   RemotePlayerManager,
+  TargetClaims,
+  LEADER_CLAIM_ID,
+  TeamCompanionSystem,
 } from '@/systems';
 import { dialogueStore } from '@/stores/dialogue-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { locationStore, type GameMode } from '@/stores/location-store';
 import { multiplayerStore } from '@/stores/multiplayer-store';
+import { attributesStore } from '@/stores/attributes-store';
 import { questStore } from '@/stores/quest-store';
 import { skillsStore } from '@/stores/skills-store';
 import { teamStore } from '@/stores/team-store';
@@ -69,6 +66,8 @@ export class GameScene extends Phaser.Scene {
   private dialogueInteractor!: DialogueInteractor;
   private combatSystem: CombatSystem | null = null;
   private idleAi: IdleAiSystem | null = null;
+  private teamCompanions: TeamCompanionSystem | null = null;
+  private targetClaims: TargetClaims | null = null;
   private playerInput: PlayerInputSystem | null = null;
   private hubInteractables!: HubInteractableManager;
   private hubCollisionLayer: Phaser.Tilemaps.TilemapLayer | null = null;
@@ -85,7 +84,8 @@ export class GameScene extends Phaser.Scene {
   private worldW = 0;
   private worldH = 0;
   /** Layout da câmera: cover/contain-hub = arte da vila; contain-combat = arena inteira; follow = tilemap. */
-  private cameraLayout: 'cover' | 'contain-hub' | 'follow' | 'follow-combat' | 'contain-combat' =
+  private cameraLayout:
+    'cover' | 'contain-hub' | 'follow' | 'follow-combat' | 'contain-combat' | 'follow-explore' =
     'follow';
   private unsubLocation: (() => void) | null = null;
   private readonly multiplayer = createMultiplayerClient();
@@ -100,9 +100,7 @@ export class GameScene extends Phaser.Scene {
 
     const session = getPlayerSession(this.registry);
     const starterId = session?.starterCharacterId ?? 'naruto-classic';
-    const index = this.cache.json.get('wonsr-sprite-index') as
-      | WonsrSpriteIndex
-      | undefined;
+    const index = this.cache.json.get('wonsr-sprite-index') as WonsrSpriteIndex | undefined;
     const pack = getActiveCharacterPack(starterId, index);
 
     // Pack lateral (Shikamaru, …) + outfits WONSR sob demanda; sem isso o
@@ -115,6 +113,12 @@ export class GameScene extends Phaser.Scene {
       for (const lookType of lookTypes) {
         const curated = getCuratedMapPack(lookType);
         if (curated) await loadCharacterPack(this, curated);
+      }
+
+      // Mapa com a equipe inteira: aliados precisam do próprio pack em memória.
+      const mapKey = data?.mapKey ?? locationStore.getSnapshot().mapKey;
+      for (const member of this.companionMembers(mapKey)) {
+        await loadCharacterPack(this, resolveCharacterPack(member, starterId, index));
       }
 
       if (index) {
@@ -162,14 +166,22 @@ export class GameScene extends Phaser.Scene {
     return [...lookTypes];
   }
 
+  /** Membros da equipe que entram como aliados (só em mapas `teamParty`). */
+  private companionMembers(mapKey: MapKey): SealedCharacter[] {
+    if (!getWonsrRenderedMap(mapKey)?.teamParty) return [];
+    const team = teamStore.getSnapshot();
+    return team.teamIds
+      .filter((id) => id !== team.activeId)
+      .map((id) => team.collection.find((entry) => entry.id === id))
+      .filter((entry): entry is SealedCharacter => entry != null);
+  }
+
   private buildWorld(data?: GameSceneData): void {
     this.cameras.main.setBackgroundColor('#000000');
 
     const session = getPlayerSession(this.registry);
     const starterId = session?.starterCharacterId ?? 'naruto-classic';
-    const spriteIndex = this.cache.json.get('wonsr-sprite-index') as
-      | WonsrSpriteIndex
-      | undefined;
+    const spriteIndex = this.cache.json.get('wonsr-sprite-index') as WonsrSpriteIndex | undefined;
     const pack = getActiveCharacterPack(starterId, spriteIndex);
 
     const loc = locationStore.getSnapshot();
@@ -316,9 +328,9 @@ export class GameScene extends Phaser.Scene {
             mapVideo.setDepth(0.5);
             mapVideo.setMute(true);
             // Phaser tipa incompleto: setPauseOnBlur existe em runtime no Video.
-            (mapVideo as Phaser.GameObjects.Video & { setPauseOnBlur: (v: boolean) => void }).setPauseOnBlur(
-              false,
-            );
+            (
+              mapVideo as Phaser.GameObjects.Video & { setPauseOnBlur: (v: boolean) => void }
+            ).setPauseOnBlur(false);
             mapVideo.setDisplaySize(rendered.width, rendered.height);
             mapVideo.play(true);
           } catch (error) {
@@ -383,6 +395,7 @@ export class GameScene extends Phaser.Scene {
         pack,
         displayName: session?.nickname,
         worldScale: combatLayoutScale(this.mapKey),
+        moveSpeed: this.mapMoveSpeed(),
       });
       if (collisionLayer) {
         this.physics.add.collider(this.player.sprite, collisionLayer);
@@ -391,10 +404,27 @@ export class GameScene extends Phaser.Scene {
 
       this.worldW = worldW;
       this.worldH = worldH;
-      this.cameraLayout = rendered ? 'contain-combat' : 'follow-combat';
+      this.cameraLayout = !rendered
+        ? 'follow-combat'
+        : rendered.cameraFollow
+          ? 'follow-explore'
+          : 'contain-combat';
       this.applyCameraLayout();
       if (!rendered) {
         this.cameras.main.startFollow(this.player.sprite, true, 1, 1);
+      } else if (rendered.cameraFollow) {
+        // Contain: a ilustração inteira fica na tela, sem recorte/zoom.
+        // Caso contrário o mundo é maior que a viewport e a câmera segue o líder.
+        if (rendered.cameraFit !== 'contain') {
+          this.cameras.main.startFollow(this.player.sprite, true, 0.12, 0.12);
+        }
+        this.teamCompanions = this.createTeamCompanions(
+          spawnX,
+          spawnY,
+          collisionLayer,
+          combatLayoutScale(this.mapKey),
+          spriteIndex,
+        );
       }
     }
 
@@ -438,18 +468,20 @@ export class GameScene extends Phaser.Scene {
       this.combatSystem = null;
       this.idleAi = null;
     } else {
-      this.playerInput = null;
+      // Mapa de exploração: WASD move o líder e a IA idle assume ao soltar as teclas.
+      const explore = getWonsrRenderedMap(this.mapKey)?.cameraFollow === true;
+      this.playerInput = explore ? new PlayerInputSystem(this, this.player) : null;
+      this.playerInput?.setEnabled(true);
       this.combatSystem = new CombatSystem(
         this,
         this.player,
         this.enemyManager,
         this.lootManager,
+        this.targetClaims,
       );
-      this.idleAi = new IdleAiSystem(
-        this.player,
-        this.enemyManager,
-        combatCollisionLayer,
-      );
+      this.idleAi = new IdleAiSystem(this.player, this.enemyManager, combatCollisionLayer, {
+        claims: this.targetClaims,
+      });
     }
 
     this.remotePlayers = new RemotePlayerManager(
@@ -468,9 +500,60 @@ export class GameScene extends Phaser.Scene {
       this.unsubLocation?.();
       this.unsubLocation = null;
       this.hubInteractables?.clear();
+      this.teamCompanions?.destroy();
+      this.teamCompanions = null;
+      this.targetClaims?.clear();
+      this.targetClaims = null;
       this.multiplayer.disconnect();
       this.remotePlayers.clear();
       multiplayerStore.setDisconnected();
+    });
+  }
+
+  /** Velocidade do mapa atual (mapa de teste farm usa multiplicador do vídeo). */
+  private mapMoveSpeed(): number | undefined {
+    const mult = getWonsrRenderedMap(this.mapKey)?.moveSpeedMult;
+    if (mult == null || mult === 1) return undefined;
+    return attributesStore.getSpeed() * mult;
+  }
+
+  /** Sobe os outros dois membros da equipe ao lado do jogador. */
+  private createTeamCompanions(
+    spawnX: number,
+    spawnY: number,
+    collisionLayer: Phaser.Tilemaps.TilemapLayer | null,
+    worldScale: number,
+    spriteIndex: WonsrSpriteIndex | undefined,
+  ): TeamCompanionSystem | null {
+    const session = getPlayerSession(this.registry);
+    const starterId = session?.starterCharacterId ?? 'naruto-classic';
+    const members = this.companionMembers(this.mapKey);
+    if (members.length === 0) return null;
+
+    // Reserva de alvos só existe quando a equipe entra em campo; nos demais
+    // mapas o líder continua mirando pelo simples "mais próximo".
+    this.targetClaims = new TargetClaims();
+
+    const companions = members.map((member, index) => {
+      const player = new Player(this, {
+        x: spawnX + (index === 0 ? -40 : 40),
+        y: spawnY + 48,
+        pack: resolveCharacterPack(member, starterId, spriteIndex),
+        displayName: member.name,
+        worldScale,
+        moveSpeed: this.mapMoveSpeed(),
+      });
+      if (collisionLayer) {
+        this.physics.add.collider(player.sprite, collisionLayer);
+      }
+      return { id: member.id, player, level: member.level };
+    });
+
+    return new TeamCompanionSystem(this, this.player, companions, {
+      collisionLayer,
+      enemyManager: this.enemyManager,
+      lootManager: this.lootManager,
+      claims: this.targetClaims,
     });
   }
 
@@ -514,6 +597,24 @@ export class GameScene extends Phaser.Scene {
       cam.stopFollow();
       cam.setZoom(zoom);
       cam.centerOn(this.worldW / 2, this.worldH / 2);
+    } else if (this.cameraLayout === 'follow-explore') {
+      const rendered = getWonsrRenderedMap(this.mapKey);
+      if (rendered?.cameraFit === 'contain') {
+        // Enquadra o PNG inteiro (como no visualizador). Sem padding nas
+        // bounds, o Phaser trava o scroll em 0 e a arte cola na esquerda.
+        const zoom = Math.min(w / this.worldW, h / this.worldH);
+        const viewW = w / zoom;
+        const viewH = h / zoom;
+        const padX = Math.max(0, (viewW - this.worldW) / 2);
+        const padY = Math.max(0, (viewH - this.worldH) / 2);
+        cam.stopFollow();
+        cam.setRoundPixels(false);
+        cam.setZoom(zoom);
+        cam.setBounds(-padX, -padY, this.worldW + padX * 2, this.worldH + padY * 2);
+        cam.centerOn(this.worldW / 2, this.worldH / 2);
+      } else {
+        cam.setZoom(rendered?.cameraZoom ?? 1);
+      }
     } else if (this.cameraLayout === 'follow-combat') {
       const coverZoom = Math.max(w / this.worldW, h / this.worldH);
       cam.setZoom(coverZoom);
@@ -541,8 +642,12 @@ export class GameScene extends Phaser.Scene {
 
   private stepWorld(time: number): void {
     this.dialogueInteractor?.update();
-    this.playerInput?.update();
-    this.idleAi?.update();
+    const manualMove = this.playerInput?.update() ?? false;
+    // Sob WASD o líder não persegue ninguém: solta a reserva para os aliados
+    // não desviarem de um alvo que ele deixou para trás.
+    if (manualMove) this.targetClaims?.release(LEADER_CLAIM_ID);
+    else this.idleAi?.update();
+    this.teamCompanions?.update(time);
     this.combatSystem?.update(time);
     this.lootManager?.update(time);
     this.lootPickup?.update();
@@ -609,11 +714,7 @@ export class GameScene extends Phaser.Scene {
 
     try {
       await this.multiplayer.connect({ playerId, nickname, villageId, mapKey });
-      multiplayerStore.setConnected(
-        playerId,
-        this.multiplayer.getTransportName(),
-        nickname,
-      );
+      multiplayerStore.setConnected(playerId, this.multiplayer.getTransportName(), nickname);
       multiplayerStore.registerChatSender((text) => {
         this.multiplayer.sendChat(text, nickname);
       });

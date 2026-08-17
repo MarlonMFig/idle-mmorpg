@@ -1,16 +1,18 @@
-import { starAttributeMultiplier } from '@/constants/character-progression';
+import { starAttributeMultiplier as starMultFromSpec } from '@/constants/aiw-quality';
+import { potentialPowerMultiplier } from '@/lib/potential';
+import type { CharacterPotential } from '@/types/potential';
 import { ATTRIBUTE_ORDER } from '@/constants/attributes';
 import type { AttributeValues } from '@/types/attributes';
 
 /**
- * Aplica bônus de estrelas aos atributos base (linear, não composto).
- * Mantém precisão float; arredondar só na UI.
+ * Aplica bônus de estrelas e potencial aos atributos base.
  */
 export function applyStarBonusToBase(
   base: AttributeValues,
   stars: number,
+  potential?: CharacterPotential,
 ): AttributeValues {
-  const mult = starAttributeMultiplier(stars);
+  const mult = starMultFromSpec(stars) * potentialPowerMultiplier(potential);
   const result = { ...base };
   for (const id of ATTRIBUTE_ORDER) {
     result[id] = base[id] * mult;

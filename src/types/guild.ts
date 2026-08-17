@@ -35,6 +35,9 @@ export interface Guild {
   bossMaxHp: number;
   skillLevels: Record<string, number>;
   shopStock: Record<string, number>;
+  /** Fragmento rotativo diário (spec AIW). */
+  dailyFragmentDay: string | null;
+  dailyFragmentCharId: string | null;
 }
 
 export type GuildTabId =

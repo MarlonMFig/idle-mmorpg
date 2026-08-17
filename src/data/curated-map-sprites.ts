@@ -128,7 +128,7 @@ export function getCuratedMapPack(lookType: number): CharacterPack | null {
 }
 
 export function getCuratedPortraitUrl(lookType: number): string | null {
-  return PREVIEW_BY_LOOK_TYPE[lookType] ?? null;
+  return getCuratedMapPack(lookType) ? (PREVIEW_BY_LOOK_TYPE[lookType] ?? null) : null;
 }
 
 export function listCuratedMapLookTypes(lookTypes: Iterable<number>): number[] {

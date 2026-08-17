@@ -1,0 +1,160 @@
+/* —— Loja Geral (gemas) —— */
+.premium-shop-overlay {
+  pointer-events: auto;
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 4.5rem 0.75rem 1rem;
+  background: rgba(4, 6, 12, 0.62);
+}
+
+.premium-shop {
+  width: min(28rem, calc(100vw - 1.5rem));
+  max-height: min(34rem, calc(100vh - 5.5rem));
+  overflow: auto;
+  border-radius: 0.75rem;
+  border: 1.5px solid rgba(176, 109, 255, 0.45);
+  background: linear-gradient(180deg, rgba(18, 14, 32, 0.98) 0%, rgba(8, 8, 16, 0.99) 100%);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.45) inset,
+    0 20px 48px rgba(0, 0, 0, 0.6);
+  color: rgba(236, 240, 246, 0.94);
+}
+
+.premium-shop__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem 0.65rem;
+  border-bottom: 1px solid rgba(176, 109, 255, 0.28);
+}
+
+.premium-shop__eyebrow {
+  margin: 0 0 0.15rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(176, 109, 255, 0.85);
+}
+
+.premium-shop__head h2 {
+  margin: 0;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #e8d4ff;
+}
+
+.premium-shop__balance {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(176, 109, 255, 0.35);
+  background: rgba(0, 0, 0, 0.28);
+  font-size: 0.9rem;
+}
+
+.premium-shop__close {
+  border: none;
+  background: transparent;
+  color: rgba(236, 240, 246, 0.72);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.premium-shop__section {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.premium-shop__section h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #c9a8ff;
+}
+
+.premium-shop__section p {
+  margin: 0 0 0.55rem;
+  font-size: 0.78rem;
+  color: rgba(220, 224, 232, 0.72);
+}
+
+.premium-shop__btn {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.45rem;
+  border: 1px solid rgba(176, 109, 255, 0.45);
+  background: linear-gradient(180deg, rgba(120, 70, 200, 0.55) 0%, rgba(70, 40, 130, 0.75) 100%);
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.premium-shop__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.premium-shop__packs,
+.premium-shop__achievements {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.premium-shop__packs button {
+  width: 100%;
+  padding: 0.45rem 0.65rem;
+  border-radius: 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.25);
+  color: rgba(236, 240, 246, 0.9);
+  font-size: 0.78rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.premium-shop__achievements li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.15rem 0.5rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: 0.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.22);
+  font-size: 0.75rem;
+}
+
+.premium-shop__achievements li.is-done {
+  opacity: 0.55;
+}
+
+.premium-shop__achievements strong {
+  grid-column: 1;
+}
+
+.premium-shop__achievements span {
+  grid-column: 1;
+  color: rgba(220, 224, 232, 0.65);
+}
+
+.premium-shop__achievements em {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  font-style: normal;
+  color: #b06dff;
+}

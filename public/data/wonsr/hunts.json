@@ -1,6 +1,6 @@
 {
   "source": "curated character packs only (no WONSR vocations/monsters)",
-  "generatedAt": "2026-08-15T03:54:37.192Z",
+  "generatedAt": "2026-08-17T01:29:24.910Z",
   "progression": {
     "targetsPerHunt": 1,
     "charactersPerLevelTier": 5,
@@ -8,9 +8,9 @@
     "levelStep": 10
   },
   "counts": {
-    "hunts": 72,
-    "targets": 72,
-    "baseCharacters": 72,
+    "hunts": 50,
+    "targets": 48,
+    "baseCharacters": 48,
     "monsterVariants": 0,
     "uniqueLookTypes": 0
   },
@@ -21,6 +21,120 @@
     "frameSize": 64
   },
   "hunts": [
+    {
+      "id": "hunt-teste-farm-wonsr",
+      "name": "Teste: Clareira de Treinamento",
+      "requiredLevel": 1,
+      "mapKey": "huntTesteFarmWonsr",
+      "description": "Clareira de treinamento 4096×2160: mesma resolução do hub, câmera enquadrando o mapa e equipe completa.",
+      "targets": [
+        {
+          "id": "curated-character-asuma",
+          "sourceId": "curated-character-asuma",
+          "name": "Asuma Sarutobi",
+          "category": "personagem",
+          "source": "curated/asuma",
+          "lookType": 9080,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        },
+        {
+          "id": "wonsr-character-kiba-inuzuka",
+          "sourceId": "wonsr-character-kiba-inuzuka",
+          "name": "Kiba Inuzuka",
+          "category": "personagem",
+          "source": "curated/kiba",
+          "lookType": 9016,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        },
+        {
+          "id": "wonsr-character-shino",
+          "sourceId": "wonsr-character-shino",
+          "name": "Shino Aburame",
+          "category": "personagem",
+          "source": "curated/shino",
+          "lookType": 9027,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "hunt-teste-equipe",
+      "name": "Teste: Konoha (equipe)",
+      "requiredLevel": 1,
+      "mapKey": "huntTesteEquipe",
+      "description": "Mapa de teste top-down: mundo grande, personagens pequenos e os 3 da equipe em campo.",
+      "targets": [
+        {
+          "id": "wonsr-character-kiba-inuzuka",
+          "sourceId": "wonsr-character-kiba-inuzuka",
+          "name": "Kiba Inuzuka",
+          "category": "personagem",
+          "source": "curated/kiba",
+          "lookType": 9016,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        },
+        {
+          "id": "wonsr-character-shino",
+          "sourceId": "wonsr-character-shino",
+          "name": "Shino Aburame",
+          "category": "personagem",
+          "source": "curated/shino",
+          "lookType": 9027,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        },
+        {
+          "id": "wonsr-character-kimimaro",
+          "sourceId": "wonsr-character-kimimaro",
+          "name": "Kimimaro",
+          "category": "personagem",
+          "source": "curated/kimimaro",
+          "lookType": 9017,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
     {
       "id": "wonsr-hunt-001",
       "name": "Mapa de Uzumaki Naruto",
@@ -748,18 +862,18 @@
     },
     {
       "id": "wonsr-hunt-030",
-      "name": "Mapa de Momo Hinamori",
+      "name": "Mapa de Asuma Sarutobi",
       "requiredLevel": 50,
-      "mapKey": "huntArenaExameChunnin",
-      "description": "Caça automática de Momo Hinamori para níveis 50+.",
+      "mapKey": "huntCampoGuerraNinja",
+      "description": "Caça automática de Asuma Sarutobi para níveis 50+.",
       "targets": [
         {
-          "id": "wonsr-character-momo-hinamori",
-          "sourceId": "wonsr-character-momo-hinamori",
-          "name": "Momo Hinamori",
+          "id": "curated-character-asuma",
+          "sourceId": "curated-character-asuma",
+          "name": "Asuma Sarutobi",
           "category": "personagem",
-          "source": "curated/momo-hinamori",
-          "lookType": 9028,
+          "source": "curated/asuma",
+          "lookType": 9080,
           "hasSprite": false,
           "requiredLevel": 50,
           "level": 50,
@@ -773,18 +887,18 @@
     },
     {
       "id": "wonsr-hunt-031",
-      "name": "Mapa de Toshiro Hitsugaya",
+      "name": "Mapa de Bardock",
       "requiredLevel": 60,
-      "mapKey": "huntArenaExameChunnin",
-      "description": "Caça automática de Toshiro Hitsugaya para níveis 60+.",
+      "mapKey": "huntArredoresReinoClover",
+      "description": "Caça automática de Bardock para níveis 60+.",
       "targets": [
         {
-          "id": "wonsr-character-hitsugaya",
-          "sourceId": "wonsr-character-hitsugaya",
-          "name": "Toshiro Hitsugaya",
+          "id": "curated-character-bardock",
+          "sourceId": "curated-character-bardock",
+          "name": "Bardock",
           "category": "personagem",
-          "source": "curated/hitsugaya",
-          "lookType": 9029,
+          "source": "curated/bardock",
+          "lookType": 9084,
           "hasSprite": false,
           "requiredLevel": 60,
           "level": 60,
@@ -798,18 +912,18 @@
     },
     {
       "id": "wonsr-hunt-032",
-      "name": "Mapa de Asta",
+      "name": "Mapa de Beerus",
       "requiredLevel": 60,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Asta para níveis 60+.",
+      "mapKey": "huntForestClearing",
+      "description": "Caça automática de Beerus para níveis 60+.",
       "targets": [
         {
-          "id": "curated-character-asta",
-          "sourceId": "curated-character-asta",
-          "name": "Asta",
+          "id": "curated-character-beerus",
+          "sourceId": "curated-character-beerus",
+          "name": "Beerus",
           "category": "personagem",
-          "source": "curated/asta",
-          "lookType": 9037,
+          "source": "curated/beerus",
+          "lookType": 9085,
           "hasSprite": false,
           "requiredLevel": 60,
           "level": 60,
@@ -823,18 +937,18 @@
     },
     {
       "id": "wonsr-hunt-033",
-      "name": "Mapa de Monkey D. Luffy",
+      "name": "Mapa de Broly",
       "requiredLevel": 60,
-      "mapKey": "huntPontePaisOnda",
-      "description": "Caça automática de Monkey D. Luffy para níveis 60+.",
+      "mapKey": "huntDesertoSaiyajin",
+      "description": "Caça automática de Broly para níveis 60+.",
       "targets": [
         {
-          "id": "curated-character-luffy",
-          "sourceId": "curated-character-luffy",
-          "name": "Monkey D. Luffy",
+          "id": "curated-character-broly",
+          "sourceId": "curated-character-broly",
+          "name": "Broly",
           "category": "personagem",
-          "source": "curated/luffy",
-          "lookType": 9038,
+          "source": "curated/broly",
+          "lookType": 9086,
           "hasSprite": false,
           "requiredLevel": 60,
           "level": 60,
@@ -848,18 +962,18 @@
     },
     {
       "id": "wonsr-hunt-034",
-      "name": "Mapa de Mereoleona",
+      "name": "Mapa de Chiyo",
       "requiredLevel": 60,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Mereoleona para níveis 60+.",
+      "mapKey": "huntTorneioArtesMarciais",
+      "description": "Caça automática de Chiyo para níveis 60+.",
       "targets": [
         {
-          "id": "curated-character-mereoleona",
-          "sourceId": "curated-character-mereoleona",
-          "name": "Mereoleona",
+          "id": "curated-character-chiyo",
+          "sourceId": "curated-character-chiyo",
+          "name": "Chiyo",
           "category": "personagem",
-          "source": "curated/mereoleona",
-          "lookType": 9039,
+          "source": "curated/chiyo",
+          "lookType": 9077,
           "hasSprite": false,
           "requiredLevel": 60,
           "level": 60,
@@ -873,18 +987,18 @@
     },
     {
       "id": "wonsr-hunt-035",
-      "name": "Mapa de Vanica",
+      "name": "Mapa de Freeza",
       "requiredLevel": 60,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Vanica para níveis 60+.",
+      "mapKey": "huntNamekusei",
+      "description": "Caça automática de Freeza para níveis 60+.",
       "targets": [
         {
-          "id": "curated-character-vanica",
-          "sourceId": "curated-character-vanica",
-          "name": "Vanica",
+          "id": "curated-character-freeza",
+          "sourceId": "curated-character-freeza",
+          "name": "Freeza",
           "category": "personagem",
-          "source": "curated/vanica",
-          "lookType": 9040,
+          "source": "curated/freeza",
+          "lookType": 9033,
           "hasSprite": false,
           "requiredLevel": 60,
           "level": 60,
@@ -898,18 +1012,18 @@
     },
     {
       "id": "wonsr-hunt-036",
-      "name": "Mapa de Zenon",
+      "name": "Mapa de Gohan (Adulto)",
       "requiredLevel": 70,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Zenon para níveis 70+.",
+      "mapKey": "huntDesertoSaiyajin",
+      "description": "Caça automática de Gohan (Adulto) para níveis 70+.",
       "targets": [
         {
-          "id": "curated-character-zenon",
-          "sourceId": "curated-character-zenon",
-          "name": "Zenon",
+          "id": "curated-character-gohan",
+          "sourceId": "curated-character-gohan",
+          "name": "Gohan (Adulto)",
           "category": "personagem",
-          "source": "curated/zenon",
-          "lookType": 9041,
+          "source": "curated/gohan",
+          "lookType": 9083,
           "hasSprite": false,
           "requiredLevel": 70,
           "level": 70,
@@ -923,18 +1037,18 @@
     },
     {
       "id": "wonsr-hunt-037",
-      "name": "Mapa de Reve",
+      "name": "Mapa de Gotenks",
       "requiredLevel": 70,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Reve para níveis 70+.",
+      "mapKey": "huntTorneioArtesMarciais",
+      "description": "Caça automática de Gotenks para níveis 70+.",
       "targets": [
         {
-          "id": "curated-character-reve",
-          "sourceId": "curated-character-reve",
-          "name": "Reve",
+          "id": "curated-character-gotenks",
+          "sourceId": "curated-character-gotenks",
+          "name": "Gotenks",
           "category": "personagem",
-          "source": "curated/reve",
-          "lookType": 9042,
+          "source": "curated/gotenks",
+          "lookType": 9034,
           "hasSprite": false,
           "requiredLevel": 70,
           "level": 70,
@@ -948,18 +1062,18 @@
     },
     {
       "id": "wonsr-hunt-038",
-      "name": "Mapa de Yuno Spirit Dive",
+      "name": "Mapa de Haku",
       "requiredLevel": 70,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Yuno Spirit Dive para níveis 70+.",
+      "mapKey": "huntPontePaisOnda",
+      "description": "Caça automática de Haku para níveis 70+.",
       "targets": [
         {
-          "id": "curated-character-yuno-spirit-dive",
-          "sourceId": "curated-character-yuno-spirit-dive",
-          "name": "Yuno Spirit Dive",
+          "id": "curated-character-haku",
+          "sourceId": "curated-character-haku",
+          "name": "Haku",
           "category": "personagem",
-          "source": "curated/yuno-spirit-dive",
-          "lookType": 9044,
+          "source": "curated/haku",
+          "lookType": 9078,
           "hasSprite": false,
           "requiredLevel": 70,
           "level": 70,
@@ -973,18 +1087,18 @@
     },
     {
       "id": "wonsr-hunt-039",
-      "name": "Mapa de Yuno Royal Knight",
+      "name": "Mapa de Hiruzen Sarutobi",
       "requiredLevel": 70,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Yuno Royal Knight para níveis 70+.",
+      "mapKey": "huntArenaExameChunnin",
+      "description": "Caça automática de Hiruzen Sarutobi para níveis 70+.",
       "targets": [
         {
-          "id": "curated-character-yuno-royal-knight",
-          "sourceId": "curated-character-yuno-royal-knight",
-          "name": "Yuno Royal Knight",
+          "id": "curated-character-hiruzen",
+          "sourceId": "curated-character-hiruzen",
+          "name": "Hiruzen Sarutobi",
           "category": "personagem",
-          "source": "curated/yuno-royal-knight",
-          "lookType": 9045,
+          "source": "curated/hiruzen",
+          "lookType": 9079,
           "hasSprite": false,
           "requiredLevel": 70,
           "level": 70,
@@ -998,18 +1112,18 @@
     },
     {
       "id": "wonsr-hunt-040",
-      "name": "Mapa de Yuno Spirit Sword",
+      "name": "Mapa de Kiba Inuzuka (Kid)",
       "requiredLevel": 70,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Yuno Spirit Sword para níveis 70+.",
+      "mapKey": "huntForestClearing",
+      "description": "Caça automática de Kiba Inuzuka (Kid) para níveis 70+.",
       "targets": [
         {
-          "id": "curated-character-yuno-spirit-sword",
-          "sourceId": "curated-character-yuno-spirit-sword",
-          "name": "Yuno Spirit Sword",
+          "id": "curated-character-kiba-kid",
+          "sourceId": "curated-character-kiba-kid",
+          "name": "Kiba Inuzuka (Kid)",
           "category": "personagem",
-          "source": "curated/yuno-spirit-sword",
-          "lookType": 9046,
+          "source": "curated/kiba-kid",
+          "lookType": 9075,
           "hasSprite": false,
           "requiredLevel": 70,
           "level": 70,
@@ -1023,18 +1137,18 @@
     },
     {
       "id": "wonsr-hunt-041",
-      "name": "Mapa de Gordon",
+      "name": "Mapa de Konohamaru Sarutobi",
       "requiredLevel": 80,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Gordon para níveis 80+.",
+      "mapKey": "huntCampoTreinamento",
+      "description": "Caça automática de Konohamaru Sarutobi para níveis 80+.",
       "targets": [
         {
-          "id": "curated-character-gordon",
-          "sourceId": "curated-character-gordon",
-          "name": "Gordon",
+          "id": "curated-character-konohamaru",
+          "sourceId": "curated-character-konohamaru",
+          "name": "Konohamaru Sarutobi",
           "category": "personagem",
-          "source": "curated/gordon",
-          "lookType": 9047,
+          "source": "curated/konohamaru",
+          "lookType": 9074,
           "hasSprite": false,
           "requiredLevel": 80,
           "level": 80,
@@ -1048,18 +1162,18 @@
     },
     {
       "id": "wonsr-hunt-042",
-      "name": "Mapa de Rakugeki Yuno",
+      "name": "Mapa de Majin Boo",
       "requiredLevel": 80,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Rakugeki Yuno para níveis 80+.",
+      "mapKey": "huntSalaDoTempo",
+      "description": "Caça automática de Majin Boo para níveis 80+.",
       "targets": [
         {
-          "id": "curated-character-rakugeki-yuno",
-          "sourceId": "curated-character-rakugeki-yuno",
-          "name": "Rakugeki Yuno",
+          "id": "curated-character-majin-boo",
+          "sourceId": "curated-character-majin-boo",
+          "name": "Majin Boo",
           "category": "personagem",
-          "source": "curated/rakugeki-yuno",
-          "lookType": 9048,
+          "source": "curated/majin-boo",
+          "lookType": 9035,
           "hasSprite": false,
           "requiredLevel": 80,
           "level": 80,
@@ -1073,18 +1187,18 @@
     },
     {
       "id": "wonsr-hunt-043",
-      "name": "Mapa de Black Asta",
+      "name": "Mapa de Naruto Shippuden",
       "requiredLevel": 80,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Black Asta para níveis 80+.",
+      "mapKey": "huntValeDoFim",
+      "description": "Caça automática de Naruto Shippuden para níveis 80+.",
       "targets": [
         {
-          "id": "curated-character-black-asta",
-          "sourceId": "curated-character-black-asta",
-          "name": "Black Asta",
+          "id": "curated-character-naruto-shippuden",
+          "sourceId": "curated-character-naruto-shippuden",
+          "name": "Naruto Shippuden",
           "category": "personagem",
-          "source": "curated/black-asta",
-          "lookType": 9049,
+          "source": "curated/naruto-shippuden",
+          "lookType": 9031,
           "hasSprite": false,
           "requiredLevel": 80,
           "level": 80,
@@ -1098,18 +1212,18 @@
     },
     {
       "id": "wonsr-hunt-044",
-      "name": "Mapa de Zora",
+      "name": "Mapa de Piccolo",
       "requiredLevel": 80,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Zora para níveis 80+.",
+      "mapKey": "huntNamekusei",
+      "description": "Caça automática de Piccolo para níveis 80+.",
       "targets": [
         {
-          "id": "curated-character-zora",
-          "sourceId": "curated-character-zora",
-          "name": "Zora",
+          "id": "curated-character-piccolo",
+          "sourceId": "curated-character-piccolo",
+          "name": "Piccolo",
           "category": "personagem",
-          "source": "curated/zora",
-          "lookType": 9050,
+          "source": "curated/piccolo",
+          "lookType": 9036,
           "hasSprite": false,
           "requiredLevel": 80,
           "level": 80,
@@ -1123,18 +1237,18 @@
     },
     {
       "id": "wonsr-hunt-045",
-      "name": "Mapa de Zagred",
+      "name": "Mapa de Sakon e Ukon",
       "requiredLevel": 80,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Zagred para níveis 80+.",
+      "mapKey": "huntLabOrochimaru",
+      "description": "Caça automática de Sakon e Ukon para níveis 80+.",
       "targets": [
         {
-          "id": "curated-character-zagred",
-          "sourceId": "curated-character-zagred",
-          "name": "Zagred",
+          "id": "curated-character-sakon",
+          "sourceId": "curated-character-sakon",
+          "name": "Sakon e Ukon",
           "category": "personagem",
-          "source": "curated/zagred",
-          "lookType": 9051,
+          "source": "curated/sakon",
+          "lookType": 9082,
           "hasSprite": false,
           "requiredLevel": 80,
           "level": 80,
@@ -1148,18 +1262,18 @@
     },
     {
       "id": "wonsr-hunt-046",
-      "name": "Mapa de Yami Sukehiro",
+      "name": "Mapa de Sasori (Hiruko)",
       "requiredLevel": 90,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Yami Sukehiro para níveis 90+.",
+      "mapKey": "huntEsconderijoAkatsuki",
+      "description": "Caça automática de Sasori (Hiruko) para níveis 90+.",
       "targets": [
         {
-          "id": "curated-character-yami",
-          "sourceId": "curated-character-yami",
-          "name": "Yami Sukehiro",
+          "id": "curated-character-sasori-puppet",
+          "sourceId": "curated-character-sasori-puppet",
+          "name": "Sasori (Hiruko)",
           "category": "personagem",
-          "source": "curated/yami",
-          "lookType": 9052,
+          "source": "curated/sasori-puppet",
+          "lookType": 9076,
           "hasSprite": false,
           "requiredLevel": 90,
           "level": 90,
@@ -1173,18 +1287,18 @@
     },
     {
       "id": "wonsr-hunt-047",
-      "name": "Mapa de William Vangeance",
+      "name": "Mapa de Son Goku",
       "requiredLevel": 90,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de William Vangeance para níveis 90+.",
+      "mapKey": "huntDesertoSaiyajin",
+      "description": "Caça automática de Son Goku para níveis 90+.",
       "targets": [
         {
-          "id": "curated-character-william",
-          "sourceId": "curated-character-william",
-          "name": "William Vangeance",
+          "id": "curated-character-goku",
+          "sourceId": "curated-character-goku",
+          "name": "Son Goku",
           "category": "personagem",
-          "source": "curated/william",
-          "lookType": 9053,
+          "source": "curated/goku",
+          "lookType": 9032,
           "hasSprite": false,
           "requiredLevel": 90,
           "level": 90,
@@ -1198,623 +1312,23 @@
     },
     {
       "id": "wonsr-hunt-048",
-      "name": "Mapa de Luck Voltia",
+      "name": "Mapa de Zabuza Momochi",
       "requiredLevel": 90,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Luck Voltia para níveis 90+.",
+      "mapKey": "huntPontePaisOnda",
+      "description": "Caça automática de Zabuza Momochi para níveis 90+.",
       "targets": [
         {
-          "id": "curated-character-luck",
-          "sourceId": "curated-character-luck",
-          "name": "Luck Voltia",
+          "id": "curated-character-zabuza",
+          "sourceId": "curated-character-zabuza",
+          "name": "Zabuza Momochi",
           "category": "personagem",
-          "source": "curated/luck",
-          "lookType": 9054,
+          "source": "curated/zabuza",
+          "lookType": 9081,
           "hasSprite": false,
           "requiredLevel": 90,
           "level": 90,
           "hp": 1890,
           "xp": 325,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-049",
-      "name": "Mapa de Langris Vaude",
-      "requiredLevel": 90,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Langris Vaude para níveis 90+.",
-      "targets": [
-        {
-          "id": "curated-character-langris",
-          "sourceId": "curated-character-langris",
-          "name": "Langris Vaude",
-          "category": "personagem",
-          "source": "curated/langris",
-          "lookType": 9055,
-          "hasSprite": false,
-          "requiredLevel": 90,
-          "level": 90,
-          "hp": 1890,
-          "xp": 325,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-050",
-      "name": "Mapa de Kaiser",
-      "requiredLevel": 90,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Kaiser para níveis 90+.",
-      "targets": [
-        {
-          "id": "curated-character-kaiser",
-          "sourceId": "curated-character-kaiser",
-          "name": "Kaiser",
-          "category": "personagem",
-          "source": "curated/kaiser",
-          "lookType": 9056,
-          "hasSprite": false,
-          "requiredLevel": 90,
-          "level": 90,
-          "hp": 1890,
-          "xp": 325,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-051",
-      "name": "Mapa de Julius Novachrono",
-      "requiredLevel": 100,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Julius Novachrono para níveis 100+.",
-      "targets": [
-        {
-          "id": "curated-character-julius",
-          "sourceId": "curated-character-julius",
-          "name": "Julius Novachrono",
-          "category": "personagem",
-          "source": "curated/julius",
-          "lookType": 9057,
-          "hasSprite": false,
-          "requiredLevel": 100,
-          "level": 100,
-          "hp": 2103,
-          "xp": 360,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-052",
-      "name": "Mapa de Gauche",
-      "requiredLevel": 100,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Gauche para níveis 100+.",
-      "targets": [
-        {
-          "id": "curated-character-gauche",
-          "sourceId": "curated-character-gauche",
-          "name": "Gauche",
-          "category": "personagem",
-          "source": "curated/gauche",
-          "lookType": 9058,
-          "hasSprite": false,
-          "requiredLevel": 100,
-          "level": 100,
-          "hp": 2103,
-          "xp": 360,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-053",
-      "name": "Mapa de Fana",
-      "requiredLevel": 100,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Fana para níveis 100+.",
-      "targets": [
-        {
-          "id": "curated-character-fana",
-          "sourceId": "curated-character-fana",
-          "name": "Fana",
-          "category": "personagem",
-          "source": "curated/fana",
-          "lookType": 9059,
-          "hasSprite": false,
-          "requiredLevel": 100,
-          "level": 100,
-          "hp": 2103,
-          "xp": 360,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-054",
-      "name": "Mapa de Noelle (Valkyrie)",
-      "requiredLevel": 100,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Noelle (Valkyrie) para níveis 100+.",
-      "targets": [
-        {
-          "id": "curated-character-noelle-e99",
-          "sourceId": "curated-character-noelle-e99",
-          "name": "Noelle (Valkyrie)",
-          "category": "personagem",
-          "source": "curated/noelle-e99",
-          "lookType": 9060,
-          "hasSprite": false,
-          "requiredLevel": 100,
-          "level": 100,
-          "hp": 2103,
-          "xp": 360,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-055",
-      "name": "Mapa de Dorothy",
-      "requiredLevel": 100,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Dorothy para níveis 100+.",
-      "targets": [
-        {
-          "id": "curated-character-dorothy",
-          "sourceId": "curated-character-dorothy",
-          "name": "Dorothy",
-          "category": "personagem",
-          "source": "curated/dorothy",
-          "lookType": 9061,
-          "hasSprite": false,
-          "requiredLevel": 100,
-          "level": 100,
-          "hp": 2103,
-          "xp": 360,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-056",
-      "name": "Mapa de Asta Demon",
-      "requiredLevel": 110,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Asta Demon para níveis 110+.",
-      "targets": [
-        {
-          "id": "curated-character-asta-demon",
-          "sourceId": "curated-character-asta-demon",
-          "name": "Asta Demon",
-          "category": "personagem",
-          "source": "curated/asta-demon",
-          "lookType": 9063,
-          "hasSprite": false,
-          "requiredLevel": 110,
-          "level": 110,
-          "hp": 2318,
-          "xp": 395,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-057",
-      "name": "Mapa de Asta Classic",
-      "requiredLevel": 110,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Asta Classic para níveis 110+.",
-      "targets": [
-        {
-          "id": "curated-character-asta-base",
-          "sourceId": "curated-character-asta-base",
-          "name": "Asta Classic",
-          "category": "personagem",
-          "source": "curated/asta-base",
-          "lookType": 9064,
-          "hasSprite": false,
-          "requiredLevel": 110,
-          "level": 110,
-          "hp": 2318,
-          "xp": 395,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-058",
-      "name": "Mapa de Gojo Satoru",
-      "requiredLevel": 110,
-      "mapKey": "huntForestClearing",
-      "description": "Caça automática de Gojo Satoru para níveis 110+.",
-      "targets": [
-        {
-          "id": "curated-character-gojo",
-          "sourceId": "curated-character-gojo",
-          "name": "Gojo Satoru",
-          "category": "personagem",
-          "source": "curated/gojo",
-          "lookType": 9065,
-          "hasSprite": false,
-          "requiredLevel": 110,
-          "level": 110,
-          "hp": 2318,
-          "xp": 395,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-059",
-      "name": "Mapa de Yuji Itadori",
-      "requiredLevel": 110,
-      "mapKey": "huntForestClearing",
-      "description": "Caça automática de Yuji Itadori para níveis 110+.",
-      "targets": [
-        {
-          "id": "curated-character-itadori",
-          "sourceId": "curated-character-itadori",
-          "name": "Yuji Itadori",
-          "category": "personagem",
-          "source": "curated/itadori",
-          "lookType": 9066,
-          "hasSprite": false,
-          "requiredLevel": 110,
-          "level": 110,
-          "hp": 2318,
-          "xp": 395,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-060",
-      "name": "Mapa de Agito",
-      "requiredLevel": 110,
-      "mapKey": "huntForestClearing",
-      "description": "Caça automática de Agito para níveis 110+.",
-      "targets": [
-        {
-          "id": "curated-character-agito",
-          "sourceId": "curated-character-agito",
-          "name": "Agito",
-          "category": "personagem",
-          "source": "curated/agito",
-          "lookType": 9067,
-          "hasSprite": false,
-          "requiredLevel": 110,
-          "level": 110,
-          "hp": 2318,
-          "xp": 395,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-061",
-      "name": "Mapa de Mahito",
-      "requiredLevel": 120,
-      "mapKey": "huntForestClearing",
-      "description": "Caça automática de Mahito para níveis 120+.",
-      "targets": [
-        {
-          "id": "curated-character-mahito",
-          "sourceId": "curated-character-mahito",
-          "name": "Mahito",
-          "category": "personagem",
-          "source": "curated/mahito",
-          "lookType": 9068,
-          "hasSprite": false,
-          "requiredLevel": 120,
-          "level": 120,
-          "hp": 2533,
-          "xp": 430,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-062",
-      "name": "Mapa de Maki Zenin",
-      "requiredLevel": 120,
-      "mapKey": "huntForestClearing",
-      "description": "Caça automática de Maki Zenin para níveis 120+.",
-      "targets": [
-        {
-          "id": "curated-character-maki",
-          "sourceId": "curated-character-maki",
-          "name": "Maki Zenin",
-          "category": "personagem",
-          "source": "curated/maki",
-          "lookType": 9069,
-          "hasSprite": false,
-          "requiredLevel": 120,
-          "level": 120,
-          "hp": 2533,
-          "xp": 430,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-063",
-      "name": "Mapa de Ryomen Sukuna",
-      "requiredLevel": 120,
-      "mapKey": "huntForestClearing",
-      "description": "Caça automática de Ryomen Sukuna para níveis 120+.",
-      "targets": [
-        {
-          "id": "curated-character-sukuna",
-          "sourceId": "curated-character-sukuna",
-          "name": "Ryomen Sukuna",
-          "category": "personagem",
-          "source": "curated/sukuna",
-          "lookType": 9070,
-          "hasSprite": false,
-          "requiredLevel": 120,
-          "level": 120,
-          "hp": 2533,
-          "xp": 430,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-064",
-      "name": "Mapa de Toji Fushiguro",
-      "requiredLevel": 120,
-      "mapKey": "huntForestClearing",
-      "description": "Caça automática de Toji Fushiguro para níveis 120+.",
-      "targets": [
-        {
-          "id": "curated-character-toji",
-          "sourceId": "curated-character-toji",
-          "name": "Toji Fushiguro",
-          "category": "personagem",
-          "source": "curated/toji",
-          "lookType": 9071,
-          "hasSprite": false,
-          "requiredLevel": 120,
-          "level": 120,
-          "hp": 2533,
-          "xp": 430,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-065",
-      "name": "Mapa de Kenshin Himura",
-      "requiredLevel": 120,
-      "mapKey": "huntArenaExameChunnin",
-      "description": "Caça automática de Kenshin Himura para níveis 120+.",
-      "targets": [
-        {
-          "id": "curated-character-kenshin",
-          "sourceId": "curated-character-kenshin",
-          "name": "Kenshin Himura",
-          "category": "personagem",
-          "source": "curated/kenshin",
-          "lookType": 9072,
-          "hasSprite": false,
-          "requiredLevel": 120,
-          "level": 120,
-          "hp": 2533,
-          "xp": 430,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-066",
-      "name": "Mapa de Ichigo Kurosaki",
-      "requiredLevel": 130,
-      "mapKey": "huntArenaExameChunnin",
-      "description": "Caça automática de Ichigo Kurosaki para níveis 130+.",
-      "targets": [
-        {
-          "id": "curated-character-ichigo",
-          "sourceId": "curated-character-ichigo",
-          "name": "Ichigo Kurosaki",
-          "category": "personagem",
-          "source": "curated/ichigo",
-          "lookType": 9073,
-          "hasSprite": false,
-          "requiredLevel": 130,
-          "level": 130,
-          "hp": 2749,
-          "xp": 465,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-067",
-      "name": "Mapa de Freeza",
-      "requiredLevel": 130,
-      "mapKey": "huntNamekusei",
-      "description": "Caça automática de Freeza para níveis 130+.",
-      "targets": [
-        {
-          "id": "curated-character-freeza",
-          "sourceId": "curated-character-freeza",
-          "name": "Freeza",
-          "category": "personagem",
-          "source": "curated/freeza",
-          "lookType": 9033,
-          "hasSprite": false,
-          "requiredLevel": 130,
-          "level": 130,
-          "hp": 2749,
-          "xp": 465,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-068",
-      "name": "Mapa de Gotenks",
-      "requiredLevel": 130,
-      "mapKey": "huntTorneioArtesMarciais",
-      "description": "Caça automática de Gotenks para níveis 130+.",
-      "targets": [
-        {
-          "id": "curated-character-gotenks",
-          "sourceId": "curated-character-gotenks",
-          "name": "Gotenks",
-          "category": "personagem",
-          "source": "curated/gotenks",
-          "lookType": 9034,
-          "hasSprite": false,
-          "requiredLevel": 130,
-          "level": 130,
-          "hp": 2749,
-          "xp": 465,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-069",
-      "name": "Mapa de Majin Boo",
-      "requiredLevel": 130,
-      "mapKey": "huntSalaDoTempo",
-      "description": "Caça automática de Majin Boo para níveis 130+.",
-      "targets": [
-        {
-          "id": "curated-character-majin-boo",
-          "sourceId": "curated-character-majin-boo",
-          "name": "Majin Boo",
-          "category": "personagem",
-          "source": "curated/majin-boo",
-          "lookType": 9035,
-          "hasSprite": false,
-          "requiredLevel": 130,
-          "level": 130,
-          "hp": 2749,
-          "xp": 465,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-070",
-      "name": "Mapa de Naruto Shippuden",
-      "requiredLevel": 130,
-      "mapKey": "huntValeDoFim",
-      "description": "Caça automática de Naruto Shippuden para níveis 130+.",
-      "targets": [
-        {
-          "id": "curated-character-naruto-shippuden",
-          "sourceId": "curated-character-naruto-shippuden",
-          "name": "Naruto Shippuden",
-          "category": "personagem",
-          "source": "curated/naruto-shippuden",
-          "lookType": 9031,
-          "hasSprite": false,
-          "requiredLevel": 130,
-          "level": 130,
-          "hp": 2749,
-          "xp": 465,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-071",
-      "name": "Mapa de Piccolo",
-      "requiredLevel": 140,
-      "mapKey": "huntNamekusei",
-      "description": "Caça automática de Piccolo para níveis 140+.",
-      "targets": [
-        {
-          "id": "curated-character-piccolo",
-          "sourceId": "curated-character-piccolo",
-          "name": "Piccolo",
-          "category": "personagem",
-          "source": "curated/piccolo",
-          "lookType": 9036,
-          "hasSprite": false,
-          "requiredLevel": 140,
-          "level": 140,
-          "hp": 2966,
-          "xp": 500,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-072",
-      "name": "Mapa de Son Goku",
-      "requiredLevel": 140,
-      "mapKey": "huntDesertoSaiyajin",
-      "description": "Caça automática de Son Goku para níveis 140+.",
-      "targets": [
-        {
-          "id": "curated-character-goku",
-          "sourceId": "curated-character-goku",
-          "name": "Son Goku",
-          "category": "personagem",
-          "source": "curated/goku",
-          "lookType": 9032,
-          "hasSprite": false,
-          "requiredLevel": 140,
-          "level": 140,
-          "hp": 2966,
-          "xp": 500,
           "speed": 50,
           "targetDistance": 1,
           "loot": []

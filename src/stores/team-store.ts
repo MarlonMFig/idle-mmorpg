@@ -1,4 +1,14 @@
+import { FRAGMENTS_PER_STAR, maxStarsForQuality } from '@/constants/aiw-quality';
+import { REFINEMENT_CRYSTAL_ITEM_ID, type PotentialAttributeId } from '@/constants/aiw-potential';
 import { clampStars } from '@/constants/character-progression';
+import { getCuratedPackByLookType } from '@/data/character-packs';
+import { narutoFragmentItemId } from '@/data/naruto-loot-tiers';
+import {
+  overallPotentialGrade,
+  refinePotentialAttribute,
+} from '@/lib/potential';
+import { achievementStore } from '@/stores/gem-store';
+import { inventoryStore } from '@/stores/inventory-store';
 import { xpRequiredForLevel } from '@/data/xp-stages';
 import { STARTERS } from '@/data/starters';
 import { getCuratedPortraitUrl } from '@/data/curated-map-sprites';
@@ -576,7 +586,7 @@ export const teamStore = {
       .filter((entry) => !removeSet.has(entry.id))
       .map((entry) => {
         if (entry.id !== targetId) return entry;
-        return { ...entry, stars: clampStars(entry.stars + 1) };
+        return { ...entry, stars: clampStars(entry.stars + 1, entry.quality) };
       });
 
     if (collection.length !== state.collection.length - plan.cost) {
@@ -592,6 +602,61 @@ export const teamStore = {
     emitSystemMessage(
       `Forja concluída: ${next?.name ?? 'personagem'} agora com ${next?.stars ?? '?'}★.`,
     );
+    return true;
+  },
+
+  upgradeStarWithFragments(targetId: string): boolean {
+    const state = store.getSnapshot();
+    const target = state.collection.find((entry) => entry.id === targetId);
+    if (!target) {
+      emitSystemMessage('Personagem não encontrado.');
+      return false;
+    }
+    if (target.stars >= maxStarsForQuality(target.quality)) {
+      emitSystemMessage('Estrelas no teto desta qualidade.');
+      return false;
+    }
+    const charId = target.sourceId ?? getCuratedPackByLookType(target.lookType)?.id ?? null;
+    const fragId = charId
+      ? narutoFragmentItemId(charId)
+      : 'item-anime-naruto-fragmento-personagem';
+    if (inventoryStore.countItem(fragId) < FRAGMENTS_PER_STAR) {
+      emitSystemMessage(`Precisa de ${FRAGMENTS_PER_STAR} fragmentos.`);
+      return false;
+    }
+    if (!inventoryStore.removeItem(fragId, FRAGMENTS_PER_STAR)) return false;
+    const collection = state.collection.map((entry) =>
+      entry.id === targetId
+        ? { ...entry, stars: clampStars(entry.stars + 1, entry.quality) }
+        : entry,
+    );
+    commit({ ...state, collection });
+    const next = collection.find((entry) => entry.id === targetId);
+    emitSystemMessage(`${next?.name ?? 'Personagem'} evoluiu para ${next?.stars}★.`);
+    return true;
+  },
+
+  refinePotential(targetId: string, attribute: PotentialAttributeId): boolean {
+    const state = store.getSnapshot();
+    const target = state.collection.find((entry) => entry.id === targetId);
+    if (!target?.potential) {
+      emitSystemMessage('Potencial indisponível.');
+      return false;
+    }
+    if (inventoryStore.countItem(REFINEMENT_CRYSTAL_ITEM_ID) < 1) {
+      emitSystemMessage('Precisa de um Cristal de Refinamento.');
+      return false;
+    }
+    if (!inventoryStore.removeItem(REFINEMENT_CRYSTAL_ITEM_ID, 1)) return false;
+    const potential = refinePotentialAttribute(target.potential, attribute);
+    const collection = state.collection.map((entry) =>
+      entry.id === targetId ? { ...entry, potential } : entry,
+    );
+    commit({ ...state, collection });
+    achievementStore.checkPotentialGrade(potential.poder.grade);
+    achievementStore.checkPotentialGrade(potential.sorte.grade);
+    achievementStore.checkPotentialGrade(potential.fortuna.grade);
+    emitSystemMessage(`${target.name}: ${attribute} refinado.`);
     return true;
   },
 };

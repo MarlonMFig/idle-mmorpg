@@ -10,8 +10,8 @@ export type CharacterClanId =
   | 'feiticeiro'
   | 'guerreiro';
 
-/** Estrelas 0–5 (forja). */
-export type CharacterStars = 0 | 1 | 2 | 3 | 4 | 5;
+/** Estrelas 0–8 (teto depende da qualidade). */
+export type CharacterStars = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
 export const CHARACTER_QUALITIES: readonly CharacterQuality[] = [
   'D',

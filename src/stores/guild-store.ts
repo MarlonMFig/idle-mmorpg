@@ -13,22 +13,17 @@ import {
   GUILD_TAG_MIN,
   guildExpForLevel,
 } from '@/constants/guild';
-import {
-  GUILD_MISSION_DEFS,
-  GUILD_SHOP_DEFS,
-  GUILD_SKILL_DEFS,
-} from '@/data/guild-content';
+import { GUILD_MISSION_DEFS, GUILD_SHOP_DEFS, GUILD_SKILL_DEFS } from '@/data/guild-content';
+import { GUILD_FRAGMENT_DAILY_LIMIT } from '@/constants/aiw-guild';
+import { fragmentPriceForCharacter, pickDailyFragmentCharacter } from '@/lib/guild-fragment-shop';
+import { NARUTO_CHARACTER_LABEL, narutoFragmentItemId } from '@/data/naruto-loot-tiers';
 import { SHOP_CURRENCY_ITEM_ID } from '@/constants/sealing';
 import { emitSystemMessage } from '@/lib/system-log';
 import { createStore } from '@/stores/create-store';
 import { inventoryStore } from '@/stores/inventory-store';
+import { vipStore } from '@/stores/vip-store';
 import { vitalsStore } from '@/stores/vitals-store';
-import type {
-  Guild,
-  GuildBannerStyle,
-  GuildMember,
-  GuildMemberRole,
-} from '@/types/guild';
+import type { Guild, GuildBannerStyle, GuildMember, GuildMemberRole } from '@/types/guild';
 import { isLeadershipRole } from '@/types/guild';
 
 const GUILDS_STORAGE_KEY = 'idle-mmorpg:guilds-v2';
@@ -41,6 +36,9 @@ export interface GuildPlayerProgress {
   missionProgress: Record<string, number>;
   bossDamage: number;
   bossAttacks: number;
+  /** Compras do fragmento rotativo no dia corrente. */
+  fragmentShopDay: string | null;
+  fragmentShopPurchases: number;
 }
 
 export interface GuildState {
@@ -59,6 +57,8 @@ const emptyProgress = (): GuildPlayerProgress => ({
   missionProgress: {},
   bossDamage: 0,
   bossAttacks: 0,
+  fragmentShopDay: null,
+  fragmentShopPurchases: 0,
 });
 
 const store = createStore<GuildState>({
@@ -73,6 +73,30 @@ const store = createStore<GuildState>({
 function todayKey(): string {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function ensureGuildDailyFragment(guildId: string): Guild | null {
+  const registry = loadRegistry();
+  const guild = registry[guildId];
+  if (!guild) return null;
+  const day = todayKey();
+  if (guild.dailyFragmentDay === day && guild.dailyFragmentCharId) return guild;
+  const updated: Guild = {
+    ...guild,
+    dailyFragmentDay: day,
+    dailyFragmentCharId: pickDailyFragmentCharacter(day),
+  };
+  registry[guildId] = updated;
+  saveRegistry(registry);
+  bump();
+  return updated;
+}
+
+function ensureFragmentPurchaseDay(): void {
+  const day = todayKey();
+  const state = store.getSnapshot();
+  if (state.progress.fragmentShopDay === day) return;
+  patchProgress({ fragmentShopDay: day, fragmentShopPurchases: 0 });
 }
 
 function bump(): void {
@@ -195,12 +219,9 @@ function normalizeGuild(raw: unknown): Guild | null {
       ? Math.min(GUILD_MAX_MEMBERS, Math.floor(data.maxMembers))
       : GUILD_MAX_MEMBERS;
 
-  const level =
-    typeof data.level === 'number' && data.level >= 1 ? Math.floor(data.level) : 1;
-  const exp =
-    typeof data.exp === 'number' && data.exp >= 0 ? Math.floor(data.exp) : 0;
-  const funds =
-    typeof data.funds === 'number' && data.funds >= 0 ? Math.floor(data.funds) : 0;
+  const level = typeof data.level === 'number' && data.level >= 1 ? Math.floor(data.level) : 1;
+  const exp = typeof data.exp === 'number' && data.exp >= 0 ? Math.floor(data.exp) : 0;
+  const funds = typeof data.funds === 'number' && data.funds >= 0 ? Math.floor(data.funds) : 0;
   const bossMaxHp =
     typeof data.bossMaxHp === 'number' && data.bossMaxHp > 0
       ? Math.floor(data.bossMaxHp)
@@ -242,13 +263,18 @@ function normalizeGuild(raw: unknown): Guild | null {
         ? data.notice.trim().slice(0, 280)
         : 'Bem-vindos à guild! Marquem presença e doem para fortalecer a equipe.',
     emblemIcon: normalizeEmblemIcon(data.emblemIcon),
-    emblemBg:
-      typeof data.emblemBg === 'string' && data.emblemBg ? data.emblemBg : '#7f1d1d',
+    emblemBg: typeof data.emblemBg === 'string' && data.emblemBg ? data.emblemBg : '#7f1d1d',
     bannerStyle: bannerStyleFromRaw(data.bannerStyle),
     bossHp,
     bossMaxHp,
     skillLevels,
     shopStock,
+    dailyFragmentDay:
+      typeof data.dailyFragmentDay === 'string' || data.dailyFragmentDay === null
+        ? (data.dailyFragmentDay as string | null)
+        : null,
+    dailyFragmentCharId:
+      typeof data.dailyFragmentCharId === 'string' ? data.dailyFragmentCharId : null,
   };
 }
 
@@ -343,9 +369,7 @@ export const guildStore = {
     if (!playerId) playerId = newPlayerId();
 
     let guildId =
-      typeof partial.guildId === 'string' && partial.guildId.trim()
-        ? partial.guildId.trim()
-        : null;
+      typeof partial.guildId === 'string' && partial.guildId.trim() ? partial.guildId.trim() : null;
 
     const nickname =
       typeof partial.nickname === 'string' && partial.nickname.trim()
@@ -379,8 +403,7 @@ export const guildStore = {
           typeof p?.guildCoins === 'number' && p.guildCoins >= 0
             ? Math.floor(p.guildCoins)
             : base.guildCoins,
-        lastCheckInDay:
-          typeof p?.lastCheckInDay === 'string' ? p.lastCheckInDay : null,
+        lastCheckInDay: typeof p?.lastCheckInDay === 'string' ? p.lastCheckInDay : null,
         claimedMissions:
           p?.claimedMissions && typeof p.claimedMissions === 'object'
             ? { ...p.claimedMissions }
@@ -390,12 +413,13 @@ export const guildStore = {
             ? { ...p.missionProgress }
             : {},
         bossDamage:
-          typeof p?.bossDamage === 'number' && p.bossDamage >= 0
-            ? Math.floor(p.bossDamage)
-            : 0,
+          typeof p?.bossDamage === 'number' && p.bossDamage >= 0 ? Math.floor(p.bossDamage) : 0,
         bossAttacks:
-          typeof p?.bossAttacks === 'number' && p.bossAttacks >= 0
-            ? Math.floor(p.bossAttacks)
+          typeof p?.bossAttacks === 'number' && p.bossAttacks >= 0 ? Math.floor(p.bossAttacks) : 0,
+        fragmentShopDay: typeof p?.fragmentShopDay === 'string' ? p.fragmentShopDay : null,
+        fragmentShopPurchases:
+          typeof p?.fragmentShopPurchases === 'number' && p.fragmentShopPurchases >= 0
+            ? Math.floor(p.fragmentShopPurchases)
             : 0,
       },
     });
@@ -432,8 +456,12 @@ export const guildStore = {
     store.setState({ ...store.getSnapshot(), isOpen });
   },
 
-  isCreateUnlocked(level = vitalsStore.getLevel()): boolean {
+  isJoinUnlocked(level = vitalsStore.getLevel()): boolean {
     return level >= GUILD_CREATE_MIN_LEVEL;
+  },
+
+  isCreateUnlocked(level = vitalsStore.getLevel()): boolean {
+    return this.isJoinUnlocked(level) && vipStore.isActive();
   },
 
   isCheckedInToday(): boolean {
@@ -481,7 +509,11 @@ export const guildStore = {
       return false;
     }
     if (!this.isCreateUnlocked()) {
-      emitSystemMessage(`Guilds liberam no nível ${GUILD_CREATE_MIN_LEVEL}.`);
+      emitSystemMessage(
+        vipStore.isActive()
+          ? `Guilds liberam no nível ${GUILD_CREATE_MIN_LEVEL}.`
+          : 'Criar guild é exclusivo VIP.',
+      );
       return false;
     }
 
@@ -535,6 +567,8 @@ export const guildStore = {
       bossMaxHp: GUILD_BOSS_MAX_HP,
       skillLevels: defaultSkillLevels(),
       shopStock: defaultShopStock(),
+      dailyFragmentDay: todayKey(),
+      dailyFragmentCharId: pickDailyFragmentCharacter(todayKey()),
     };
 
     registry[id] = guild;
@@ -555,7 +589,7 @@ export const guildStore = {
       emitSystemMessage('Você já está em uma guild.');
       return false;
     }
-    if (!this.isCreateUnlocked()) {
+    if (!this.isJoinUnlocked()) {
       emitSystemMessage(`Guilds liberam no nível ${GUILD_CREATE_MIN_LEVEL}.`);
       return false;
     }
@@ -705,10 +739,7 @@ export const guildStore = {
     const guildExp = value * 2;
 
     updateGuild(state.guildId, (g) => {
-      const withExp = addGuildExp(
-        { ...g, funds: g.funds + value },
-        guildExp,
-      );
+      const withExp = addGuildExp({ ...g, funds: g.funds + value }, guildExp);
       return {
         ...withExp,
         members: withExp.members.map((m) =>
@@ -796,7 +827,7 @@ export const guildStore = {
       },
     });
 
-    const left = Math.max(0, (guild.bossHp - finalDmg));
+    const left = Math.max(0, guild.bossHp - finalDmg);
     emitSystemMessage(
       `Boss: ${finalDmg.toLocaleString('pt-BR')} de dano${crit ? ' (CRÍTICO!)' : ''}. HP restante: ${left.toLocaleString('pt-BR')}.`,
     );
@@ -884,12 +915,67 @@ export const guildStore = {
 
     if (def.copperReward > 0) {
       inventoryStore.addItem(SHOP_CURRENCY_ITEM_ID, def.copperReward);
-      emitSystemMessage(
-        `Comprou ${def.name}. +${def.copperReward} cobre no inventário.`,
-      );
+      emitSystemMessage(`Comprou ${def.name}. +${def.copperReward} cobre no inventário.`);
     } else {
       emitSystemMessage(`Comprou ${def.name}.`);
     }
+    return true;
+  },
+
+  getDailyFragmentOffer(): {
+    characterId: string;
+    label: string;
+    itemId: string;
+    priceCoins: number;
+    purchasesLeft: number;
+  } | null {
+    const state = store.getSnapshot();
+    if (!state.guildId) return null;
+    ensureFragmentPurchaseDay();
+    const guild = ensureGuildDailyFragment(state.guildId);
+    if (!guild?.dailyFragmentCharId) return null;
+    const characterId = guild.dailyFragmentCharId;
+    const progress = store.getSnapshot().progress;
+    const purchasesLeft = Math.max(
+      0,
+      GUILD_FRAGMENT_DAILY_LIMIT - progress.fragmentShopPurchases,
+    );
+    return {
+      characterId,
+      label: NARUTO_CHARACTER_LABEL[characterId] ?? characterId,
+      itemId: narutoFragmentItemId(characterId),
+      priceCoins: fragmentPriceForCharacter(characterId),
+      purchasesLeft,
+    };
+  },
+
+  buyDailyFragment(): boolean {
+    const state = store.getSnapshot();
+    if (!state.guildId) {
+      emitSystemMessage('Entre em uma guild para comprar fragmentos.');
+      return false;
+    }
+    const offer = this.getDailyFragmentOffer();
+    if (!offer) return false;
+    if (offer.purchasesLeft <= 0) {
+      emitSystemMessage('Limite diário de fragmentos atingido (2/dia).');
+      return false;
+    }
+    if (state.progress.guildCoins < offer.priceCoins) {
+      emitSystemMessage('Selos de Aliança insuficientes.');
+      return false;
+    }
+    if (!inventoryStore.addItem(offer.itemId, 1)) {
+      emitSystemMessage('Inventário cheio.');
+      return false;
+    }
+    patchProgress({
+      guildCoins: state.progress.guildCoins - offer.priceCoins,
+      fragmentShopPurchases: state.progress.fragmentShopPurchases + 1,
+    });
+    emitSystemMessage(
+      `Fragmento de ${offer.label} comprado (${offer.purchasesLeft - 1} restantes hoje).`,
+    );
     return true;
   },
 

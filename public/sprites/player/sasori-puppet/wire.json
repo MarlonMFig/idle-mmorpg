@@ -1,0 +1,208 @@
+{
+  "id": "sasori-puppet",
+  "name": "Sasori (Hiruko)",
+  "lookType": 9076,
+  "contentHeight": 83,
+  "idle": {
+    "image": "/sprites/player/sasori-puppet/idle.png",
+    "frameWidth": 89,
+    "frameHeight": 87,
+    "frameCount": 4,
+    "contentHeight": 83,
+    "scale": 1,
+    "originX": 0.6067415730337079,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/sasori-puppet/walk.png",
+    "frameWidth": 89,
+    "frameHeight": 87,
+    "frameCount": 4,
+    "contentHeight": 83,
+    "scale": 1,
+    "originX": 0.6067415730337079,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/sasori-puppet/combo1.png",
+      "frameWidth": 137,
+      "frameHeight": 92,
+      "frameCount": 5,
+      "contentHeight": 83,
+      "scale": 1,
+      "originX": 0.5255474452554745,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/sasori-puppet/combo2.png",
+      "frameWidth": 172,
+      "frameHeight": 92,
+      "frameCount": 5,
+      "contentHeight": 83,
+      "scale": 1,
+      "originX": 0.4186046511627907,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/sasori-puppet/combo3.png",
+      "frameWidth": 105,
+      "frameHeight": 60,
+      "frameCount": 3,
+      "contentHeight": 83,
+      "scale": 1,
+      "originX": 0.5142857142857142,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/sasori-puppet/hurt.png",
+    "frameWidth": 75,
+    "frameHeight": 87,
+    "frameCount": 2,
+    "contentHeight": 83,
+    "scale": 1,
+    "originX": 0.5333333333333333,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/sasori-puppet/death.png",
+    "frameWidth": 75,
+    "frameHeight": 84,
+    "frameCount": 3,
+    "contentHeight": 83,
+    "scale": 1,
+    "originX": 0.5333333333333333,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-sasori-puppet-1",
+      "skillName": "Tails Rain - Start",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/sasori-puppet/special1.png",
+        "frameWidth": 223,
+        "frameHeight": 92,
+        "frameCount": 8,
+        "contentHeight": 83,
+        "scale": 1,
+        "originX": 0.32286995515695066,
+        "durationMs": 450,
+        "hitDelayMs": 217,
+        "frameRate": 18,
+        "skillId": "skill-sasori-puppet-1",
+        "skillName": "Tails Rain - Start",
+        "actionId": 2400
+      },
+      "fx": {
+        "image": "/sprites/player/sasori-puppet/special1-fx.png",
+        "frameWidth": 332,
+        "frameHeight": 242,
+        "frameCount": 10,
+        "contentHeight": 238,
+        "scale": 1,
+        "originX": 0.5028571428571429,
+        "frameRate": 18,
+        "durationMs": 280
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-sasori-puppet-2",
+      "skillName": "Puppet Katon",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/sasori-puppet/special2.png",
+        "frameWidth": 89,
+        "frameHeight": 87,
+        "frameCount": 5,
+        "contentHeight": 83,
+        "scale": 1,
+        "originX": 0.6067415730337079,
+        "durationMs": 800,
+        "hitDelayMs": 367,
+        "frameRate": 8,
+        "skillId": "skill-sasori-puppet-2",
+        "skillName": "Puppet Katon",
+        "actionId": 2500
+      },
+      "fx": {
+        "image": "/sprites/player/sasori-puppet/special2-fx.png",
+        "frameWidth": 332,
+        "frameHeight": 161,
+        "frameCount": 8,
+        "contentHeight": 155,
+        "scale": 1,
+        "originX": 0.015317286652078774,
+        "frameRate": 18,
+        "durationMs": 367
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-sasori-puppet-3",
+      "skillName": "Pinchos Disaster",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/sasori-puppet/special3.png",
+        "frameWidth": 99,
+        "frameHeight": 87,
+        "frameCount": 6,
+        "contentHeight": 83,
+        "scale": 1,
+        "originX": 0.6464646464646465,
+        "durationMs": 1533,
+        "hitDelayMs": 683,
+        "frameRate": 8,
+        "skillId": "skill-sasori-puppet-3",
+        "skillName": "Pinchos Disaster",
+        "actionId": 2550
+      },
+      "fx": {
+        "image": "/sprites/player/sasori-puppet/special3-fx.png",
+        "frameWidth": 331,
+        "frameHeight": 259,
+        "frameCount": 5,
+        "contentHeight": 255,
+        "scale": 1,
+        "originX": 0.5649546827794562,
+        "frameRate": 15,
+        "durationMs": 333
+      },
+      "index": 2
+    },
+    {
+      "skillId": "skill-sasori-puppet-4",
+      "skillName": "Combo 3 - 1",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/sasori-puppet/special4.png",
+        "frameWidth": 137,
+        "frameHeight": 92,
+        "frameCount": 8,
+        "contentHeight": 83,
+        "scale": 1,
+        "originX": 0.5255474452554745,
+        "durationMs": 733,
+        "hitDelayMs": 333,
+        "frameRate": 11,
+        "skillId": "skill-sasori-puppet-4",
+        "skillName": "Combo 3 - 1",
+        "actionId": 2300
+      },
+      "fx": {
+        "image": "/sprites/player/sasori-puppet/special4-fx.png",
+        "frameWidth": 171,
+        "frameHeight": 169,
+        "frameCount": 7,
+        "contentHeight": 165,
+        "scale": 1,
+        "originX": 0.5029239766081871,
+        "frameRate": 18,
+        "durationMs": 350
+      },
+      "index": 3
+    }
+  ]
+}

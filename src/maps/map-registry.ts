@@ -33,6 +33,10 @@ export const MAP_KEYS = {
   huntSalaDoTempo: 'huntSalaDoTempo',
   /** Deserto rochoso Saiyajin (lateral 4K). */
   huntDesertoSaiyajin: 'huntDesertoSaiyajin',
+  /** Teste: caça top-down 3072² com equipe de 3 e câmera seguindo o líder. */
+  huntTesteEquipe: 'huntTesteEquipe',
+  /** Teste: clareira de treinamento 4096×2160 com equipe e câmera livre. */
+  huntTesteFarmWonsr: 'huntTesteFarmWonsr',
   academy: 'academy',
   wonsrKonoha: 'wonsrKonoha',
 } as const;
@@ -66,6 +70,10 @@ export const MAP_FILES: Record<MapKey, string> = {
   huntTorneioArtesMarciais: '/maps/hunt-torneio-artes-marciais.tmx',
   huntSalaDoTempo: '/maps/hunt-sala-do-tempo.tmx',
   huntDesertoSaiyajin: '/maps/hunt-deserto-saiyajin.tmx',
+  // Reaproveita o recorte top-down de Konoha (PNG + colisão) como mapa de teste.
+  huntTesteEquipe: '/maps/wonsr-konoha.tmx',
+  // Colisão derivada da própria arte (scripts/install-teste-clareira-map.js).
+  huntTesteFarmWonsr: '/maps/hunt-teste-clareira.tmx',
   academy: '/maps/academy.tmx',
   wonsrKonoha: '/maps/wonsr-konoha.tmx',
 };

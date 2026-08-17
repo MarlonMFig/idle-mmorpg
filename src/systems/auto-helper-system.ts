@@ -1,5 +1,6 @@
 import { getHelperConsumable } from '@/data/helper-items';
 import { emitSystemMessage } from '@/lib/system-log';
+import { tryVipRestockPotion } from '@/lib/vip-bonuses';
 import { helperStore } from '@/stores/helper-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { vitalsStore } from '@/stores/vitals-store';
@@ -16,6 +17,12 @@ export const autoHelperSystem = {
   /** Tenta curar se Auto Cura ligado e HP abaixo do threshold. */
   tick(nowMs: number): void {
     const settings = helperStore.getSnapshot();
+    const potionId = settings.potionItemId;
+
+    if (inventoryStore.countItem(potionId) < 1) {
+      tryVipRestockPotion(potionId, nowMs);
+    }
+
     if (!settings.autoPotion) return;
     if (vitalsStore.isDead()) return;
 
@@ -27,7 +34,6 @@ export const autoHelperSystem = {
     if (pct > settings.hpThresholdPct) return;
     if (nowMs - lastPotionAt < POTION_COOLDOWN_MS) return;
 
-    const potionId = settings.potionItemId;
     const consumable = getHelperConsumable(potionId);
     if (!consumable || consumable.kind !== 'heal-percent') return;
 
