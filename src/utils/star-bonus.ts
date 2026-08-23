@@ -1,18 +1,12 @@
-import { starAttributeMultiplier as starMultFromSpec } from '@/constants/aiw-quality';
-import { potentialPowerMultiplier } from '@/lib/potential';
-import type { CharacterPotential } from '@/types/potential';
+import { starAttributeMultiplier as starMultFromSpec } from '@/config/gameConfig';
 import { ATTRIBUTE_ORDER } from '@/constants/attributes';
 import type { AttributeValues } from '@/types/attributes';
 
 /**
- * Aplica bônus de estrelas e potencial aos atributos base.
+ * Aplica o bônus de estrelas (+2% cada) aos atributos base.
  */
-export function applyStarBonusToBase(
-  base: AttributeValues,
-  stars: number,
-  potential?: CharacterPotential,
-): AttributeValues {
-  const mult = starMultFromSpec(stars) * potentialPowerMultiplier(potential);
+export function applyStarBonusToBase(base: AttributeValues, stars: number): AttributeValues {
+  const mult = starMultFromSpec(stars);
   const result = { ...base };
   for (const id of ATTRIBUTE_ORDER) {
     result[id] = base[id] * mult;

@@ -1,72 +1,27 @@
-import { FRAGMENTS_PER_STAR, maxStarsForQuality } from '@/constants/aiw-quality';
-import { REFINEMENT_CRYSTAL_ITEM_ID, type PotentialAttributeId } from '@/constants/aiw-potential';
+import { FRAGMENTS_PER_STAR } from '@/constants/aiw-quality';
+import { formatMaxStarsReachedMessage, getMaxStarsForRarity } from '@/config/gameConfig';
 import { clampStars } from '@/constants/character-progression';
-import { getCuratedPackByLookType } from '@/data/character-packs';
+import { getCharacterDefinitionByLookType } from '@/data/characters';
+import { getCharacterPack, NARUTO_CLASSIC_LOOK_TYPE, ROCK_LEE_LOOK_TYPE, SASUKE_CLASSIC_LOOK_TYPE } from '@/data/character-packs';
 import { narutoFragmentItemId } from '@/data/naruto-loot-tiers';
-import {
-  overallPotentialGrade,
-  refinePotentialAttribute,
-} from '@/lib/potential';
-import { achievementStore } from '@/stores/gem-store';
 import { inventoryStore } from '@/stores/inventory-store';
-import { xpRequiredForLevel } from '@/data/xp-stages';
+import { addExperience } from '@/lib/player-progression';
+import { clampMasteryLevel, clampMasteryXp } from '@/constants/character-mastery';
+import { clampAwakeningLevel } from '@/constants/character-awakening';
+import { isMaxMastery } from '@/lib/character-mastery';
 import { STARTERS } from '@/data/starters';
-import { getCuratedPortraitUrl } from '@/data/curated-map-sprites';
-import {
-  CHOUJI_CURATED_LOOK_TYPE,
-  getCharacterPack,
-  GUY_CURATED_LOOK_TYPE,
-  HINATA_CURATED_LOOK_TYPE,
-  INO_CURATED_LOOK_TYPE,
-  JIRAIYA_LOOK_TYPES,
-  JIROBO_LOOK_TYPES,
-  KAKASHI_CURATED_LOOK_TYPE,
-  NARUTO_CLASSIC_LOOK_TYPE,
-  NARUTO_SENNIN_LOOK_TYPE,
-  NEJI_CURATED_LOOK_TYPE,
-  ROCK_LEE_LOOK_TYPE,
-  SASUKE_CLASSIC_LOOK_TYPE,
-  UCHIHA_ITACHI_LOOK_TYPE,
-  KABUTO_CURATED_LOOK_TYPE,
-  TSUNADE_CURATED_LOOK_TYPE,
-  KIBA_CURATED_LOOK_TYPE,
-  KIMIMARO_CURATED_LOOK_TYPE,
-  SASUKE_CURSED_CURATED_LOOK_TYPE,
-  OROCHIMARU_CURATED_LOOK_TYPE,
-  NARUTO_KYUBI_CURATED_LOOK_TYPE,
-  KISAME_CURATED_LOOK_TYPE,
-  DEIDARA_CURATED_LOOK_TYPE,
-  SAKURA_SHIPPUDEN_CURATED_LOOK_TYPE,
-  TENTEN_CURATED_LOOK_TYPE,
-  TEMARI_CURATED_LOOK_TYPE,
-  TAYUYA_CURATED_LOOK_TYPE,
-  SHINO_CURATED_LOOK_TYPE,
-  MOMO_HINAMORI_CURATED_LOOK_TYPE,
-  HITSUGAYA_CURATED_LOOK_TYPE,
-  SHISUI_CURATED_LOOK_TYPE,
-  SHISUI_LOOK_TYPES,
-  NARUTO_SHIPPUDEN_CURATED_LOOK_TYPE,
-  NARUTO_SHIPPUDEN_LOOK_TYPES,
-  GOKU_CURATED_LOOK_TYPE,
-  GOKU_LOOK_TYPES,
-  FREEZA_CURATED_LOOK_TYPE,
-  FREEZA_LOOK_TYPES,
-  GOTENKS_CURATED_LOOK_TYPE,
-  GOTENKS_LOOK_TYPES,
-  MAJIN_BOO_CURATED_LOOK_TYPE,
-  MAJIN_BOO_LOOK_TYPES,
-  PICCOLO_CURATED_LOOK_TYPE,
-  PICCOLO_LOOK_TYPES,
-  ASTA_CURATED_LOOK_TYPE,
-  LUFFY_CURATED_LOOK_TYPE,
-} from '@/data/character-packs';
+import { getCharacterPreviewUrl } from '@/data/curated-map-sprites';
 import { emitSystemMessage } from '@/lib/system-log';
 import { planForgeStar } from '@/systems/forge';
 import { createStore } from '@/stores/create-store';
 import { TEAM_SLOT_COUNT } from '@/constants/sealing';
 import type { StarterCharacterId } from '@/types/player-creation';
 import type { SealedCharacter, TeamState } from '@/types/team';
-import { buildSealedCharacter, normalizeSealedCharacter } from '@/utils/character-identity';
+import {
+  buildSealedCharacter,
+  createCharacterInstanceId,
+  normalizeSealedCharacter,
+} from '@/utils/character-identity';
 
 function starterMember(starterId: StarterCharacterId): SealedCharacter {
   const starter = STARTERS.find((entry) => entry.id === starterId);
@@ -95,148 +50,7 @@ function starterMember(starterId: StarterCharacterId): SealedCharacter {
 }
 
 function previewForLookType(lookType: number): string {
-  if (lookType === NARUTO_CLASSIC_LOOK_TYPE) return '/sprites/player/previews/naruto.png';
-  if (lookType === SASUKE_CLASSIC_LOOK_TYPE) return '/sprites/player/previews/sasuke.png';
-  if (lookType === ROCK_LEE_LOOK_TYPE) return '/sprites/player/previews/rock-lee.png';
-  if (lookType === 1426) return '/sprites/player/previews/shikamaru.png';
-  if (
-    lookType === 489 ||
-    lookType === 490 ||
-    lookType === 494 ||
-    lookType === NEJI_CURATED_LOOK_TYPE
-  ) {
-    return '/sprites/player/previews/neji.png';
-  }
-  if (lookType === 1395 || lookType === 41 || lookType === 42 || lookType === 710) {
-    return '/sprites/player/previews/gaara.png';
-  }
-  if (lookType === 1423 || lookType === 350 || lookType === 352) {
-    return '/sprites/player/previews/sakura.png';
-  }
-  if (lookType === CHOUJI_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/chouji.png';
-  }
-  if (lookType === HINATA_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/hinata.png';
-  }
-  if (lookType === GUY_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/guy.png';
-  }
-  if (lookType === INO_CURATED_LOOK_TYPE || lookType === 1169) {
-    return '/sprites/player/previews/ino.png';
-  }
-  if (lookType === KAKASHI_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/kakashi.png';
-  }
-  if (lookType === NARUTO_SENNIN_LOOK_TYPE) {
-    return '/sprites/player/previews/naruto-sennin.png';
-  }
-  if (lookType === UCHIHA_ITACHI_LOOK_TYPE) {
-    return '/sprites/player/previews/itachi.png';
-  }
-  if (
-    lookType === SHISUI_CURATED_LOOK_TYPE ||
-    (SHISUI_LOOK_TYPES as readonly number[]).includes(lookType)
-  ) {
-    return '/sprites/player/previews/shisui.png';
-  }
-  if (
-    lookType === NARUTO_SHIPPUDEN_CURATED_LOOK_TYPE ||
-    (NARUTO_SHIPPUDEN_LOOK_TYPES as readonly number[]).includes(lookType)
-  ) {
-    return '/sprites/player/previews/naruto-shippuden.png';
-  }
-  if (
-    lookType === GOKU_CURATED_LOOK_TYPE ||
-    (GOKU_LOOK_TYPES as readonly number[]).includes(lookType)
-  ) {
-    return '/sprites/player/previews/goku.png';
-  }
-  if (
-    lookType === FREEZA_CURATED_LOOK_TYPE ||
-    (FREEZA_LOOK_TYPES as readonly number[]).includes(lookType)
-  ) {
-    return '/sprites/player/previews/freeza.png';
-  }
-  if (
-    lookType === GOTENKS_CURATED_LOOK_TYPE ||
-    (GOTENKS_LOOK_TYPES as readonly number[]).includes(lookType)
-  ) {
-    return '/sprites/player/previews/gotenks.png';
-  }
-  if (
-    lookType === MAJIN_BOO_CURATED_LOOK_TYPE ||
-    (MAJIN_BOO_LOOK_TYPES as readonly number[]).includes(lookType)
-  ) {
-    return '/sprites/player/previews/majin-boo.png';
-  }
-  if (
-    lookType === PICCOLO_CURATED_LOOK_TYPE ||
-    (PICCOLO_LOOK_TYPES as readonly number[]).includes(lookType)
-  ) {
-    return '/sprites/player/previews/piccolo.png';
-  }
-  if ((JIRAIYA_LOOK_TYPES as readonly number[]).includes(lookType)) {
-    return '/sprites/player/previews/jiraiya.png';
-  }
-  if ((JIROBO_LOOK_TYPES as readonly number[]).includes(lookType)) {
-    return '/sprites/player/previews/jirobo.png';
-  }
-  if (lookType === KABUTO_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/kabuto.png';
-  }
-  if (lookType === TSUNADE_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/tsunade.png';
-  }
-  if (lookType === KIBA_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/kiba.png';
-  }
-  if (lookType === KIMIMARO_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/kimimaro.png';
-  }
-  if (lookType === SASUKE_CURSED_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/sasuke-cursed.png';
-  }
-  if (lookType === OROCHIMARU_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/orochimaru.png';
-  }
-  if (lookType === NARUTO_KYUBI_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/naruto-kyubi.png';
-  }
-  if (lookType === KISAME_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/kisame.png';
-  }
-  if (lookType === DEIDARA_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/deidara.png';
-  }
-  if (lookType === SAKURA_SHIPPUDEN_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/sakura-shippuden.png';
-  }
-  if (lookType === TENTEN_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/tenten.png';
-  }
-  if (lookType === TEMARI_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/temari.png';
-  }
-  if (lookType === TAYUYA_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/tayuya.png';
-  }
-  if (lookType === SHINO_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/shino.png';
-  }
-  if (lookType === MOMO_HINAMORI_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/momo-hinamori.png';
-  }
-  if (lookType === HITSUGAYA_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/hitsugaya.png';
-  }
-  if (lookType === ASTA_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/asta.png';
-  }
-  if (lookType === LUFFY_CURATED_LOOK_TYPE) {
-    return '/sprites/player/previews/luffy.png';
-  }
-  return getCuratedPortraitUrl(lookType) ?? `/sprites/wonsr/outfits/${lookType}.png`;
+  return getCharacterPreviewUrl(lookType);
 }
 
 /** Prefer preview curado (`/previews/`) sobre URL legada quebrada (outfit WONSR 90xx). */
@@ -291,23 +105,34 @@ export const teamStore = {
       }));
     if (collection.length === 0) return false;
 
-    const ids = new Set(collection.map((entry) => entry.id));
+    const seenIds = new Set<string>();
+    const reminted = collection.map((entry) => {
+      if (!seenIds.has(entry.id)) {
+        seenIds.add(entry.id);
+        return entry;
+      }
+      const nextId = createCharacterInstanceId();
+      seenIds.add(nextId);
+      return { ...entry, id: nextId };
+    });
+
+    const ids = new Set(reminted.map((entry) => entry.id));
     let teamIds = partial.teamIds.filter((id) => ids.has(id));
     if (teamIds.length === 0) {
-      teamIds = [collection[0].id];
+      teamIds = [reminted[0].id];
     }
     teamIds = teamIds.slice(0, TEAM_SLOT_COUNT);
 
     let activeId = partial.activeId && ids.has(partial.activeId) ? partial.activeId : null;
     if (!activeId || !teamIds.includes(activeId)) {
-      activeId = teamIds[0] ?? collection[0].id;
+      activeId = teamIds[0] ?? reminted[0].id;
     }
     if (!teamIds.includes(activeId)) {
       teamIds = [activeId, ...teamIds.filter((id) => id !== activeId)].slice(0, TEAM_SLOT_COUNT);
     }
 
     commit({
-      collection,
+      collection: reminted,
       teamIds,
       activeId,
       isOpen: false,
@@ -360,6 +185,39 @@ export const teamStore = {
     return true;
   },
 
+  setCharacterMastery(instanceId: string, progress: { masteryLevel: number; masteryXp: number }): boolean {
+    const state = store.getSnapshot();
+    const masteryLevel = clampMasteryLevel(progress.masteryLevel);
+    const masteryXp = isMaxMastery(masteryLevel) ? 0 : clampMasteryXp(progress.masteryXp);
+    let found = false;
+    const collection = state.collection.map((entry) => {
+      if (entry.id !== instanceId) return entry;
+      found = true;
+      if (entry.masteryLevel === masteryLevel && entry.masteryXp === masteryXp) {
+        return entry;
+      }
+      return { ...entry, masteryLevel, masteryXp };
+    });
+    if (!found) return false;
+    commit({ ...state, collection });
+    return true;
+  },
+
+  setCharacterAwakening(instanceId: string, awakeningLevel: number): boolean {
+    const state = store.getSnapshot();
+    const nextLevel = clampAwakeningLevel(awakeningLevel);
+    let found = false;
+    const collection = state.collection.map((entry) => {
+      if (entry.id !== instanceId) return entry;
+      found = true;
+      if (entry.awakeningLevel === nextLevel) return entry;
+      return { ...entry, awakeningLevel: nextLevel };
+    });
+    if (!found) return false;
+    commit({ ...state, collection });
+    return true;
+  },
+
   /**
    * Saves antigos sem nível por personagem.
    * Starter recupera o progresso da conta (era o único nível).
@@ -389,17 +247,9 @@ export const teamStore = {
     let leveled = false;
     const collection = state.collection.map((entry) => {
       if (entry.id !== instanceId) return entry;
-      let level = Math.max(1, entry.level);
-      let xp = Math.max(0, entry.xp);
-      let xpMax = xpRequiredForLevel(level);
-      xp += amount;
-      while (xp >= xpMax) {
-        xp -= xpMax;
-        level += 1;
-        xpMax = xpRequiredForLevel(level);
-        leveled = true;
-      }
-      return { ...entry, level, xp };
+      const next = addExperience(Math.max(1, entry.level), Math.max(0, entry.xp), amount);
+      if (next.leveled) leveled = true;
+      return { ...entry, level: next.level, xp: next.xp };
     });
     commit({ ...state, collection });
     return leveled;
@@ -438,11 +288,18 @@ export const teamStore = {
       starterId: member.starterId ?? null,
       previewUrl: member.previewUrl,
       characterKey: member.characterKey,
+      characterId: member.characterId,
+      obtainedAt: member.obtainedAt,
       quality: member.quality,
+      qualityStatMultiplier: member.qualityStatMultiplier,
       stars: member.stars,
-      clanId: member.clanId,
+      lineageId: member.lineageId,
+      clanId: member.lineageId,
       level: member.level,
       xp: member.xp,
+      masteryLevel: member.masteryLevel,
+      masteryXp: member.masteryXp,
+      awakeningLevel: member.awakeningLevel,
       isFavorite: member.isFavorite,
       isLocked: member.isLocked,
     });
@@ -456,6 +313,27 @@ export const teamStore = {
       collection: [...state.collection, sealed],
     });
     return true;
+  },
+
+  addCharacterInstance(
+    member: Partial<SealedCharacter> &
+      Pick<SealedCharacter, 'id' | 'name' | 'lookType'> & {
+        sourceId?: string | null;
+        starterId?: StarterCharacterId | null;
+        previewUrl?: string;
+      },
+  ): boolean {
+    return this.addToCollection(member);
+  },
+
+  getCharacterInstance(instanceId: string): SealedCharacter | null {
+    return store.getSnapshot().collection.find((entry) => entry.id === instanceId) ?? null;
+  },
+
+  countCopies(characterId: string): number {
+    return store
+      .getSnapshot()
+      .collection.filter((entry) => entry.characterId === characterId).length;
   },
 
   setFavorite(instanceId: string, isFavorite: boolean): boolean {
@@ -484,13 +362,13 @@ export const teamStore = {
     return true;
   },
 
-  addToTeam(characterId: string): boolean {
+  addToTeam(instanceId: string): boolean {
     const state = store.getSnapshot();
-    if (!state.collection.some((entry) => entry.id === characterId)) {
+    if (!state.collection.some((entry) => entry.id === instanceId)) {
       emitSystemMessage('Personagem não encontrado na coleção.');
       return false;
     }
-    if (state.teamIds.includes(characterId)) {
+    if (state.teamIds.includes(instanceId)) {
       emitSystemMessage('Esse personagem já está na equipe.');
       return false;
     }
@@ -498,7 +376,7 @@ export const teamStore = {
       emitSystemMessage('Equipe cheia (máximo 3). Remova alguém antes.');
       return false;
     }
-    commit({ ...state, teamIds: [...state.teamIds, characterId] });
+    commit({ ...state, teamIds: [...state.teamIds, instanceId] });
     emitSystemMessage('Personagem adicionado à equipe.');
     return true;
   },
@@ -522,16 +400,43 @@ export const teamStore = {
     return true;
   },
 
-  setActive(characterId: string): boolean {
+  setActive(instanceId: string): boolean {
     const state = store.getSnapshot();
-    if (!state.teamIds.includes(characterId)) {
+    if (!state.teamIds.includes(instanceId)) {
       emitSystemMessage('Só membros da equipe podem ser o principal.');
       return false;
     }
-    if (state.activeId === characterId) return false;
-    commit({ ...state, activeId: characterId });
-    const member = state.collection.find((entry) => entry.id === characterId);
+    if (state.activeId === instanceId) return false;
+    commit({ ...state, activeId: instanceId });
+    const member = state.collection.find((entry) => entry.id === instanceId);
     emitSystemMessage(`Agora lutando com ${member?.name ?? 'personagem'}.`);
+    return true;
+  },
+
+  /**
+   * Troca atômica da formação (Item 43 — presets).
+   * Um único commit: evita estados intermediários de gameplay.
+   */
+  applyFormation(teamIds: readonly string[], activeId: string): boolean {
+    const state = store.getSnapshot();
+    const collectionIds = new Set(state.collection.map((entry) => entry.id));
+    const unique: string[] = [];
+    const seen = new Set<string>();
+    for (const id of teamIds) {
+      if (typeof id !== 'string' || !id) continue;
+      if (!collectionIds.has(id)) continue;
+      if (seen.has(id)) continue;
+      seen.add(id);
+      unique.push(id);
+      if (unique.length >= TEAM_SLOT_COUNT) break;
+    }
+    if (unique.length === 0) return false;
+    const nextActive = unique.includes(activeId) ? activeId : unique[0]!;
+    commit({
+      ...state,
+      teamIds: unique,
+      activeId: nextActive,
+    });
     return true;
   },
 
@@ -539,13 +444,13 @@ export const teamStore = {
    * Forja +1 estrela no alvo consumindo materiais confirmados.
    * UI deve listar `plan.materialIds` antes de chamar.
    */
-  forgeStar(targetId: string, confirmedMaterialIds: readonly string[]): boolean {
+  forgeStar(targetInstanceId: string, confirmedMaterialInstanceIds: readonly string[]): boolean {
     const state = store.getSnapshot();
     const plan = planForgeStar({
-      targetId,
+      targetInstanceId,
       collection: state.collection,
       teamIds: state.teamIds,
-      preferredMaterialIds: confirmedMaterialIds,
+      materialInstanceIds: confirmedMaterialInstanceIds,
     });
 
     if (plan.reason === 'target-missing') {
@@ -556,8 +461,12 @@ export const teamStore = {
       emitSystemMessage('Forja para este rank ainda não está disponível.');
       return false;
     }
-    if (plan.reason === 'max-stars') {
-      emitSystemMessage('Este personagem já está no máximo de estrelas.');
+    if (plan.reason === 'stars-unavailable') {
+      emitSystemMessage(formatMaxStarsReachedMessage(plan.target?.quality ?? 'D'));
+      return false;
+    }
+    if (plan.reason === 'max-stars' && plan.target) {
+      emitSystemMessage(formatMaxStarsReachedMessage(plan.target.quality));
       return false;
     }
     if (plan.reason !== 'ok' || !plan.target) {
@@ -569,15 +478,15 @@ export const teamStore = {
 
     // Confirmar que o conjunto bate exatamente com o planejado.
     if (
-      confirmedMaterialIds.length !== plan.materialIds.length ||
-      !plan.materialIds.every((id) => confirmedMaterialIds.includes(id))
+      confirmedMaterialInstanceIds.length !== plan.materialIds.length ||
+      !plan.materialIds.every((id) => confirmedMaterialInstanceIds.includes(id))
     ) {
       emitSystemMessage('Lista de materiais inválida. Confirme novamente.');
       return false;
     }
 
     const removeSet = new Set(plan.materialIds);
-    if (removeSet.has(targetId)) {
+    if (removeSet.has(targetInstanceId)) {
       emitSystemMessage('O alvo não pode ser consumido como material.');
       return false;
     }
@@ -585,7 +494,7 @@ export const teamStore = {
     const collection = state.collection
       .filter((entry) => !removeSet.has(entry.id))
       .map((entry) => {
-        if (entry.id !== targetId) return entry;
+        if (entry.id !== targetInstanceId) return entry;
         return { ...entry, stars: clampStars(entry.stars + 1, entry.quality) };
       });
 
@@ -598,10 +507,12 @@ export const teamStore = {
     const teamIds = state.teamIds.filter((id) => !removeSet.has(id));
     commit({ ...state, collection, teamIds });
 
-    const next = collection.find((entry) => entry.id === targetId);
+    const next = collection.find((entry) => entry.id === targetInstanceId);
     emitSystemMessage(
       `Forja concluída: ${next?.name ?? 'personagem'} agora com ${next?.stars ?? '?'}★.`,
     );
+    void import('@/lib/achievement-listeners').then((m) => m.notifyAchievementStarsChanged());
+    void import('@/stores/missions-store').then((m) => m.missionsStore.syncStateMissions());
     return true;
   },
 
@@ -612,11 +523,14 @@ export const teamStore = {
       emitSystemMessage('Personagem não encontrado.');
       return false;
     }
-    if (target.stars >= maxStarsForQuality(target.quality)) {
-      emitSystemMessage('Estrelas no teto desta qualidade.');
+    if (target.stars >= getMaxStarsForRarity(target.quality)) {
+      emitSystemMessage(formatMaxStarsReachedMessage(target.quality));
       return false;
     }
-    const charId = target.sourceId ?? getCuratedPackByLookType(target.lookType)?.id ?? null;
+    const charId =
+      target.sourceId ??
+      getCharacterDefinitionByLookType(target.lookType, { includeInactive: true })?.id ??
+      null;
     const fragId = charId
       ? narutoFragmentItemId(charId)
       : 'item-anime-naruto-fragmento-personagem';
@@ -633,30 +547,8 @@ export const teamStore = {
     commit({ ...state, collection });
     const next = collection.find((entry) => entry.id === targetId);
     emitSystemMessage(`${next?.name ?? 'Personagem'} evoluiu para ${next?.stars}★.`);
-    return true;
-  },
-
-  refinePotential(targetId: string, attribute: PotentialAttributeId): boolean {
-    const state = store.getSnapshot();
-    const target = state.collection.find((entry) => entry.id === targetId);
-    if (!target?.potential) {
-      emitSystemMessage('Potencial indisponível.');
-      return false;
-    }
-    if (inventoryStore.countItem(REFINEMENT_CRYSTAL_ITEM_ID) < 1) {
-      emitSystemMessage('Precisa de um Cristal de Refinamento.');
-      return false;
-    }
-    if (!inventoryStore.removeItem(REFINEMENT_CRYSTAL_ITEM_ID, 1)) return false;
-    const potential = refinePotentialAttribute(target.potential, attribute);
-    const collection = state.collection.map((entry) =>
-      entry.id === targetId ? { ...entry, potential } : entry,
-    );
-    commit({ ...state, collection });
-    achievementStore.checkPotentialGrade(potential.poder.grade);
-    achievementStore.checkPotentialGrade(potential.sorte.grade);
-    achievementStore.checkPotentialGrade(potential.fortuna.grade);
-    emitSystemMessage(`${target.name}: ${attribute} refinado.`);
+    void import('@/lib/achievement-listeners').then((m) => m.notifyAchievementStarsChanged());
+    void import('@/stores/missions-store').then((m) => m.missionsStore.syncStateMissions());
     return true;
   },
 };

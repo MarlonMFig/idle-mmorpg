@@ -21,11 +21,16 @@ export function HuntAnalyzerPanel() {
   const isOpen = useStore(huntAnalyzerStore, (s) => s.isOpen);
   const kills = useStore(huntAnalyzerStore, (s) => s.kills);
   const sealed = useStore(huntAnalyzerStore, (s) => s.sealed);
+  const captureAttempts = useStore(huntAnalyzerStore, (s) => s.captureAttempts);
   const xpGained = useStore(huntAnalyzerStore, (s) => s.xpGained);
+  const isTestSession = useStore(huntAnalyzerStore, (s) => s.isTestSession);
   const lootItems = useStore(huntAnalyzerStore, (s) => s.lootItems);
   const scrollsUsed = useStore(huntAnalyzerStore, (s) => s.scrollsUsed);
   const supplyCopper = useStore(huntAnalyzerStore, (s) => s.supplyCopper);
   const sealLogs = useStore(huntAnalyzerStore, (s) => s.sealLogs);
+  const qualityKills = useStore(huntAnalyzerStore, (s) => s.qualityKills);
+  const qualityCaptures = useStore(huntAnalyzerStore, (s) => s.qualityCaptures);
+  const qualityFails = useStore(huntAnalyzerStore, (s) => s.qualityFails);
   const dropsMap = useStore(huntAnalyzerStore, (s) => s.drops);
   const sessionStartedAt = useStore(huntAnalyzerStore, (s) => s.sessionStartedAt);
 
@@ -118,7 +123,9 @@ export function HuntAnalyzerPanel() {
               <span className="hunt-analyzer__title-bars" aria-hidden />
               Hunt Analyzer
             </h2>
-            <p className="hunt-analyzer__session">• sessão atual</p>
+            <p className="hunt-analyzer__session">
+              {isTestSession ? '• TEST SESSION' : '• sessão atual'}
+            </p>
           </div>
         </div>
         <div className="hunt-analyzer__head-actions" data-no-drag>
@@ -166,7 +173,7 @@ export function HuntAnalyzerPanel() {
           tone="seal"
           icon="🌀"
           value={formatCopper(sealed)}
-          label="Selados"
+          label={`Selados (${captureAttempts} tent.)`}
         />
         <StatCard
           tone="loot"
@@ -200,6 +207,24 @@ export function HuntAnalyzerPanel() {
       <div className="hunt-analyzer__rates" role="list">
         <div className="hunt-analyzer__rate" role="listitem">
           <span className="hunt-analyzer__rate-icon" aria-hidden>
+            $
+          </span>
+          <span className="hunt-analyzer__rate-value is-pos">
+            {formatMoney(rates.copperPerHour)}/h
+          </span>
+          <span className="hunt-analyzer__rate-icon">REAL</span>
+        </div>
+        <div className="hunt-analyzer__rate" role="listitem">
+          <span className="hunt-analyzer__rate-icon" aria-hidden>
+            ▣
+          </span>
+          <span className="hunt-analyzer__rate-value is-pos">
+            {formatMoney(rates.lootPerHour)}/h
+          </span>
+          <span className="hunt-analyzer__rate-icon">REAL</span>
+        </div>
+        <div className="hunt-analyzer__rate" role="listitem">
+          <span className="hunt-analyzer__rate-icon" aria-hidden>
             ↗
           </span>
           <span
@@ -216,6 +241,14 @@ export function HuntAnalyzerPanel() {
           </span>
           <span className="hunt-analyzer__rate-value is-xp">
             {formatCopper(rates.xpPerHour)} XP/h
+          </span>
+        </div>
+        <div className="hunt-analyzer__rate" role="listitem">
+          <span className="hunt-analyzer__rate-icon" aria-hidden>
+            M
+          </span>
+          <span className="hunt-analyzer__rate-value is-xp">
+            {formatCopper(rates.masteryXpPerHour)} M.XP/h
           </span>
         </div>
         <div className="hunt-analyzer__rate" role="listitem">
@@ -299,6 +332,13 @@ export function HuntAnalyzerPanel() {
             </ul>
           )}
         </div>
+      ) : null}
+
+      {isTestSession ? (
+        <p className="hunt-analyzer__footer">
+          DEV quality — kills {JSON.stringify(qualityKills)} · captures{' '}
+          {JSON.stringify(qualityCaptures)} · fails {JSON.stringify(qualityFails)}
+        </p>
       ) : null}
 
       <p className="hunt-analyzer__footer">

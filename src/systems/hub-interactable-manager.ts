@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import { sharpenWorldText } from '@/constants/nameplate';
+import { RENDER_LAYER } from '@/constants/render-layers';
 import { getActiveHub, HUB_UI_SCALE } from '@/data/hub-backgrounds';
 import { combatLayoutScale } from '@/data/wonsr-rendered-maps';
 import {
@@ -25,14 +26,14 @@ interface HubMarker {
 const GLOW_TEXTURE = 'hub-building-glow';
 /** Gradiente invertido: apaga as bordas do recorte do prédio. */
 const FEATHER_TEXTURE = 'hub-building-feather';
-/** Atrás do jogador (o passeio já rende depth ≈ 86 em `worldDepthForY`). */
+/** Atrás do jogador (faixa de personagens começa em RENDER_LAYER.characters). */
 const GLOW_DEPTH = 2;
 /** Nome do prédio sempre por cima de personagens e efeitos. */
-const LABEL_DEPTH = 240;
+const LABEL_DEPTH = RENDER_LAYER.combatText;
 /** Quanto o nome sobe ao entrar (px de mundo). */
-const LABEL_RISE = 56;
+const LABEL_RISE = 36;
 /** Folga entre o telhado e a base do nome (px de mundo). */
-const LABEL_GAP = 42;
+const LABEL_GAP = 28;
 /** Luz baixa e pulsante na porta: mostra que o prédio é clicável. */
 const IDLE_DOOR_ALPHA = 0;
 
@@ -86,12 +87,12 @@ export class HubInteractableManager {
     const facadeAlpha = lit ? 0.48 : 0.34;
     const baseScaleX = facade.scaleX;
     const baseScaleY = facade.scaleY;
-    facade.setScale(baseScaleX * 0.97, baseScaleY * 0.97);
+    facade.setScale(baseScaleX, baseScaleY);
 
-    const doorSize = Math.min(area.width * 0.85, 560);
+    const doorSize = Math.min(Math.max(16, area.width - 16), 560);
     const doorway = this.scene.add
       .image(def.position.x, def.position.y, texture)
-      .setDisplaySize(doorSize, doorSize * 0.8)
+      .setDisplaySize(doorSize, Math.round((doorSize * 4) / 5))
       .setBlendMode(Phaser.BlendModes.ADD)
       .setTint(0xffd9a0)
       .setDepth(GLOW_DEPTH + 1)
@@ -229,7 +230,7 @@ export class HubInteractableManager {
     const { x, y } = def.position;
     const s = combatLayoutScale(def.mapKey);
     const root = this.scene.add.container(x, y);
-    root.setDepth(8);
+    root.setDepth(RENDER_LAYER.characters - 8);
 
     const disc = this.scene.add.circle(0, 0, 18 * s, def.color, 0.92);
     disc.setStrokeStyle(Math.max(2, 2 * s), 0xffffff, 0.85);
@@ -331,6 +332,9 @@ export class HubInteractableManager {
       case 'forge':
         teamStore.setOpen(false);
         forgeStore.open();
+        break;
+      case 'bag':
+        teamStore.setOpen(true);
         break;
       case 'return':
         locationStore.enterHub();

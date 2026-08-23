@@ -1,5 +1,8 @@
 import { SKILL_HOTBAR_SIZE } from '@/constants/skill';
+import { isSkillCooldownIgnored } from '@/config/devConfig';
+import { characterLabStore, isCharacterLabSession } from '@/stores/character-lab-store';
 import { listSkillUnlocksFor } from '@/data/skill-unlocks';
+import { getCharacterPack } from '@/data/character-packs';
 import { getHotbarSkillIdsForStarter, getSkill, STARTER_KNOWN_SKILL_IDS } from '@/data/skills';
 import { createStore } from '@/stores/create-store';
 import type { StarterCharacterId } from '@/types/player-creation';
@@ -10,14 +13,14 @@ function emptyHotbar(): HotbarSlot[] {
   return Array.from({ length: SKILL_HOTBAR_SIZE }, () => null);
 }
 
+function labIgnoresCooldown(): boolean {
+  if (!isCharacterLabSession()) return false;
+  const lab = characterLabStore.getSnapshot();
+  return lab.ignoreCooldown || lab.infiniteChakra;
+}
+
 function buildHotbarForStarter(starterId: StarterCharacterId): HotbarSlot[] {
-  const hotbar = emptyHotbar();
-  getHotbarSkillIdsForStarter(starterId).forEach((id, index) => {
-    if (index < SKILL_HOTBAR_SIZE && getSkill(id)) {
-      hotbar[index] = id;
-    }
-  });
-  return hotbar;
+  return buildHotbarFromIds(getCharacterPack(starterId).hotbarSkillIds);
 }
 
 function knownIdsForStarter(starterId: StarterCharacterId): string[] {
@@ -25,10 +28,10 @@ function knownIdsForStarter(starterId: StarterCharacterId): string[] {
   return [...new Set([...STARTER_KNOWN_SKILL_IDS, ...fromHotbar])];
 }
 
-function buildHotbarFromIds(skillIds: readonly string[]): HotbarSlot[] {
+function buildHotbarFromIds(skillIds: readonly (string | null)[]): HotbarSlot[] {
   const hotbar = emptyHotbar();
   skillIds.forEach((id, index) => {
-    if (index < SKILL_HOTBAR_SIZE && getSkill(id)) {
+    if (index < SKILL_HOTBAR_SIZE && id && getSkill(id)) {
       hotbar[index] = id;
     }
   });
@@ -62,11 +65,11 @@ export const skillsStore = {
    * Troca a hotbar do personagem ativo sem limpar skills conhecidas
    * (progressão do jogador) nem reiniciar a sessão.
    */
-  applyCharacterHotbar(skillIds: readonly string[]): void {
+  applyCharacterHotbar(skillIds: readonly (string | null)[]): void {
     const state = store.getSnapshot();
     const nextKnown = new Set(state.knownIds);
     for (const id of skillIds) {
-      if (getSkill(id)) nextKnown.add(id);
+      if (id && getSkill(id)) nextKnown.add(id);
     }
     store.setState({
       ...state,
@@ -139,6 +142,7 @@ export const skillsStore = {
   },
 
   isReady(skillId: string, now = Date.now()): boolean {
+    if (isSkillCooldownIgnored() || labIgnoresCooldown()) return true;
     const readyAt = store.getSnapshot().cooldownReadyAt[skillId] ?? 0;
     return now >= readyAt;
   },
@@ -148,12 +152,13 @@ export const skillsStore = {
     return Math.max(0, readyAt - now);
   },
 
-  /** Chakra restaurado (Centro de Cura): todos os jutsus voltam a ficar prontos. */
+  /** DEV / Lab: zera cooldowns de Skills. Não usar no Médico (Item 42). */
   clearCooldowns(): void {
     store.setState((state) => ({ ...state, cooldownReadyAt: {} }));
   },
 
   startCooldown(skillId: string, cooldownMs: number, now = Date.now()): void {
+    if (isSkillCooldownIgnored() || labIgnoresCooldown()) return;
     const state = store.getSnapshot();
     store.setState({
       ...state,

@@ -2,6 +2,7 @@ import * as Phaser from 'phaser';
 import { NAMEPLATE_GAP_PX } from '@/constants/combat';
 import { MULTIPLAYER_INTERPOLATION } from '@/constants/multiplayer';
 import { addNameplate, REMOTE_NAMEPLATE_STYLE, worldDepthForY } from '@/constants/nameplate';
+import { combatTextDepthForY } from '@/constants/render-layers';
 import { directionFacesLeft, type PlayerDirection } from '@/constants/player';
 import {
   characterDisplayScale,
@@ -139,7 +140,7 @@ export class RemotePlayer {
           NAMEPLATE_GAP_PX * this.worldScale,
       ),
     );
-    this.nameLabel.setDepth(depth + 3);
+    this.nameLabel.setDepth(combatTextDepthForY(this.sprite.y, 3));
   }
 
   destroy(): void {

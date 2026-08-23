@@ -8,11 +8,17 @@ import { WONSR_JUTSU_REFERENCE, type WonsrJutsuReference } from '@/data/wonsr-ju
 import type { SkillAnimationKind, SkillDefinition, SkillElement } from '@/types/skill';
 
 const ELEMENT_ANIMATION: Record<SkillElement, SkillAnimationKind> = {
+  physical: 'slash',
   fire: 'burst',
   water: 'projectile',
   wind: 'slash',
   earth: 'aura',
   lightning: 'beam',
+  ice: 'projectile',
+  dark: 'aura',
+  light: 'burst',
+  energy: 'beam',
+  magic: 'aura',
   yin: 'aura',
   yang: 'burst',
   neutral: 'slash',

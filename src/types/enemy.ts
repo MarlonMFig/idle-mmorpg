@@ -1,3 +1,5 @@
+import type { CombatAffinityFields } from '@/data/damage-elements';
+import type { CharacterQuality } from '@/types/character-meta';
 import type { WonsrDirection, WonsrSpriteFit } from '@/data/wonsr-sprites';
 import type { MapKey } from '@/maps/map-registry';
 import type { LootDropEntry } from '@/types/loot';
@@ -47,8 +49,14 @@ export interface EnemySealableIdentity {
   sourceId: string;
   name: string;
   lookType: number;
-  /** Nível da caça (catálogo), independente de FORCE_HUNT_LEVEL no combate. */
+  /** Nível da caça (catálogo). */
   level?: number;
+  /**
+   * Legado: quality NÃO é rolada no spawn e NÃO afeta combate.
+   * Captura ignora este campo e rola após sucesso.
+   */
+  quality?: CharacterQuality;
+  qualityStatMultiplier?: number;
 }
 
 /** Definição autoritativa de um monstro. */
@@ -76,6 +84,30 @@ export interface EnemyDefinition {
   noRespawn?: boolean;
   /** Override do ENEMY_RESPAWN_MS (ex.: mapa de teste farm). */
   respawnMs?: number;
+  /**
+   * melee = Hunt padrão.
+   * external = persegue, mas ataques vêm de outro sistema (Boss AI).
+   */
+  aiMode?: 'melee' | 'external';
+  /** Habilidades WONSR (XML) usadas no golpe contra o jogador. */
+  skills?: EnemySkill[];
+  /** Mesma estrutura de players. Ausente = vazio. */
+  resistances?: CombatAffinityFields['resistances'];
+  immunities?: CombatAffinityFields['immunities'];
+  statusResistances?: CombatAffinityFields['statusResistances'];
+  statusImmunities?: CombatAffinityFields['statusImmunities'];
+}
+
+export interface EnemySkill {
+  name: string;
+  intervalMs: number;
+  min: number;
+  max: number;
+  /** Alcance em tiles do XML WONSR. */
+  range: number;
+  element: string;
+  effectId?: string;
+  missileId?: string;
 }
 
 export interface EnemyRuntimeStats {

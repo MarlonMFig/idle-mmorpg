@@ -31,12 +31,12 @@
   },
   "ichigo-idle": {
     "image": "/sprites/player/ichigo/idle.png",
-    "frameWidth": 75,
+    "frameWidth": 37,
     "frameHeight": 55,
-    "frameCount": 8,
+    "frameCount": 4,
     "contentHeight": 51,
     "scale": 1,
-    "originX": 0.37333333333333335,
+    "originX": 0.5135135135135135,
     "frameRate": 8
   },
   "ichigo-walk": {

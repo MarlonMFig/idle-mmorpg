@@ -13,14 +13,20 @@ import {
   NAMEPLATE_GAP_PX,
 } from '@/constants/combat';
 import { addNameplate, NAMEPLATE_STYLE, worldDepthForY } from '@/constants/nameplate';
+import { combatTextDepthForY } from '@/constants/render-layers';
 import {
   CHARACTER_BODY_HEIGHT,
   CHARACTER_BODY_WIDTH,
   CHARACTER_DISPLAY_HEIGHT,
 } from '@/constants/sprites';
 import { combatLayoutScale } from '@/data/wonsr-rendered-maps';
+import { isLabEnemyInvincible } from '@/stores/character-lab-store';
+import { getEffectiveCombatStats, scaledAttackCooldown } from '@/systems/combat-stats';
+import { getStatusRuntime } from '@/systems/status-runtime';
 import type { WonsrDirection } from '@/data/wonsr-sprites';
-import type { EnemyDefinition, EnemyRuntimeStats } from '@/types/enemy';
+import type { EnemyDefinition, EnemyRuntimeStats, EnemySkill } from '@/types/enemy';
+import { playWonsrEnemySkillFx } from '@/systems/wonsr-enemy-fx';
+import { enemyMaxHpForDefinition, scaleEnemyLevelDamage } from '@/lib/enemy-quality-stats';
 
 /** Cor da vida: verde → âmbar → carmim conforme a vida cai. */
 function enemyHpFillColor(ratio: number): number {
@@ -66,7 +72,12 @@ export class Enemy {
   /** Brilho superior na vida (pixel highlight). */
   private readonly hpBarGloss: Phaser.GameObjects.Rectangle;
   private readonly nameLabel: Phaser.GameObjects.Text;
+  private readonly statusIcons: Phaser.GameObjects.Text;
   private alive = true;
+  /** Loot/XP desta instância já resolvidos (uma morte = uma recompensa). */
+  rewardClaimed = false;
+  /** Selamento desta instância já resolvido (manual ou auto). */
+  captureResolved = false;
   private respawnAt = 0;
   private patrolTarget: { x: number; y: number } | null = null;
   private nextPatrolAt = 0;
@@ -78,11 +89,15 @@ export class Enemy {
   private reactionEpoch = 0;
   /** Último golpe no jogador (ms scene). */
   private lastAttackAt = 0;
+  /** Próximo instante em que cada habilidade WONSR pode ser usada. */
+  private readonly skillReadyAt = new Map<string, number>();
   /** Índice do próximo hit da cadeia de combos. */
   private comboStep = 0;
   /** Golpe agendado no meio da animação de combo. */
   private pendingHit: { damage: number; at: number; range: number } | null = null;
   private lastPlayerPos: { x: number; y: number } | null = null;
+  /** Cap de floaters — Boss com HP alto não acumula milhares de textos. */
+  private readonly damageFloaters: Phaser.GameObjects.Text[] = [];
   /** Altura do topo do sprite relativo a `sprite.y` (inclui hover de voo). */
   private readonly spriteTopLift: number;
   private readonly layoutScale: number;
@@ -94,9 +109,10 @@ export class Enemy {
   ) {
     this.definition = definition;
     this.layoutScale = combatLayoutScale(definition.mapKey);
+    const hpMax = enemyMaxHpForDefinition(definition);
     this.stats = {
-      hp: definition.hp,
-      hpMax: definition.hp,
+      hp: hpMax,
+      hpMax,
       level: definition.level,
       xp: definition.xp,
     };
@@ -166,6 +182,14 @@ export class Enemy {
       .rectangle(0, 0, barW, ENEMY_HP_BAR_GLOSS_H * s, 0xffffff, 0.28)
       .setOrigin(0, 0.5);
     this.nameLabel.setScale(s);
+    this.statusIcons = scene.add
+      .text(0, 0, '', {
+        fontFamily: 'Segoe UI Emoji, Apple Color Emoji, sans-serif',
+        fontSize: `${Math.max(10, Math.round(12 * s))}px`,
+        color: '#fff4c8',
+      })
+      .setOrigin(0.5, 1)
+      .setDepth(combatTextDepthForY(definition.spawn.y, 6));
 
     this.refreshHpBar();
     this.syncOverlays();
@@ -213,12 +237,22 @@ export class Enemy {
   }
 
   /** Aplica dano. Retorna true se o golpe matou o monstro. */
-  takeDamage(amount: number): boolean {
-    if (!this.alive || amount <= 0) return false;
+  takeDamage(amount: number, floater?: { tag?: 'RESIST' | 'WEAK' | 'IMMUNE' }): boolean {
+    if (!this.alive) return false;
+    if (floater?.tag === 'IMMUNE') {
+      this.showDamage(0, 'IMMUNE');
+      return false;
+    }
+    if (amount <= 0) return false;
+    if (isLabEnemyInvincible()) {
+      this.showDamage(amount, floater?.tag);
+      this.playHurtReaction();
+      return false;
+    }
 
     this.stats.hp = Math.max(0, this.stats.hp - amount);
     this.refreshHpBar({ pulse: true });
-    this.showDamage(amount);
+    this.showDamage(amount, floater?.tag);
 
     if (this.stats.hp <= 0) {
       this.die();
@@ -227,6 +261,44 @@ export class Enemy {
 
     this.playHurtReaction();
     return false;
+  }
+
+  /** Boss AI / testes: dispara o golpe básico existente. */
+  triggerBasicAttack(time: number): number | null {
+    if (!this.alive) return null;
+    if (time - this.lastAttackAt < scaledAttackCooldown(ENEMY_ATTACK_COOLDOWN_MS, this.id)) {
+      return null;
+    }
+    if (getStatusRuntime(this.scene).isStunned(this.id)) return null;
+    this.lastAttackAt = time;
+    return this.beginAttack(time);
+  }
+
+  /** DEV: força HP sem loot. */
+  setHp(hp: number): void {
+    this.stats.hp = Math.max(0, Math.min(this.stats.hpMax, Math.floor(hp)));
+    this.refreshHpBar();
+    if (this.stats.hp <= 0 && this.alive) this.die();
+  }
+
+  heal(amount: number): number {
+    if (!this.alive || amount <= 0) return 0;
+    const next = Math.min(this.stats.hpMax, this.stats.hp + Math.floor(amount));
+    const healed = next - this.stats.hp;
+    if (healed <= 0) return 0;
+    this.stats.hp = next;
+    this.refreshHpBar();
+    return healed;
+  }
+
+  setStatusIcons(icons: Array<{ icon: string; stacks: number }>): void {
+    if (!this.alive) {
+      this.statusIcons.setText('');
+      return;
+    }
+    this.statusIcons.setText(
+      icons.map((entry) => (entry.stacks > 1 ? `${entry.icon}${entry.stacks}` : entry.icon)).join(''),
+    );
   }
 
   /** Atualiza IA / barra / respawn. Com posição do jogador: persegue e ataca. */
@@ -291,7 +363,8 @@ export class Enemy {
     }
 
     // Em alcance de golpe: para, olha pro jogador e ataca.
-    if (dist <= ENEMY_ATTACK_RANGE * this.layoutScale) {
+    const attackReach = this.attackReach();
+    if (dist <= attackReach) {
       this.sprite.setVelocity(0, 0);
       this.patrolTarget = null;
       if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
@@ -300,18 +373,30 @@ export class Enemy {
           this.sprite.setFlipX(dx < 0);
         }
       }
-      if (time - this.lastAttackAt < ENEMY_ATTACK_COOLDOWN_MS) {
+      if (
+        !this.definition.skills?.length &&
+        time - this.lastAttackAt < scaledAttackCooldown(ENEMY_ATTACK_COOLDOWN_MS, this.id)
+      ) {
+        this.playIdleAnim();
+        return null;
+      }
+      if (this.definition.aiMode === 'external') {
+        this.playIdleAnim();
+        return null;
+      }
+      if (getStatusRuntime(this.scene).isStunned(this.id)) {
         this.playIdleAnim();
         return null;
       }
       this.lastAttackAt = time;
-      return this.beginAttack(time);
+      return this.beginAttack(time, dist);
     }
 
     // Persegue até o alcance.
     this.patrolTarget = null;
+    const move = getEffectiveCombatStats(this.id, { movementSpeed: this.definition.speed }).movementSpeed;
     const speed = Phaser.Math.Clamp(
-      this.definition.speed * ENEMY_CHASE_SPEED_FACTOR,
+      move * ENEMY_CHASE_SPEED_FACTOR,
       40 * this.layoutScale,
       110 * this.layoutScale,
     );
@@ -323,9 +408,18 @@ export class Enemy {
 
   /**
    * Toca combo/ataque se existir; agenda o hit no meio da animação.
-   * Sem sheet: dano imediato (fallback atlas).
+   * Sem sheet: dano imediato (fallback atlas), ou habilidade WONSR com VFX.
    */
-  private beginAttack(time: number): number | null {
+  private beginAttack(time: number, dist = 0): number | null {
+    if (this.definition.skills?.length) {
+      const skill = this.pickSkill(dist, time);
+      if (!skill) {
+        this.playIdleAnim();
+        return null;
+      }
+      return this.beginSkillAttack(time, skill);
+    }
+
     const damage = this.attackDamage();
     const played = this.playAttackAnim();
     if (!played) {
@@ -360,10 +454,71 @@ export class Enemy {
     return null;
   }
 
+  private beginSkillAttack(time: number, skill: EnemySkill): number | null {
+    const cooldown = Phaser.Math.Clamp(skill.intervalMs || ENEMY_ATTACK_COOLDOWN_MS, 700, 4200);
+    this.skillReadyAt.set(skill.name, time + cooldown);
+    this.comboStep += 1;
+
+    const target = this.lastPlayerPos ?? { x: this.sprite.x, y: this.sprite.y };
+    const hitDelay = playWonsrEnemySkillFx(this.scene, skill, { x: this.sprite.x, y: this.sprite.y }, target);
+    const durationMs = Math.max(280, hitDelay + 80);
+    const unlockAt = time + durationMs;
+    this.reactingUntil = unlockAt;
+    this.pendingHit = {
+      damage: this.skillDamage(skill),
+      at: time + hitDelay,
+      range: this.skillReach(skill) * 1.15,
+    };
+    this.playIdleAnim();
+
+    const epoch = this.reactionEpoch;
+    this.scene.time.delayedCall(durationMs, () => {
+      if (this.reactionEpoch !== epoch || !this.alive || this.deathHold) return;
+      if (this.reactingUntil !== unlockAt) return;
+      this.reactingUntil = 0;
+      this.playIdleAnim();
+    });
+    return null;
+  }
+
+  private attackReach(): number {
+    const skills = this.definition.skills;
+    if (!skills?.length) return ENEMY_ATTACK_RANGE * this.layoutScale;
+    return Math.max(...skills.map((skill) => this.skillReach(skill)));
+  }
+
+  private skillReach(skill: EnemySkill): number {
+    const tiles = Math.max(1, skill.range || 1);
+    return Math.max(ENEMY_ATTACK_RANGE, tiles * 32) * this.layoutScale;
+  }
+
+  private pickSkill(dist: number, time: number): EnemySkill | null {
+    const skills = this.definition.skills;
+    if (!skills?.length) return null;
+    const ready = skills.filter((skill) => {
+      const nextAt = this.skillReadyAt.get(skill.name) ?? 0;
+      return time >= nextAt && dist <= this.skillReach(skill) * 1.2;
+    });
+    if (!ready.length) return null;
+    const named = ready.filter((skill) => skill.name.toLowerCase() !== 'melee');
+    const pool = named.length ? named : ready;
+    return pool[this.comboStep % pool.length] ?? null;
+  }
+
+  private skillDamage(skill: EnemySkill): number {
+    const level = Math.max(1, this.stats.level);
+    const avg = (Math.abs(skill.min) + Math.abs(skill.max)) / 2;
+    const namedBonus = skill.name.toLowerCase() === 'melee' ? 0 : 4;
+    return scaleEnemyLevelDamage(
+      5 + level * 1.65 + Math.min(16, avg / 500) + namedBonus,
+      this.definition,
+    );
+  }
+
   /** Dano bruto antes da defesa do jogador. */
   private attackDamage(): number {
     const level = Math.max(1, this.stats.level);
-    return Math.max(2, Math.floor(5 + level * 1.65));
+    return scaleEnemyLevelDamage(5 + level * 1.65, this.definition);
   }
 
   /** Toca o próximo hit da cadeia de combo. @returns false se não há sheet. */
@@ -395,8 +550,11 @@ export class Enemy {
 
   destroy(): void {
     this.mapCollider?.destroy();
+    for (const floater of this.damageFloaters) floater.destroy();
+    this.damageFloaters.length = 0;
     this.sprite.destroy();
     this.nameLabel.destroy();
+    this.statusIcons.destroy();
     this.hpBarBorder.destroy();
     this.hpBarBg.destroy();
     this.hpBarFill.destroy();
@@ -405,6 +563,8 @@ export class Enemy {
 
   private die(): void {
     this.alive = false;
+    getStatusRuntime(this.scene).clearTarget(this.id);
+    this.statusIcons.setText('');
     this.patrolTarget = null;
     this.reactingUntil = 0;
     this.pendingHit = null;
@@ -443,17 +603,21 @@ export class Enemy {
 
   private respawn(): void {
     this.alive = true;
+    this.rewardClaimed = false;
+    this.captureResolved = false;
     this.deathHold = false;
     this.reactingUntil = 0;
     this.pendingHit = null;
     this.comboStep = 0;
-    this.stats.hp = this.stats.hpMax;
     this.scene.tweens.killTweensOf(this.sprite);
     this.sprite.clearTint();
     this.sprite.setVisible(true);
     this.sprite.setAlpha(1);
     this.sprite.enableBody(true, this.definition.spawn.x, this.definition.spawn.y, true, true);
     this.sprite.setVelocity(0, 0);
+    const hpMax = enemyMaxHpForDefinition(this.definition);
+    this.stats.hpMax = hpMax;
+    this.stats.hp = hpMax;
     this.nameLabel.setVisible(true);
     this.setHpBarVisible(true);
     this.nextPatrolAt = this.scene.time.now + Phaser.Math.Between(250, 900);
@@ -480,8 +644,9 @@ export class Enemy {
         this.playIdleAnim();
         return;
       }
+      const move = getEffectiveCombatStats(this.id, { movementSpeed: this.definition.speed }).movementSpeed;
       const speed = Phaser.Math.Clamp(
-        this.definition.speed * 0.24,
+        move * 0.24,
         28 * this.layoutScale,
         68 * this.layoutScale,
       );
@@ -686,7 +851,7 @@ export class Enemy {
     const headY = this.sprite.y - this.spriteTopLift;
     const nameBottom = headY - NAMEPLATE_GAP_PX * s;
     this.nameLabel.setPosition(Math.round(this.sprite.x), Math.round(nameBottom));
-    this.nameLabel.setDepth(depth + 5);
+    this.nameLabel.setDepth(combatTextDepthForY(this.sprite.y, 5));
 
     const barY =
       nameBottom -
@@ -697,13 +862,16 @@ export class Enemy {
     const glossY = barY - (ENEMY_HP_BAR_HEIGHT * s) / 2 + ENEMY_HP_BAR_GLOSS_H * s;
 
     this.hpBarBorder.setPosition(this.sprite.x, barY);
-    this.hpBarBorder.setDepth(depth + 1);
+    this.hpBarBorder.setDepth(combatTextDepthForY(this.sprite.y, 1));
     this.hpBarBg.setPosition(this.sprite.x, barY);
-    this.hpBarBg.setDepth(depth + 2);
+    this.hpBarBg.setDepth(combatTextDepthForY(this.sprite.y, 2));
     this.hpBarFill.setPosition(left, barY);
-    this.hpBarFill.setDepth(depth + 3);
+    this.hpBarFill.setDepth(combatTextDepthForY(this.sprite.y, 3));
     this.hpBarGloss.setPosition(left + 0.5, glossY);
-    this.hpBarGloss.setDepth(depth + 4);
+    this.hpBarGloss.setDepth(combatTextDepthForY(this.sprite.y, 4));
+    this.statusIcons.setPosition(Math.round(this.sprite.x), Math.round(barY - (ENEMY_HP_BAR_HEIGHT * s) / 2 - 2 * s));
+    this.statusIcons.setDepth(combatTextDepthForY(this.sprite.y, 6));
+    this.statusIcons.setVisible(this.alive);
   }
 
   private flashHit(): void {
@@ -717,18 +885,25 @@ export class Enemy {
     });
   }
 
-  private showDamage(amount: number): void {
+  private showDamage(amount: number, tag?: 'RESIST' | 'WEAK' | 'IMMUNE'): void {
+    const label = tag === 'IMMUNE' ? 'IMMUNE' : `-${Math.round(amount)}${tag ? ` ${tag}` : ''}`;
+    const color = tag === 'IMMUNE' ? '#9bd0f5' : tag === 'WEAK' ? '#ffb347' : tag === 'RESIST' ? '#8ecae6' : '#ffffff';
+    while (this.damageFloaters.length >= 10) {
+      const oldest = this.damageFloaters.shift();
+      oldest?.destroy();
+    }
     const floater = this.scene.add
-      .text(this.sprite.x, this.sprite.y - this.spriteTopLift * 0.55, `-${Math.round(amount)}`, {
+      .text(this.sprite.x, this.sprite.y - this.spriteTopLift * 0.55, label, {
         fontFamily: 'Tahoma, "Segoe UI", sans-serif',
         fontSize: '12px',
         fontStyle: 'bold',
-        color: '#ffffff',
+        color,
         stroke: '#1a0808',
         strokeThickness: 3,
       })
       .setOrigin(0.5)
-      .setDepth(worldDepthForY(this.sprite.y, 8) + 20);
+      .setDepth(combatTextDepthForY(this.sprite.y, 20));
+    this.damageFloaters.push(floater);
 
     this.scene.tweens.add({
       targets: floater,
@@ -736,7 +911,11 @@ export class Enemy {
       alpha: 0,
       duration: 600,
       ease: 'Cubic.easeOut',
-      onComplete: () => floater.destroy(),
+      onComplete: () => {
+        floater.destroy();
+        const index = this.damageFloaters.indexOf(floater);
+        if (index >= 0) this.damageFloaters.splice(index, 1);
+      },
     });
   }
 }

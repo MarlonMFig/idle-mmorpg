@@ -8,7 +8,7 @@ interface MedicUiState {
 
 const store = createStore<MedicUiState>({ isOpen: false, healedAt: 0 });
 
-/** Centro de Cura Ninja — atendimento gratuito da clínica do hub. */
+/** Centro de Cura Ninja — recuperação de HP no Hub (Copper). */
 export const medicStore = {
   subscribe: store.subscribe,
   getSnapshot: store.getSnapshot,

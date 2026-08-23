@@ -1,11 +1,14 @@
-import type { CharacterClanId, CharacterQuality, CharacterStars } from '@/types/character-meta';
-import type { CharacterPotential } from '@/types/potential';
+import type { LineageId, CharacterQuality, CharacterStars } from '@/types/character-meta';
 import type { StarterCharacterId } from '@/types/player-creation';
 
-/** Personagem na coleção (starter ou selado em caça). Instância única. */
+/** Personagem na coleção (starter ou selado). Instância única do jogador. */
 export interface SealedCharacter {
-  /** ID de instância na bag (UUID). */
+  /** instanceId — UUID persistente. Nunca usar characterId aqui. */
   id: string;
+  /**
+   * ID da CharacterDefinition (catálogo). Várias instâncias compartilham.
+   */
+  characterId: string;
   /**
    * Identidade de forja: cópias do mesmo personagem compartilham o key
    * (tipicamente `look:<lookType>`).
@@ -21,19 +24,38 @@ export interface SealedCharacter {
   previewUrl: string;
   /** Qualidade natural imutável. */
   quality: CharacterQuality;
-  /** Estrelas 0–8 (teto por qualidade). */
+  /**
+   * Multiplicador de stats primários rolado uma vez na faixa da quality.
+   * Persistido. Não inferir quality a partir deste número.
+   */
+  qualityStatMultiplier: number;
+  /** Estrelas; teto por raridade (getMaxStarsForRarity). */
   stars: CharacterStars;
-  /** Potencial (IVs) rolado no desbloqueio. */
-  potential?: CharacterPotential;
-  /** Afinidade de clã fixa do personagem. */
-  clanId: CharacterClanId;
-  /** Nível próprio (selado herda o da caça; starter começa em 1). */
+  /**
+   * Afinidade de Linhagem — derivada de CharacterDefinition quando possível.
+   * Mantida no save por compatibilidade; preferir getInstanceLineageId().
+   */
+  lineageId: LineageId;
+  /** @deprecated use lineageId — aceito em saves legados. */
+  clanId?: LineageId;
+  /** Nível da instância (captura = Nv.1). */
   level: number;
   /** XP atual rumo ao próximo nível. */
   xp: number;
+  /** Maestria desta cópia (0–100). Independente de Level/Stars. */
+  masteryLevel: number;
+  /** XP de Maestria rumo ao próximo nível. 0 no máximo. */
+  masteryXp: number;
+  /** Despertar desta cópia (0–3). Independente de Level/Stars/Maestria. */
+  awakeningLevel: number;
   isFavorite: boolean;
   isLocked: boolean;
+  /** Epoch ms. Ausente = save legado. */
+  obtainedAt?: number;
 }
+
+/** Alias oficial: CharacterInstance = cópia do jogador. */
+export type CharacterInstance = SealedCharacter;
 
 export interface TeamState {
   /** Todos os personagens obtidos (duplicatas permitidas para forja). */

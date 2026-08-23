@@ -1,18 +1,18 @@
 /**
- * Instala o mapa de teste "Clareira de Treinamento" (4096×2160, mesma
- * resolução do hub). Sem resize e sem recompressão — a arte entra como cópia
- * fiel para ficar no mesmo peso visual dos sprites 4K.
+ * Instala o mapa de teste `hunt-teste-clareira` (primeira caça).
  *
  * node scripts/install-teste-clareira-map.js [caminho-do-png]
  *
- * Colisão: tiles de 16px (divide 4096 e 2160). Cada tile vota pelos pixels
- * (grama/trilha/ponte vs água/rocha/toco/boneco/cerca). Flood fill a partir
- * do centro evita spawn na floresta das bordas.
+ * Aceita arte quadrada/retangular. Se a largura/altura não for múltipla do
+ * tile (16px), faz crop central para o maior múltiplo — sem upscale.
+ *
+ * Colisão: cada tile vota pelos pixels (chão/trilha vs água/rocha/copa densa).
+ * Flood fill a partir do centro evita spawn na mata das bordas.
  *
  * Saídas:
- *   public/maps/hunt-teste-clareira.png   arte (cópia fiel)
- *   public/maps/hunt-teste-clareira.tmx   colisão 256×135 tiles de 16px
- *   .tmp/clareira-collision-preview.png   overlay para inspeção visual
+ *   public/maps/hunt-teste-clareira.png
+ *   public/maps/hunt-teste-clareira.tmx
+ *   .tmp/clareira-collision-preview.png
  */
 const fs = require('fs');
 const path = require('path');
@@ -23,27 +23,27 @@ const MAPS_DIR = path.join(ROOT, 'public', 'maps');
 const SLUG = 'hunt-teste-clareira';
 const DEFAULT_SRC = path.join(
   ROOT,
-  '.tmp',
-  'mapa-ninja',
-  'Mapa_Treinamento_Ninja_Obstaculos_4096x2160.png',
+  '.tmp-mapa-floresta',
+  'mapa_floresta_5000x5000',
+  'mapa_floresta_5000x5000.png',
 );
 
 const TILE = 16;
 const ENEMY_SPAWNS = 16;
-const SPAWN_MIN_DIST = 300;
+const SPAWN_MIN_DIST = 380;
 /** Fração mínima de pixels caminháveis para o tile ficar aberto. */
-const WALK_VOTE = 0.66;
+const WALK_VOTE = 0.55;
 /** Não nascer colado na borda do PNG. */
-const SPAWN_INSET = 360;
+const SPAWN_INSET = 420;
 
 function luma(r, g, b) {
   return 0.299 * r + 0.587 * g + 0.114 * b;
 }
 
 /**
- * 1 = grama, trilha ou ponte; 0 = água, rocha, mata, toco, boneco, cerca.
- * Classifica o pixel, não a média do tile — senão um boneco no meio da
- * grama “some” na média verde e o personagem atravessa o obstáculo.
+ * 1 = chão da clareira / trilha; 0 = água, rocha, mata densa, toco, cerca.
+ * Arte floresta 5k: grama oliva escura (lum ~75–110) sob luz quente — não
+ * exigir verde “claro” como na clareira 4K antiga.
  */
 function pixelWalkable(r, g, b) {
   const lum = luma(r, g, b);
@@ -51,14 +51,19 @@ function pixelWalkable(r, g, b) {
   const min = Math.min(r, g, b);
   const sat = max - min;
 
-  if (b > r + 14 && b > g - 10 && b > 70) return 0;
-  if (lum < 64) return 0;
-  if (sat < 26 && lum < 185) return 0;
-  // Copa/tronco musgoso bem escuro — grama viva da clareira fica acima disso.
-  if (g > r && g > b && lum < 90 && g - r < 24) return 0;
-  if (g > r + 2 && g > b + 12) return 1;
-  // Terra clara e tábuas da ponte (madeira quente o bastante para andar).
-  if (r > 138 && g > 108 && r > b + 22 && lum > 112) return 1;
+  // Água / sombra azulada
+  if (b > r + 10 && b > g + 4 && b > 55) return 0;
+  if (lum < 52) return 0;
+  // Rocha cinza / madeira cinzenta
+  if (sat < 22 && lum < 170) return 0;
+  // Copa/tronco bem escuro
+  if (g >= r && g > b && lum < 68) return 0;
+  // Grama / chão da clareira (oliva / amarelo-verde)
+  if (g >= r - 4 && g > b + 8 && lum >= 68 && lum <= 185 && sat >= 18) return 1;
+  // Terra / trilha quente
+  if (r >= g - 6 && r > b + 10 && lum >= 78 && lum <= 190 && sat >= 16) return 1;
+  // Madeira de ponte clara
+  if (r > 120 && g > 95 && r > b + 18 && lum > 105 && sat > 20) return 1;
   return 0;
 }
 
@@ -193,7 +198,7 @@ function pickSpawns(tiles, count, minDist, center, width, height) {
         p.y <= height - SPAWN_INSET,
     );
   const picked = [];
-  const rings = [520, 820];
+  const rings = [720, 1200, 1680];
   const perRing = Math.ceil(count / rings.length);
   for (const radius of rings) {
     for (let i = 0; i < perRing && picked.length < count; i += 1) {
@@ -284,37 +289,59 @@ async function main() {
   if (!fs.existsSync(src)) throw new Error(`arte não encontrada: ${src}`);
 
   const meta = await sharp(src).metadata();
-  const width = meta.width;
-  const height = meta.height;
-  if (width !== 4096 || height !== 2160) {
-    throw new Error(`esperado 4096×2160, recebido ${width}×${height} — recusar resize`);
+  const srcW = meta.width;
+  const srcH = meta.height;
+  if (!srcW || !srcH) throw new Error('não foi possível ler dimensões da arte');
+  if (srcW < TILE * 8 || srcH < TILE * 8) {
+    throw new Error(`arte ${srcW}×${srcH} é pequena demais`);
   }
+
+  const width = Math.floor(srcW / TILE) * TILE;
+  const height = Math.floor(srcH / TILE) * TILE;
+  const cropLeft = Math.floor((srcW - width) / 2);
+  const cropTop = Math.floor((srcH - height) / 2);
   const cols = width / TILE;
   const rows = height / TILE;
-  if (!Number.isInteger(cols) || !Number.isInteger(rows)) {
-    throw new Error(`tile ${TILE}px não divide ${width}×${height}`);
-  }
-  console.log(`arte ${width}×${height} · colisão ${cols}×${rows} tiles de ${TILE}px`);
+  console.log(
+    `fonte ${srcW}×${srcH}` +
+      (width !== srcW || height !== srcH
+        ? ` → crop central ${width}×${height} (tile ${TILE}px)`
+        : ` · nativo múltiplo de ${TILE}px`),
+  );
+  console.log(`colisão ${cols}×${rows} tiles`);
 
   const outPng = path.join(MAPS_DIR, `${SLUG}.png`);
   fs.mkdirSync(MAPS_DIR, { recursive: true });
-  fs.mkdirSync(path.join(ROOT, '.tmp', 'mapa-ninja'), { recursive: true });
-  // Cópia binária: nenhum resize, nenhuma recompressão.
-  if (path.resolve(src) !== path.resolve(outPng)) {
-    fs.copyFileSync(src, outPng);
-  }
-  const cacheSrc = path.join(
-    ROOT,
-    '.tmp',
-    'mapa-ninja',
-    'Mapa_Treinamento_Ninja_Obstaculos_4096x2160.png',
-  );
-  if (path.resolve(src) !== path.resolve(cacheSrc)) {
-    fs.copyFileSync(src, cacheSrc);
-  }
-  console.log(`png  ${(fs.statSync(outPng).size / 1048576).toFixed(2)}MB → ${outPng} (cópia fiel)`);
+  fs.mkdirSync(path.join(ROOT, '.tmp'), { recursive: true });
 
-  const { data, info } = await sharp(src).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+  const prepared = sharp(src).extract({
+    left: cropLeft,
+    top: cropTop,
+    width,
+    height,
+  });
+  // PNG do mapa: crop só se preciso; sem upscale. Reusa arquivo se já bate.
+  let reusePng = false;
+  if (fs.existsSync(outPng)) {
+    const existing = await sharp(outPng).metadata();
+    if (existing.width === width && existing.height === height) reusePng = true;
+  }
+  // Sempre grava quando a fonte veio na CLI (arte nova, mesmo tamanho).
+  const forceWrite = Boolean(process.argv[2]);
+  if (!reusePng || forceWrite) {
+    await prepared.clone().png({ compressionLevel: 9, adaptiveFiltering: true }).toFile(outPng);
+    reusePng = false;
+  }
+  console.log(
+    `png  ${(fs.statSync(outPng).size / 1048576).toFixed(2)}MB → ${outPng}` +
+      (reusePng ? ' (já instalado)' : ''),
+  );
+
+  const { data, info } = await prepared
+    .clone()
+    .removeAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
   const walk = new Uint8Array(cols * rows);
   for (let ty = 0; ty < rows; ty += 1) {
     for (let tx = 0; tx < cols; tx += 1) {
@@ -339,7 +366,7 @@ async function main() {
   console.log(`spawn do jogador ${player.x},${player.y} · ${spawns.length} pontos de monstro`);
 
   writeTmx(walk, cols, rows, width, height);
-  const preview = await writePreview(src, walk, cols, rows, width, height, spawns, player);
+  const preview = await writePreview(outPng, walk, cols, rows, width, height, spawns, player);
   console.log(`tmx  → ${path.join(MAPS_DIR, `${SLUG}.tmx`)}`);
   console.log(`preview → ${preview}`);
 

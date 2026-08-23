@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { SKILL_ELEMENT_CSS, SKILL_ELEMENT_LABELS } from '@/constants/skill';
+import { resolveSkillElement } from '@/data/damage-elements';
 import { getSkill } from '@/data/skills';
 import { useStore } from '@/hooks/use-store';
 import { skillsStore } from '@/stores/skills-store';
@@ -63,7 +64,7 @@ export function SkillHotbar() {
               title={
                 skill
                   ? `${skill.name} · Nv. ${skill.requiredLevel ?? 1} · ${
-                      SKILL_ELEMENT_LABELS[skill.element]
+                      SKILL_ELEMENT_LABELS[resolveSkillElement(skill)]
                     } · ${
                       skill.effect === 'heal'
                         ? `Cura ${Math.round((skill.healPercent ?? 0) * 100)}% HP`
@@ -83,7 +84,7 @@ export function SkillHotbar() {
                   <span
                     className="hud-skills__icon"
                     style={{
-                      backgroundColor: SKILL_ELEMENT_CSS[skill.element],
+                      backgroundColor: SKILL_ELEMENT_CSS[resolveSkillElement(skill)],
                       backgroundImage: `url(${skill.icon})`,
                     }}
                     aria-hidden

@@ -10,6 +10,7 @@ import { createStore } from '@/stores/create-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { villageStore } from '@/stores/village-store';
 import { grantPlayerXp } from '@/lib/grant-player-xp';
+import { rewardService } from '@/lib/reward-service';
 import type {
   DialogueQuestAction,
   QuestDefinition,
@@ -264,9 +265,14 @@ function grantRewards(quest: QuestDefinition): void {
     villageStore.onQuestCompleted(quest.rewards.xp);
   }
 
-  for (const item of quest.rewards.items ?? []) {
-    if (!getItem(item.itemId)) continue;
-    inventoryStore.addItem(item.itemId, item.quantity);
+  const items = (quest.rewards.items ?? []).filter((item) => getItem(item.itemId));
+  if (items.length > 0) {
+    rewardService.grant({
+      rewards: { items: items.map((i) => ({ itemId: i.itemId, quantity: i.quantity })) },
+      source: 'unknown',
+      sourceId: quest.id,
+      allowPartial: true,
+    });
   }
 }
 

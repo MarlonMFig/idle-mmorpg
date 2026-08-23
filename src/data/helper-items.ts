@@ -3,15 +3,20 @@ import {
   SEALING_SCROLL_TIERS,
   type SealingScrollTierId,
 } from '@/constants/sealing';
+import {
+  ITEM_STACK_LIMITS,
+  POTION_ITEM_IDS,
+  getPotionHealPercent,
+} from '@/config/gameConfig';
 
 /** Poção — cura percentual do HP máximo. */
-export const HP_POTION_ITEM_ID = 'item-hp-potion';
+export const HP_POTION_ITEM_ID = POTION_ITEM_IDS.normal;
 /** Poção Concentrada — cura intermediária. O id antigo fica para não zerar inventários salvos. */
-export const HP_POTION_CONCENTRATED_ITEM_ID = 'item-hp-potion-ultra';
+export const HP_POTION_CONCENTRATED_ITEM_ID = POTION_ITEM_IDS.concentrated;
 /** Poção Ultra Concentrada — cura total. */
-export const HP_POTION_ULTRA_ITEM_ID = 'item-hp-potion-ultra-concentrada';
+export const HP_POTION_ULTRA_ITEM_ID = POTION_ITEM_IDS.ultra;
 /** Revive — necessário para Auto Revive. */
-export const REVIVE_ITEM_ID = 'item-revive';
+export const REVIVE_ITEM_ID = POTION_ITEM_IDS.revive;
 
 export type HelperConsumableKind = 'heal-percent' | 'revive';
 
@@ -21,11 +26,20 @@ export interface HelperConsumableDef {
   healPercent?: number;
 }
 
-/** Efeitos dos consumíveis do Helper (mapa paralelo ao catálogo). */
+/** Efeitos dos consumíveis do Helper (fonte: gameConfig.POTION_RULES). */
 export const HELPER_CONSUMABLES: Readonly<Record<string, HelperConsumableDef>> = {
-  [HP_POTION_ITEM_ID]: { kind: 'heal-percent', healPercent: 0.35 },
-  [HP_POTION_CONCENTRATED_ITEM_ID]: { kind: 'heal-percent', healPercent: 0.7 },
-  [HP_POTION_ULTRA_ITEM_ID]: { kind: 'heal-percent', healPercent: 1 },
+  [HP_POTION_ITEM_ID]: {
+    kind: 'heal-percent',
+    healPercent: getPotionHealPercent(HP_POTION_ITEM_ID),
+  },
+  [HP_POTION_CONCENTRATED_ITEM_ID]: {
+    kind: 'heal-percent',
+    healPercent: getPotionHealPercent(HP_POTION_CONCENTRATED_ITEM_ID),
+  },
+  [HP_POTION_ULTRA_ITEM_ID]: {
+    kind: 'heal-percent',
+    healPercent: getPotionHealPercent(HP_POTION_ULTRA_ITEM_ID),
+  },
   [REVIVE_ITEM_ID]: { kind: 'revive' },
 };
 
@@ -42,28 +56,28 @@ export const HELPER_ITEM_DEFS: Record<string, ItemDefinition> = {
     id: HP_POTION_ITEM_ID,
     name: 'Poção',
     rarity: 'common',
-    stackMax: 999,
+    stackMax: ITEM_STACK_LIMITS.potion,
     iconSrc: '/ui/items/potions/pocao.png',
   },
   [HP_POTION_CONCENTRATED_ITEM_ID]: {
     id: HP_POTION_CONCENTRATED_ITEM_ID,
     name: 'Poção Concentrada',
     rarity: 'uncommon',
-    stackMax: 999,
+    stackMax: ITEM_STACK_LIMITS.potion,
     iconSrc: '/ui/items/potions/pocao-concentrada.png',
   },
   [HP_POTION_ULTRA_ITEM_ID]: {
     id: HP_POTION_ULTRA_ITEM_ID,
     name: 'Poção Ultra Concentrada',
     rarity: 'epic',
-    stackMax: 999,
+    stackMax: ITEM_STACK_LIMITS.potion,
     iconSrc: '/ui/items/potions/pocao-ultra-concentrada.png',
   },
   [REVIVE_ITEM_ID]: {
     id: REVIVE_ITEM_ID,
     name: 'Revive',
     rarity: 'rare',
-    stackMax: 99,
+    stackMax: ITEM_STACK_LIMITS.revive,
     iconSrc: '/ui/items/potions/revive.png',
   },
 };

@@ -6,8 +6,8 @@ const { JUMP_FORCE_ROSTER } = require('./lib/jump-force-roster');
 
 const ROOT = path.resolve(__dirname, '..');
 const OUT = path.join(ROOT, 'src', 'data', 'jump-force-packs.ts');
-// Rotação atual: apenas Naruto e Dragon Ball. Ichigo fica preservado no roster/assets.
-const ACTIVE_ROSTER = JUMP_FORCE_ROSTER.filter((row) => row.id !== 'ichigo');
+// Rotação atual: Naruto + Dragon Ball + Ichigo (Bleach).
+const ACTIVE_ROSTER = JUMP_FORCE_ROSTER;
 
 /** Âncora / timing / range que o wire.json não expressa. */
 const FX_OVERRIDES = {

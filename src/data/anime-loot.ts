@@ -17,10 +17,10 @@ import type { ItemRarity, LootDropEntry, RolledLoot } from '@/types/loot';
 /**
  * Quantidade de cobre (Ryo 100%) garantida ao matar.
  */
-export function copperRewardForKill(level: number): number {
+export function copperRewardForKill(level: number, rng: () => number = Math.random): number {
   const safeLevel = Math.max(1, Math.floor(level) || 1);
   const coinMax = Math.max(2, Math.min(25, Math.ceil(safeLevel / 3)));
-  return 1 + Math.floor(Math.random() * coinMax);
+  return 1 + Math.floor(rng() * coinMax);
 }
 
 export interface NarutoLootContext {

@@ -6,6 +6,10 @@ import { NewGameScreen } from '@/ui/new-game';
 import { GameHud } from '@/ui/hud';
 import { DialogueWindow } from '@/ui/dialogue';
 import { accountStore } from '@/stores/account-store';
+import { achievementsStore } from '@/stores/achievements-store';
+import { missionsStore } from '@/stores/missions-store';
+import { dailyLoginStore } from '@/stores/daily-login-store';
+import { bossStore } from '@/stores/boss-store';
 import { guildStore } from '@/stores/guild-store';
 import { villageStore } from '@/stores/village-store';
 import { locationStore } from '@/stores/location-store';
@@ -14,11 +18,13 @@ import { inventoryStore } from '@/stores/inventory-store';
 import { shopStore } from '@/stores/shop-store';
 import { skillsStore } from '@/stores/skills-store';
 import { teamStore } from '@/stores/team-store';
+import { teamPresetStore } from '@/stores/team-preset-store';
 import { systemLogStore } from '@/lib/system-log';
 import {
   applyPersistedSession,
   loadPersistedSession,
   trackSession,
+  wipeAllLocalPlayerAccounts,
 } from '@/lib/session-persist';
 import type { PlayerCreation } from '@/types/player-creation';
 import { HuntSelector } from '@/ui/hunts';
@@ -29,6 +35,7 @@ export function NewGameGate() {
 
   // Restore last session from localStorage (`idle-mmorpg:session-v1`) on first paint.
   useEffect(() => {
+    wipeAllLocalPlayerAccounts();
     const saved = loadPersistedSession();
     if (saved) {
       try {
@@ -45,13 +52,16 @@ export function NewGameGate() {
     huntStore.reset();
     villageStore.reset();
     accountStore.reset();
-    if (guildStore.getSnapshot().guildId) {
-      guildStore.leaveGuild();
-    }
+    achievementsStore.reset();
+    missionsStore.reset();
+    dailyLoginStore.reset();
+    bossStore.reset();
+    void guildStore.devResetGuildData();
     guildStore.reset();
     inventoryStore.reset();
     skillsStore.reset(player.starterCharacterId);
     teamStore.reset(player.starterCharacterId);
+    teamPresetStore.reset(teamStore.getSnapshot().teamIds);
     shopStore.reset();
     systemLogStore.reset();
     villageStore.joinVillage(player.villageId, player.nickname);

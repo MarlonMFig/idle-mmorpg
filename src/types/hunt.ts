@@ -1,5 +1,18 @@
 import type { MapKey } from '@/maps/map-registry';
 
+export interface HuntTargetAttack {
+  name: string;
+  intervalMs: number;
+  min: number;
+  max: number;
+  range: number;
+  element: string;
+  /** Folha WONSR de efeito (impacto / jutsu). */
+  effectId?: string;
+  /** Folha WONSR de projétil (ataques com alcance > 1). */
+  missileId?: string;
+}
+
 export interface HuntTarget {
   id: string;
   sourceId: string;
@@ -14,6 +27,7 @@ export interface HuntTarget {
   xp: number;
   speed: number;
   targetDistance: number;
+  attacks?: HuntTargetAttack[];
   loot: Array<{
     itemId: string;
     clientId: number;
@@ -22,12 +36,18 @@ export interface HuntTarget {
   }>;
 }
 
+export type HuntSelectorTab = 'naruto' | 'wonsr' | 'bosses';
+
 export interface HuntDefinition {
   id: string;
   name: string;
   requiredLevel: number;
   mapKey: MapKey;
   description: string;
+  /** Aba do seletor. Ausente = Naruto World. */
+  tab?: HuntSelectorTab;
+  /** false = Hunt não selável (bosses, dummy de treino). Default true. */
+  sealable?: boolean;
   targets: HuntTarget[];
   /**
    * Duelo lateral: entra o próximo da lista (sem respawn do mesmo inimigo).

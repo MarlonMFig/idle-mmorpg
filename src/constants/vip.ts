@@ -1,3 +1,5 @@
+import { OFFLINE_LIMITS } from '@/constants/offline';
+
 /** Bônus e regras do VIP (spec AIW). */
 
 export const VIP_EXP_MULT = 1.2;
@@ -5,7 +7,6 @@ export const VIP_EXP_MULT = 1.2;
 export const VIP_LOOT_MULT = 1.15;
 export const VIP_POTION_RESTOCK_QTY = 10;
 export const VIP_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
-export const VIP_OFFLINE_HOURS_BONUS = 4;
 
 export const VIP_BENEFITS = [
   { id: 'exp', label: '+20% EXP', detail: 'Progressão de conta mais rápida.' },
@@ -27,12 +28,7 @@ export const VIP_BENEFITS = [
   {
     id: 'offline',
     label: 'Offline ampliado',
-    detail: `+${VIP_OFFLINE_HOURS_BONUS}h de acúmulo idle.`,
-  },
-  {
-    id: 'guild',
-    label: 'Criação de guild',
-    detail: 'Fundar guild é exclusivo VIP; entrar continua no Nv. 20.',
+    detail: `Até ${OFFLINE_LIMITS.vipHours}h de progresso (sem VIP: ${OFFLINE_LIMITS.nonVipHours}h).`,
   },
   {
     id: 'cosmetic',

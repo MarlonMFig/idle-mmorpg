@@ -3,9 +3,19 @@ import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
 import { BLACK_CLOVER_BY_LOOK_TYPE, BLACK_CLOVER_BY_SLUG } from '@/data/black-clover-packs';
 import { JUJUTSU_KAISEN_BY_LOOK_TYPE, JUJUTSU_KAISEN_BY_SLUG } from '@/data/jujutsu-kaisen-packs';
 import { JUMP_FORCE_BY_LOOK_TYPE, JUMP_FORCE_BY_SLUG } from '@/data/jump-force-packs';
+import { TINY_RPG_BY_LOOK_TYPE, TINY_RPG_BY_SLUG } from '@/data/tiny-rpg-packs';
+import { getVfxDefinition, sharedVfxToSheet } from '@/data/vfx/registry';
+import { isSequenceVfx } from '@/data/vfx/types';
+import { applyDevPackOverlay } from '@/lib/dev/dev-runtime-registry';
+import type { CombatAffinityFields, DamageElement } from '@/data/damage-elements';
+import type { SkillAiConfig } from '@/data/skill-ai-def';
+import type { SkillExecutionDef } from '@/data/skill-execution-def';
+import type { SkillStatusApplication } from '@/data/status-effect-def';
+import type { SkillVfxTargetMode } from '@/data/skill-vfx-targeting';
+import { SKILL_VFX_TARGET_MODES } from '@/data/skill-vfx-targeting';
 import type { WonsrDirection } from '@/data/wonsr-sprites';
+import type { SpriteAlignmentConfig } from '@/lib/sprite-alignment';
 import type { StarterCharacterId } from '@/types/player-creation';
-
 /** Avoid runtime `phaser` import — this module is used by React stores during SSR. */
 const PHASER_LOADER_COMPLETE = 'complete';
 const PHASER_TEXTURE_FILTER_NEAREST = 1;
@@ -33,6 +43,24 @@ export interface SpriteSheetDef {
    * Sem valor: 0.5.
    */
   originX?: number;
+  /**
+   * Origin Y (0–1+). Sem valor: pés (`1`) ou hover de `fly`.
+   * Por animação — idle/walk/special podem diferir.
+   */
+  originY?: number;
+  /**
+   * Deslocamento em px da folha (0 = sem mudança).
+   * X positivo = para a frente do personagem; Y positivo = para baixo.
+   */
+  offsetX?: number;
+  offsetY?: number;
+  /**
+   * Sequência de imagens (um PNG por quadro). Sem isto, `url` é spritesheet.
+   * Usado sobretudo em poses de Skill no Test Lab.
+   */
+  frames?: readonly string[];
+  /** Se a animação da folha faz loop. Default false nas skills. */
+  loop?: boolean;
   /** FX opcional do golpe (slash / spark no caster). */
   fx?: SpriteSheetDef;
   /** Âncora do FX. Default `'caster'`. */
@@ -88,6 +116,11 @@ export interface CharacterSkillAnimDef extends SpriteSheetDef {
   /** Multiplicador visual do FX sem alterar a resolução nativa da sprite. */
   fxScale?: number;
   /**
+   * Se `true`, o FX não herda a escala da sprite do personagem
+   * (só `fxScale` × escala do mapa). Default `false` = comportamento atual.
+   */
+  fxIndependentScale?: boolean;
+  /**
    * Segundo FX sem voo (ex.: impacto no chão no hitDelay enquanto `fx` é kick-off).
    * Timing: `fxSecondaryReleaseMs` (default = hitDelay). Âncora: `fxSecondaryAttach`.
    */
@@ -96,6 +129,84 @@ export interface CharacterSkillAnimDef extends SpriteSheetDef {
   fxSecondaryAttach?: 'caster' | 'target';
   /** FPS do FX secundário; padrão 12. */
   fxSecondaryFrameRate?: number;
+  /**
+   * Comportamento oficial do VFX em relação ao alvo.
+   * Ausente = legado (`fxAttach` / `fxFlightFrameCount`). Não quebra skills antigas.
+   */
+  targeting?: SkillVfxTargeting;
+  /**
+   * ID no VfxRegistry (`src/data/vfx`). Sem isto, usa `fx` inline (legado).
+   * Este campo é o **VFX Efeito** da Skill.
+   */
+  vfxId?: string;
+  /** Offset visual desta skill sobre o VFX de catálogo. Ignorado sem `vfxId`. */
+  vfxOffsetX?: number;
+  vfxOffsetY?: number;
+  /**
+   * Pose / cast: animação do personagem e/ou VFX de preparação.
+   * Nenhum dos dois é obrigatório.
+   */
+  cast?: SkillCastVisual;
+  /** Delay (ms) entre o início da pose e o lançamento do efeito. Independente de travelSpeed. */
+  castDelayMs?: number;
+  /**
+   * Quando o dano é aplicado. Ausente = `hit-delay` (legado).
+   * Não migrar skills antigas em massa.
+   */
+  damageTrigger?: SkillDamageTrigger;
+  /**
+   * Tipo de execução avançada. Ausente = `single-hit` (comportamento atual).
+   * Não migrar Skills automaticamente.
+   */
+  execution?: SkillExecutionDef;
+  /**
+   * Status Effects desta Skill no pack. Ausente = usa SkillDefinition.statusEffects.
+   * Não migrar automaticamente.
+   */
+  statusEffects?: SkillStatusApplication[];
+  /**
+   * Overlay de elemento desta Skill no pack. Ausente = SkillDefinition.element
+   * ou `neutral`. Não inferir pelo VFX.
+   */
+  element?: DamageElement;
+  /**
+   * IA deste personagem nesta Skill. Ausente = autoUse on, prioridade = slot.
+   * Segue o skillId ao reordenar slots.
+   */
+  ai?: SkillAiConfig;
+}
+
+/** Pose / preparação da Skill (folha do personagem). Não causa dano. */
+export interface SkillCastVisual {
+  /** Slot ou key de animação do personagem (`special1`, `idle`, …). */
+  animationId?: string;
+  /**
+   * VFX de carga opcional (camada futura). NÃO é a animação corporal da pose.
+   */
+  vfxId?: string;
+  scale?: number;
+  scaleX?: number;
+  scaleY?: number;
+  offsetX?: number;
+  offsetY?: number;
+  loop?: boolean;
+}
+
+export { SKILL_VFX_TARGET_MODES };
+export type { SkillVfxTargetMode };
+
+export const SKILL_DAMAGE_TRIGGERS = ['hit-delay', 'on-arrival', 'on-effect-start'] as const;
+export type SkillDamageTrigger = (typeof SKILL_DAMAGE_TRIGGERS)[number];
+
+/** Trajetória do VFX (por skill). Separado da escala/offset visual do asset. */
+export interface SkillVfxTargeting {
+  mode: SkillVfxTargetMode;
+  /** Velocidade em px/s. Só usada em `travel-to-target`. */
+  travelSpeed?: number;
+  spawnOffsetX?: number;
+  spawnOffsetY?: number;
+  targetOffsetX?: number;
+  targetOffsetY?: number;
 }
 
 /** Hit reaction / death sheet (repeat: 0). Opcional por pack. */
@@ -129,8 +240,8 @@ export interface CharacterPack {
   };
   /** skillId → animação no personagem. */
   skillAnims: Record<string, CharacterSkillAnimDef>;
-  /** Hotbar de 4 jutsus, liberados nos níveis 1, 5, 15 e 30. */
-  hotbarSkillIds: readonly string[];
+  /** Hotbar oficial: índice 0 = Slot 1 … índice 3 = Slot 4. `null` = slot vazio (não desloca os demais). */
+  hotbarSkillIds: readonly (string | null)[];
   /**
    * Multiplicador uniforme (altura no mundo). 1 = `CONTENT → CHARACTER_DISPLAY_HEIGHT`.
    * Preferir ajustar `contentHeight` das folhas; isto é override fino.
@@ -148,6 +259,20 @@ export interface CharacterPack {
   locomotion?: 'walk' | 'fly';
   /** Elevação em px de mundo quando `locomotion: 'fly'` (padrão 14). */
   flightHoverPx?: number;
+  /**
+   * Alignment visual global (Hub / Hunt). Offset de renderização do personagem
+   * inteiro — aplica a idle/walk/skills/poses via origin. Não é progresso do
+   * jogador; não altera hitbox, PNG nem offsets específicos de Skill/VFX.
+   */
+  spriteAlignment?: SpriteAlignmentConfig;
+  /**
+   * Resistências / imunidades do personagem. Ausente = vazio (dano normal).
+   * Não preencher packs existentes automaticamente.
+   */
+  resistances?: CombatAffinityFields['resistances'];
+  immunities?: CombatAffinityFields['immunities'];
+  statusResistances?: CombatAffinityFields['statusResistances'];
+  statusImmunities?: CombatAffinityFields['statusImmunities'];
 }
 
 function wonsrOutfitSheet(
@@ -191,6 +316,7 @@ const NARUTO_WALK: SpriteSheetDef = {
   frameHeight: 86,
   frameCount: 6,
   contentHeight: 81,
+  offsetY: 4,
 };
 
 const NARUTO_IDLE: SpriteSheetDef = {
@@ -200,6 +326,7 @@ const NARUTO_IDLE: SpriteSheetDef = {
   frameHeight: 85,
   frameCount: 6,
   contentHeight: 81,
+  offsetY: 4,
 };
 
 const NARUTO_COMBO_1: SpriteSheetDef = {
@@ -1646,7 +1773,7 @@ const UCHIHA_ITACHI_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     durationMs: 1000,
     hitDelayMs: 917,
     fxReleaseMs: 500,
-    fxScale: 1.25,
+    fxScale: 1.75,
     fx: {
       key: 'itachi-tsukuyomi-fx',
       url: '/sprites/wonsr/effects/274.png',
@@ -1655,6 +1782,38 @@ const UCHIHA_ITACHI_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
       frameCount: 6,
       contentHeight: 174,
     },
+    offsetX: 0,
+    offsetY: 0,
+    cast: {
+      scaleX: 1,
+      scaleY: 1,
+      scale: 1,
+      offsetX: 0,
+      offsetY: 0,
+    },
+    castDelayMs: 0,
+    vfxId: 'amaterasu',
+    targeting: {
+      mode: 'instant-target',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
+    },
+        execution: {
+      type: 'persistent',
+      duration: 1000,
+      tickInterval: 1000,
+      persistentAnchor: 'target',
+    },
+    element: 'yin',
+        ai: {
+      autoUse: true,
+      priority: 3,
+    },
+    vfxOffsetX: 0,
+    vfxOffsetY: 0,
   },
   'skill-itachi-hosenka': {
     key: 'itachi-amaterasu',
@@ -1687,7 +1846,7 @@ const UCHIHA_ITACHI_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     durationMs: 1000,
     hitDelayMs: 917,
     fxReleaseMs: 600,
-    fxScale: 2.4,
+    fxScale: 3.7,
     fx: {
       key: 'itachi-susano-kogeki-fx',
       url: '/sprites/wonsr/effects/335.png',
@@ -1695,6 +1854,47 @@ const UCHIHA_ITACHI_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
       frameHeight: 32,
       frameCount: 4,
       contentHeight: 32,
+    },
+    vfxId: 'kamui',
+    vfxOffsetY: -115,
+    castDelayMs: 0,
+    targeting: {
+      mode: 'caster',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
+    },
+        execution: {
+      type: 'persistent',
+      duration: 1500,
+      tickInterval: 1000,
+      persistentAnchor: 'target',
+    },
+    vfxOffsetX: 0,
+    offsetX: 0,
+    offsetY: 0,
+    cast: {
+      scaleX: 1,
+      scaleY: 1,
+      scale: 1,
+      offsetX: 0,
+      offsetY: 0,
+    },
+        statusEffects: [
+      {
+        statusId: 'attack-down',
+        chance: 1,
+        target: 'target',
+        application: 'on-end',
+        applyMode: 'once-per-skill',
+      },
+    ],
+    element: 'yin',
+        ai: {
+      autoUse: true,
+      priority: 4,
     },
   },
 };
@@ -1709,10 +1909,10 @@ const UCHIHA_ITACHI_PACK: CharacterPack = {
   death: UCHIHA_ITACHI_DEATH,
   skillAnims: UCHIHA_ITACHI_JUTSU_ANIMS,
   hotbarSkillIds: [
-    'skill-amaterasu',
+    null,
+    'skill-itachi-susano-kogeki',
     'skill-itachi-tsukuyomi',
     'skill-itachi-hosenka',
-    'skill-itachi-susano-kogeki',
   ],
 };
 
@@ -3451,7 +3651,7 @@ const KISAME_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     fxAttach: 'target',
     fxGround: true,
     fxBlend: 'add',
-    fxScale: 2.4,
+    fxScale: 0.75,
     fx: {
       key: 'fx-water-geyser',
       url: '/sprites/fx/craftpix-water/geyser.png',
@@ -3460,6 +3660,74 @@ const KISAME_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
       frameCount: 7,
       contentHeight: 89,
       frameRate: 10,
+    },
+    vfxId: 'suir-no-jutsu',
+    vfxOffsetY: -50,
+  },
+  'kisame-suiton-lance': {
+    key: 'kisame-cast',
+    url: '/sprites/player/kisame/suiryudan.png',
+    frameWidth: 159,
+    frameHeight: 256,
+    frameCount: 7,
+    contentHeight: 110,
+    frameRate: 24,
+    offsetX: 0,
+    offsetY: 0,
+    durationMs: 292,
+    hitDelayMs: 1000,
+    vfxId: 'suiton-lance',
+    fxScale: 1,
+    vfxOffsetX: 0,
+    vfxOffsetY: 0,
+    castDelayMs: 400,
+    targeting: {
+      mode: 'travel-to-target',
+      travelSpeed: 2000,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
+    },
+    cast: {
+      scaleX: 1,
+      scaleY: 1,
+      scale: 1,
+      offsetX: 0,
+      offsetY: 0,
+    },
+  },
+  'kisame-suiton-lance-water': {
+    key: 'kisame-cast',
+    url: '/sprites/player/kisame/suiryudan.png',
+    frameWidth: 159,
+    frameHeight: 256,
+    frameCount: 7,
+    contentHeight: 110,
+    frameRate: 24,
+    offsetX: 0,
+    offsetY: 0,
+    durationMs: 292,
+    hitDelayMs: 1000,
+    vfxId: 'suiton-lance',
+    fxScale: 1,
+    vfxOffsetX: 0,
+    vfxOffsetY: 0,
+    castDelayMs: 400,
+    targeting: {
+      mode: 'travel-to-target',
+      travelSpeed: 2000,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
+    },
+    cast: {
+      scaleX: 1,
+      scaleY: 1,
+      scale: 1,
+      offsetX: 0,
+      offsetY: 0,
     },
   },
 };
@@ -3472,11 +3740,13 @@ const KISAME_PACK: CharacterPack = {
   attackChain: KISAME_ATTACK_CHAIN,
   hurt: KISAME_HURT,
   death: KISAME_DEATH,
+  spriteAlignment: { hub: { x: 0, y: 0 }, hunt: { x: 0, y: 0 } },
   skillAnims: KISAME_JUTSU_ANIMS,
   hotbarSkillIds: [
     'skill-suiton-suiryudan',
     'skill-kisame-suiryu-tatsumaki',
     'skill-kisame-mizu-kanketsusen',
+    'kisame-suiton-lance-water',
   ],
 };
 
@@ -3575,6 +3845,7 @@ const SAKURA_SHIP_WALK: SpriteSheetDef = {
   frameHeight: 99,
   frameCount: 6,
   contentHeight: 91,
+  offsetY: 5,
 };
 const SAKURA_SHIP_IDLE: SpriteSheetDef = {
   key: 'sakura-shippuden-idle',
@@ -3583,6 +3854,7 @@ const SAKURA_SHIP_IDLE: SpriteSheetDef = {
   frameHeight: 95,
   frameCount: 5,
   contentHeight: 91,
+  offsetY: 5,
 };
 const SAKURA_SHIP_COMBO_1: SpriteSheetDef = {
   key: 'sakura-shippuden-combo1',
@@ -4050,6 +4322,37 @@ const SHINO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
       frameHeight: 176,
       frameCount: 18,
       contentHeight: 172,
+      offsetX: 0,
+      offsetY: 0,
+    },
+    offsetX: 0,
+    offsetY: 0,
+    cast: {
+      scaleX: 1,
+      scaleY: 1,
+      scale: 1,
+      offsetX: 0,
+      offsetY: 0,
+    },
+    fxScale: 1.5,
+    castDelayMs: 0,
+    targeting: {
+      mode: 'instant-target',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
+    },
+        execution: {
+      type: 'area',
+      radius: 600,
+    },
+    element: 'earth',
+        ai: {
+      autoUse: true,
+      priority: 1,
+      energyCost: 40,
     },
   },
 };
@@ -4062,7 +4365,12 @@ const SHINO_PACK: CharacterPack = {
   hurt: SHINO_HURT,
   death: SHINO_DEATH,
   skillAnims: SHINO_JUTSU_ANIMS,
-  hotbarSkillIds: ['skill-kikaichu'],
+  hotbarSkillIds: [
+    'skill-kikaichu',
+    null,
+    null,
+    null,
+  ],
 };
 
 /** Momo Hinamori — lookType 9028. */
@@ -4741,6 +5049,7 @@ const CURATED_BY_SLUG: Record<string, CharacterPack> = {
   'kenshin-himura': KENSHIN_PACK,
   'himura-kenshin': KENSHIN_PACK,
   ...JUMP_FORCE_BY_SLUG,
+  ...TINY_RPG_BY_SLUG,
 };
 
 const CURATED_BY_LOOK_TYPE: Record<number, CharacterPack> = {
@@ -4790,6 +5099,7 @@ const CURATED_BY_LOOK_TYPE: Record<number, CharacterPack> = {
   ...JUJUTSU_KAISEN_BY_LOOK_TYPE,
   ...JUMP_FORCE_BY_LOOK_TYPE,
   [KENSHIN_CURATED_LOOK_TYPE]: KENSHIN_PACK,
+  ...TINY_RPG_BY_LOOK_TYPE,
 };
 
 /**
@@ -4802,7 +5112,6 @@ const INACTIVE_CHARACTER_PACK_IDS = new Set<string>([
   'asta',
   'luffy',
   'kenshin',
-  'ichigo',
   ...Object.values(BLACK_CLOVER_BY_SLUG).map((pack) => pack.id),
   ...Object.values(JUJUTSU_KAISEN_BY_SLUG).map((pack) => pack.id),
 ]);
@@ -4811,21 +5120,85 @@ function isActiveCharacterPack(pack: CharacterPack | null | undefined): pack is 
   return Boolean(pack && !INACTIVE_CHARACTER_PACK_IDS.has(pack.id));
 }
 
+export function isInactiveCharacterPackId(packId: string): boolean {
+  return INACTIVE_CHARACTER_PACK_IDS.has(packId);
+}
+
+function uniquePacksFromMaps(): CharacterPack[] {
+  const seen = new Set<string>();
+  const packs: CharacterPack[] = [];
+  for (const pack of [...Object.values(PACKS), ...Object.values(CURATED_BY_SLUG)]) {
+    if (seen.has(pack.id)) continue;
+    seen.add(pack.id);
+    packs.push(pack);
+  }
+  return packs;
+}
+
+let lookTypesByPackId: Map<string, number[]> | null = null;
+
+function lookTypeIndex(): Map<string, number[]> {
+  if (lookTypesByPackId) return lookTypesByPackId;
+  const index = new Map<string, number[]>();
+  for (const [look, pack] of Object.entries(CURATED_BY_LOOK_TYPE)) {
+    const id = pack.id;
+    const n = Number(look);
+    const arr = index.get(id);
+    if (arr) arr.push(n);
+    else index.set(id, [n]);
+  }
+  lookTypesByPackId = index;
+  return index;
+}
+
+/** lookTypes WONSR / curados que apontam para o mesmo pack.id. */
+export function listLookTypesForPack(packId: string): number[] {
+  return lookTypeIndex().get(packId) ?? [];
+}
+
+/** Todos os packs cadastrados (inclui inativos, salvo `includeInactive: false`). */
+export function listCharacterPacks(options?: { includeInactive?: boolean }): CharacterPack[] {
+  const includeInactive = options?.includeInactive !== false;
+  return uniquePacksFromMaps()
+    .filter((pack) => includeInactive || !INACTIVE_CHARACTER_PACK_IDS.has(pack.id))
+    .map(applyDevPackOverlay);
+}
+
+/** Pack pelo id permanente (`naruto-classic`, `kakashi`, `gaara`, …). */
+export function getCharacterPackById(
+  packId: string,
+  options?: { includeInactive?: boolean },
+): CharacterPack | null {
+  if (!packId) return null;
+  const starter = PACKS[packId as StarterCharacterId];
+  if (starter) {
+    if (options?.includeInactive === false && INACTIVE_CHARACTER_PACK_IDS.has(starter.id)) return null;
+    return applyDevPackOverlay(starter);
+  }
+  const bySlug = CURATED_BY_SLUG[packId];
+  const pack = bySlug ?? uniquePacksFromMaps().find((entry) => entry.id === packId) ?? null;
+  if (!pack) return null;
+  if (options?.includeInactive === false && INACTIVE_CHARACTER_PACK_IDS.has(pack.id)) return null;
+  return applyDevPackOverlay(pack);
+}
+
 export function getCharacterPack(starterId: StarterCharacterId): CharacterPack {
-  return PACKS[starterId] ?? NARUTO_PACK;
+  return applyDevPackOverlay(PACKS[starterId] ?? NARUTO_PACK);
 }
 
 /** Pack lateral curado por slug WONSR (ex.: `shikamaru`). */
 export function getCuratedPackBySlug(slug: string | null | undefined): CharacterPack | null {
   if (!slug) return null;
   const pack = CURATED_BY_SLUG[slug];
-  return isActiveCharacterPack(pack) ? pack : null;
+  if (!isActiveCharacterPack(pack)) return null;
+  return applyDevPackOverlay(pack);
 }
 
 /** Pack lateral curado por lookType WONSR. */
 export function getCuratedPackByLookType(lookType: number): CharacterPack | null {
   const pack = CURATED_BY_LOOK_TYPE[lookType];
-  return isActiveCharacterPack(pack) ? pack : null;
+  if (!isActiveCharacterPack(pack)) return null;
+  return applyDevPackOverlay(pack);
 }
 
 /**
@@ -4852,6 +5225,7 @@ export function characterFlightHoverPx(pack: CharacterPack): number {
  * Origin lateral (sem outfit WONSR). `fly` sobe o sprite: originY > 1
  * deixa o ponto de colisão no chão e o corpo flutuando.
  * `sheet.originX` trava folhas largas (beam) nos pés.
+ * offsetX/Y alteram só o origin visual — não a posição lógica (sprite.x/y).
  */
 export function characterLateralOrigin(
   pack: CharacterPack,
@@ -4859,8 +5233,11 @@ export function characterLateralOrigin(
 ): { x: number; y: number } {
   const hover = characterFlightHoverPx(pack);
   const displayH = CHARACTER_DISPLAY_HEIGHT * (pack.displayScale ?? 1);
-  const originY = hover <= 0 ? 1 : 1 + hover / Math.max(displayH, 1);
-  const originX = sheet?.originX ?? 0.5;
+  const baseY = sheet?.originY ?? (hover <= 0 ? 1 : 1 + hover / Math.max(displayH, 1));
+  const frameW = Math.max(1, sheet?.frameWidth ?? 1);
+  const frameH = Math.max(1, sheet?.frameHeight ?? 1);
+  const originX = (sheet?.originX ?? 0.5) - (sheet?.offsetX ?? 0) / frameW;
+  const originY = baseY - (sheet?.offsetY ?? 0) / frameH;
   return { x: originX, y: originY };
 }
 
@@ -4909,6 +5286,10 @@ export function listPackSheets(pack: CharacterPack): SpriteSheetDef[] {
   if (pack.death) sheets.push(pack.death);
   for (const anim of Object.values(pack.skillAnims)) {
     sheets.push(anim);
+    if (anim.vfxId) {
+      const catalog = getVfxDefinition(anim.vfxId);
+      if (catalog && !isSequenceVfx(catalog)) sheets.push(sharedVfxToSheet(catalog));
+    }
     if (anim.fx) sheets.push(anim.fx);
     if (anim.fxSecondary) sheets.push(anim.fxSecondary);
   }
@@ -4932,15 +5313,53 @@ function applyNearestFilter(scene: Phaser.Scene, keys: Iterable<string>): void {
   }
 }
 
+export function sequenceFrameKey(sheetKey: string, index: number): string {
+  return `${sheetKey}__f${index}`;
+}
+
+export function createSpriteSheetAnimation(
+  scene: Phaser.Scene,
+  sheet: SpriteSheetDef,
+  animKey: string,
+): boolean {
+  const sequence = sheet.frames && sheet.frames.length > 0;
+  const frames = sequence
+    ? sheet.frames!.map((_, index) => ({ key: sequenceFrameKey(sheet.key, index) }))
+    : scene.textures.exists(sheet.key)
+      ? scene.anims.generateFrameNumbers(sheet.key, {
+          start: 0,
+          end: Math.max(0, sheet.frameCount - 1),
+        })
+      : null;
+  if (!frames || frames.length === 0) return false;
+  if (sequence && frames.some((frame) => !frame.key || !scene.textures.exists(frame.key))) return false;
+  if (scene.anims.exists(animKey)) scene.anims.remove(animKey);
+  scene.anims.create({
+    key: animKey,
+    frames,
+    frameRate: sheet.frameRate ?? 12,
+    repeat: sheet.loop ? -1 : 0,
+  });
+  return true;
+}
+
 /**
- * Carrega sob demanda as sheets de um pack (troca de personagem selado).
+ * Carrega folhas avulsas (VFX de catálogo no Test Lab).
  * Se a textura já existe com frameWidth/Height diferentes, recarrega.
  */
-export function loadCharacterPack(scene: Phaser.Scene, pack: CharacterPack): Promise<void> {
-  const sheets = listPackSheets(pack);
+export function loadSpriteSheets(scene: Phaser.Scene, sheets: SpriteSheetDef[]): Promise<void> {
   const queued = new Set<string>();
 
   for (const sheet of sheets) {
+    if (sheet.frames && sheet.frames.length > 0) {
+      sheet.frames.forEach((url, index) => {
+        const frameKey = sequenceFrameKey(sheet.key, index);
+        if (queued.has(frameKey) || scene.textures.exists(frameKey)) return;
+        queued.add(frameKey);
+        scene.load.image(frameKey, url);
+      });
+      continue;
+    }
     if (queued.has(sheet.key)) continue;
 
     if (scene.textures.exists(sheet.key)) {
@@ -4951,7 +5370,6 @@ export function loadCharacterPack(scene: Phaser.Scene, pack: CharacterPack): Pro
         existing.height === sheet.frameHeight;
       if (sameSize) continue;
       scene.textures.remove(sheet.key);
-      // Phaser types mark AnimationManager.anims as protected; Map is public at runtime.
       const animsMap = (
         scene.anims as unknown as {
           anims: Map<string, Phaser.Animations.Animation>;
@@ -4974,7 +5392,9 @@ export function loadCharacterPack(scene: Phaser.Scene, pack: CharacterPack): Pro
   if (queued.size === 0) {
     applyNearestFilter(
       scene,
-      sheets.map((s) => s.key),
+      sheets.flatMap((s) =>
+        s.frames?.length ? s.frames.map((_, i) => sequenceFrameKey(s.key, i)) : [s.key],
+      ),
     );
     return Promise.resolve();
   }
@@ -4986,4 +5406,13 @@ export function loadCharacterPack(scene: Phaser.Scene, pack: CharacterPack): Pro
     });
     scene.load.start();
   });
+}
+
+/**
+ * Carrega sob demanda as sheets de um pack (troca de personagem selado).
+ */
+export async function loadCharacterPack(scene: Phaser.Scene, pack: CharacterPack): Promise<void> {
+  await loadSpriteSheets(scene, listPackSheets(pack));
+  const { ensurePackSharedVfx } = await import('@/data/vfx/load-shared-vfx');
+  await ensurePackSharedVfx(scene, pack);
 }

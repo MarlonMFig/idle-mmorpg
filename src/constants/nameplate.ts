@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser';
+import { characterDepthForY } from '@/constants/render-layers';
 
 /**
  * Tipografia de nameplate no mapa — nome limpo, contorno nítido sobre o pixel art.
@@ -78,7 +79,7 @@ export function refreshWorldTextResolution(scene: Phaser.Scene): void {
   }
 }
 
-/** Depth base + y*fator para ordenar personagens (mais abaixo = na frente). */
+/** Depth na faixa de personagens + y*fator (mais abaixo = na frente). */
 export function worldDepthForY(y: number, base = 8): number {
-  return base + y * 0.05;
+  return characterDepthForY(y, base - 8);
 }

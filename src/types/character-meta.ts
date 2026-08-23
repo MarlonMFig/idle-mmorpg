@@ -1,8 +1,8 @@
-/** Qualidade natural imutável (rank de personagem). */
+/** Qualidade de instância / spawn (D–SSS). Não é identidade do CharacterDefinition. */
 export type CharacterQuality = 'D' | 'C' | 'B' | 'A' | 'S' | 'SS' | 'SSS';
 
-/** Clãs de conta do jogador. */
-export type CharacterClanId =
+/** Linhagem / afinidade de universo do personagem. */
+export type LineageId =
   | 'ninja'
   | 'shinigami'
   | 'pirata'
@@ -10,8 +10,11 @@ export type CharacterClanId =
   | 'feiticeiro'
   | 'guerreiro';
 
-/** Estrelas 0–8 (teto depende da qualidade). */
-export type CharacterStars = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+/** @deprecated Renomeado para LineageId (Item 20 — Linhagem). */
+export type CharacterClanId = LineageId;
+
+/** Estrelas 0–5; o teto efetivo vem de getMaxStarsForRarity. */
+export type CharacterStars = 0 | 1 | 2 | 3 | 4 | 5;
 
 export const CHARACTER_QUALITIES: readonly CharacterQuality[] = [
   'D',
@@ -23,7 +26,7 @@ export const CHARACTER_QUALITIES: readonly CharacterQuality[] = [
   'SSS',
 ] as const;
 
-export const CHARACTER_CLAN_IDS: readonly CharacterClanId[] = [
+export const LINEAGE_IDS: readonly LineageId[] = [
   'ninja',
   'shinigami',
   'pirata',
@@ -31,3 +34,6 @@ export const CHARACTER_CLAN_IDS: readonly CharacterClanId[] = [
   'feiticeiro',
   'guerreiro',
 ] as const;
+
+/** @deprecated use LINEAGE_IDS */
+export const CHARACTER_CLAN_IDS: readonly LineageId[] = LINEAGE_IDS;

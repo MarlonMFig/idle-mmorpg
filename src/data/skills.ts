@@ -5,12 +5,14 @@ import {
   CHARACTER_SKILL_COOLDOWNS_MS,
   CHARACTER_SKILL_DAMAGE,
   CHARACTER_SKILL_LEVELS,
-  FORCE_ALL_SKILLS_LEVEL_1,
 } from '@/constants/skill';
+import { shouldForceAllSkillsLevel1 } from '@/config/devConfig';
 import { JUMP_FORCE_SKILLS } from '@/data/jump-force-packs';
 import { getCharacterPack } from '@/data/character-packs';
 import { CHARACTER_PROGRESSION_SKILL_DEFINITIONS } from '@/data/character-skill-progression';
 import { WONSR_SKILL_DEFINITIONS } from '@/data/wonsr-skills';
+import { LAB_VISUAL_SKILLS } from '@/data/lab-visual-skills';
+import { getDevSkill, listDevSkills } from '@/lib/dev/dev-runtime-registry';
 
 /**
  * Catálogo vivo de jutsus.
@@ -774,10 +776,16 @@ const ALL_SKILL_DEFINITIONS: readonly SkillDefinition[] = [
   ...JUMP_FORCE_SKILLS,
   ...CHARACTER_PROGRESSION_SKILL_DEFINITIONS,
   ...WONSR_SKILL_DEFINITIONS.filter((skill) => !SKILL_LIST.some((base) => base.id === skill.id)),
+  ...LAB_VISUAL_SKILLS.filter(
+    (skill) =>
+      !SKILL_LIST.some((base) => base.id === skill.id) &&
+      !CHARACTER_PROGRESSION_SKILL_DEFINITIONS.some((base) => base.id === skill.id) &&
+      !JUMP_FORCE_SKILLS.some((base) => base.id === skill.id),
+  ),
 ];
 
-// TEST: FORCE_ALL_SKILLS_LEVEL_1 zera o gate de nível de todos os jutsus.
-export const SKILL_DEFINITIONS: readonly SkillDefinition[] = FORCE_ALL_SKILLS_LEVEL_1
+// TEST: DEV_FLAGS.forceAllSkillsLevel1 zera o gate de nível de todos os jutsus.
+export const SKILL_DEFINITIONS: readonly SkillDefinition[] = shouldForceAllSkillsLevel1()
   ? ALL_SKILL_DEFINITIONS.map((skill) => ({ ...skill, requiredLevel: 1 }))
   : ALL_SKILL_DEFINITIONS;
 
@@ -786,19 +794,36 @@ export const SKILLS: Record<string, SkillDefinition> = Object.fromEntries(
 );
 
 /** Hotbar default = pack do Naruto (compat). */
-export const STARTER_HOTBAR_SKILL_IDS: readonly string[] =
-  getCharacterPack('naruto-classic').hotbarSkillIds;
+export const STARTER_HOTBAR_SKILL_IDS: readonly string[] = getHotbarSkillIdsForStarter('naruto-classic');
 
 export const STARTER_KNOWN_SKILL_IDS: readonly string[] = SKILL_DEFINITIONS.map(
   (skill) => skill.id,
 );
 
 export function getHotbarSkillIdsForStarter(starterId: StarterCharacterId): readonly string[] {
-  return getCharacterPack(starterId).hotbarSkillIds;
+  return getCharacterPack(starterId).hotbarSkillIds.filter((id): id is string => Boolean(id));
 }
 
-export function getSkill(skillId: string): SkillDefinition | undefined {
-  return SKILLS[skillId];
+export function getSkill(skillId: string | null | undefined): SkillDefinition | undefined {
+  if (!skillId) return undefined;
+  return getDevSkill(skillId) ?? SKILLS[skillId];
+}
+
+/** Slot oficial 1–4 do pack. Slot vazio → null (Hunt segue os demais). */
+export function getSkillForSlot(
+  pack: { hotbarSkillIds: readonly (string | null)[] } | null | undefined,
+  slot: 1 | 2 | 3 | 4,
+): SkillDefinition | null {
+  const id = pack?.hotbarSkillIds[slot - 1] ?? null;
+  if (!id) return null;
+  return getSkill(id) ?? null;
+}
+
+export function listCatalogSkills(): SkillDefinition[] {
+  const map = new Map<string, SkillDefinition>();
+  for (const skill of SKILL_DEFINITIONS) map.set(skill.id, skill);
+  for (const skill of listDevSkills()) map.set(skill.id, skill);
+  return [...map.values()].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
 }
 
 export function listSkillsByElement(element: SkillElement): SkillDefinition[] {

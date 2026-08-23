@@ -8,23 +8,64 @@ import type {
   AttributeModifiers,
   PlayerAttributes,
 } from '@/types/attributes';
+import { resolveQualityStatMultiplier } from '@/constants/character-quality-stats';
+import type { CharacterQuality } from '@/types/character-meta';
 import { computePlayerAttributes, emptyModifiers } from '@/utils/attributes';
+import { resolveAwakeningRuntime } from '@/lib/awakening-runtime';
 
 function activeStars(): number {
   return teamStore.getActive()?.stars ?? 0;
+}
+
+function activeQuality(): CharacterQuality {
+  return teamStore.getActive()?.quality ?? 'D';
+}
+
+function activeQualityStatMultiplier(): number {
+  const active = teamStore.getActive();
+  return resolveQualityStatMultiplier(active?.quality, active?.qualityStatMultiplier);
 }
 
 function activeCharacterLevel(): number {
   return Math.max(1, teamStore.getActive()?.level || 1);
 }
 
-function buildState(level: number, stars: number, activeBuffs: AttributeBuff[]): PlayerAttributes {
-  return computePlayerAttributes({ level, stars, buffs: activeBuffs });
+function buildState(
+  level: number,
+  stars: number,
+  activeBuffs: AttributeBuff[],
+  awakening?: { characterId: string | null; awakeningLevel: number },
+  quality: CharacterQuality = 'D',
+  qualityStatMultiplier?: number,
+): PlayerAttributes {
+  const runtime = awakening ?? resolveAwakeningRuntime();
+  return computePlayerAttributes({
+    level,
+    stars,
+    quality,
+    qualityStatMultiplier,
+    buffs: activeBuffs,
+    characterId: runtime.characterId,
+    awakeningLevel: runtime.awakeningLevel,
+  });
 }
 
 let buffs: AttributeBuff[] = [];
 
-const store = createStore<PlayerAttributes>(buildState(1, 0, buffs));
+function liveState(): PlayerAttributes {
+  return buildState(
+    activeCharacterLevel(),
+    activeStars(),
+    buffs,
+    undefined,
+    activeQuality(),
+    activeQualityStatMultiplier(),
+  );
+}
+
+const store = createStore<PlayerAttributes>(
+  buildState(1, 0, buffs, { characterId: null, awakeningLevel: 0 }),
+);
 
 function syncVitals(fullHeal: boolean): void {
   const { totals } = store.getSnapshot();
@@ -32,7 +73,7 @@ function syncVitals(fullHeal: boolean): void {
 }
 
 /**
- * Atributos do jogador: base×estrelas do principal + nível + buffs.
+ * Atributos do jogador: base×estrelas do principal + nível + quality + buffs.
  * Sem camada de equipamento.
  */
 export const attributesStore = {
@@ -64,12 +105,12 @@ export const attributesStore = {
   },
 
   /**
-   * Recalcula totais (estrelas do principal ativo + nível + buffs).
+   * Recalcula totais (estrelas do principal ativo + nível + qualidade + buffs).
    * @param fullHeal restaura HP ao máximo (início de partida).
    */
   recalculate(fullHeal = false): void {
     this.pruneExpiredBuffs();
-    store.setState(buildState(activeCharacterLevel(), activeStars(), buffs));
+    store.setState(liveState());
     syncVitals(fullHeal);
   },
 
@@ -92,7 +133,7 @@ export const attributesStore = {
   addBuff(id: string, modifiers: AttributeModifiers, durationMs?: number): void {
     const expiresAt = durationMs != null ? Date.now() + durationMs : undefined;
     buffs = [...buffs.filter((buff) => buff.id !== id), { id, modifiers, expiresAt }];
-    store.setState(buildState(activeCharacterLevel(), activeStars(), buffs));
+    store.setState(liveState());
     syncVitals(false);
   },
 
@@ -100,14 +141,14 @@ export const attributesStore = {
     const next = buffs.filter((buff) => buff.id !== id);
     if (next.length === buffs.length) return;
     buffs = next;
-    store.setState(buildState(activeCharacterLevel(), activeStars(), buffs));
+    store.setState(liveState());
     syncVitals(false);
   },
 
   clearBuffs(): void {
     if (buffs.length === 0) return;
     buffs = [];
-    store.setState(buildState(activeCharacterLevel(), activeStars(), buffs));
+    store.setState(liveState());
     syncVitals(false);
   },
 
@@ -127,7 +168,8 @@ export const INITIAL_ATTRIBUTES: PlayerAttributes = {
   totals: { ...BASE_ATTRIBUTES },
   base: { ...BASE_ATTRIBUTES },
   level: {},
-  equipment: {},
+  awakening: {},
+  lineage: {},
   buffs: {},
   activeBuffs: [],
 };

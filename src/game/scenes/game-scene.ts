@@ -1,24 +1,31 @@
 import * as Phaser from 'phaser';
 import { refreshWorldTextResolution } from '@/constants/nameplate';
+import { RENDER_LAYER } from '@/constants/render-layers';
 import { HUB_CHARACTER_SCALE } from '@/constants/sprites';
 import { loadCharacterPack } from '@/data/character-packs';
 import { filterOutfitLookTypes, getCuratedMapPack } from '@/data/curated-map-sprites';
-import { getActiveHub } from '@/data/hub-backgrounds';
+import { getActiveHub, integerHubCameraZoom } from '@/data/hub-backgrounds';
 import { getNpcsForMap } from '@/data/npcs';
-import { combatLayoutScale, getWonsrRenderedMap } from '@/data/wonsr-rendered-maps';
-import { loadOutfitSheets, type WonsrSpriteIndex } from '@/data/wonsr-sprites';
+import {
+  combatLayoutScale,
+  getWonsrRenderedMap,
+  officialCameraZoom,
+} from '@/data/wonsr-rendered-maps';
+import { loadOutfitSheets, collectHuntFxSheets, type WonsrSpriteIndex } from '@/data/wonsr-sprites';
 import { getHubNpcs } from '@/data/wonsr-hub-npcs';
 import { resolveCharacterPack } from '@/data/resolve-character-pack';
 import { Player } from '@/entities';
 import { getPlayerSession } from '@/game/registry';
-import { getActiveCharacterPack } from '@/lib/active-character';
+import { getSpawnCharacterPack } from '@/lib/active-character';
+import { isLabBlockingHuntGameplay } from '@/stores/character-lab-store';
 import { emitChatMessage, emitSystemMessage } from '@/lib/system-log';
 import type { HuntCatalog } from '@/types/hunt';
 import type { SealedCharacter } from '@/types/team';
-import { MapLoader, MAP_KEYS, type MapKey } from '@/maps';
+import { MapLoader, MAP_FILES, MAP_KEYS, type MapKey } from '@/maps';
 import { createMultiplayerClient } from '@/services/multiplayer-client';
 import {
   CombatSystem,
+  CharacterLabSystem,
   DialogueInteractor,
   EnemyManager,
   HubInteractableManager,
@@ -33,15 +40,22 @@ import {
   LEADER_CLAIM_ID,
   TeamCompanionSystem,
 } from '@/systems';
+import { MapViewportLabSystem } from '@/systems/map-viewport-lab-system';
+import { HubBirdFlockSystem } from '@/systems/hub-bird-flock';
+import { HubChimneySmokeSystem } from '@/systems/hub-chimney-smoke';
 import { dialogueStore } from '@/stores/dialogue-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { locationStore, type GameMode } from '@/stores/location-store';
+import { bossStore } from '@/stores/boss-store';
 import { multiplayerStore } from '@/stores/multiplayer-store';
-import { attributesStore } from '@/stores/attributes-store';
+import { getEffectiveCombatStats, PLAYER_STATUS_UNIT_ID } from '@/systems/combat-stats';
+import { unbindStatusRuntime } from '@/systems/status-runtime';
 import { questStore } from '@/stores/quest-store';
 import { skillsStore } from '@/stores/skills-store';
 import { teamStore } from '@/stores/team-store';
 import { vitalsStore } from '@/stores/vitals-store';
+import { mapViewportLabStore } from '@/stores/map-viewport-lab-store';
+import { getDevMapConfig } from '@/lib/dev/dev-runtime-registry';
 
 interface GameSceneData {
   mapKey?: MapKey;
@@ -65,11 +79,17 @@ export class GameScene extends Phaser.Scene {
   private lootPickup!: LootPickupSystem;
   private dialogueInteractor!: DialogueInteractor;
   private combatSystem: CombatSystem | null = null;
+  private characterLab: CharacterLabSystem | null = null;
+  private mapViewportLab: MapViewportLabSystem | null = null;
+  private mapBackground: Phaser.GameObjects.Image | null = null;
+  private labOwnedCombat = false;
   private idleAi: IdleAiSystem | null = null;
   private teamCompanions: TeamCompanionSystem | null = null;
   private targetClaims: TargetClaims | null = null;
   private playerInput: PlayerInputSystem | null = null;
   private hubInteractables!: HubInteractableManager;
+  private hubBirds: HubBirdFlockSystem | null = null;
+  private hubChimneySmoke: HubChimneySmokeSystem | null = null;
   private hubCollisionLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private remotePlayers!: RemotePlayerManager;
   private playerSync!: PlayerSyncSystem;
@@ -101,7 +121,7 @@ export class GameScene extends Phaser.Scene {
     const session = getPlayerSession(this.registry);
     const starterId = session?.starterCharacterId ?? 'naruto-classic';
     const index = this.cache.json.get('wonsr-sprite-index') as WonsrSpriteIndex | undefined;
-    const pack = getActiveCharacterPack(starterId, index);
+    const pack = getSpawnCharacterPack(starterId, index);
 
     // Pack lateral (Shikamaru, …) + outfits WONSR sob demanda; sem isso o
     // player spawna com textura ausente e trava ao gerar frames.
@@ -122,7 +142,10 @@ export class GameScene extends Phaser.Scene {
       }
 
       if (index) {
-        await loadOutfitSheets(this, index, filterOutfitLookTypes(lookTypes));
+        const huntId = data?.huntId ?? locationStore.getSnapshot().huntId;
+        const catalog = this.cache.json.get('wonsr-hunts') as HuntCatalog | undefined;
+        const hunt = huntId ? catalog?.hunts.find((entry) => entry.id === huntId) : undefined;
+        await loadOutfitSheets(this, index, filterOutfitLookTypes(lookTypes), collectHuntFxSheets(hunt));
       }
       if (buildSeq !== this.buildSeq || !this.sys.isActive()) return;
       this.buildWorld(data);
@@ -153,11 +176,13 @@ export class GameScene extends Phaser.Scene {
       const catalog = this.cache.json.get('wonsr-hunts') as HuntCatalog | undefined;
       const hunt = catalog?.hunts.find((entry) => entry.id === huntId);
       for (const target of hunt?.targets ?? []) {
-        // hasSprite cobre atlas WONSR; packs curados (ex.: sennin 9001, itachi 9002, neji 9003) não dependem do atlas.
-        if (target.hasSprite || getCuratedMapPack(target.lookType)) {
-          lookTypes.add(target.lookType);
-        }
+        lookTypes.add(target.lookType);
       }
+    }
+
+    if (loc.encounterKind === 'boss' && loc.bossId) {
+      const boss = bossStore.getDefinition(loc.bossId);
+      if (boss) lookTypes.add(boss.lookType);
     }
 
     const activeLookType = teamStore.getActive()?.lookType;
@@ -178,11 +203,12 @@ export class GameScene extends Phaser.Scene {
 
   private buildWorld(data?: GameSceneData): void {
     this.cameras.main.setBackgroundColor('#000000');
+    this.time.timeScale = 1;
 
     const session = getPlayerSession(this.registry);
     const starterId = session?.starterCharacterId ?? 'naruto-classic';
     const spriteIndex = this.cache.json.get('wonsr-sprite-index') as WonsrSpriteIndex | undefined;
-    const pack = getActiveCharacterPack(starterId, spriteIndex);
+    const pack = getSpawnCharacterPack(starterId, spriteIndex);
 
     const loc = locationStore.getSnapshot();
     this.mode = data?.mode ?? loc.mode ?? 'hub';
@@ -191,6 +217,9 @@ export class GameScene extends Phaser.Scene {
     this.travelSeq = loc.travelSeq;
 
     if (!loc.sessionStarted) {
+      // Novo jogo / sessão sem hydrate: starter loadout.
+      // Após applyPersistedSession, location.hydrate marca sessionStarted=true
+      // e o inventário já veio do session blob — não resetar aqui.
       vitalsStore.reset();
       inventoryStore.reset();
       skillsStore.reset(starterId);
@@ -234,8 +263,10 @@ export class GameScene extends Phaser.Scene {
       }
 
       const bg = this.add.image(0, 0, hub.key).setOrigin(0, 0).setDepth(0);
+      // Ilustração pintada: LINEAR (nunca nearest — nearest pixeliza a arte).
       bg.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
       bg.setDisplaySize(hub.width, hub.height);
+      this.mapBackground = bg;
 
       worldW = hub.width;
       worldH = hub.height;
@@ -246,7 +277,12 @@ export class GameScene extends Phaser.Scene {
       this.cameras.main.setBounds(0, 0, worldW, worldH);
       this.worldW = worldW;
       this.worldH = worldH;
-      this.cameraLayout = hub.cameraMode === 'contain' ? 'contain-hub' : 'cover';
+      this.cameraLayout =
+        hub.cameraMode === 'contain'
+          ? 'contain-hub'
+          : hub.cameraMode === 'follow'
+            ? 'follow'
+            : 'cover';
       this.applyCameraLayout();
     } else if (hubUsesTilemap) {
       const maps = new MapLoader(this);
@@ -267,8 +303,9 @@ export class GameScene extends Phaser.Scene {
       worldW = hub.tilemapWidth ?? 3072;
       worldH = hub.tilemapHeight ?? 3072;
       const hubBg = this.add.image(0, 0, imageKey).setOrigin(0, 0).setDepth(0);
-      // Ilustração pintada: linear. pixelArt/nearest fica só nos sprites.
+      // Ilustração pintada: linear. nearest só nos sprites pixel.
       hubBg.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
+      this.mapBackground = hubBg;
 
       const { layers } = maps.createLayers(hubMapKey);
       const ground = layers.find((layer) => layer.layer.name === 'ground');
@@ -295,6 +332,7 @@ export class GameScene extends Phaser.Scene {
             : 'cover';
       this.applyCameraLayout();
     } else {
+      if (this.deferCombatMapAssets()) return;
       const maps = new MapLoader(this);
       if (!maps.has(this.mapKey)) {
         this.recoverToHub(`mapa ausente no cache: ${this.mapKey}`);
@@ -321,6 +359,7 @@ export class GameScene extends Phaser.Scene {
             ? Phaser.Textures.FilterMode.NEAREST
             : Phaser.Textures.FilterMode.LINEAR,
         );
+        this.mapBackground = mapBg;
         if (rendered.videoKey && this.cache.video.exists(rendered.videoKey)) {
           try {
             const mapVideo = this.add.video(0, 0, rendered.videoKey);
@@ -345,7 +384,11 @@ export class GameScene extends Phaser.Scene {
           console.warn(`[GameScene] colisão TMX falhou (${this.mapKey})`, error);
         }
         const collision = layers.find((layer) => layer.layer.name === 'collision');
-        for (const layer of layers) layer.setVisible(false);
+        for (const layer of layers) {
+          layer.setVisible(false);
+          layer.setAlpha(0);
+          layer.setDepth(-10);
+        }
         if (collision) {
           collision.setCollisionByExclusion([-1]);
           collisionLayer = collision;
@@ -354,7 +397,7 @@ export class GameScene extends Phaser.Scene {
           const mapFg = this.add
             .image(0, 0, rendered.foregroundKey)
             .setOrigin(0, 0)
-            .setDepth(36)
+            .setDepth(RENDER_LAYER.mapForeground)
             .setScrollFactor(1);
           mapFg.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
         }
@@ -387,7 +430,45 @@ export class GameScene extends Phaser.Scene {
 
       this.npcManager.loadForMap(this.mapKey);
       this.enemyManager.setCollisionLayer(collisionLayer);
-      this.enemyManager.loadForMap(this.mapKey, this.huntId);
+      if (loc.encounterKind === 'boss' && loc.bossId) {
+        const boss = bossStore.getDefinition(loc.bossId);
+        const runtime = bossStore.getSnapshot().runtime;
+        const spawn =
+          getWonsrRenderedMap(this.mapKey)?.enemySpawns[0] ?? { x: spawnX + 220, y: spawnY };
+        if (boss) {
+          const spawnHp =
+            runtime && runtime.bossId === boss.id ? runtime.currentHp : boss.hp;
+          const spawnHpMax =
+            runtime && runtime.bossId === boss.id ? runtime.hpMax : boss.hp;
+          const def = this.enemyManager.buildLookTypePresentation(
+            boss.lookType,
+            this.mapKey,
+            spawn,
+            {
+              id: boss.id,
+              name: boss.name,
+              hp: spawnHpMax,
+              level: boss.level,
+              xp: boss.xp,
+              speed: boss.speed,
+            },
+            {
+              resistances: boss.resistances,
+              immunities: boss.immunities,
+              statusResistances: boss.statusResistances,
+              statusImmunities: boss.statusImmunities,
+            },
+          );
+          const enemy = this.enemyManager.loadBoss(this.mapKey, def);
+          if (spawnHp < spawnHpMax) {
+            enemy.setHp(spawnHp);
+          }
+        } else {
+          this.enemyManager.loadForMap(this.mapKey, this.huntId);
+        }
+      } else {
+        this.enemyManager.loadForMap(this.mapKey, this.huntId);
+      }
 
       this.player = new Player(this, {
         x: spawnX,
@@ -396,6 +477,8 @@ export class GameScene extends Phaser.Scene {
         displayName: session?.nickname,
         worldScale: combatLayoutScale(this.mapKey),
         moveSpeed: this.mapMoveSpeed(),
+        instanceId: teamStore.getActive()?.id ?? null,
+        alignmentContext: 'hunt',
       });
       if (collisionLayer) {
         this.physics.add.collider(this.player.sprite, collisionLayer);
@@ -434,16 +517,15 @@ export class GameScene extends Phaser.Scene {
         y: spawnY,
         pack,
         displayName: session?.nickname,
-        worldScale: HUB_CHARACTER_SCALE,
+        worldScale: getDevMapConfig(hub.tilemapKey ?? this.mapKey)?.layoutScale ?? hub.layoutScale ?? HUB_CHARACTER_SCALE,
+        instanceId: teamStore.getActive()?.id ?? null,
+        alignmentContext: 'hub',
       });
       this.npcManager.loadHub();
 
-      if (this.hubCollisionLayer) {
-        this.physics.add.collider(this.player.sprite, this.hubCollisionLayer);
-        // Cover stays centered on the illustration; only follow in follow mode.
-        if (this.cameraLayout === 'follow') {
-          this.cameras.main.startFollow(this.player.sprite, true, 1, 1);
-        }
+      // Praça isométrica: o TMX ainda é o corredor lateral antigo — não colidir.
+      if (this.cameraLayout === 'follow') {
+        this.cameras.main.startFollow(this.player.sprite, true, 1, 1);
       }
     }
 
@@ -457,6 +539,15 @@ export class GameScene extends Phaser.Scene {
 
     this.hubInteractables = new HubInteractableManager(this);
     this.hubInteractables.load(this.mode, this.mapKey);
+
+    this.hubBirds?.destroy();
+    this.hubBirds = null;
+    this.hubChimneySmoke?.destroy();
+    this.hubChimneySmoke = null;
+    if (this.mode === 'hub') {
+      this.hubBirds = new HubBirdFlockSystem(this, this.worldW, this.worldH);
+      this.hubChimneySmoke = new HubChimneySmokeSystem(this);
+    }
 
     this.lootPickup = new LootPickupSystem(this.lootManager);
 
@@ -484,13 +575,38 @@ export class GameScene extends Phaser.Scene {
       });
     }
 
+    this.input.keyboard?.clearCaptures();
+
+    this.characterLab = new CharacterLabSystem(
+      this,
+      this.player,
+      this.enemyManager,
+      this.combatSystem,
+      () => this.ensureLabCombat(),
+      () => this.releaseLabCombat(),
+      this.mapKey,
+    );
+
     this.remotePlayers = new RemotePlayerManager(
       this,
-      this.mode === 'hub' ? HUB_CHARACTER_SCALE : combatLayoutScale(this.mapKey),
+      this.mode === 'hub'
+        ? (getActiveHub().layoutScale ?? HUB_CHARACTER_SCALE)
+        : combatLayoutScale(this.mapKey),
     );
     this.playerSync = new PlayerSyncSystem(this.multiplayer, this.player, this.remotePlayers);
 
     void this.connectMultiplayer(this.mapKey);
+
+    this.mapViewportLab?.destroy();
+    this.mapViewportLab = new MapViewportLabSystem({
+      scene: this,
+      getPlayer: () => this.player ?? null,
+      getWorldSize: () => ({ w: this.worldW, h: this.worldH }),
+      getMapKey: () => this.mapKey,
+      getCameraLayout: () => this.cameraLayout,
+      getMapBackground: () => this.mapBackground,
+      applyCameraLayout: () => this.applyCameraLayout(),
+    });
 
     this.worldReady = true;
 
@@ -500,6 +616,19 @@ export class GameScene extends Phaser.Scene {
       this.unsubLocation?.();
       this.unsubLocation = null;
       this.hubInteractables?.clear();
+      this.hubBirds?.destroy();
+      this.hubBirds = null;
+      this.hubChimneySmoke?.destroy();
+      this.hubChimneySmoke = null;
+      this.characterLab?.destroy();
+      this.characterLab = null;
+      this.mapViewportLab?.destroy();
+      this.mapViewportLab = null;
+      this.mapBackground = null;
+      this.combatSystem?.destroy();
+      this.combatSystem = null;
+      unbindStatusRuntime(this);
+      this.labOwnedCombat = false;
       this.teamCompanions?.destroy();
       this.teamCompanions = null;
       this.targetClaims?.clear();
@@ -514,7 +643,7 @@ export class GameScene extends Phaser.Scene {
   private mapMoveSpeed(): number | undefined {
     const mult = getWonsrRenderedMap(this.mapKey)?.moveSpeedMult;
     if (mult == null || mult === 1) return undefined;
-    return attributesStore.getSpeed() * mult;
+    return getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).movementSpeed * mult;
   }
 
   /** Sobe os outros dois membros da equipe ao lado do jogador. */
@@ -542,6 +671,8 @@ export class GameScene extends Phaser.Scene {
         displayName: member.name,
         worldScale,
         moveSpeed: this.mapMoveSpeed(),
+        instanceId: member.id,
+        alignmentContext: 'hunt',
       });
       if (collisionLayer) {
         this.physics.add.collider(player.sprite, collisionLayer);
@@ -555,6 +686,49 @@ export class GameScene extends Phaser.Scene {
       lootManager: this.lootManager,
       claims: this.targetClaims,
     });
+  }
+
+  /**
+   * Mapas top-down 5k não entram no preload. Baixa PNG+TMX na primeira entrada
+   * e reinicia a cena com os assets no cache.
+   */
+  private deferCombatMapAssets(): boolean {
+    const rendered = getWonsrRenderedMap(this.mapKey);
+    const tmxUrl = MAP_FILES[this.mapKey];
+    if (!tmxUrl) return false;
+    const textKey = `tmx:${this.mapKey}`;
+    const needText = !this.cache.text.exists(textKey);
+    const needImage = Boolean(rendered && !this.textures.exists(rendered.imageKey));
+
+    if (!needText && !needImage) {
+      if (!this.cache.tilemap.exists(this.mapKey) && this.cache.text.exists(textKey)) {
+        try {
+          new MapLoader(this).registerFromTextCache(this.mapKey);
+        } catch (error) {
+          this.recoverToHub(
+            `falha ao parsear ${this.mapKey}: ${error instanceof Error ? error.message : String(error)}`,
+          );
+          return true;
+        }
+      }
+      return false;
+    }
+
+    if (needText) this.load.text(textKey, tmxUrl);
+    if (needImage && rendered) this.load.image(rendered.imageKey, rendered.imageUrl);
+    this.load.once(Phaser.Loader.Events.COMPLETE, () => {
+      try {
+        new MapLoader(this).registerFromTextCache(this.mapKey);
+      } catch (error) {
+        console.warn(`[GameScene] TMX ${this.mapKey}`, error);
+      }
+      this.scene.restart({ mapKey: this.mapKey, mode: this.mode, huntId: this.huntId });
+    });
+    this.load.once(Phaser.Loader.Events.FILE_LOAD_ERROR, (file: { key?: string }) => {
+      this.recoverToHub(`falha ao carregar ${file?.key ?? this.mapKey}`);
+    });
+    this.load.start();
+    return true;
   }
 
   /**
@@ -574,11 +748,44 @@ export class GameScene extends Phaser.Scene {
   }
 
   private applyCameraLayout(): void {
+    // Map Viewport Lab assume zoom/viewport enquanto ativo.
+    if (mapViewportLabStore.getLiveOverrides()) return;
+
     const cam = this.cameras.main;
     const w = this.scale.width;
     const h = this.scale.height;
     cam.setViewport(0, 0, w, h);
-    cam.setRoundPixels(true);
+    cam.setRoundPixels(this.mode !== 'hub');
+
+  // Hub follow (Map Lab / modo follow): zoom inteiro opcional.
+  // Cover/contain do hub pintado usam o caminho normal abaixo (LINEAR).
+  if (this.mode === 'hub' && this.cameraLayout === 'follow') {
+    const hub = getActiveHub();
+    const preferred =
+      getDevMapConfig(hub.tilemapKey ?? this.mapKey)?.cameraZoom ?? hub.cameraZoom ?? null;
+    if (preferred != null) {
+      const zoom = integerHubCameraZoom(w, h, this.worldW, this.worldH, preferred);
+      cam.setZoom(zoom);
+      refreshWorldTextResolution(this);
+      return;
+    }
+  }
+
+    const savedZoom = this.mode === 'hub' ? null : officialCameraZoom(this.mapKey);
+    if (
+      savedZoom != null &&
+      (this.cameraLayout === 'cover' ||
+        this.cameraLayout === 'contain-hub' ||
+        this.cameraLayout === 'contain-combat')
+    ) {
+      cam.setZoom(savedZoom);
+      if (this.cameraLayout === 'contain-hub' || this.cameraLayout === 'contain-combat') {
+        cam.stopFollow();
+      }
+      cam.centerOn(this.worldW / 2, this.worldH / 2);
+      refreshWorldTextResolution(this);
+      return;
+    }
 
     if (this.cameraLayout === 'cover') {
       // Preenche o viewport (cover); corta bordas se aspect do hub ≠ da janela.
@@ -600,32 +807,46 @@ export class GameScene extends Phaser.Scene {
     } else if (this.cameraLayout === 'follow-explore') {
       const rendered = getWonsrRenderedMap(this.mapKey);
       if (rendered?.cameraFit === 'contain') {
-        // Enquadra o PNG inteiro (como no visualizador). Sem padding nas
-        // bounds, o Phaser trava o scroll em 0 e a arte cola na esquerda.
-        const zoom = Math.min(w / this.worldW, h / this.worldH);
-        const viewW = w / zoom;
-        const viewH = h / zoom;
-        const padX = Math.max(0, (viewW - this.worldW) / 2);
-        const padY = Math.max(0, (viewH - this.worldH) / 2);
+        // Cover: preenche a tela. Contain deixava tarja preta nas laterais.
+        const zoom = Math.max(w / this.worldW, h / this.worldH);
         cam.stopFollow();
         cam.setRoundPixels(false);
         cam.setZoom(zoom);
-        cam.setBounds(-padX, -padY, this.worldW + padX * 2, this.worldH + padY * 2);
+        cam.setBounds(0, 0, this.worldW, this.worldH);
         cam.centerOn(this.worldW / 2, this.worldH / 2);
       } else {
-        cam.setZoom(rendered?.cameraZoom ?? 1);
+        cam.setZoom(officialCameraZoom(this.mapKey) ?? rendered?.cameraZoom ?? 1);
       }
     } else if (this.cameraLayout === 'follow-combat') {
       const coverZoom = Math.max(w / this.worldW, h / this.worldH);
       cam.setZoom(coverZoom);
     } else {
-      // Hub 4K: cover preenche a tela. Em 1080p o zoom sai da altura (0.5), então
-      // a arte cabe inteira na vertical e a câmera só desliza os 256px extras de
-      // largura do mundo 4096. Floor 2 esticava o PNG 1024.
+      // Cover do hub: zoom = max(view/world) — fracionário, sem pixel snap.
       const coverZoom = Math.max(w / this.worldW, h / this.worldH);
       cam.setZoom(coverZoom);
     }
     refreshWorldTextResolution(this);
+  }
+
+  private ensureLabCombat(): CombatSystem {
+    if (!this.combatSystem) {
+      this.combatSystem = new CombatSystem(
+        this,
+        this.player,
+        this.enemyManager,
+        this.lootManager,
+        this.targetClaims,
+      );
+      this.labOwnedCombat = true;
+    }
+    return this.combatSystem;
+  }
+
+  private releaseLabCombat(): void {
+    if (!this.labOwnedCombat) return;
+    this.combatSystem?.destroy();
+    this.combatSystem = null;
+    this.labOwnedCombat = false;
   }
 
   update(time: number): void {
@@ -646,13 +867,21 @@ export class GameScene extends Phaser.Scene {
     // Sob WASD o líder não persegue ninguém: solta a reserva para os aliados
     // não desviarem de um alvo que ele deixou para trás.
     if (manualMove) this.targetClaims?.release(LEADER_CLAIM_ID);
-    else this.idleAi?.update();
-    this.teamCompanions?.update(time);
+    else if (!isLabBlockingHuntGameplay()) this.idleAi?.update();
+    if (!isLabBlockingHuntGameplay()) this.teamCompanions?.update(time);
+    this.hubBirds?.update(time, this.game.loop.delta);
+    this.characterLab?.update(time);
+    this.mapViewportLab?.update();
     this.combatSystem?.update(time);
-    this.lootManager?.update(time);
-    this.lootPickup?.update();
+    if (!isLabBlockingHuntGameplay()) this.lootManager?.update(time);
+    if (!isLabBlockingHuntGameplay()) this.lootPickup?.update();
     this.playerSync?.update(time);
     this.clampLateralFloor();
+    if (this.mode === 'hub' && this.cameraLayout === 'follow') {
+      const cam = this.cameras.main;
+      cam.scrollX = Math.round(cam.scrollX);
+      cam.scrollY = Math.round(cam.scrollY);
+    }
     this.player?.syncPresentation();
 
     if (dialogueStore.isOpen()) {
@@ -671,10 +900,25 @@ export class GameScene extends Phaser.Scene {
 
   /** Visão lateral: pés do jogador e inimigos na linha do chão. */
   private clampLateralFloor(): void {
+    const lab = mapViewportLabStore.getLiveOverrides();
+    const mapKey = this.mapKey;
+    // Hub isométrico: não herdar overlay antigo de chão lateral.
+    if (this.mode === 'hub' && getActiveHub().lateralFloorY == null && !lab) {
+      return;
+    }
+    const fromLab =
+      lab &&
+      ((lab.catalogId === 'hub' && this.mode === 'hub') || String(lab.mapKey) === String(mapKey))
+        ? lab.lateralFloorY
+        : null;
+    const fromDev = getDevMapConfig(this.mode === 'hub' ? (getActiveHub().tilemapKey ?? mapKey) : mapKey)
+      ?.lateralFloorY;
     const floorY =
-      this.mode === 'hub'
+      fromLab ??
+      fromDev ??
+      (this.mode === 'hub'
         ? getActiveHub().lateralFloorY
-        : getWonsrRenderedMap(this.mapKey)?.lateralFloorY;
+        : getWonsrRenderedMap(this.mapKey)?.lateralFloorY);
     if (floorY == null || !this.player) return;
     if (Math.abs(this.player.sprite.y - floorY) > 0.5) {
       this.player.sprite.setY(floorY);

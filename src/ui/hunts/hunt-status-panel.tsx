@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { applyForcedHuntLevels } from '@/constants/combat';
+import { applyForcedHuntLevels, huntEnemyStatsForLevel } from '@/constants/combat';
 import { useStore } from '@/hooks/use-store';
 import { locationStore } from '@/stores/location-store';
 import type { HuntCatalog, HuntDefinition, PhaserAtlasData } from '@/types/hunt';
 import { getCuratedPortraitUrl } from '@/data/curated-map-sprites';
 
-const HUNTS_URL = '/data/wonsr/hunts.json';
+const HUNTS_URL = '/data/wonsr/hunts.json?v=wonsr-10maps';
 const ATLAS_URL = '/sprites/wonsr-hunts/characters.json';
 const ATLAS_IMAGE_URL = '/sprites/wonsr-hunts/characters.png';
 
@@ -28,7 +28,6 @@ export function HuntStatusPanel() {
       fetch(ATLAS_URL).then((response) => response.json() as Promise<PhaserAtlasData>),
     ]).then(([catalog, atlasData]) => {
       if (cancelled) return;
-      // TEST: FORCE_HUNT_LEVEL via applyForcedHuntLevels (level / HP / XP in panel).
       const forced = applyForcedHuntLevels(catalog);
       setHunt(forced.hunts.find((entry) => entry.id === huntId) ?? null);
       setAtlas(atlasData);
@@ -41,7 +40,11 @@ export function HuntStatusPanel() {
   const target = hunt?.targets[0];
   if (!hunt || !target) return null;
 
-  const displayStats = { level: target.level, hp: target.hp, xp: target.xp };
+  const displayStats = {
+    level: target.level,
+    hp: target.hp,
+    xp: huntEnemyStatsForLevel(target.level).xp,
+  };
 
   const curatedUrl = getCuratedPortraitUrl(target.lookType);
   const frame = atlas?.frames[`look-${target.lookType}`]?.frame;

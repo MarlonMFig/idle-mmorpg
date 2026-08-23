@@ -1,38 +1,129 @@
 import { createStore } from '@/stores/create-store';
 import {
-  getNpcSellPrice,
+  getItemSellValue,
+  getOfferDisplayName,
   getShopOffer,
-  SHOP_OFFERS,
+  listShopOffers,
+  listShopOffersByCategory,
   type ShopOffer,
 } from '@/data/shop';
-import { inventoryStore } from '@/stores/inventory-store';
+import { getItem, getItemStackLimit } from '@/data/items';
 import { emitSystemMessage } from '@/lib/system-log';
-import { getItem } from '@/data/items';
-import { SHOP_CURRENCY_ITEM_ID } from '@/constants/sealing';
+import { economyService } from '@/lib/economy-service';
+import { emitItemSold, emitShopPurchaseCompleted } from '@/lib/economy-events';
+import { isItemSellable } from '@/lib/economy-validation';
+import { getDailyCycleId, getWeeklyCycleId } from '@/lib/mission-cycle';
+import { inventoryStore } from '@/stores/inventory-store';
+import { vitalsStore } from '@/stores/vitals-store';
+import type { ShopCategoryId } from '@/types/shop';
+import { SHOP_CATEGORY_LABEL } from '@/types/shop';
 
 export type ShopTabId = 'buy' | 'sell';
+
+export interface ShopPurchaseBucket {
+  bought: number;
+  resetCycleId: string | null;
+}
 
 export interface ShopState {
   isOpen: boolean;
   tab: ShopTabId;
+  category: ShopCategoryId;
   lastResult: string | null;
+  purchases: Record<string, ShopPurchaseBucket>;
+  /** DEV: ignora requirements de nível. */
+  forceEligible: boolean;
 }
 
 const store = createStore<ShopState>({
   isOpen: false,
   tab: 'buy',
+  category: 'consumables',
   lastResult: null,
+  purchases: {},
+  forceEligible: false,
 });
 
+const purchaseInFlight = new Set<string>();
+
+/** Espaço real no inventário para o item (stacks parciais + slots vazios). */
+function inventoryRoomFor(itemId: string): number {
+  const stackMax = getItemStackLimit(itemId);
+  if (stackMax <= 0) return 0;
+  let room = 0;
+  for (const slot of inventoryStore.getSnapshot().slots) {
+    if (!slot) {
+      room += stackMax;
+      continue;
+    }
+    if (slot.itemId === itemId) {
+      room += Math.max(0, stackMax - slot.quantity);
+    }
+  }
+  return room;
+}
+
+function cycleForOffer(offer: ShopOffer): string | null {
+  if (offer.resetType === 'none' || offer.resetType === 'lifetime') return null;
+  if (offer.resetType === 'weekly') return getWeeklyCycleId();
+  return getDailyCycleId();
+}
+
+function syncedBucket(offer: ShopOffer, previous?: ShopPurchaseBucket): ShopPurchaseBucket {
+  const cycleId = cycleForOffer(offer);
+  if (offer.resetType === 'lifetime') {
+    return previous ?? { bought: 0, resetCycleId: 'lifetime' };
+  }
+  if (offer.resetType === 'none' || cycleId == null) {
+    return { bought: 0, resetCycleId: null };
+  }
+  if (!previous || previous.resetCycleId !== cycleId) {
+    return { bought: 0, resetCycleId: cycleId };
+  }
+  return previous;
+}
+
+function getBucket(offer: ShopOffer): ShopPurchaseBucket {
+  return syncedBucket(offer, store.getSnapshot().purchases[offer.id]);
+}
+
+function setBucket(offerId: string, bucket: ShopPurchaseBucket): void {
+  const state = store.getSnapshot();
+  store.setState({
+    ...state,
+    purchases: { ...state.purchases, [offerId]: bucket },
+  });
+}
+
 /**
- * Loja do hub (Kuro) — compra e venda com moeda de cobre.
+ * Loja do hub — compra/venda via Economy Service.
+ * Limites daily/weekly: getDailyCycleId / getWeeklyCycleId.
  */
 export const shopStore = {
   subscribe: store.subscribe,
   getSnapshot: store.getSnapshot,
 
   reset(): void {
-    store.setState({ isOpen: false, tab: 'buy', lastResult: null });
+    store.setState({
+      isOpen: false,
+      tab: 'buy',
+      category: 'consumables',
+      lastResult: null,
+      purchases: {},
+      forceEligible: false,
+    });
+  },
+
+  hydrate(partial: { purchases?: Record<string, ShopPurchaseBucket> | null }): void {
+    if (!partial.purchases) return;
+    store.setState({
+      ...store.getSnapshot(),
+      purchases: { ...partial.purchases },
+    });
+  },
+
+  getPersistedPurchases(): Record<string, ShopPurchaseBucket> {
+    return { ...store.getSnapshot().purchases };
   },
 
   toggleOpen(): void {
@@ -46,33 +137,90 @@ export const shopStore = {
   },
 
   setOpen(isOpen: boolean): void {
-    const state = store.getSnapshot();
-    store.setState({
-      ...state,
-      isOpen,
-      lastResult: null,
-    });
+    store.setState({ ...store.getSnapshot(), isOpen, lastResult: null });
   },
 
   setTab(tab: ShopTabId): void {
     store.setState({ ...store.getSnapshot(), tab, lastResult: null });
   },
 
-  listOffers(): readonly ShopOffer[] {
-    return SHOP_OFFERS;
+  setCategory(category: ShopCategoryId): void {
+    store.setState({ ...store.getSnapshot(), category, lastResult: null });
   },
 
-  /** Stacks inventário vendáveis (preço unitário > 0), agregados por itemId. */
+  listOffers(): readonly ShopOffer[] {
+    return listShopOffers();
+  },
+
+  listOffersCurrentCategory(): readonly ShopOffer[] {
+    return listShopOffersByCategory(store.getSnapshot().category);
+  },
+
+  categoryLabel(id: ShopCategoryId): string {
+    return SHOP_CATEGORY_LABEL[id];
+  },
+
+  getPurchased(offerId: string): number {
+    const offer = getShopOffer(offerId);
+    if (!offer) return 0;
+    return getBucket(offer).bought;
+  },
+
+  getRemainingLimit(offerId: string): number | null {
+    const offer = getShopOffer(offerId);
+    if (!offer || offer.purchaseLimit == null) return null;
+    return Math.max(0, offer.purchaseLimit - getBucket(offer).bought);
+  },
+
+  maxAffordablePacks(offerId: string): number {
+    const offer = getShopOffer(offerId);
+    if (!offer) return 0;
+    const balance = economyService.getBalance(offer.currency);
+    const byFunds = Math.floor(balance / Math.max(1, offer.price));
+    let capped = byFunds;
+    const remaining = this.getRemainingLimit(offerId);
+    if (remaining != null) capped = Math.min(capped, remaining);
+    if (offer.stock != null) capped = Math.min(capped, Math.max(0, offer.stock));
+    const room = inventoryRoomFor(offer.itemId);
+    const perPack = Math.max(1, offer.quantityPerPurchase);
+    let bundleExtra = 0;
+    if (offer.bundleRewards?.length) {
+      for (const row of offer.bundleRewards) {
+        const need = Math.max(0, Math.floor(row.quantity));
+        if (need <= 0) continue;
+        const br = inventoryRoomFor(row.itemId);
+        bundleExtra = Math.max(bundleExtra, Math.floor(br / need));
+      }
+    }
+    const byStack = Math.floor(room / perPack);
+    const byInv = offer.bundleRewards?.length ? Math.min(byStack, bundleExtra || byStack) : byStack;
+    return Math.max(0, Math.min(capped, byInv, 99));
+  },
+
+  isEligible(offer: ShopOffer): { ok: boolean; reason?: string } {
+    if (store.getSnapshot().forceEligible) return { ok: true };
+    const level = vitalsStore.getLevel();
+    if (offer.requirements?.playerLevel != null && level < offer.requirements.playerLevel) {
+      return { ok: false, reason: `Requer nível ${offer.requirements.playerLevel}` };
+    }
+    return { ok: true };
+  },
+
+  /** DEV — força elegibilidade de ofertas. */
+  setForceEligible(force: boolean): void {
+    store.setState({ ...store.getSnapshot(), forceEligible: force });
+  },
+
   listSellable(): readonly { itemId: string; quantity: number; unitPrice: number }[] {
     const byId = new Map<string, number>();
     for (const slot of inventoryStore.getSnapshot().slots) {
       if (!slot) continue;
       byId.set(slot.itemId, (byId.get(slot.itemId) ?? 0) + slot.quantity);
     }
-
     const out: { itemId: string; quantity: number; unitPrice: number }[] = [];
     for (const [itemId, quantity] of byId) {
-      const unitPrice = getNpcSellPrice(itemId);
+      if (!isItemSellable(itemId)) continue;
+      const unitPrice = getItemSellValue(itemId);
       if (unitPrice <= 0) continue;
       out.push({ itemId, quantity, unitPrice });
     }
@@ -84,64 +232,165 @@ export const shopStore = {
     return out;
   },
 
-  buy(offerId: string, quantity = 1): boolean {
+  /**
+   * Compra `packs` da oferta (cada pack entrega quantityPerPurchase itens).
+   * Atômica + anti double-click.
+   */
+  buy(offerId: string, packs = 1): boolean {
     const offer = getShopOffer(offerId);
-    if (!offer || quantity <= 0) return false;
+    const packCount = Math.floor(packs);
+    if (!offer || packCount <= 0) return false;
 
-    const result = inventoryStore.buyItem({
-      itemId: offer.itemId,
-      quantity,
-      price: offer.price,
-      currencyItemId: offer.currencyItemId,
-    });
+    if (purchaseInFlight.has(offerId) || purchaseInFlight.has('*')) {
+      emitSystemMessage('Compra em andamento…');
+      return false;
+    }
 
-    const currency = getItem(offer.currencyItemId);
-    let message: string;
-    if (result === 'ok') {
-      message = `Comprou ${quantity}× ${offer.name}.`;
+    const eligible = this.isEligible(offer);
+    if (!eligible.ok) {
+      emitSystemMessage(eligible.reason ?? 'Oferta bloqueada.');
+      return false;
+    }
+
+    const remaining = this.getRemainingLimit(offerId);
+    if (remaining != null && packCount > remaining) {
+      emitSystemMessage(`Limite de compra atingido (${remaining} restantes).`);
+      return false;
+    }
+
+    const totalCost = offer.price * packCount;
+    const totalItems = offer.quantityPerPurchase * packCount;
+    const name = getOfferDisplayName(offer);
+
+    if (!economyService.canAfford(offer.currency, totalCost)) {
+      const label = offer.currency === 'copper' ? 'Copper' : 'Anime Coins';
+      emitSystemMessage(`${label} insuficiente. Precisa de ${totalCost}.`);
+      store.setState({ ...store.getSnapshot(), lastResult: 'Sem saldo' });
+      return false;
+    }
+
+    purchaseInFlight.add(offerId);
+    purchaseInFlight.add('*');
+    try {
+      // Gasta primeiro; reembolsa se entrega falhar.
+      if (!economyService.spendCurrency(offer.currency, totalCost, 'shopPurchase', {
+        offerId,
+        itemId: offer.itemId,
+        quantity: totalItems,
+      })) {
+        emitSystemMessage('Saldo insuficiente.');
+        return false;
+      }
+
+      const leftover = inventoryStore.addItem(offer.itemId, totalItems, 'unknown');
+      if (leftover > 0) {
+        economyService.grantCurrency(offer.currency, totalCost, 'shopPurchase', {
+          refund: true,
+          offerId,
+        });
+        if (leftover < totalItems) {
+          inventoryStore.removeItem(offer.itemId, totalItems - leftover);
+        }
+        emitSystemMessage('Inventário cheio — moeda reembolsada.');
+        store.setState({ ...store.getSnapshot(), lastResult: 'Inventário cheio' });
+        return false;
+      }
+
+      if (offer.bundleRewards?.length) {
+        for (const row of offer.bundleRewards) {
+          const qty = Math.max(0, Math.floor(row.quantity)) * packCount;
+          if (qty <= 0) continue;
+          const left = inventoryStore.addItem(row.itemId, qty, 'unknown');
+          if (left > 0) {
+            // Reembolso total se bundle falhar parcialmente.
+            inventoryStore.removeItem(offer.itemId, totalItems);
+            for (const prev of offer.bundleRewards) {
+              if (prev === row) break;
+              inventoryStore.removeItem(prev.itemId, Math.floor(prev.quantity) * packCount);
+            }
+            if (left < qty) inventoryStore.removeItem(row.itemId, qty - left);
+            economyService.grantCurrency(offer.currency, totalCost, 'shopPurchase', {
+              refund: true,
+              offerId,
+              bundle: true,
+            });
+            emitSystemMessage('Inventário cheio (bundle) — moeda reembolsada.');
+            return false;
+          }
+        }
+      }
+
+      if (offer.purchaseLimit != null) {
+        const bucket = getBucket(offer);
+        setBucket(offer.id, {
+          bought: bucket.bought + packCount,
+          resetCycleId: bucket.resetCycleId ?? cycleForOffer(offer),
+        });
+      }
+
+      emitShopPurchaseCompleted({
+        offerId: offer.id,
+        currency: offer.currency,
+        price: totalCost,
+        itemId: offer.itemId,
+        quantity: totalItems,
+      });
+      const message = `Comprou ${totalItems}× ${name}.`;
       emitSystemMessage(message);
       store.setState({ ...store.getSnapshot(), lastResult: message });
       return true;
+    } finally {
+      purchaseInFlight.delete(offerId);
+      purchaseInFlight.delete('*');
     }
-    if (result === 'no-funds') {
-      message = `Cobre insuficiente. Precisa de ${offer.price * quantity} ${currency?.name ?? 'moedas'}.`;
-    } else if (result === 'no-space') {
-      message = 'Inventário cheio — liberte um slot antes de comprar.';
-    } else {
-      message = 'Não foi possível concluir a compra.';
-    }
-    emitSystemMessage(message);
-    store.setState({ ...store.getSnapshot(), lastResult: message });
-    return false;
   },
 
   sell(itemId: string, quantity = 1): boolean {
-    const unitPrice = getNpcSellPrice(itemId);
-    if (unitPrice <= 0 || quantity <= 0) return false;
+    const qty = Math.floor(quantity);
+    if (!isItemSellable(itemId) || qty <= 0) {
+      emitSystemMessage('Item não vendável.');
+      return false;
+    }
+    const unitPrice = getItemSellValue(itemId);
+    if (unitPrice <= 0) return false;
 
     const def = getItem(itemId);
-    const result = inventoryStore.sellItem({
-      itemId,
-      quantity,
-      unitPrice,
-      currencyItemId: SHOP_CURRENCY_ITEM_ID,
-    });
-
-    let message: string;
-    if (result === 'ok') {
-      const total = unitPrice * quantity;
-      message = `Vendeu ${quantity}× ${def?.name ?? itemId} por ${total} cobre.`;
+    if (purchaseInFlight.has('sell') || purchaseInFlight.has('*')) return false;
+    purchaseInFlight.add('sell');
+    purchaseInFlight.add('*');
+    try {
+      if (!inventoryStore.removeItem(itemId, qty)) {
+        emitSystemMessage('Quantidade insuficiente.');
+        return false;
+      }
+      const total = unitPrice * qty;
+      economyService.grantCurrency('copper', total, 'shopSale', {
+        itemId,
+        quantity: qty,
+        unitPrice,
+      });
+      emitItemSold({ itemId, quantity: qty, unitPrice, totalCopper: total });
+      const message = `Vendeu ${qty}× ${def?.name ?? itemId} por ${total} cobre.`;
       emitSystemMessage(message);
       store.setState({ ...store.getSnapshot(), lastResult: message });
       return true;
+    } finally {
+      purchaseInFlight.delete('sell');
+      purchaseInFlight.delete('*');
     }
-    if (result === 'no-stock') {
-      message = 'Quantidade insuficiente no inventário.';
-    } else {
-      message = 'Não foi possível concluir a venda.';
+  },
+
+  /** Compat VIP restock — mesma compra atômica. */
+  buyForVipRestock(offerId: string, quantity: number): boolean {
+    const offer = getShopOffer(offerId);
+    if (!offer || offer.quantityPerPurchase !== 1) {
+      // packs: quantity = packs
+      return this.buy(offerId, quantity);
     }
-    emitSystemMessage(message);
-    store.setState({ ...store.getSnapshot(), lastResult: message });
-    return false;
+    return this.buy(offerId, quantity);
+  },
+
+  devResetLimits(): void {
+    store.setState({ ...store.getSnapshot(), purchases: {} });
   },
 };

@@ -38,11 +38,10 @@ const COLS = HUB_W / TILE;
 const ROWS = HUB_H / TILE;
 
 /**
- * Passeio de pedra da plataforma, medido na arte: a pedra iluminada vai de
- * y=1468 a 1493 e o muro escuro começa em 1494. Pés em 1489 deixam o
- * personagem na borda da frente do passeio, com a pedra visível sob ele.
+ * Passeio de pedra (arte 4096×2160 atual): ladrilho iluminado começa ~1587.
+ * Pés em 1596. A colisão TMX não deve prender o Y — o hub lateral usa clamp.
  */
-const FLOOR_Y = 1489;
+const FLOOR_Y = 1620;
 /** Margem lateral: impede o jogador de encostar na borda da tela. */
 const EDGE_MARGIN = 96;
 

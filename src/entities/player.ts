@@ -1,20 +1,53 @@
 import * as Phaser from 'phaser';
 import { NAMEPLATE_GAP_PX } from '@/constants/combat';
 import { addNameplate, PLAYER_NAMEPLATE_STYLE, worldDepthForY } from '@/constants/nameplate';
+import { combatTextDepthForY } from '@/constants/render-layers';
 import { directionFacesLeft, PLAYER_DIRECTIONS, type PlayerDirection } from '@/constants/player';
 import { CHARACTER_BODY_HEIGHT, CHARACTER_BODY_WIDTH } from '@/constants/sprites';
 import {
   characterDisplayScale,
   characterLateralOrigin,
   characterNameplateLift,
+  createSpriteSheetAnimation,
+  loadSpriteSheets,
   packDeathAnimKey,
   packHurtAnimKey,
   type CharacterPack,
   type CharacterSkillAnimDef,
   type SpriteSheetDef,
 } from '@/data/character-packs';
-import { attributesStore } from '@/stores/attributes-store';
+import { applySharedVfxToAnim, type SkillVfxOverlay } from '@/data/vfx/apply-skill-vfx';
+import { resolveAwakeningRuntime } from '@/lib/awakening-runtime';
+import { resolveEffectiveSkillAnim } from '@/lib/resolve-effective-skill';
+import { getEffectiveCombatStats, PLAYER_STATUS_UNIT_ID } from '@/systems/combat-stats';
+import { cloneSkillStatusEffects } from '@/data/status-effect-def';
+import { characterLabStore, isCharacterLabSession } from '@/stores/character-lab-store';
+import { skillActionLockMs } from '@/lib/combat-visual-timing';
+import {
+  poseDurationMs,
+  poseSheetToSpriteDef,
+  skillAnimHasPose,
+  type LabPoseSheet,
+} from '@/lib/dev/lab-pose-sheet';
 import type { PlayerAnimState } from '@/types/net';
+import {
+  resolveSpriteAlignment,
+  type SpriteAlignmentContext,
+  type SpriteAlignmentPoint,
+} from '@/lib/sprite-alignment';
+import { locationStore } from '@/stores/location-store';
+/** Overlay da Skill: só envia campos que a Skill já tinha ou que o usuário mudou no lab. */
+function labSkillVfxOverlay(
+  lab: ReturnType<typeof characterLabStore.getSnapshot>,
+  anim: CharacterSkillAnimDef,
+): SkillVfxOverlay {
+  const orig = lab.skillOriginals;
+  const overlay: SkillVfxOverlay = {};
+  if (anim.fxScale != null || lab.vfxScale !== orig.vfxScale) overlay.scale = lab.vfxScale;
+  if (anim.vfxOffsetX != null || lab.vfxOffsetX !== orig.vfxOffsetX) overlay.offsetX = lab.vfxOffsetX;
+  if (anim.vfxOffsetY != null || lab.vfxOffsetY !== orig.vfxOffsetY) overlay.offsetY = lab.vfxOffsetY;
+  return overlay;
+}
 
 export interface PlayerSpawnOptions {
   x: number;
@@ -29,14 +62,20 @@ export interface PlayerSpawnOptions {
    * ativo — o que só faz sentido para o jogador, não para aliados do time.
    */
   moveSpeed?: number;
+  /** CharacterInstance desta cópia. Lab preview ignora o save. */
+  instanceId?: string | null;
+  /**
+   * Contexto de alignment visual. Default: deduz do locationStore
+   * (`hub` vs hunt/combat).
+   */
+  alignmentContext?: SpriteAlignmentContext;
 }
-
 /**
  * Jogador idle com pack visual do starter (Naruto / Sasuke / …).
  */
 export class Player {
   readonly sprite: Phaser.Physics.Arcade.Sprite;
-  readonly pack: CharacterPack;
+  pack: CharacterPack;
   private readonly nameLabel: Phaser.GameObjects.Text | null;
   private facing: PlayerDirection = 'down';
   private anim: PlayerAnimState = 'idle';
@@ -44,16 +83,30 @@ export class Player {
   /** Índice do próximo hit da cadeia de combos (1→2→3→1…). */
   private comboStep = 0;
   private lastAttackSheet: SpriteSheetDef | null = null;
-  readonly worldScale: number;
+  worldScale: number;
   private readonly moveSpeed: number | null;
-  private readonly scaleX: number;
-  private readonly scaleY: number;
-  private readonly nameplateLift: number;
+  readonly instanceId: string | null;
+  private scaleX: number;
+  private scaleY: number;
+  private nameplateLift: number;
   private readonly skillAnimKeys: Set<string>;
   private readonly attackAnimKeys: Set<string>;
   private readonly hurtAnimKey: string | null;
   private readonly deathAnimKey: string | null;
   private dead = false;
+  private labScaleX = 1;
+  private labScaleY = 1;
+  private labPoseScaleX = 1;
+  private labPoseScaleY = 1;
+  private labOffsetX = 0;
+  private labOffsetY = 0;
+  private labVfxScale = 1;
+  private labVfxOffsetX = 0;
+  private labVfxOffsetY = 0;
+  /** Contexto Hub/Hunt para `pack.spriteAlignment`. */
+  private readonly alignmentContext: SpriteAlignmentContext;
+  /** Última folha usada no origin (idle/walk/skill). */
+  private originSheet: SpriteSheetDef | null = null;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -63,8 +116,11 @@ export class Player {
     // Escala do pack (walk → jutsus); X pode ser mais estreito que Y.
     this.worldScale = options.worldScale ?? 1;
     this.moveSpeed = options.moveSpeed ?? null;
-    const display = characterDisplayScale(options.pack);
-    this.scaleX = display.x * this.worldScale;
+    this.instanceId = options.instanceId ?? null;
+    this.alignmentContext =
+      options.alignmentContext ??
+      (locationStore.getSnapshot().mode === 'hub' ? 'hub' : 'hunt');
+    const display = characterDisplayScale(options.pack);    this.scaleX = display.x * this.worldScale;
     this.scaleY = display.y * this.worldScale;
     this.nameplateLift = characterNameplateLift(options.pack) * this.worldScale;
     this.skillAnimKeys = new Set(
@@ -146,7 +202,7 @@ export class Player {
       Math.round(this.sprite.x),
       Math.round(this.sprite.y - this.nameplateLift - NAMEPLATE_GAP_PX * this.worldScale),
     );
-    this.nameLabel.setDepth(depth + 3);
+    this.nameLabel.setDepth(combatTextDepthForY(this.sprite.y, 3));
   }
 
   /** Remove sprite e nameplate (aliados trocam de mapa junto com a cena). */
@@ -228,7 +284,9 @@ export class Player {
   }
 
   private speed(): number {
-    return (this.moveSpeed ?? attributesStore.getSpeed()) * this.worldScale;
+    return (
+      (this.moveSpeed ?? getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).movementSpeed) * this.worldScale
+    );
   }
 
   faceToward(targetX: number, targetY: number): void {
@@ -291,18 +349,31 @@ export class Player {
     const def = this.pack.skillAnims[skillId];
     if (!def || this.isBusy()) return null;
 
-    const animKey = `skill-${def.key}`;
-    if (!this.scene.anims.exists(animKey)) return null;
-
-    // Trava no lugar: especial não herda velocity/walk da perseguição.
+    const hasPose = skillAnimHasPose(def);
+    const lockMs = skillActionLockMs(def);
     this.anim = 'idle';
-    const castMs = Math.max(def.durationMs, def.hitDelayMs ?? def.durationMs);
-    this.busyUntil = this.scene.time.now + castMs;
+    this.busyUntil = this.scene.time.now + lockMs;
     this.sprite.setVelocity(0, 0);
     this.sprite.clearTint();
-    // As folhas de jutsu são de lado, sempre voltadas para a direita.
     this.sprite.setFlipX(directionFacesLeft(this.facing));
-    // Escala única do pack; origin da folha (pés) evita slide em beams largos.
+
+    if (!hasPose) {
+      this.labPoseScaleX = 1;
+      this.labPoseScaleY = 1;
+      this.applyBaseScale();
+      return def.hitDelayMs;
+    }
+
+    const animKey = `skill-${def.key}`;
+    if (!createSpriteSheetAnimation(this.scene, def, animKey)) {
+      this.labPoseScaleX = 1;
+      this.labPoseScaleY = 1;
+      this.applyBaseScale();
+      return def.hitDelayMs;
+    }
+
+    this.labPoseScaleX = def.cast?.scaleX ?? def.cast?.scale ?? 1;
+    this.labPoseScaleY = def.cast?.scaleY ?? def.cast?.scale ?? 1;
     this.applyBaseScale();
     this.applySheetOrigin(def);
     this.sprite.anims.play(animKey, true);
@@ -310,8 +381,181 @@ export class Player {
     return def.hitDelayMs;
   }
 
+  /**
+   * Atualiza o pack em sessão (Lab save) sem recarregar a cena.
+   */
+  replacePack(pack: CharacterPack): void {
+    this.pack = pack;
+    if (!this.pack.outfit && this.sprite?.active) {
+      this.applySheetOrigin(this.pack.idle ?? this.pack.walk);
+    }
+  }
+
   getSkillAnim(skillId: string): CharacterSkillAnimDef | undefined {
-    return this.pack.skillAnims[skillId];
+    const def = this.pack.skillAnims[skillId];
+    if (!def) return undefined;
+    const awakeningCtx = resolveAwakeningRuntime({
+      characterId: this.pack.id,
+      instanceId: this.instanceId,
+    });
+    const awakened = resolveEffectiveSkillAnim(def, skillId, awakeningCtx) ?? def;
+    if (!isCharacterLabSession()) return awakened;
+    const lab = characterLabStore.getSnapshot();
+    if (!characterLabStore.skillOverrideDirty()) return awakened;
+    const injectTargeting = lab.skillOriginals.hasOfficialTargetMode || characterLabStore.hasUnsavedSkillChanges();
+    const overlayed = applySharedVfxToAnim(
+      { ...awakened, fx: awakened.fx ? { ...awakened.fx } : awakened.fx },
+      lab.vfxId,
+      labSkillVfxOverlay(lab, awakened),
+    );
+    return {
+      ...overlayed,
+      execution: lab.execution,
+      statusEffects: cloneSkillStatusEffects(lab.statusEffects),
+      element: lab.skillElement,
+      ai: lab.skillAi,
+      targeting: injectTargeting
+        ? {
+            mode: lab.targetMode,
+            travelSpeed: lab.travelSpeed,
+            spawnOffsetX: lab.spawnOffsetX,
+            spawnOffsetY: lab.spawnOffsetY,
+            targetOffsetX: lab.targetOffsetX,
+            targetOffsetY: lab.targetOffsetY,
+          }
+        : awakened.targeting
+          ? { ...awakened.targeting }
+          : awakened.targeting,
+    };
+  }
+
+  applyLabVisuals(options: {
+    scaleX: number;
+    scaleY: number;
+    offsetX: number;
+    offsetY: number;
+    vfxScale: number;
+    vfxOffsetX: number;
+    vfxOffsetY: number;
+    animationSpeed: number;
+  }): void {
+    this.labScaleX = options.scaleX;
+    this.labScaleY = options.scaleY;
+    this.labOffsetX = options.offsetX;
+    this.labOffsetY = options.offsetY;
+    this.labVfxScale = options.vfxScale;
+    this.labVfxOffsetX = options.vfxOffsetX;
+    this.labVfxOffsetY = options.vfxOffsetY;
+    const anims = this.sprite?.anims;
+    if (!this.sprite?.active || !anims) return;
+    anims.timeScale = options.animationSpeed;
+    this.applyBaseScale();
+    this.previewLabAlignment();
+  }
+
+  /** Hunt / teardown: não herdar speed/offset/scale do DEV Lab. */
+  resetLabVisualOverrides(): void {
+    this.applyLabVisuals({
+      scaleX: 1,
+      scaleY: 1,
+      offsetX: 0,
+      offsetY: 0,
+      vfxScale: 1,
+      vfxOffsetX: 0,
+      vfxOffsetY: 0,
+      animationSpeed: 1,
+    });
+  }
+
+  getFrameDebug(): {
+    anim: string;
+    frame: number;
+    total: number;
+    timeMs: number;
+    actionLocked: boolean;
+  } | null {
+    const anim = this.sprite.anims.currentAnim;
+    const current = this.sprite.anims.currentFrame;
+    if (!anim || !current) return null;
+    return {
+      anim: anim.key,
+      frame: current.index + 1,
+      total: anim.frames.length,
+      timeMs: Math.round(this.sprite.anims.getProgress() * (anim.duration || 0)),
+      actionLocked: this.isBusy(),
+    };
+  }
+
+  playLabSlot(slot: 'idle' | 'walk' | 'attack' | 'combo1' | 'combo2' | 'combo3' | 'hurt' | 'death' | 'special1' | 'special2' | 'special3'): void {
+    this.dead = false;
+    this.busyUntil = 0;
+    this.sprite.setVelocity(0, 0);
+    if (slot === 'idle') {
+      this.anim = 'idle';
+      this.playIdle();
+      return;
+    }
+    if (slot === 'walk') {
+      this.anim = 'walk';
+      this.playWalk();
+      return;
+    }
+    if (slot === 'hurt') {
+      this.playHurt();
+      return;
+    }
+    if (slot === 'death') {
+      this.playDeath();
+      return;
+    }
+    if (slot === 'attack' || slot === 'combo1' || slot === 'combo2' || slot === 'combo3') {
+      const chain = packAttackSheets(this.pack);
+      if (slot === 'combo1') this.comboStep = 0;
+      if (slot === 'combo2') this.comboStep = Math.min(1, chain.length - 1);
+      if (slot === 'combo3') this.comboStep = Math.min(2, chain.length - 1);
+      this.playAttack();
+      return;
+    }
+    const index = slot === 'special1' ? 0 : slot === 'special2' ? 1 : 2;
+    const skillId = this.pack.hotbarSkillIds[index];
+    if (skillId) this.playSkillAnim(skillId);
+  }
+
+  resetLabPose(): void {
+    this.labPoseScaleX = 1;
+    this.labPoseScaleY = 1;
+    this.clearDeath();
+    this.busyUntil = 0;
+    this.sprite.setVelocity(0, 0);
+    this.anim = 'idle';
+    this.playIdle();
+  }
+
+  async playLabPoseSheet(sheet: LabPoseSheet): Promise<boolean> {
+    this.resetLabPose();
+    const def = poseSheetToSpriteDef(sheet);
+    if (!def.url && !def.frames?.length) return false;
+    try {
+      await loadSpriteSheets(this.scene, [def]);
+    } catch (error) {
+      console.warn('[Player] falha ao carregar pose', error);
+      return false;
+    }
+    const animKey = `lab-pose-${def.key}`;
+    if (!createSpriteSheetAnimation(this.scene, def, animKey)) return false;
+    this.dead = false;
+    const durationMs = poseDurationMs(sheet);
+    this.busyUntil = this.scene.time.now + (sheet.loop ? 60_000 : durationMs);
+    this.anim = 'idle';
+    this.sprite.setVelocity(0, 0);
+    this.sprite.setFlipX(directionFacesLeft(this.facing));
+    this.labPoseScaleX = sheet.scaleX;
+    this.labPoseScaleY = sheet.scaleY;
+    this.applyBaseScale();
+    this.applySheetOrigin(def);
+    this.sprite.anims.play(animKey, true);
+    this.refreshBodyOffset();
+    return true;
   }
 
   /**
@@ -392,6 +636,8 @@ export class Player {
   private finishSkillHold(): void {
     if (this.dead) return;
     this.busyUntil = 0;
+    this.labPoseScaleX = 1;
+    this.labPoseScaleY = 1;
     this.applyBaseScale();
     this.anim = 'idle';
     this.sprite.clearTint();
@@ -447,14 +693,105 @@ export class Player {
   }
 
   private applyBaseScale(): void {
-    this.sprite.setScale(this.scaleX, this.scaleY);
+    this.sprite.setScale(this.scaleX * this.labScaleX * this.labPoseScaleX, this.scaleY * this.labScaleY * this.labPoseScaleY);
   }
 
-  /** Origin da folha atual (pés em jutsus largos / hover em fly). */
+  /** Hot-apply de `layoutScale` / worldScale (Map Viewport Lab). Não muda colisão do TMX. */
+  setWorldScale(scale: number): void {
+    if (!(scale > 0) || !Number.isFinite(scale)) return;
+    if (Math.abs(scale - this.worldScale) < 0.0001) return;
+    this.worldScale = scale;
+    const display = characterDisplayScale(this.pack);
+    this.scaleX = display.x * scale;
+    this.scaleY = display.y * scale;
+    this.nameplateLift = characterNameplateLift(this.pack) * scale;
+    this.nameLabel?.setScale(scale);
+    this.applyBaseScale();
+    this.refreshBodyOffset();
+    this.syncPresentation();
+  }
+
+  /**
+   * Alinhamento visual da sprite (origin). Não altera worldX/worldY.
+   * Ordem: sheet offset (pose/skill) + lab body offset + character global alignment.
+   */
   private applySheetOrigin(sheet: SpriteSheetDef): void {
     if (this.pack.outfit) return;
-    const origin = characterLateralOrigin(this.pack, sheet);
+    this.originSheet = sheet;
+    const alignment = this.resolveActiveAlignment();
+    const origin = characterLateralOrigin(this.pack, {
+      ...sheet,
+      offsetX: (sheet.offsetX ?? 0) + this.labOffsetX + alignment.x,
+      offsetY: (sheet.offsetY ?? 0) + this.labOffsetY + alignment.y,
+    });
     this.sprite.setOrigin(origin.x, origin.y);
+  }
+
+  /**
+   * Aplica o rascunho Hub/Hunt Y do Lab neste avatar (preview ao vivo).
+   * O slider de Position Y só mudava o React — o Phaser não reaplicava o origin.
+   */
+  previewLabAlignment(): void {
+    if (this.pack.outfit || !this.sprite?.active) return;
+    if (!isCharacterLabSession()) return;
+    const lab = characterLabStore.getSnapshot();
+    const alignment =
+      lab.alignContext === 'hub'
+        ? { x: lab.alignHubX, y: lab.alignHubY }
+        : { x: lab.alignHuntX, y: lab.alignHuntY };
+    const sheet = this.originSheet ?? this.pack.idle ?? this.pack.walk;
+    this.originSheet = sheet;
+    const origin = characterLateralOrigin(this.pack, {
+      ...sheet,
+      offsetX: (sheet.offsetX ?? 0) + this.labOffsetX + alignment.x,
+      offsetY: (sheet.offsetY ?? 0) + this.labOffsetY + alignment.y,
+    });
+    this.sprite.setOrigin(origin.x, origin.y);
+    this.refreshBodyOffset();
+  }
+
+  /** Alignment efetivo: rascunho do Lab (sessão aberta) ou pack salvo. */
+  private resolveActiveAlignment(): SpriteAlignmentPoint {
+    if (isCharacterLabSession()) {
+      const lab = characterLabStore.getSnapshot();
+      if (lab.isOpen && (!lab.playerId || this.packMatchesLab(lab.playerId))) {
+        return lab.alignContext === 'hub'
+          ? { x: lab.alignHubX, y: lab.alignHubY }
+          : { x: lab.alignHuntX, y: lab.alignHuntY };
+      }
+    }
+    return resolveSpriteAlignment(this.pack.spriteAlignment, this.alignmentContext);
+  }
+
+  private packMatchesLab(playerId: string): boolean {
+    return this.pack.id === playerId;
+  }
+
+  /** Breakdown Base → Global → Pose para o Dev Lab. */
+  getAlignmentDebug(): {
+    context: SpriteAlignmentContext;
+    base: SpriteAlignmentPoint;
+    alignment: SpriteAlignmentPoint;
+    poseOffset: SpriteAlignmentPoint;
+    final: SpriteAlignmentPoint;
+  } {
+    const sheet = this.lastAttackSheet ?? this.pack.idle ?? this.pack.walk;
+    const alignment = this.resolveActiveAlignment();
+    const poseOffset = {
+      x: (sheet.offsetX ?? 0) + this.labOffsetX,
+      y: (sheet.offsetY ?? 0) + this.labOffsetY,
+    };
+    const base = { x: Math.round(this.sprite.x), y: Math.round(this.sprite.y) };
+    return {
+      context: this.alignmentContext,
+      base,
+      alignment,
+      poseOffset,
+      final: {
+        x: base.x + alignment.x + poseOffset.x,
+        y: base.y + alignment.y + poseOffset.y,
+      },
+    };
   }
 
   private refreshBodyOffset(): void {
@@ -581,18 +918,21 @@ export class Player {
 
     for (const def of Object.values(pack.skillAnims)) {
       const animKey = `skill-${def.key}`;
-      if (!scene.textures.exists(def.key)) continue;
-      // Sempre recria: textura pode ter mudado (fw/fh) e anims antigas leem frames errados.
-      if (scene.anims.exists(animKey)) scene.anims.remove(animKey);
-      scene.anims.create({
-        key: animKey,
-        frames: scene.anims.generateFrameNumbers(def.key, {
-          start: 0,
-          end: def.frameCount - 1,
-        }),
-        frameRate: def.frameRate ?? 12,
-        repeat: 0,
-      });
+      if (def.frames && def.frames.length > 0) {
+        if (!createSpriteSheetAnimation(scene, def, animKey)) continue;
+      } else {
+        if (!scene.textures.exists(def.key)) continue;
+        if (scene.anims.exists(animKey)) scene.anims.remove(animKey);
+        scene.anims.create({
+          key: animKey,
+          frames: scene.anims.generateFrameNumbers(def.key, {
+            start: 0,
+            end: def.frameCount - 1,
+          }),
+          frameRate: def.frameRate ?? 12,
+          repeat: def.loop ? -1 : 0,
+        });
+      }
 
       if (def.fx && scene.textures.exists(def.fx.key) && !scene.anims.exists(`fx-${def.fx.key}`)) {
         scene.anims.create({

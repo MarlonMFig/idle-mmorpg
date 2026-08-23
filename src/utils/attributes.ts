@@ -11,8 +11,12 @@ import type {
   AttributeValues,
   PlayerAttributes,
 } from '@/types/attributes';
-import type { CharacterPotential } from '@/types/potential';
+import type { LineageSpecializationModifiers } from '@/types/lineage';
+import { applyQualityToPrimaryBase, resolveQualityStatMultiplier } from '@/constants/character-quality-stats';
+import type { CharacterQuality } from '@/types/character-meta';
 import { applyStarBonusToBase } from '@/utils/star-bonus';
+import { getAwakeningStatModifiers } from '@/lib/awakening-rewards';
+import { getLineageSpecializationStatModifiers } from '@/lib/lineage-specialization-modifiers';
 
 export function emptyModifiers(): AttributeModifiers {
   return {};
@@ -68,33 +72,66 @@ export function sumBuffModifiers(buffs: readonly AttributeBuff[], now = Date.now
 }
 
 /**
- * Compõe atributos: base×estrelas + nível + buffs.
- * Equipamento removido do jogo.
+ * Compõe atributos na ordem oficial:
+ * Base → Stars → Level → Quality (HP/ATK/DEF, uma vez) → Awakening → Lineage → Buffs.
+ * Qualidade vem da CharacterInstance, nunca da CharacterDefinition.
  */
 export function computePlayerAttributes(input: {
   level: number;
   stars?: number;
-  potential?: CharacterPotential;
+  quality?: CharacterQuality | null;
+  qualityStatMultiplier?: number | null;
   buffs?: readonly AttributeBuff[];
   now?: number;
+  characterId?: string | null;
+  awakeningLevel?: number;
+  lineageModifiers?: LineageSpecializationModifiers;
 }): PlayerAttributes {
-  const baseRaw = cloneValues(BASE_ATTRIBUTES);
   const stars = input.stars ?? 0;
-  const base = applyStarBonusToBase(baseRaw, stars, input.potential);
+  const base = applyStarBonusToBase(cloneValues(BASE_ATTRIBUTES), stars);
   const level = levelModifiersFor(input.level);
   const buffList = input.buffs ?? [];
   const buffs = sumBuffModifiers(buffList, input.now);
 
+  const progressed = createZeroValues();
+  addModifiers(progressed, base);
+  addModifiers(progressed, level);
+  const afterQuality = applyQualityToPrimaryBase(
+    progressed,
+    resolveQualityStatMultiplier(input.quality, input.qualityStatMultiplier),
+  );
+  const awakening = getAwakeningStatModifiers(
+    afterQuality,
+    input.characterId ?? null,
+    input.awakeningLevel ?? 0,
+  );
+
+  const afterAwakening = createZeroValues();
+  addModifiers(afterAwakening, afterQuality);
+  addModifiers(afterAwakening, awakening);
+  let lineage: AttributeModifiers = {};
+  try {
+    lineage = getLineageSpecializationStatModifiers(
+      afterAwakening,
+      input.characterId ?? null,
+      input.lineageModifiers,
+    );
+  } catch {
+    lineage = {};
+  }
+
   const totals = createZeroValues();
-  addModifiers(totals, base);
-  addModifiers(totals, level);
+  addModifiers(totals, afterQuality);
+  addModifiers(totals, awakening);
+  addModifiers(totals, lineage);
   addModifiers(totals, buffs);
 
   return {
     totals,
     base,
     level,
-    equipment: {},
+    awakening,
+    lineage,
     buffs,
     activeBuffs: buffList.filter(
       (buff) => buff.expiresAt == null || buff.expiresAt > (input.now ?? Date.now()),

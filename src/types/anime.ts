@@ -25,11 +25,10 @@ export const ANIME_LABELS: Record<AnimeId, string> = {
   'dragon-ball': 'Dragon Ball',
 };
 
-/** Clã de conta que representa cada anime (1:1). */
-export const ANIME_TO_CLAN: Record<
-  AnimeId,
-  'ninja' | 'shinigami' | 'pirata' | 'cacador' | 'feiticeiro' | 'guerreiro'
-> = {
+import type { LineageId } from '@/types/character-meta';
+
+/** Linhagem de conta que representa cada anime (1:1). */
+export const ANIME_TO_LINEAGE: Record<AnimeId, LineageId> = {
   naruto: 'ninja',
   bleach: 'shinigami',
   'one-piece': 'pirata',
@@ -37,3 +36,6 @@ export const ANIME_TO_CLAN: Record<
   jujutsu: 'feiticeiro',
   'dragon-ball': 'guerreiro',
 };
+
+/** @deprecated use ANIME_TO_LINEAGE */
+export const ANIME_TO_CLAN = ANIME_TO_LINEAGE;

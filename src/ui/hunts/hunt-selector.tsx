@@ -9,12 +9,13 @@ import { locationStore } from '@/stores/location-store';
 import type {
   HuntCatalog,
   HuntDefinition,
+  HuntSelectorTab,
   PhaserAtlasData,
   PhaserAtlasFrame,
 } from '@/types/hunt';
 import { getCuratedPortraitUrl } from '@/data/curated-map-sprites';
 
-const HUNTS_URL = '/data/wonsr/hunts.json';
+const HUNTS_URL = '/data/wonsr/hunts.json?v=wonsr-10maps';
 const ATLAS_URL = '/sprites/wonsr-hunts/characters.json';
 const ATLAS_IMAGE_URL = '/sprites/wonsr-hunts/characters.png';
 
@@ -42,16 +43,31 @@ function CharacterSprite({ lookType, frame, name }: CharacterSpriteProps) {
       />
     );
   }
-  if (!frame) return <span className="hunt-selector__sprite hunt-selector__sprite--empty" />;
+  if (frame) {
+    return (
+      <span
+        className="hunt-selector__sprite"
+        role="img"
+        aria-label={name}
+        title={`${name} · lookType ${lookType}`}
+        style={{
+          backgroundImage: `url(${ATLAS_IMAGE_URL})`,
+          backgroundPosition: `-${frame.frame.x}px -${frame.frame.y}px`,
+        }}
+      />
+    );
+  }
   return (
     <span
-      className="hunt-selector__sprite"
+      className="hunt-selector__sprite hunt-selector__sprite--outfit"
       role="img"
       aria-label={name}
       title={`${name} · lookType ${lookType}`}
       style={{
-        backgroundImage: `url(${ATLAS_IMAGE_URL})`,
-        backgroundPosition: `-${frame.frame.x}px -${frame.frame.y}px`,
+        backgroundImage: `url(/sprites/wonsr/outfits/${lookType}.png)`,
+        backgroundPosition: 'center bottom',
+        backgroundSize: 'contain',
+        backgroundRepeat: 'no-repeat',
       }}
     />
   );
@@ -65,6 +81,7 @@ export function HuntSelector() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [onlyUnlocked, setOnlyUnlocked] = useState(false);
+  const [tab, setTab] = useState<HuntSelectorTab>('wonsr');
 
   useEffect(() => {
     let cancelled = false;
@@ -80,7 +97,6 @@ export function HuntSelector() {
     ])
       .then(([nextCatalog, nextAtlas]) => {
         if (cancelled) return;
-        // TEST: FORCE_HUNT_LEVEL rewrites requiredLevel/level so list + gates show Nv 1.
         setCatalog(applyForcedHuntLevels(nextCatalog));
         setAtlas(nextAtlas);
       })
@@ -101,23 +117,26 @@ export function HuntSelector() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [open]);
 
+  const huntsOnTab = useMemo(
+    () =>
+      catalog?.hunts.filter((hunt) => (hunt.tab ?? 'naruto') === tab) ?? [],
+    [catalog, tab],
+  );
   const unlockedCount = useMemo(
-    () => catalog?.hunts.filter((hunt) => level >= hunt.requiredLevel).length ?? 0,
-    [catalog, level],
+    () => huntsOnTab.filter((hunt) => level >= hunt.requiredLevel).length,
+    [huntsOnTab, level],
   );
   const visibleHunts = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase('pt-BR');
-    return (
-      catalog?.hunts.filter((hunt) => {
-        if (onlyUnlocked && level < hunt.requiredLevel) return false;
-        if (!normalizedQuery) return true;
-        const target = hunt.targets[0];
-        return `${hunt.name} ${target?.name ?? ''} ${target?.category ?? ''}`
-          .toLocaleLowerCase('pt-BR')
-          .includes(normalizedQuery);
-      }) ?? []
-    );
-  }, [catalog, level, onlyUnlocked, query]);
+    return huntsOnTab.filter((hunt) => {
+      if (onlyUnlocked && level < hunt.requiredLevel) return false;
+      if (!normalizedQuery) return true;
+      const target = hunt.targets[0];
+      return `${hunt.name} ${target?.name ?? ''} ${target?.category ?? ''}`
+        .toLocaleLowerCase('pt-BR')
+        .includes(normalizedQuery);
+    });
+  }, [huntsOnTab, level, onlyUnlocked, query]);
   const displayedHunts = useMemo(() => visibleHunts.slice(0, 120), [visibleHunts]);
 
   if (!open) return null;
@@ -135,9 +154,11 @@ export function HuntSelector() {
         <header className="hunt-selector__header">
           <div>
             <p className="hunt-selector__eyebrow">Mapa-múndi</p>
-            <h2>Mapa Naruto World</h2>
+            <h2>
+              {tab === 'wonsr' ? 'WONSR' : tab === 'bosses' ? 'Bosses' : 'Mapa Naruto World'}
+            </h2>
             <p>
-              Seu nível: <strong>{level}</strong> · {unlockedCount}/{catalog?.counts.hunts ?? '—'} mapas
+              Seu nível: <strong>{level}</strong> · {unlockedCount}/{huntsOnTab.length || '—'} mapas
               liberados · um personagem por mapa
             </p>
           </div>
@@ -149,13 +170,43 @@ export function HuntSelector() {
         {error ? <p className="hunt-selector__status">{error}</p> : null}
         {!catalog && !error ? <p className="hunt-selector__status">Carregando caças…</p> : null}
 
+        <div className="hunt-selector__tabs" role="tablist" aria-label="Universo das caças">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'naruto'}
+            className={`hunt-selector__tab${tab === 'naruto' ? ' hunt-selector__tab--active' : ''}`}
+            onClick={() => setTab('naruto')}
+          >
+            Naruto World
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'wonsr'}
+            className={`hunt-selector__tab${tab === 'wonsr' ? ' hunt-selector__tab--active' : ''}`}
+            onClick={() => setTab('wonsr')}
+          >
+            WONSR
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'bosses'}
+            className={`hunt-selector__tab${tab === 'bosses' ? ' hunt-selector__tab--active' : ''}`}
+            onClick={() => setTab('bosses')}
+          >
+            Bosses
+          </button>
+        </div>
+
         <div className="hunt-selector__filters">
           <label>
             <span>Buscar personagem</span>
             <input
               type="search"
               value={query}
-              placeholder="Naruto, Gaara, Akatsuki…"
+              placeholder="Naruto, Kurama, Gyuki…"
               onChange={(event) => setQuery(event.target.value)}
             />
           </label>

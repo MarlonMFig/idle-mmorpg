@@ -1,23 +1,23 @@
 import {
-  ACHIEVEMENT_DEFS,
-  DAILY_LOGIN_GEMS,
   GEM_PACKAGES,
 } from '@/constants/aiw-gems';
-import {
-  REFINEMENT_CRYSTAL_GEM_PRICE,
-  REFINEMENT_CRYSTAL_ITEM_ID,
-  REFINEMENT_CRYSTAL_WEEKLY_LIMIT_F2P,
-  REFINEMENT_CRYSTAL_WEEKLY_LIMIT_VIP,
-} from '@/constants/aiw-potential';
+import { getDailyCycleId } from '@/lib/mission-cycle';
 import { emitSystemMessage } from '@/lib/system-log';
+import { achievementsStore } from '@/stores/achievements-store';
 import { createStore } from '@/stores/create-store';
-import { inventoryStore } from '@/stores/inventory-store';
-import { vipStore } from '@/stores/vip-store';
 
 export interface GemState {
   isOpen: boolean;
   balance: number;
+  /**
+   * @deprecated Item 34 — Daily Login unificado em dailyLoginStore.
+   * Mantido só para ler saves antigos; migration zera após consumir.
+   */
   lastLoginDay: string | null;
+  /**
+   * @deprecated Item 38 — Achievements unificados em achievementsStore.
+   * Lido só na migration; após aplicar, limpo e não reescrito com dados novos.
+   */
   claimedAchievements: Record<string, boolean>;
   totalKills: number;
   weeklyCrystalWeek: string | null;
@@ -34,25 +34,24 @@ const store = createStore<GemState>({
   weeklyCrystalPurchases: 0,
 });
 
-function todayKey(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const YMD_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * Normaliza lastLoginDay legado para cycleId YYYY-MM-DD (America/Sao_Paulo).
+ * Usado pela migration Item 34 — não concede reward.
+ */
+export function normalizeLegacyGemLoginDay(raw: string | null | undefined): string | null {
+  if (raw == null || raw === '') return null;
+  if (YMD_RE.test(raw)) return raw;
+  const parsed = Date.parse(raw);
+  if (Number.isFinite(parsed)) return getDailyCycleId(parsed);
+  return getDailyCycleId();
 }
 
-function weekKey(): string {
-  const d = new Date();
-  const oneJan = new Date(d.getFullYear(), 0, 1);
-  const week = Math.ceil(((d.getTime() - oneJan.getTime()) / 86400000 + oneJan.getDay() + 1) / 7);
-  return `${d.getFullYear()}-W${week}`;
-}
-
-function ensureWeeklyCrystal(): void {
-  const state = store.getSnapshot();
-  const wk = weekKey();
-  if (state.weeklyCrystalWeek === wk) return;
-  store.setState({ ...state, weeklyCrystalWeek: wk, weeklyCrystalPurchases: 0 });
-}
-
+/**
+ * Economia de Gemas / Anime Coins premium.
+ * Achievements NÃO vivem aqui (Item 38 → achievementsStore).
+ */
 export const gemStore = {
   subscribe(listener: () => void): () => void {
     return store.subscribe(listener);
@@ -64,19 +63,42 @@ export const gemStore = {
 
   hydrate(partial: Partial<GemState>): void {
     const state = store.getSnapshot();
+    const rawLogin =
+      typeof partial.lastLoginDay === 'string' || partial.lastLoginDay === null
+        ? partial.lastLoginDay
+        : state.lastLoginDay;
     store.setState({
       ...state,
       balance: typeof partial.balance === 'number' ? partial.balance : state.balance,
-      lastLoginDay:
-        typeof partial.lastLoginDay === 'string' ? partial.lastLoginDay : state.lastLoginDay,
-      claimedAchievements: partial.claimedAchievements ?? state.claimedAchievements,
+      lastLoginDay: normalizeLegacyGemLoginDay(rawLogin),
+      claimedAchievements:
+        partial.claimedAchievements && typeof partial.claimedAchievements === 'object'
+          ? { ...partial.claimedAchievements }
+          : state.claimedAchievements,
       totalKills: typeof partial.totalKills === 'number' ? partial.totalKills : state.totalKills,
-      weeklyCrystalWeek: partial.weeklyCrystalWeek ?? state.weeklyCrystalWeek,
+      weeklyCrystalWeek:
+        typeof partial.weeklyCrystalWeek === 'string' || partial.weeklyCrystalWeek === null
+          ? partial.weeklyCrystalWeek
+          : state.weeklyCrystalWeek,
       weeklyCrystalPurchases:
         typeof partial.weeklyCrystalPurchases === 'number'
           ? partial.weeklyCrystalPurchases
           : state.weeklyCrystalPurchases,
     });
+  },
+
+  /** Limpa campo legado Daily Login após migration (não toca balance). */
+  clearLegacyDailyLoginField(): void {
+    const state = store.getSnapshot();
+    if (state.lastLoginDay == null) return;
+    store.setState({ ...state, lastLoginDay: null });
+  },
+
+  /** Item 38 — zera mapa legado após migration (não concede/remove gems). */
+  clearLegacyAchievementClaims(): void {
+    const state = store.getSnapshot();
+    if (Object.keys(state.claimedAchievements).length === 0) return;
+    store.setState({ ...state, claimedAchievements: {} });
   },
 
   open(): void {
@@ -106,62 +128,10 @@ export const gemStore = {
     return true;
   },
 
-  /** Login diário: 5 gemas (F2P e VIP). */
-  claimDailyLogin(): boolean {
-    const today = todayKey();
-    const state = store.getSnapshot();
-    if (state.lastLoginDay === today) return false;
-    store.setState({
-      ...state,
-      lastLoginDay: today,
-      balance: state.balance + DAILY_LOGIN_GEMS,
-    });
-    emitSystemMessage(`Login diário: +${DAILY_LOGIN_GEMS} Gemas.`);
-    return true;
-  },
-
   recordKill(): void {
     const state = store.getSnapshot();
     store.setState({ ...state, totalKills: state.totalKills + 1 });
-    achievementStore.checkKillMilestones(state.totalKills + 1);
-  },
-
-  weeklyCrystalLimit(): number {
-    ensureWeeklyCrystal();
-    return vipStore.isActive()
-      ? REFINEMENT_CRYSTAL_WEEKLY_LIMIT_VIP
-      : REFINEMENT_CRYSTAL_WEEKLY_LIMIT_F2P;
-  },
-
-  weeklyCrystalRemaining(): number {
-    ensureWeeklyCrystal();
-    const state = store.getSnapshot();
-    return Math.max(0, this.weeklyCrystalLimit() - state.weeklyCrystalPurchases);
-  },
-
-  buyWeeklyRefinementCrystal(): boolean {
-    ensureWeeklyCrystal();
-    const state = store.getSnapshot();
-    if (state.weeklyCrystalPurchases >= this.weeklyCrystalLimit()) {
-      emitSystemMessage('Limite semanal de Cristais de Refinamento atingido.');
-      return false;
-    }
-    if (!this.spendGems(REFINEMENT_CRYSTAL_GEM_PRICE)) {
-      emitSystemMessage('Gemas insuficientes.');
-      return false;
-    }
-    if (!inventoryStore.addItem(REFINEMENT_CRYSTAL_ITEM_ID, 1)) {
-      this.addGems(REFINEMENT_CRYSTAL_GEM_PRICE);
-      emitSystemMessage('Inventário cheio.');
-      return false;
-    }
-    store.setState({
-      ...store.getSnapshot(),
-      weeklyCrystalPurchases: state.weeklyCrystalPurchases + 1,
-    });
-    emitSystemMessage('Cristal de Refinamento comprado na loja semanal.');
-    achievementStore.unlock('ach-first-refine');
-    return true;
+    achievementsStore.evaluate('onlineKills');
   },
 
   /** Dev: simula pacote (sem PIX). */
@@ -171,43 +141,5 @@ export const gemStore = {
     const bonus = Math.floor((pack.gems * pack.bonusPercent) / 100);
     this.addGems(pack.gems + bonus, pack.name);
     return true;
-  },
-
-  listAchievements(): typeof ACHIEVEMENT_DEFS {
-    return ACHIEVEMENT_DEFS;
-  },
-};
-
-/** Conquistas — recompensa em gemas, uma vez. */
-export const achievementStore = {
-  unlock(id: string): void {
-    const def = ACHIEVEMENT_DEFS.find((entry) => entry.id === id);
-    if (!def) return;
-    const state = gemStore.getSnapshot();
-    if (state.claimedAchievements[id]) return;
-    gemStore.hydrate({
-      claimedAchievements: { ...state.claimedAchievements, [id]: true },
-      balance: state.balance + def.gems,
-    });
-    emitSystemMessage(`Conquista: ${def.title} (+${def.gems} Gemas)`);
-  },
-
-  checkKillMilestones(kills: number): void {
-    if (kills >= 100) this.unlock('ach-kills-100');
-    if (kills >= 1000) this.unlock('ach-kills-1000');
-    if (kills >= 10000) this.unlock('ach-kills-10000');
-  },
-
-  checkAccountLevel(level: number): void {
-    if (level >= 10) this.unlock('ach-level-10');
-    if (level >= 25) this.unlock('ach-level-25');
-    if (level >= 50) this.unlock('ach-level-50');
-    if (level >= 100) this.unlock('ach-level-100');
-  },
-
-  checkPotentialGrade(grade: string): void {
-    if (grade === 'S') this.unlock('ach-potential-s');
-    if (grade === 'SS') this.unlock('ach-potential-ss');
-    if (grade === 'SSS') this.unlock('ach-potential-sss');
   },
 };

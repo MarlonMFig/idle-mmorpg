@@ -1,5 +1,7 @@
 import * as Phaser from 'phaser';
 import { SKILL_ELEMENT_COLOR } from '@/constants/skill';
+import { resolveSkillElement } from '@/data/damage-elements';
+import { combatTextDepthForY, vfxDepthForLayer } from '@/constants/render-layers';
 import type { SkillDefinition } from '@/types/skill';
 
 export interface SkillVfxPoints {
@@ -68,7 +70,7 @@ export class SkillVfx {
 
     const spark = this.scene.add
       .sprite(x, y - 18, COMBO_HIT_FX.key, 0)
-      .setDepth(24)
+      .setDepth(vfxDepthForLayer('front-of-characters', y))
       .setScale(scale)
       .setBlendMode(Phaser.BlendModes.ADD);
     spark.play(COMBO_HIT_FX.animKey);
@@ -76,7 +78,7 @@ export class SkillVfx {
   }
 
   play(skill: SkillDefinition, points: SkillVfxPoints): void {
-    const tint = skill.animation.tint ?? SKILL_ELEMENT_COLOR[skill.element];
+    const tint = skill.animation.tint ?? SKILL_ELEMENT_COLOR[resolveSkillElement(skill)];
     const duration = skill.animation.durationMs ?? 280;
     const scale = skill.animation.scale ?? 1;
 
@@ -142,7 +144,7 @@ export class SkillVfx {
 
     const effect = this.scene.add
       .sprite(points.toX, points.toY - 18, textureKey, 0)
-      .setDepth(22)
+      .setDepth(vfxDepthForLayer('front-of-characters', points.toY))
       .setScale(scale);
     effect.play(animationKey);
     effect.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => effect.destroy());
@@ -155,7 +157,7 @@ export class SkillVfx {
     scale: number,
   ): void {
     const orb = this.scene.add.circle(points.fromX, points.fromY - 12, 6 * scale, tint, 0.95);
-    orb.setDepth(20);
+    orb.setDepth(vfxDepthForLayer('front-of-characters', points.toY));
     this.scene.tweens.add({
       targets: orb,
       x: points.toX,
@@ -173,7 +175,7 @@ export class SkillVfx {
     const line = this.scene.add
       .line(0, 0, points.fromX, points.fromY - 10, points.toX, points.toY - 14, tint, 0.9)
       .setLineWidth(3 * scale)
-      .setDepth(20);
+      .setDepth(vfxDepthForLayer('front-of-characters', points.toY));
     this.scene.tweens.add({
       targets: line,
       alpha: 0,
@@ -193,7 +195,7 @@ export class SkillVfx {
       tint,
       0.55,
     );
-    arc.setDepth(20);
+    arc.setDepth(vfxDepthForLayer('front-of-characters', points.toY));
     this.scene.tweens.add({
       targets: arc,
       scaleX: 1.4,
@@ -207,7 +209,7 @@ export class SkillVfx {
   private playAura(points: SkillVfxPoints, tint: number, duration: number, scale: number): void {
     const ring = this.scene.add.circle(points.toX, points.toY - 12, 10 * scale, tint, 0.2);
     ring.setStrokeStyle(2 * scale, tint, 0.9);
-    ring.setDepth(19);
+    ring.setDepth(vfxDepthForLayer('front-of-characters', points.toY));
     this.scene.tweens.add({
       targets: ring,
       scaleX: 2.2,
@@ -229,7 +231,7 @@ export class SkillVfx {
 
     const ring = this.scene.add.ellipse(x, y, 30 * scale, 12 * scale, tint, 0.18);
     ring.setStrokeStyle(2, tint, 0.85);
-    ring.setDepth(6);
+    ring.setDepth(vfxDepthForLayer('behind-characters', y));
     this.scene.tweens.add({
       targets: ring,
       scaleX: 2.1,
@@ -259,7 +261,7 @@ export class SkillVfx {
       const offsetX = Phaser.Math.Between(-16, 16) * scale;
       const cross = this.scene.add
         .sprite(x + offsetX, y - Phaser.Math.Between(0, 14), HEAL_FX.key, 0)
-        .setDepth(23)
+        .setDepth(vfxDepthForLayer('front-of-characters', y))
         .setScale(0.55 * scale)
         .setTint(tint)
         .setAlpha(0);
@@ -297,7 +299,7 @@ export class SkillVfx {
         strokeThickness: 3,
       })
       .setOrigin(0.5)
-      .setDepth(30);
+      .setDepth(combatTextDepthForY(y, 10));
 
     this.scene.tweens.add({
       targets: floater,
@@ -312,8 +314,8 @@ export class SkillVfx {
   private playBurst(points: SkillVfxPoints, tint: number, duration: number, scale: number): void {
     const x = points.toX;
     const y = points.toY - 14;
-    const core = this.scene.add.circle(x, y, 8 * scale, tint, 0.85).setDepth(20);
-    const glow = this.scene.add.circle(x, y, 14 * scale, tint, 0.35).setDepth(19);
+    const core = this.scene.add.circle(x, y, 8 * scale, tint, 0.85).setDepth(vfxDepthForLayer('front-of-characters', y));
+    const glow = this.scene.add.circle(x, y, 14 * scale, tint, 0.35).setDepth(vfxDepthForLayer('front-of-characters', y));
     this.scene.tweens.add({
       targets: [core, glow],
       scaleX: 1.8,

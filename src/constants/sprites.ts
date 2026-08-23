@@ -11,8 +11,7 @@ export const CHARACTER_DISPLAY_HEIGHT = 62;
 
 /**
  * Multiplicador visual no hub ilustrado.
- * 2.1 → ~130px de altura, ~80% das portas do hub lateral (160px na clínica,
- * 165px na casa central), que é a proporção de uma pessoa em pé numa porta.
+ * 2.1 → ~130px de altura, ~80% das portas do hub lateral.
  */
 export const HUB_CHARACTER_SCALE = 2.1;
 

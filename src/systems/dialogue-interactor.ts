@@ -3,6 +3,7 @@ import { DIALOGUE_INTERACT_DISTANCE } from '@/constants/dialogue';
 import type { Npc } from '@/entities/npc';
 import { dialogueStore } from '@/stores/dialogue-store';
 import type { NPCManager } from '@/systems/npc-manager';
+import { isTypingInField } from '@/utils/dom-focus';
 
 /**
  * Detecta proximidade + tecla E para abrir diálogo.
@@ -20,11 +21,11 @@ export class DialogueInteractor {
     if (!scene.input.keyboard) {
       throw new Error('Teclado indisponível para diálogo');
     }
-    this.keyE = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    this.keyE = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E, false);
   }
 
   update(): void {
-    if (dialogueStore.isOpen()) {
+    if (dialogueStore.isOpen() || isTypingInField()) {
       this.clearHighlights();
       this.nearest = null;
       return;

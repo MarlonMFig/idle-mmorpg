@@ -28,6 +28,7 @@ function enemy(overrides: Partial<EnemyDefinition> = {}): EnemyDefinition {
       sourceId: 'wonsr-vocation-30',
       name: 'Sakura Haruno',
       lookType: 1423,
+      quality: 'D',
     },
     ...overrides,
   };
@@ -66,6 +67,7 @@ const sakuraEnemy = enemy({
     name: 'Sakura Haruno',
     lookType: 1423,
     level: 40,
+    quality: 'D',
   },
 });
 result = trySealEnemy(sakuraEnemy, () => 0);

@@ -50,6 +50,7 @@ import {
 import { BLACK_CLOVER_PREVIEW_BY_LOOK_TYPE } from '@/data/black-clover-packs';
 import { JUJUTSU_KAISEN_PREVIEW_BY_LOOK_TYPE } from '@/data/jujutsu-kaisen-packs';
 import { JUMP_FORCE_PREVIEW_BY_LOOK_TYPE } from '@/data/jump-force-packs';
+import { TINY_RPG_PREVIEW_BY_LOOK_TYPE } from '@/data/tiny-rpg-packs';
 
 /** Preview estático (UI caças / inventário). */
 const PREVIEW_BY_LOOK_TYPE: Record<number, string> = {
@@ -120,6 +121,7 @@ const PREVIEW_BY_LOOK_TYPE: Record<number, string> = {
   ...BLACK_CLOVER_PREVIEW_BY_LOOK_TYPE,
   ...JUJUTSU_KAISEN_PREVIEW_BY_LOOK_TYPE,
   ...JUMP_FORCE_PREVIEW_BY_LOOK_TYPE,
+  ...TINY_RPG_PREVIEW_BY_LOOK_TYPE,
 };
 
 /** lookTypes com pack lateral no mapa (em vez do atlas/outfit WONSR). */
@@ -129,6 +131,11 @@ export function getCuratedMapPack(lookType: number): CharacterPack | null {
 
 export function getCuratedPortraitUrl(lookType: number): string | null {
   return getCuratedMapPack(lookType) ? (PREVIEW_BY_LOOK_TYPE[lookType] ?? null) : null;
+}
+
+/** Preview da coleção / Test Mode — não depende do pack estar ativo na Hunt. */
+export function getCharacterPreviewUrl(lookType: number): string {
+  return PREVIEW_BY_LOOK_TYPE[lookType] ?? `/sprites/wonsr/outfits/${lookType}.png`;
 }
 
 export function listCuratedMapLookTypes(lookTypes: Iterable<number>): number[] {

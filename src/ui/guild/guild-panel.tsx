@@ -1,21 +1,28 @@
 'use client';
 
-import Image from 'next/image';
 import { useEffect, useMemo, useState } from 'react';
 import {
-  GUILD_CHECKIN_COINS,
-  GUILD_CHECKIN_EXP,
   GUILD_COLORS,
   GUILD_CREATE_MIN_LEVEL,
-  GUILD_DONATE_MIN,
+  GUILD_DEFAULT_EMBLEM,
+  GUILD_DESCRIPTION_MAX,
   GUILD_EMBLEMS,
-  GUILD_MAX_MEMBERS,
+  GUILD_MEMBER_LIMIT,
   GUILD_NAME_MAX,
   GUILD_TAG_MAX,
-  guildExpForLevel,
+  GUILD_TOP_CONTRIBUTORS,
+  guildXpForLevel,
 } from '@/constants/guild';
-import { GUILD_MISSION_DEFS, GUILD_SHOP_DEFS, GUILD_SKILL_DEFS } from '@/data/guild-content';
 import { useStore } from '@/hooks/use-store';
+import {
+  canDemoteMember,
+  canDissolveGuild,
+  canKickMember,
+  canLeaveGuild,
+  canPromoteMember,
+  canTransferLeadership,
+  canGuildMemberPerform,
+} from '@/lib/guild-permissions';
 import {
   guildStore,
   isValidGuildName,
@@ -23,67 +30,66 @@ import {
   normalizeGuildName,
   normalizeGuildTag,
 } from '@/stores/guild-store';
-import { vipStore } from '@/stores/vip-store';
+import {
+  crestGlow,
+  GuildBannerPicker,
+  GuildEmblem,
+  resolveEmblemIndex,
+} from '@/ui/guild/guild-banner-picker';
+import { GuildBossTab } from '@/ui/guild/guild-boss-tab';
+import { GuildShopTab } from '@/ui/guild/guild-shop-tab';
+import { MgrWindow } from '@/ui/mgr';
 import { vitalsStore } from '@/stores/vitals-store';
-import type { Guild, GuildTabId } from '@/types/guild';
-import { GUILD_ROLE_LABEL, isLeadershipRole } from '@/types/guild';
+import type {
+  Guild,
+  GuildJoinMode,
+  GuildMember,
+  GuildPublicSummary,
+  GuildUiTabId,
+} from '@/types/guild';
+import { GUILD_ROLE_LABEL, GUILD_ROLE_ORDER } from '@/types/guild';
 
 function fmt(n: number): string {
   return n.toLocaleString('pt-BR');
 }
 
-function powerLabel(members: number, funds: number, level: number): string {
-  const power = members * 120_000 + funds * 2 + level * 50_000;
-  if (power >= 1_000_000) return `${(power / 1_000_000).toFixed(2)}M`;
-  if (power >= 1_000) return `${(power / 1_000).toFixed(1)}K`;
-  return String(power);
+function fmtTime(ts: number): string {
+  try {
+    return new Date(ts).toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return '—';
+  }
 }
 
-/** Brilho suave atrás do estandarte — sem moldura nem fundo sólido. */
-function crestGlow(color: string): string {
-  return `radial-gradient(circle, ${color}88 0%, ${color}2b 45%, transparent 72%)`;
-}
-
-function GuildEmblem({ value, className = '' }: { value: string; className?: string }) {
-  if (!value.startsWith('/')) return <span className={className}>{value}</span>;
-  return <Image src={value} alt="" width={160} height={210} className={className} unoptimized />;
-}
-
-const TABS: { id: GuildTabId; label: string; icon: string; manageOnly?: boolean }[] = [
-  { id: 'members', label: 'Membros', icon: '👥' },
-  { id: 'ranking', label: 'Ranking', icon: '🏆' },
-  { id: 'missions', label: 'Missões', icon: '📜' },
-  { id: 'boss', label: 'Boss', icon: '⚔️' },
-  { id: 'skills', label: 'Habilidades', icon: '✨' },
-  { id: 'shop', label: 'Loja', icon: '🛒' },
-  { id: 'manage', label: 'Gestão', icon: '⚙️', manageOnly: true },
+const TABS: { id: GuildUiTabId; label: string }[] = [
+  { id: 'overview', label: 'Visão Geral' },
+  { id: 'members', label: 'Membros' },
+  { id: 'progress', label: 'Progresso' },
+  { id: 'applications', label: 'Solicitações' },
+  { id: 'boss', label: 'Boss' },
+  { id: 'shop', label: 'Loja' },
 ];
 
+type MemberSort = 'role' | 'contribution' | 'playerLevel' | 'lastActiveAt';
+
 /**
- * Janela da Guilda — layout inspirado no protótipo Anime World Idle
- * (header, mural, abas: membros / ranking / missões / boss / skills / loja / gestão).
+ * Guild UI (Item 28) — social/progressivo.
+ * Sem Boss / War / Ranking / Shop / bônus de combate.
  */
 export function GuildPanel() {
   const isOpen = useStore(guildStore, (s) => s.isOpen);
   const guildId = useStore(guildStore, (s) => s.guildId);
   const playerId = useStore(guildStore, (s) => s.playerId);
-  const nickname = useStore(guildStore, (s) => s.nickname);
   const registryTick = useStore(guildStore, (s) => s.registryTick);
-  const progress = useStore(guildStore, (s) => s.progress);
+  const uiTab = useStore(guildStore, (s) => s.uiTab);
+  const lobbyMode = useStore(guildStore, (s) => s.lobbyMode);
   const level = useStore(vitalsStore, (s) => s.level);
-  const vipActive = useStore(vipStore, (s) => s.active);
-  const canJoin = level >= GUILD_CREATE_MIN_LEVEL;
-  const canCreate = canJoin && vipActive;
-
-  const [tab, setTab] = useState<GuildTabId>('members');
-  const [fullscreen, setFullscreen] = useState(false);
-  const [createName, setCreateName] = useState('');
-  const [createTag, setCreateTag] = useState('');
-  const [emblemIdx, setEmblemIdx] = useState(0);
-  const [emblemColor, setEmblemColor] = useState<string>(GUILD_COLORS[0]);
-  const [donateAmt, setDonateAmt] = useState(String(GUILD_DONATE_MIN));
-  const [noticeDraft, setNoticeDraft] = useState('');
-  const [lobbyMode, setLobbyMode] = useState<'join' | 'create'>('create');
+  const canAccess = level >= GUILD_CREATE_MIN_LEVEL;
 
   const myGuild = useMemo(() => {
     void registryTick;
@@ -91,40 +97,10 @@ export function GuildPanel() {
     return guildStore.getMyGuild();
   }, [registryTick, guildId]);
 
-  const guilds = useMemo(() => {
-    void registryTick;
-    return guildStore.listGuilds();
-  }, [registryTick]);
-
-  const role = useMemo(() => {
-    void registryTick;
-    return guildStore.getMyRole();
-  }, [registryTick, guildId, playerId]);
-
-  const rank = useMemo(() => {
-    if (!myGuild) return 0;
-    return guildStore.serverRank(myGuild.id);
-  }, [myGuild, registryTick]);
-
-  const checkedIn = guildStore.isCheckedInToday();
-  const canLead = role ? isLeadershipRole(role) : false;
-
-  const unclaimedMissions = useMemo(() => {
-    return GUILD_MISSION_DEFS.filter((m) => {
-      const p = progress.missionProgress[m.id] ?? 0;
-      return p >= m.target && !progress.claimedMissions[m.id];
-    }).length;
-  }, [progress]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    if (myGuild) {
-      setTab('members');
-      setNoticeDraft(myGuild.notice);
-    } else {
-      setLobbyMode(canCreate ? 'create' : 'join');
-    }
-  }, [isOpen, myGuild?.id, canCreate]);
+  const myMember = useMemo(() => {
+    if (!myGuild || !playerId) return null;
+    return myGuild.members.find((m) => m.playerId === playerId) ?? null;
+  }, [myGuild, playerId, registryTick]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -140,511 +116,541 @@ export function GuildPanel() {
 
   if (!isOpen) return null;
 
-  const expMax = myGuild ? guildExpForLevel(myGuild.level) : 1;
-  const expPct = myGuild ? Math.min(100, Math.round((myGuild.exp / expMax) * 100)) : 0;
-
   return (
-    <div
-      className="guild-win-overlay"
-      role="presentation"
-      onClick={() => guildStore.setOpen(false)}
+    <MgrWindow
+      title="Guild"
+      lede={
+        myGuild
+          ? `${myGuild.name} · Nv. ${myGuild.level}`
+          : 'Grupos sociais multi-linhagem do hub'
+      }
+      pill={
+        !canAccess
+          ? `Nv. ${GUILD_CREATE_MIN_LEVEL}+`
+          : myGuild
+            ? `[${myGuild.tag}]`
+            : undefined
+      }
+      icon="⚑"
+      size="lg"
+      tabs={myGuild ? TABS : undefined}
+      activeTab={uiTab}
+      onTabChange={(id) => guildStore.setUiTab(id as GuildUiTabId)}
+      onClose={() => guildStore.setOpen(false)}
     >
-      <div
-        className={`guild-win${fullscreen ? ' is-full' : ''}`}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Janela da Guilda"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Titlebar */}
-        <header className="guild-win__titlebar">
-          <div className="guild-win__titlebar-left">
-            <span aria-hidden>🚩</span>
-            <h1 className="guild-win__app-title">Janela da Guilda</h1>
-            <span className="guild-win__version">v1.2</span>
-          </div>
-          <div className="guild-win__titlebar-actions">
-            {!canJoin ? (
-              <span className="guild-win__lock-chip">Nv. {GUILD_CREATE_MIN_LEVEL}+</span>
-            ) : !canCreate ? (
-              <span className="guild-win__lock-chip">VIP</span>
-            ) : null}
-            <button
-              type="button"
-              className="guild-win__icon-btn"
-              title={fullscreen ? 'Restaurar' : 'Maximizar'}
-              onClick={() => setFullscreen((v) => !v)}
-            >
-              {fullscreen ? '⤓' : '⤢'}
-            </button>
-            <button
-              type="button"
-              className="guild-win__icon-btn guild-win__icon-btn--close"
-              title="Fechar"
-              aria-label="Fechar"
-              onClick={() => guildStore.setOpen(false)}
-            >
-              ×
-            </button>
-          </div>
-        </header>
-
-        {!myGuild ? (
-          <LobbyView
-            canJoin={canJoin}
-            canCreate={canCreate}
-            level={level}
-            mode={lobbyMode}
-            setMode={setLobbyMode}
-            guilds={guilds}
-            createName={createName}
-            setCreateName={setCreateName}
-            createTag={createTag}
-            setCreateTag={setCreateTag}
-            emblemIdx={emblemIdx}
-            setEmblemIdx={setEmblemIdx}
-            emblemColor={emblemColor}
-            setEmblemColor={setEmblemColor}
-          />
-        ) : (
-          <>
-            {/* Guild Header */}
-            <section className="guild-win__header">
-              <div className="guild-win__header-top">
-                <div className="guild-win__identity">
-                  <div
-                    className="guild-win__crest"
-                    style={{ background: crestGlow(myGuild.emblemBg) }}
-                  >
-                    <GuildEmblem value={myGuild.emblemIcon} className="guild-win__crest-icon" />
-                    <span className="guild-win__crest-lv">Lv.{myGuild.level}</span>
-                  </div>
-                  <div>
-                    <div className="guild-win__name-row">
-                      <h2 className="guild-win__name">{myGuild.name}</h2>
-                      <span className="guild-win__tag">[{myGuild.tag}]</span>
-                      {canLead ? (
-                        <button
-                          type="button"
-                          className="guild-win__manage-link"
-                          onClick={() => setTab('manage')}
-                        >
-                          ⚙️ Gestão
-                        </button>
-                      ) : null}
-                    </div>
-                    <p className="guild-win__meta">
-                      Líder:{' '}
-                      <strong>
-                        {myGuild.members.find((m) => m.playerId === myGuild.leaderId)?.nickname ??
-                          '—'}
-                      </strong>
-                      <span className="guild-win__dot">•</span>
-                      Membros:{' '}
-                      <strong className="is-green">
-                        {myGuild.members.length}/{myGuild.maxMembers}
-                      </strong>
-                      <span className="guild-win__dot">•</span>
-                      Ranking: <strong className="is-gold">#{rank}</strong>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="guild-win__wallet">
-                  <div className="guild-win__currency">
-                    <span>🏛️ Fundos da Guilda:</span>
-                    <strong className="is-green">{fmt(myGuild.funds)}</strong>
-                  </div>
-                  <div className="guild-win__currency">
-                    <span>🪙 Moedas de Guilda:</span>
-                    <strong className="is-gold">{fmt(progress.guildCoins)}</strong>
-                  </div>
-                  <button
-                    type="button"
-                    className={`guild-win__checkin${checkedIn ? ' is-done' : ''}`}
-                    disabled={checkedIn}
-                    onClick={() => guildStore.checkIn()}
-                  >
-                    {checkedIn ? (
-                      <>✓ Presença Confirmada!</>
-                    ) : (
-                      <>
-                        <span>Marcar Presença</span>
-                        <small>
-                          +{GUILD_CHECKIN_COINS} moedas • +{GUILD_CHECKIN_EXP} EXP
-                        </small>
-                      </>
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    className="guild-win__btn-danger guild-win__leave-btn"
-                    onClick={() => {
-                      const alone = myGuild.members.length <= 1;
-                      const asLeader = role === 'leader' && !alone;
-                      const message = alone
-                        ? 'Sair dissolve a guilda (você é o único membro). Continuar?'
-                        : asLeader
-                          ? 'Sair transfere a liderança ao membro mais antigo. Continuar?'
-                          : 'Sair desta guilda?';
-                      if (window.confirm(message)) guildStore.leaveGuild();
-                    }}
-                  >
-                    Sair da guild
-                  </button>
-                </div>
-              </div>
-
-              <div className="guild-win__exp-row">
-                <span className="guild-win__exp-label">Progresso Nv. {myGuild.level}:</span>
-                <span className="guild-win__exp-nums">
-                  {fmt(myGuild.exp)} / {fmt(expMax)} EXP ({expPct}%)
-                </span>
-                <div className="guild-win__exp-bar">
-                  <span style={{ width: `${expPct}%` }} />
-                </div>
-                <span className="guild-win__power">
-                  Poder ≈ {powerLabel(myGuild.members.length, myGuild.funds, myGuild.level)}
-                </span>
-              </div>
-            </section>
-
-            {/* Tabs */}
-            <nav className="guild-win__tabs" aria-label="Abas da guilda">
-              {TABS.filter((t) => !t.manageOnly || canLead).map((t) => {
-                const label =
-                  t.id === 'members'
-                    ? `${t.label} (${myGuild.members.length})`
-                    : t.id === 'missions' && unclaimedMissions > 0
-                      ? `${t.label} (${unclaimedMissions})`
-                      : t.label;
-                return (
-                  <button
-                    key={t.id}
-                    type="button"
-                    className={`guild-win__tab${tab === t.id ? ' is-active' : ''}`}
-                    onClick={() => setTab(t.id)}
-                  >
-                    <span aria-hidden>{t.icon}</span>
-                    {label}
-                  </button>
-                );
-              })}
-            </nav>
-
-            {/* Notice mural */}
-            <div className="guild-win__mural">
-              <span className="guild-win__mural-label">Mural Oficial</span>
-              <p>{myGuild.notice}</p>
-            </div>
-
-            {/* Body */}
-            <div className="guild-win__body">
-              {tab === 'members' ? (
-                <MembersBody
-                  guild={myGuild}
-                  playerId={playerId}
-                  donateAmt={donateAmt}
-                  setDonateAmt={setDonateAmt}
-                />
-              ) : null}
-              {tab === 'ranking' ? <RankingBody guilds={guilds} myId={myGuild.id} /> : null}
-              {tab === 'missions' ? <MissionsBody progress={progress} /> : null}
-              {tab === 'boss' ? (
-                <BossBody
-                  guild={myGuild}
-                  playerDamage={progress.bossDamage}
-                  playerAttacks={progress.bossAttacks}
-                  playerName={nickname ?? 'Você'}
-                />
-              ) : null}
-              {tab === 'skills' ? (
-                <SkillsBody guild={myGuild} coins={progress.guildCoins} canLead={canLead} />
-              ) : null}
-              {tab === 'shop' ? <ShopBody guild={myGuild} coins={progress.guildCoins} /> : null}
-              {tab === 'manage' && canLead ? (
-                <ManageBody
-                  guild={myGuild}
-                  noticeDraft={noticeDraft}
-                  setNoticeDraft={setNoticeDraft}
-                />
-              ) : null}
-            </div>
-          </>
-        )}
-      </div>
-    </div>
+      {!myGuild ? (
+        <LobbyView canAccess={canAccess} level={level} mode={lobbyMode} />
+      ) : (
+        <GuildHome
+          guild={myGuild}
+          me={myMember}
+          playerId={playerId}
+          tab={uiTab}
+          onTab={(t) => guildStore.setUiTab(t)}
+        />
+      )}
+    </MgrWindow>
   );
 }
 
 function LobbyView({
-  canJoin,
-  canCreate,
+  canAccess,
   level,
   mode,
-  setMode,
-  guilds,
-  createName,
-  setCreateName,
-  createTag,
-  setCreateTag,
-  emblemIdx,
-  setEmblemIdx,
-  emblemColor,
-  setEmblemColor,
 }: {
-  canJoin: boolean;
-  canCreate: boolean;
+  canAccess: boolean;
   level: number;
-  mode: 'join' | 'create';
-  setMode: (m: 'join' | 'create') => void;
-  guilds: Guild[];
-  createName: string;
-  setCreateName: (v: string) => void;
-  createTag: string;
-  setCreateTag: (v: string) => void;
-  emblemIdx: number;
-  setEmblemIdx: (v: number) => void;
-  emblemColor: string;
-  setEmblemColor: (v: string) => void;
+  mode: 'home' | 'create' | 'search';
 }) {
-  const emblem = GUILD_EMBLEMS[emblemIdx] ?? GUILD_EMBLEMS[0];
-
+  if (mode === 'create') {
+    return <CreateGuildForm canAccess={canAccess} onBack={() => guildStore.setLobbyMode('home')} />;
+  }
+  if (mode === 'search') {
+    return <SearchGuildView canAccess={canAccess} onBack={() => guildStore.setLobbyMode('home')} />;
+  }
   return (
     <div className="guild-win__lobby">
       <div className="guild-win__lobby-hero">
-        <Image src="/ui/hub-menu/guild.png" alt="" width={48} height={48} unoptimized />
         <div>
-          <h2>Guildas do Servidor</h2>
+          <h2>Você não está em uma Guild</h2>
           <p>
-            Entre a partir do nível {GUILD_CREATE_MIN_LEVEL}. Criar guild é exclusivo VIP (máx.{' '}
-            {GUILD_MAX_MEMBERS} membros).
-          </p>
-          <p className="guild-win__lobby-lv">
+            Guilds são grupos sociais multi-linhagem. Liberadas no nível {GUILD_CREATE_MIN_LEVEL}.
             Seu nível: <strong>{level}</strong>
-            {!canJoin
-              ? ` — faltam ${GUILD_CREATE_MIN_LEVEL - level}`
-              : canCreate
-                ? ' — criar e entrar liberados'
-                : ' — entrar liberado · criar exige VIP'}
           </p>
         </div>
       </div>
-
-      <div className="guild-win__lobby-tabs">
+      <div className="guild-win__lobby-actions">
         <button
           type="button"
-          className={mode === 'join' ? 'is-active' : ''}
-          onClick={() => setMode('join')}
+          className="guild-win__btn-gold"
+          disabled={!canAccess}
+          onClick={() => guildStore.setLobbyMode('create')}
         >
-          Entrar
+          Criar Guild
         </button>
         <button
           type="button"
-          className={mode === 'create' ? 'is-active' : ''}
-          onClick={() => setMode('create')}
+          className="guild-win__btn-green"
+          disabled={!canAccess}
+          onClick={() => guildStore.setLobbyMode('search')}
         >
-          Criar
+          Buscar Guild
         </button>
       </div>
-
-      {mode === 'create' ? (
-        <form
-          className="guild-win__create-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!isValidGuildName(createName) || !isValidGuildTag(createTag)) return;
-            guildStore.createGuild({
-              name: createName,
-              tag: createTag,
-              emblemIcon: emblem.icon,
-              emblemBg: emblemColor,
-            });
-          }}
-        >
-          <label>
-            Nome
-            <input
-              value={createName}
-              maxLength={GUILD_NAME_MAX}
-              onChange={(e) => setCreateName(e.target.value)}
-              placeholder="Ex.: Nuvem Negra"
-            />
-          </label>
-          <label>
-            Tag
-            <input
-              value={createTag}
-              maxLength={GUILD_TAG_MAX}
-              onChange={(e) => setCreateTag(normalizeGuildTag(e.target.value))}
-              placeholder="CLD"
-            />
-          </label>
-          <div className="guild-win__identity-builder">
-            <div
-              className="guild-win__identity-preview"
-              style={{ background: crestGlow(emblemColor) }}
-              aria-label={`Preview: ${emblem.label}`}
-            >
-              <GuildEmblem value={emblem.icon} />
-            </div>
-            <div className="guild-win__identity-options">
-              <div className="guild-win__emblem-picks">
-                <span>Emblema</span>
-                <div>
-                  {GUILD_EMBLEMS.map((em, i) => (
-                    <button
-                      key={em.label}
-                      type="button"
-                      className={`guild-win__emblem-btn${emblemIdx === i ? ' is-on' : ''}`}
-                      title={em.label}
-                      aria-label={em.label}
-                      aria-pressed={emblemIdx === i}
-                      onClick={() => setEmblemIdx(i)}
-                    >
-                      <GuildEmblem value={em.icon} />
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="guild-win__color-picks">
-                <span>Cor do brilho</span>
-                <div>
-                  {GUILD_COLORS.map((color) => (
-                    <button
-                      key={color}
-                      type="button"
-                      className={emblemColor === color ? 'is-on' : ''}
-                      style={{ background: color }}
-                      title={color}
-                      aria-label={`Cor ${color}`}
-                      aria-pressed={emblemColor === color}
-                      onClick={() => setEmblemColor(color)}
-                    />
-                  ))}
-                  <label className="guild-win__color-custom" title="Escolher outra cor">
-                    <input
-                      type="color"
-                      value={emblemColor}
-                      onChange={(event) => setEmblemColor(event.target.value)}
-                      aria-label="Escolher outra cor"
-                    />
-                    <span>+</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-          <p className="guild-win__preview">
-            Preview: [{normalizeGuildTag(createTag) || 'TAG'}]{' '}
-            {normalizeGuildName(createName) || 'Nome'}
-          </p>
-          <button type="submit" className="guild-win__btn-gold" disabled={!canCreate}>
-            {canCreate ? 'Criar guilda' : 'Criar guilda (VIP)'}
-          </button>
-          {!canCreate ? (
-            <p className="guild-win__lobby-lv">
-              {canJoin
-                ? 'Ative o VIP no menu superior para criar uma guild.'
-                : `Criar exige VIP e nível ${GUILD_CREATE_MIN_LEVEL}.`}
-            </p>
-          ) : null}
-        </form>
-      ) : (
-        <ul className="guild-win__browse">
-          {guilds.length === 0 ? (
-            <li className="guild-win__empty">Nenhuma guild criada ainda.</li>
-          ) : (
-            guilds.map((g, i) => {
-              const full = g.members.length >= g.maxMembers;
-              return (
-                <li key={g.id} className="guild-win__browse-row">
-                  <span className="guild-win__browse-rank">#{i + 1}</span>
-                  <span
-                    className="guild-win__browse-crest"
-                    style={{ background: crestGlow(g.emblemBg) }}
-                  >
-                    <GuildEmblem value={g.emblemIcon} />
-                  </span>
-                  <div className="guild-win__browse-info">
-                    <strong>
-                      [{g.tag}] {g.name}
-                    </strong>
-                    <span>
-                      Lv.{g.level} · {g.members.length}/{g.maxMembers} · Fundos {fmt(g.funds)}
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    className="guild-win__btn-green"
-                    disabled={!canJoin || full}
-                    onClick={() => guildStore.joinGuild(g.id)}
-                  >
-                    {full ? 'Cheia' : 'Entrar'}
-                  </button>
-                </li>
-              );
-            })
-          )}
-        </ul>
-      )}
     </div>
   );
 }
 
-function MembersBody({
+function CreateGuildForm({ canAccess, onBack }: { canAccess: boolean; onBack: () => void }) {
+  const [name, setName] = useState('');
+  const [tag, setTag] = useState('');
+  const [description, setDescription] = useState('');
+  const [joinMode, setJoinMode] = useState<GuildJoinMode>('open');
+  const [emblemIdx, setEmblemIdx] = useState(0);
+  const [emblemColor, setEmblemColor] = useState<string>(GUILD_COLORS[0]);
+  const emblem = GUILD_EMBLEMS[emblemIdx] ?? GUILD_EMBLEMS[0];
+
+  return (
+    <form
+      className="guild-win__create-form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!isValidGuildName(name) || !isValidGuildTag(tag)) return;
+        void guildStore.createGuild({
+          name,
+          tag,
+          description,
+          joinMode,
+          emblemIcon: emblem?.icon ?? GUILD_DEFAULT_EMBLEM,
+          emblemBg: emblemColor,
+        });
+      }}
+    >
+      <button type="button" className="guild-win__link-back" onClick={onBack}>
+        ← Voltar
+      </button>
+      <h2>Criar Guild</h2>
+      <label>
+        Nome
+        <input
+          value={name}
+          maxLength={GUILD_NAME_MAX}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Ex.: Anime Legends"
+        />
+      </label>
+      <label>
+        Tag
+        <input
+          value={tag}
+          maxLength={GUILD_TAG_MAX}
+          onChange={(e) => setTag(normalizeGuildTag(e.target.value))}
+          placeholder="AL"
+        />
+      </label>
+      <label>
+        Descrição
+        <textarea
+          rows={3}
+          maxLength={GUILD_DESCRIPTION_MAX}
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+      </label>
+      <GuildBannerPicker
+        emblemIdx={emblemIdx}
+        emblemColor={emblemColor}
+        onEmblemIdx={setEmblemIdx}
+        onEmblemColor={setEmblemColor}
+      />
+      <fieldset className="guild-win__join-mode">
+        <legend>Modo de entrada</legend>
+        <label>
+          <input
+            type="radio"
+            checked={joinMode === 'open'}
+            onChange={() => setJoinMode('open')}
+          />{' '}
+          Open (entrada direta)
+        </label>
+        <label>
+          <input
+            type="radio"
+            checked={joinMode === 'approval'}
+            onChange={() => setJoinMode('approval')}
+          />{' '}
+          Approval (aprovação)
+        </label>
+      </fieldset>
+      <p className="guild-win__hint">
+        Preview: [{normalizeGuildTag(tag) || 'TAG'}] {normalizeGuildName(name) || 'Nome'} · Limite{' '}
+        {GUILD_MEMBER_LIMIT} membros · Sem custo neste item
+      </p>
+      <button type="submit" className="guild-win__btn-gold" disabled={!canAccess}>
+        Criar
+      </button>
+    </form>
+  );
+}
+
+function SearchGuildView({ canAccess, onBack }: { canAccess: boolean; onBack: () => void }) {
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(0);
+  const [rows, setRows] = useState<GuildPublicSummary[]>([]);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    void guildStore.searchGuilds(query, page).then((res) => {
+      if (cancelled) return;
+      setRows(res.guilds);
+      setTotal(res.total);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [query, page]);
+
+  return (
+    <div className="guild-win__search">
+      <button type="button" className="guild-win__link-back" onClick={onBack}>
+        ← Voltar
+      </button>
+      <h2>Buscar Guild</h2>
+      <input
+        value={query}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setPage(0);
+        }}
+        placeholder="Nome ou tag"
+      />
+      <ul className="guild-win__browse">
+        {rows.length === 0 ? (
+          <li className="guild-win__empty">Nenhuma Guild encontrada.</li>
+        ) : (
+          rows.map((g) => {
+            const full = g.memberCount >= g.maxMembers;
+            const bg = g.emblemBg ?? '#7f1d1d';
+            const icon = g.emblemIcon ?? GUILD_DEFAULT_EMBLEM;
+            return (
+              <li key={g.id} className="guild-win__browse-row">
+                <span className="guild-win__browse-crest" style={{ background: crestGlow(bg) }}>
+                  <GuildEmblem value={icon} />
+                </span>
+                <div className="guild-win__browse-info">
+                  <strong>
+                    [{g.tag}] {g.name}
+                  </strong>
+                  <span>
+                    Lv.{g.level} · {g.memberCount}/{g.maxMembers} ·{' '}
+                    {g.joinMode === 'open' ? 'Open' : 'Approval'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="guild-win__btn-green"
+                  disabled={!canAccess || full}
+                  onClick={() => void guildStore.joinGuild(g.id)}
+                >
+                  {full ? 'Cheia' : g.joinMode === 'open' ? 'Entrar' : 'Solicitar'}
+                </button>
+              </li>
+            );
+          })
+        )}
+      </ul>
+      <div className="guild-win__pager">
+        <button type="button" disabled={page <= 0} onClick={() => setPage((p) => p - 1)}>
+          Anterior
+        </button>
+        <span>
+          Página {page + 1} · {total} guilds
+        </span>
+        <button
+          type="button"
+          disabled={(page + 1) * 20 >= total}
+          onClick={() => setPage((p) => p + 1)}
+        >
+          Próxima
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function GuildHome({
   guild,
+  me,
   playerId,
-  donateAmt,
-  setDonateAmt,
+  tab,
 }: {
   guild: Guild;
+  me: GuildMember | null;
   playerId: string | null;
-  donateAmt: string;
-  setDonateAmt: (v: string) => void;
+  tab: GuildUiTabId;
+  onTab?: (t: GuildUiTabId) => void;
 }) {
-  const sorted = [...guild.members].sort((a, b) => {
-    const order = { leader: 0, vice: 1, officer: 2, member: 3 };
-    if (order[a.role] !== order[b.role]) return order[a.role] - order[b.role];
-    return b.coinsDonated - a.coinsDonated;
-  });
+  const xpNeed = guildXpForLevel(guild.level);
+  const xpPct = Math.min(100, Math.round((guild.xp / xpNeed) * 100));
+  const leader = guild.members.find((m) => m.playerId === guild.leaderId);
+  const emblemIcon = guild.legacy?.emblemIcon ?? GUILD_DEFAULT_EMBLEM;
+  const emblemBg = guild.legacy?.emblemBg ?? '#7f1d1d';
+
+  return (
+    <>
+      <section className="guild-win__header">
+        <div className="guild-win__header-identity">
+          <span className="guild-win__header-crest" style={{ background: crestGlow(emblemBg) }}>
+            <GuildEmblem value={emblemIcon} className="guild-win__crest-icon" />
+          </span>
+          <div>
+            <div className="guild-win__name-row">
+              <h2 className="guild-win__name">{guild.name}</h2>
+              <span className="guild-win__tag">[{guild.tag}]</span>
+            </div>
+            <p className="guild-win__meta">
+              Level <strong>{guild.level}</strong>
+              <span className="guild-win__dot">•</span>
+              Membros{' '}
+              <strong>
+                {guild.members.length}/{guild.maxMembers}
+              </strong>
+              <span className="guild-win__dot">•</span>
+              Líder <strong>{leader?.nickname ?? '—'}</strong>
+              <span className="guild-win__dot">•</span>
+              {guild.joinMode === 'open' ? 'Open' : 'Approval'}
+            </p>
+          </div>
+        </div>
+        <div className="guild-win__exp-row">
+          <span className="guild-win__exp-label">Guild XP</span>
+          <span className="guild-win__exp-nums">
+            {fmt(guild.xp)} / {fmt(xpNeed)} ({xpPct}%)
+          </span>
+          <div className="guild-win__exp-bar">
+            <span style={{ width: `${xpPct}%` }} />
+          </div>
+        </div>
+      </section>
+
+      <div className="guild-win__body">
+        {tab === 'overview' ? <OverviewTab guild={guild} me={me} /> : null}
+        {tab === 'members' ? <MembersTab guild={guild} me={me} playerId={playerId} /> : null}
+        {tab === 'progress' ? <ProgressTab guild={guild} /> : null}
+        {tab === 'applications' ? <ApplicationsTab guild={guild} me={me} /> : null}
+        {tab === 'boss' ? <GuildBossTab guild={guild} /> : null}
+        {tab === 'shop' ? <GuildShopTab guild={guild} /> : null}
+      </div>
+    </>
+  );
+}
+
+function OverviewTab({ guild, me }: { guild: Guild; me: GuildMember | null }) {
+  const leaveCheck = canLeaveGuild(me, guild.members.length);
+  const [desc, setDesc] = useState(guild.description);
+  const canEdit = canGuildMemberPerform(me, 'editGuild');
+  const [emblemIdx, setEmblemIdx] = useState(() => resolveEmblemIndex(guild.legacy?.emblemIcon));
+  const [emblemColor, setEmblemColor] = useState(guild.legacy?.emblemBg ?? GUILD_COLORS[0]);
+
+  useEffect(() => {
+    setDesc(guild.description);
+    setEmblemIdx(resolveEmblemIndex(guild.legacy?.emblemIcon));
+    setEmblemColor(guild.legacy?.emblemBg ?? GUILD_COLORS[0]);
+  }, [guild.id, guild.description, guild.legacy?.emblemIcon, guild.legacy?.emblemBg]);
+
+  return (
+    <div className="guild-win__overview">
+      <p className="guild-win__desc">{guild.description || 'Sem descrição.'}</p>
+      {canEdit ? (
+        <div className="guild-win__edit-block">
+          <label>
+            Descrição
+            <textarea
+              rows={2}
+              maxLength={GUILD_DESCRIPTION_MAX}
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+            />
+          </label>
+          <GuildBannerPicker
+            emblemIdx={emblemIdx}
+            emblemColor={emblemColor}
+            onEmblemIdx={setEmblemIdx}
+            onEmblemColor={setEmblemColor}
+          />
+          <div className="guild-win__row-actions">
+            <button
+              type="button"
+              className="guild-win__btn-gold"
+              onClick={() =>
+                void guildStore.editGuild({
+                  description: desc,
+                  emblemIcon: GUILD_EMBLEMS[emblemIdx]?.icon ?? GUILD_DEFAULT_EMBLEM,
+                  emblemBg: emblemColor,
+                })
+              }
+            >
+              Salvar descrição e banner
+            </button>
+            <button
+              type="button"
+              className="guild-win__btn-green"
+              onClick={() =>
+                void guildStore.editGuild({
+                  joinMode: guild.joinMode === 'open' ? 'approval' : 'open',
+                })
+              }
+            >
+              Alternar modo ({guild.joinMode === 'open' ? '→ Approval' : '→ Open'})
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      <h4>Histórico recente</h4>
+      <ul className="guild-win__activity">
+        {guild.activity.length === 0 ? (
+          <li className="guild-win__empty">Nenhum evento ainda.</li>
+        ) : (
+          guild.activity.slice(0, 12).map((a) => (
+            <li key={a.id}>
+              <span>{fmtTime(a.timestamp)}</span> {a.message}
+            </li>
+          ))
+        )}
+      </ul>
+
+      <div className="guild-win__danger-zone">
+        {leaveCheck.ok ? (
+          <button
+            type="button"
+            className="guild-win__btn-danger"
+            onClick={() => {
+              if (window.confirm('Sair desta Guild?')) void guildStore.leaveGuild();
+            }}
+          >
+            Sair da Guild
+          </button>
+        ) : (
+          <p className="guild-win__hint">{leaveCheck.reason}</p>
+        )}
+        {canDissolveGuild(me) ? (
+          <button
+            type="button"
+            className="guild-win__btn-danger"
+            onClick={() => {
+              const a = window.prompt('Digite DISSOLVER para confirmar a dissolução da Guild:');
+              if (a === 'DISSOLVER') void guildStore.dissolveGuild();
+            }}
+          >
+            Dissolver Guild
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+function MembersTab({
+  guild,
+  me,
+  playerId,
+}: {
+  guild: Guild;
+  me: GuildMember | null;
+  playerId: string | null;
+}) {
+  const [sort, setSort] = useState<MemberSort>('role');
+  const sorted = useMemo(() => {
+    const list = [...guild.members];
+    list.sort((a, b) => {
+      if (sort === 'role') {
+        if (GUILD_ROLE_ORDER[a.role] !== GUILD_ROLE_ORDER[b.role]) {
+          return GUILD_ROLE_ORDER[a.role] - GUILD_ROLE_ORDER[b.role];
+        }
+        return b.contribution - a.contribution;
+      }
+      if (sort === 'contribution') return b.contribution - a.contribution;
+      if (sort === 'playerLevel') return b.playerLevel - a.playerLevel;
+      return b.lastActiveAt - a.lastActiveAt;
+    });
+    return list;
+  }, [guild.members, sort]);
 
   return (
     <div className="guild-win__members">
-      <div className="guild-win__donate">
-        <label>
-          Doar cobre aos fundos
-          <input
-            type="number"
-            min={GUILD_DONATE_MIN}
-            value={donateAmt}
-            onChange={(e) => setDonateAmt(e.target.value)}
-          />
-        </label>
-        <button
-          type="button"
-          className="guild-win__btn-gold"
-          onClick={() => guildStore.donate(Number(donateAmt) || 0)}
-        >
-          Doar
-        </button>
-        <span className="guild-win__hint">
-          Mín. {GUILD_DONATE_MIN} · Você recebe 10% em moedas de guilda
-        </span>
+      <div className="guild-win__sort">
+        <span>Ordenar:</span>
+        {(
+          [
+            ['role', 'Cargo'],
+            ['contribution', 'Contribution'],
+            ['playerLevel', 'Level'],
+            ['lastActiveAt', 'Atividade'],
+          ] as const
+        ).map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            className={sort === id ? 'is-active' : undefined}
+            onClick={() => setSort(id)}
+          >
+            {label}
+          </button>
+        ))}
       </div>
       <ul className="guild-win__member-list">
         {sorted.map((m) => (
           <li key={m.playerId} className={m.playerId === playerId ? 'is-me' : ''}>
-            <span className="guild-win__member-name">
-              {m.nickname}
-              {m.playerId === playerId ? ' (você)' : ''}
-            </span>
-            <span className={`guild-win__role guild-win__role--${m.role}`}>
-              {GUILD_ROLE_LABEL[m.role]}
-            </span>
+            <div className="guild-win__member-main">
+              <span className="guild-win__member-name">
+                {m.nickname}
+                {m.playerId === playerId ? ' (você)' : ''}
+              </span>
+              <span className={`guild-win__role guild-win__role--${m.role}`}>
+                {GUILD_ROLE_LABEL[m.role]}
+              </span>
+            </div>
             <span className="guild-win__member-stat">
-              Doado {fmt(m.coinsDonated)} · EXP {fmt(m.expContributed)}
+              Lv.{m.playerLevel} · Contrib. {fmt(m.contribution)} · {fmtTime(m.lastActiveAt)}
             </span>
+            <div className="guild-win__member-actions">
+              {canPromoteMember(me, m, 'officer') ? (
+                <button type="button" onClick={() => void guildStore.setMemberRole(m.playerId, 'officer')}>
+                  Promover
+                </button>
+              ) : null}
+              {canDemoteMember(me, m) ? (
+                <button type="button" onClick={() => void guildStore.setMemberRole(m.playerId, 'member')}>
+                  Rebaixar
+                </button>
+              ) : null}
+              {canKickMember(me, m) ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm(`Expulsar ${m.nickname}?`)) {
+                      void guildStore.kickMember(m.playerId);
+                    }
+                  }}
+                >
+                  Expulsar
+                </button>
+              ) : null}
+              {canTransferLeadership(me, m) ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm(`Transferir liderança para ${m.nickname}?`)) {
+                      void guildStore.transferLeadership(m.playerId);
+                    }
+                  }}
+                >
+                  Transferir liderança
+                </button>
+              ) : null}
+            </div>
           </li>
         ))}
       </ul>
@@ -652,351 +658,77 @@ function MembersBody({
   );
 }
 
-function RankingBody({ guilds, myId }: { guilds: Guild[]; myId: string }) {
+function ProgressTab({ guild }: { guild: Guild }) {
+  const need = guildXpForLevel(guild.level);
+  const totalContribution = guild.members.reduce((sum, m) => sum + m.contribution, 0);
+  const top = [...guild.members]
+    .sort((a, b) => b.contribution - a.contribution)
+    .slice(0, GUILD_TOP_CONTRIBUTORS);
+
   return (
-    <div className="guild-win__ranking">
-      <p className="guild-win__hint">Ranking local por nível e fundos da guilda.</p>
-      <ol className="guild-win__rank-list">
-        {guilds.map((g, i) => (
-          <li key={g.id} className={g.id === myId ? 'is-mine' : ''}>
-            <span className="guild-win__rank-pos">#{i + 1}</span>
-            <span className="guild-win__browse-crest" style={{ background: crestGlow(g.emblemBg) }}>
-              <GuildEmblem value={g.emblemIcon} />
-            </span>
-            <div>
-              <strong>
-                [{g.tag}] {g.name}
-              </strong>
-              <span>
-                Lv.{g.level} · {g.members.length} membros · {fmt(g.funds)} fundos
-              </span>
-            </div>
-            {g.id === myId ? <em>Sua guild</em> : null}
+    <div className="guild-win__progress">
+      <p>
+        Guild Level <strong>{guild.level}</strong>
+      </p>
+      <p>
+        XP {fmt(guild.xp)} / {fmt(need)}
+      </p>
+      <p>Contribution total (all-time): {fmt(totalContribution)}</p>
+      <h4>Top contribuidores</h4>
+      <ol>
+        {top.map((m, i) => (
+          <li key={m.playerId}>
+            #{i + 1} {m.nickname} — {fmt(m.contribution)}
           </li>
         ))}
       </ol>
-    </div>
-  );
-}
-
-function MissionsBody({
-  progress,
-}: {
-  progress: {
-    missionProgress: Record<string, number>;
-    claimedMissions: Record<string, boolean>;
-  };
-}) {
-  return (
-    <div className="guild-win__missions">
-      <div className="guild-win__missions-top">
-        <p>Missões diárias e de guilda — resgate recompensas ao completar.</p>
-        <button
-          type="button"
-          className="guild-win__btn-gold"
-          onClick={() => guildStore.claimAllMissions()}
-        >
-          Resgatar todas
-        </button>
-      </div>
-      <div className="guild-win__mission-grid">
-        {GUILD_MISSION_DEFS.map((m) => {
-          const cur = progress.missionProgress[m.id] ?? 0;
-          const done = cur >= m.target;
-          const claimed = Boolean(progress.claimedMissions[m.id]);
-          const pct = Math.min(100, Math.round((cur / m.target) * 100));
-          return (
-            <article key={m.id} className="guild-win__mission-card">
-              <header>
-                <span>{m.icon}</span>
-                <div>
-                  <strong>{m.title}</strong>
-                  <em>{m.category}</em>
-                </div>
-              </header>
-              <p>{m.description}</p>
-              <div className="guild-win__mission-bar">
-                <span style={{ width: `${pct}%` }} />
-              </div>
-              <footer>
-                <span>
-                  {fmt(Math.min(cur, m.target))}/{fmt(m.target)} · +{m.rewardCoins}🪙 +{m.rewardExp}{' '}
-                  EXP
-                </span>
-                <button
-                  type="button"
-                  className="guild-win__btn-green"
-                  disabled={!done || claimed}
-                  onClick={() => guildStore.claimMission(m.id)}
-                >
-                  {claimed ? 'Resgatado' : done ? 'Resgatar' : 'Em progresso'}
-                </button>
-              </footer>
-            </article>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function BossBody({
-  guild,
-  playerDamage,
-  playerAttacks,
-  playerName,
-}: {
-  guild: Guild;
-  playerDamage: number;
-  playerAttacks: number;
-  playerName: string;
-}) {
-  const pct = Math.max(0, Math.round((guild.bossHp / guild.bossMaxHp) * 100));
-  const dead = guild.bossHp <= 0;
-
-  return (
-    <div className="guild-win__boss">
-      <div className="guild-win__boss-card">
-        <div className="guild-win__boss-art" aria-hidden>
-          🔥
-        </div>
-        <div>
-          <h3>Kurama — Nove Caudas</h3>
-          <p className="guild-win__hint">Besta com Cauda · Nível 80 · Fogo / Chakra</p>
-          <p className={dead ? 'is-green' : 'is-gold'}>{dead ? 'DERROTADO' : 'DISPONÍVEL'}</p>
-          <div className="guild-win__boss-hp">
-            <span style={{ width: `${pct}%` }} />
-          </div>
-          <p className="guild-win__exp-nums">
-            {fmt(guild.bossHp)} / {fmt(guild.bossMaxHp)} HP ({pct}%)
-          </p>
-          <button
-            type="button"
-            className="guild-win__btn-gold"
-            disabled={dead}
-            onClick={() => guildStore.attackBoss()}
-          >
-            Atacar Boss
-          </button>
-        </div>
-      </div>
-      <div className="guild-win__boss-rank">
-        <h4>Seu dano na wave</h4>
-        <p>
-          {playerName}: <strong>{fmt(playerDamage)}</strong> em {playerAttacks} ataque(s)
-        </p>
-        <p className="guild-win__hint">Cada ataque concede +50 moedas de guilda.</p>
-      </div>
-    </div>
-  );
-}
-
-function SkillsBody({ guild, coins, canLead }: { guild: Guild; coins: number; canLead: boolean }) {
-  return (
-    <div className="guild-win__skills">
-      {!canLead ? (
-        <p className="guild-win__hint">Somente Líder/Vice podem aprimorar habilidades.</p>
-      ) : null}
-      <div className="guild-win__skill-grid">
-        {GUILD_SKILL_DEFS.map((sk) => {
-          const lv = guild.skillLevels[sk.id] ?? 0;
-          const maxed = lv >= sk.maxLevel;
-          const costFunds = Math.floor(sk.baseFunds * Math.pow(1.25, lv));
-          const costCoins = Math.floor(sk.baseCoins * Math.pow(1.2, lv));
-          return (
-            <article key={sk.id} className="guild-win__skill-card">
-              <header>
-                <span>{sk.icon}</span>
-                <div>
-                  <strong>{sk.name}</strong>
-                  <em>
-                    Nv. {lv}/{sk.maxLevel}
-                  </em>
-                </div>
-              </header>
-              <p>{sk.description}</p>
-              <p className="is-gold">{sk.effectText}</p>
-              <footer>
-                <span>
-                  🏛️ {fmt(costFunds)} · 🪙 {fmt(costCoins)}
-                </span>
-                <button
-                  type="button"
-                  className="guild-win__btn-green"
-                  disabled={!canLead || maxed || guild.funds < costFunds || coins < costCoins}
-                  onClick={() => guildStore.upgradeSkill(sk.id)}
-                >
-                  {maxed ? 'Máx' : 'Aprimorar'}
-                </button>
-              </footer>
-            </article>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function ShopBody({ guild, coins }: { guild: Guild; coins: number }) {
-  const fragmentOffer = guildStore.getDailyFragmentOffer();
-
-  return (
-    <div className="guild-win__shop">
       <p className="guild-win__hint">
-        Compre com Selos de Aliança. Fragmento rotativo muda todo dia (máx. 2/dia).
+        Kills Online geram Guild XP e Contribution. Offline / Dev Lab: 0.
       </p>
-
-      {fragmentOffer ? (
-        <article className="guild-win__shop-card guild-win__shop-card--featured">
-          <header>
-            <span>🧩</span>
-            <div>
-              <strong>Fragmento do dia — {fragmentOffer.label}</strong>
-              <em>Rotativo</em>
-            </div>
-          </header>
-          <p>1 fragmento para evolução por estrela (+1★ = 10 fragmentos).</p>
-          <footer>
-            <span>
-              🪙 {fmt(fragmentOffer.priceCoins)} · {fragmentOffer.purchasesLeft} compras restantes
-            </span>
-            <button
-              type="button"
-              className="guild-win__btn-gold"
-              disabled={fragmentOffer.purchasesLeft <= 0 || coins < fragmentOffer.priceCoins}
-              onClick={() => guildStore.buyDailyFragment()}
-            >
-              Comprar fragmento
-            </button>
-          </footer>
-        </article>
-      ) : null}
-
-      <div className="guild-win__shop-grid">
-        {GUILD_SHOP_DEFS.map((item) => {
-          const stock = guild.shopStock[item.id] ?? 0;
-          const locked = guild.level < item.reqGuildLevel;
-          const afford = coins >= item.priceCoins;
-          return (
-            <article key={item.id} className="guild-win__shop-card">
-              <header>
-                <span>{item.icon}</span>
-                <div>
-                  <strong>{item.name}</strong>
-                  <em>{item.category}</em>
-                </div>
-              </header>
-              <p>{item.description}</p>
-              <footer>
-                <span>
-                  🪙 {fmt(item.priceCoins)} · Estoque {stock}/{item.maxStock}
-                  {locked ? ` · Lv.${item.reqGuildLevel}` : ''}
-                </span>
-                <button
-                  type="button"
-                  className="guild-win__btn-gold"
-                  disabled={locked || stock <= 0 || !afford}
-                  onClick={() => guildStore.buyShopItem(item.id)}
-                >
-                  Comprar
-                </button>
-              </footer>
-            </article>
-          );
-        })}
-      </div>
     </div>
   );
 }
 
-function ManageBody({
-  guild,
-  noticeDraft,
-  setNoticeDraft,
-}: {
-  guild: Guild;
-  noticeDraft: string;
-  setNoticeDraft: (v: string) => void;
-}) {
+function ApplicationsTab({ guild, me }: { guild: Guild; me: GuildMember | null }) {
+  const canApprove = canGuildMemberPerform(me, 'approveMember');
+  if (guild.joinMode !== 'approval') {
+    return (
+      <p className="guild-win__hint">
+        Esta Guild está em modo Open. Solicitações só aparecem no modo Approval.
+      </p>
+    );
+  }
+  if (!canApprove) {
+    return <p className="guild-win__hint">Apenas Líder/Oficial gerenciam solicitações.</p>;
+  }
+  if (guild.applications.length === 0) {
+    return <p className="guild-win__hint">Nenhuma solicitação pendente.</p>;
+  }
   return (
-    <div className="guild-win__manage">
-      <label className="guild-win__field">
-        Mural oficial
-        <textarea
-          rows={3}
-          maxLength={280}
-          value={noticeDraft}
-          onChange={(e) => setNoticeDraft(e.target.value)}
-        />
-      </label>
-      <button
-        type="button"
-        className="guild-win__btn-gold"
-        onClick={() => guildStore.updateNotice(noticeDraft)}
-      >
-        Salvar mural
-      </button>
-
-      <div className="guild-win__emblem-picks">
-        <span>Identidade da guilda</span>
-        <div>
-          {GUILD_EMBLEMS.map((em) => (
+    <ul className="guild-win__apps">
+      {guild.applications.map((a) => (
+        <li key={a.playerId}>
+          <div>
+            <strong>{a.nickname}</strong> · Lv.{a.playerLevel} · {fmtTime(a.requestedAt)}
+          </div>
+          <div className="guild-win__row-actions">
             <button
-              key={em.label}
               type="button"
-              className={`guild-win__emblem-btn${guild.emblemIcon === em.icon ? ' is-on' : ''}`}
-              title={em.label}
-              aria-label={em.label}
-              aria-pressed={guild.emblemIcon === em.icon}
-              onClick={() => guildStore.updateEmblem(em.icon, guild.emblemBg)}
+              className="guild-win__btn-green"
+              onClick={() => void guildStore.approveApplication(a.playerId)}
             >
-              <GuildEmblem value={em.icon} />
+              Aprovar
             </button>
-          ))}
-        </div>
-      </div>
-      <div className="guild-win__color-picks">
-        <span>Cor do brilho</span>
-        <div>
-          {GUILD_COLORS.map((color) => (
             <button
-              key={color}
               type="button"
-              className={guild.emblemBg === color ? 'is-on' : ''}
-              style={{ background: color }}
-              aria-label={`Cor ${color}`}
-              aria-pressed={guild.emblemBg === color}
-              onClick={() => guildStore.updateEmblem(guild.emblemIcon, color)}
-            />
-          ))}
-          <label className="guild-win__color-custom" title="Escolher outra cor">
-            <input
-              type="color"
-              value={guild.emblemBg}
-              onChange={(event) => guildStore.updateEmblem(guild.emblemIcon, event.target.value)}
-              aria-label="Escolher outra cor"
-            />
-            <span>+</span>
-          </label>
-        </div>
-      </div>
-
-      <div className="guild-win__danger-zone">
-        <h4>Zona de risco</h4>
-        <p>
-          Sair da guilda. Se for o único membro, a guilda é dissolvida. Se for líder com membros, a
-          liderança é transferida.
-        </p>
-        <button
-          type="button"
-          className="guild-win__btn-danger"
-          onClick={() => {
-            if (window.confirm('Sair da guilda?')) guildStore.leaveGuild();
-          }}
-        >
-          {guild.members.length <= 1 ? 'Dissolver guilda' : 'Sair da guilda'}
-        </button>
-      </div>
-    </div>
+              className="guild-win__btn-danger"
+              onClick={() => void guildStore.rejectApplication(a.playerId)}
+            >
+              Recusar
+            </button>
+          </div>
+        </li>
+      ))}
+    </ul>
   );
 }

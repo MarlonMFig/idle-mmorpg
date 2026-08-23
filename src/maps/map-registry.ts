@@ -35,10 +35,27 @@ export const MAP_KEYS = {
   huntDesertoSaiyajin: 'huntDesertoSaiyajin',
   /** Teste: caça top-down 3072² com equipe de 3 e câmera seguindo o líder. */
   huntTesteEquipe: 'huntTesteEquipe',
-  /** Teste: clareira de treinamento 4096×2160 com equipe e câmera livre. */
+  /** Teste: floresta upscale 5016² (crop 5008) com equipe e câmera no líder. */
   huntTesteFarmWonsr: 'huntTesteFarmWonsr',
+  /** Teste: floresta aberta (mesmo mundo do mapa teste) com Tiny RPG Demon_A. */
+  huntTesteDemon: 'huntTesteDemon',
+  /** Teste: floresta aberta com outfits de monstros WONSR (lookType). */
+  huntTesteWonsrMonsters: 'huntTesteWonsrMonsters',
+  /** Recorte top-down WONSR: farm Anbu (96×96 tiles). */
+  wonsrFarmAnbu: 'wonsrFarmAnbu',
   academy: 'academy',
   wonsrKonoha: 'wonsrKonoha',
+  /** Top-down 3840×2160 — aba WONSR (zip 8 mapas Naruto). */
+  huntWonsrFlorestaDaMorte: 'huntWonsrFlorestaDaMorte',
+  huntWonsrCampoTreinamento: 'huntWonsrCampoTreinamento',
+  huntWonsrCavernaAkatsuki: 'huntWonsrCavernaAkatsuki',
+  huntWonsrDesertoAreia: 'huntWonsrDesertoAreia',
+  huntWonsrEsconderijoOrochimaru: 'huntWonsrEsconderijoOrochimaru',
+  huntWonsrPaisDoFerro: 'huntWonsrPaisDoFerro',
+  huntWonsrPonteDaNevoa: 'huntWonsrPonteDaNevoa',
+  huntWonsrValeDasEstatuas: 'huntWonsrValeDasEstatuas',
+  huntWonsrClareiraEquipe7: 'huntWonsrClareiraEquipe7',
+  huntWonsrLaboratorioOrochimaru: 'huntWonsrLaboratorioOrochimaru',
 } as const;
 
 export type MapKey = (typeof MAP_KEYS)[keyof typeof MAP_KEYS];
@@ -74,6 +91,19 @@ export const MAP_FILES: Record<MapKey, string> = {
   huntTesteEquipe: '/maps/wonsr-konoha.tmx',
   // Colisão derivada da própria arte (scripts/install-teste-clareira-map.js).
   huntTesteFarmWonsr: '/maps/hunt-teste-clareira.tmx',
+  huntTesteDemon: '/maps/hunt-teste-clareira.tmx',
+  huntTesteWonsrMonsters: '/maps/hunt-teste-clareira.tmx',
   academy: '/maps/academy.tmx',
   wonsrKonoha: '/maps/wonsr-konoha.tmx',
+  wonsrFarmAnbu: '/maps/wonsr-farm-anbu.tmx',
+  huntWonsrFlorestaDaMorte: '/maps/wonsr-floresta-da-morte.tmx?v=col16',
+  huntWonsrCampoTreinamento: '/maps/wonsr-campo-treinamento.tmx?v=col16',
+  huntWonsrCavernaAkatsuki: '/maps/wonsr-caverna-akatsuki.tmx?v=col16',
+  huntWonsrDesertoAreia: '/maps/wonsr-deserto-areia.tmx?v=col16',
+  huntWonsrEsconderijoOrochimaru: '/maps/wonsr-esconderijo-orochimaru.tmx?v=col16',
+  huntWonsrPaisDoFerro: '/maps/wonsr-pais-do-ferro.tmx?v=col16',
+  huntWonsrPonteDaNevoa: '/maps/wonsr-ponte-da-nevoa.tmx?v=col16',
+  huntWonsrValeDasEstatuas: '/maps/wonsr-vale-das-estatuas.tmx?v=col16',
+  huntWonsrClareiraEquipe7: '/maps/wonsr-clareira-equipe-7.tmx?v=col16',
+  huntWonsrLaboratorioOrochimaru: '/maps/wonsr-laboratorio-orochimaru.tmx?v=col16',
 };

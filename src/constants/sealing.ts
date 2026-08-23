@@ -27,6 +27,11 @@ export interface SealingScrollTier {
   /** Ordem de consumo: o de maior rank é preferido quando disponível. */
   rank: number;
   successChance: number;
+  /**
+   * Alias estável da chance do pergaminho (0–1).
+   * Hoje = successChance; não rebalancear.
+   */
+  captureModifier: number;
   label: string;
   iconSrc: string;
 }
@@ -40,6 +45,7 @@ export const SEALING_SCROLL_TIERS: readonly SealingScrollTier[] = [
     itemId: 'item-sealing-scroll',
     rank: 1,
     successChance: SEAL_SUCCESS_CHANCE,
+    captureModifier: SEAL_SUCCESS_CHANCE,
     label: 'Comum',
     iconSrc: '/ui/items/sealing-scrolls/common.png',
   },
@@ -47,6 +53,7 @@ export const SEALING_SCROLL_TIERS: readonly SealingScrollTier[] = [
     itemId: 'item-sealing-scroll-rare',
     rank: 2,
     successChance: 0.94,
+    captureModifier: 0.94,
     label: 'Raro',
     iconSrc: '/ui/items/sealing-scrolls/rare.png',
   },
@@ -54,6 +61,7 @@ export const SEALING_SCROLL_TIERS: readonly SealingScrollTier[] = [
     itemId: 'item-sealing-scroll-epic',
     rank: 3,
     successChance: 0.97,
+    captureModifier: 0.97,
     label: 'Épico',
     iconSrc: '/ui/items/sealing-scrolls/epic.png',
   },
@@ -61,6 +69,7 @@ export const SEALING_SCROLL_TIERS: readonly SealingScrollTier[] = [
     itemId: 'item-sealing-scroll-legendary',
     rank: 4,
     successChance: 0.99,
+    captureModifier: 0.99,
     label: 'Lendário',
     iconSrc: '/ui/items/sealing-scrolls/legendary.png',
   },

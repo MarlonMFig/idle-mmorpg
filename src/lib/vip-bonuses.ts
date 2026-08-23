@@ -1,7 +1,8 @@
 import { VIP_EXP_MULT, VIP_LOOT_MULT, VIP_POTION_RESTOCK_QTY } from '@/constants/vip';
-import { getShopOfferByItemId } from '@/data/shop';
+import { getOfferDisplayName, getShopOfferByItemId } from '@/data/shop';
 import { emitSystemMessage } from '@/lib/system-log';
 import { inventoryStore } from '@/stores/inventory-store';
+import { shopStore } from '@/stores/shop-store';
 import { vipStore } from '@/stores/vip-store';
 
 let lastPotionWarnAt = 0;
@@ -30,25 +31,17 @@ export function tryVipRestockPotion(itemId: string, nowMs = Date.now()): boolean
   const offer = getShopOfferByItemId(itemId);
   if (!offer) return false;
 
-  const result = inventoryStore.buyItem({
-    itemId: offer.itemId,
-    quantity: VIP_POTION_RESTOCK_QTY,
-    price: offer.price,
-    currencyItemId: offer.currencyItemId,
-  });
-
-  if (result === 'ok') {
-    emitSystemMessage(`VIP: reposição de ${VIP_POTION_RESTOCK_QTY}× ${offer.name} no mercado.`);
+  const ok = shopStore.buy(offer.id, VIP_POTION_RESTOCK_QTY);
+  if (ok) {
+    emitSystemMessage(
+      `VIP: reposição de ${VIP_POTION_RESTOCK_QTY}× ${getOfferDisplayName(offer)} no mercado.`,
+    );
     return true;
   }
 
   if (nowMs - lastPotionWarnAt > 6000) {
     lastPotionWarnAt = nowMs;
-    if (result === 'no-funds') {
-      emitSystemMessage('VIP: cobre insuficiente para repor poções no mercado.');
-    } else if (result === 'no-space') {
-      emitSystemMessage('VIP: inventário cheio — não foi possível repor poções.');
-    }
+    emitSystemMessage('VIP: não foi possível repor poções (saldo ou inventário).');
   }
   return inventoryStore.countItem(itemId) >= 1;
 }

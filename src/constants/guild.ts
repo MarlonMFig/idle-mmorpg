@@ -1,76 +1,86 @@
-/** Regras de criação e capacidade de Guild. */
+/** Regras e configs do sistema de Guild (Item 28). */
 
-/** Nível de conta mínimo para criar/entrar em guild. */
+/** Alias canônico do limite de membros. */
+export const GUILD_MEMBER_LIMIT = 30;
+
+/** @deprecated Prefer GUILD_MEMBER_LIMIT. */
+export const GUILD_MAX_MEMBERS = GUILD_MEMBER_LIMIT;
+
+/** Nível mínimo de conta para criar/entrar (sem VIP). */
 export const GUILD_CREATE_MIN_LEVEL = 20;
-
-/** Membros máximos por guild. */
-export const GUILD_MAX_MEMBERS = 30;
 
 export const GUILD_NAME_MIN = 3;
 export const GUILD_NAME_MAX = 24;
-
 export const GUILD_TAG_MIN = 2;
 export const GUILD_TAG_MAX = 4;
+export const GUILD_DESCRIPTION_MAX = 280;
 
-/** Presença diária. */
-export const GUILD_CHECKIN_COINS = 100;
-export const GUILD_CHECKIN_EXP = 500;
+/** Custo de criação — configurável; 0 neste item (sem cobrança). */
+export const GUILD_CREATE_COST = {
+  copper: 0,
+  animeCoins: 0,
+} as const;
 
-/** Doação: cobre → fundos; EXP da guild = 2× valor; moedas pessoais = 10%. */
-export const GUILD_DONATE_MIN = 100;
+/** Guild XP por kill Online oficial (não usa Player XP). */
+export const GUILD_XP_PER_ONLINE_KILL = 1;
 
-/** EXP necessária para o próximo nível da guild. */
-export function guildExpForLevel(level: number): number {
-  return Math.max(5_000, Math.floor(level * 5_000));
+/** Contribution pessoal por kill Online oficial. */
+export const GUILD_CONTRIBUTION_PER_ONLINE_KILL = 1;
+
+/** Histórico: últimos N eventos. */
+export const GUILD_ACTIVITY_LIMIT = 80;
+
+/** Top contribuidores na aba Progresso. */
+export const GUILD_TOP_CONTRIBUTORS = 5;
+
+/**
+ * Curva própria de Guild Level (não usa Player XP).
+ * Simples e configurável — não é balanceamento final.
+ * Lv.n → n * 2000 XP (mín. 2000).
+ */
+export function guildXpForLevel(level: number): number {
+  const lv = Math.max(1, Math.floor(level));
+  return Math.max(2_000, lv * 2_000);
 }
 
-/** Estandartes ilustrados disponíveis na criação da guilda. */
-export const GUILD_EMBLEMS = (
-  [
-    [1, 'Folha de Konoha'],
-    [2, 'Clã Uchiha'],
-    [3, 'Nuvem Vermelha'],
-    [4, 'Tropa de Exploração'],
-    [5, 'Piratas do Chapéu de Palha'],
-    [6, 'Fairy Tail'],
-    [7, 'Máscara Hollow'],
-    [8, 'Chama Sombria'],
-    [9, 'Serpente Celeste'],
-    [10, 'Marca Amaldiçoada'],
-    [11, 'Crânio Branco'],
-    [12, 'Leão Dourado'],
-    [14, 'Sharingan'],
-    [15, 'Touro Negro'],
-    [16, 'Asas Celestes'],
-    [18, 'Kame'],
-    [19, 'Oni Violeta'],
-    [21, 'Estrela Sombria'],
-    [22, 'Lâminas Cruzadas'],
-    [23, 'Lua de Sangue'],
-    [24, 'Cruz Dourada'],
-    [25, 'Chama Azul'],
-    [26, 'Estrela de Batalha'],
-    [27, 'Guerreiro Saiyajin'],
-    [28, 'Crânio Carmesim'],
-    [29, 'Olho Triplo'],
-    [30, 'Fênix Dourada'],
-    [31, 'Cavaleiro Alado'],
-    [32, 'Escorpião Dourado'],
-    [33, 'Máscara Demoníaca'],
-    [34, 'Grifo Dourado'],
-    [35, 'Machados Rubros'],
-    [36, 'Lanças Verdes'],
-    [38, 'Pirata da Caveira'],
-    [39, 'Lua Violeta'],
-    [40, 'Selo Sábio'],
-  ] as [number, string][]
-).map(([id, label]) => ({
+/** @deprecated Prefer guildXpForLevel. */
+export function guildExpForLevel(level: number): number {
+  return guildXpForLevel(level);
+}
+
+/** Legado UI (ainda referenciado por assets). */
+export const GUILD_CHECKIN_COINS = 100;
+export const GUILD_CHECKIN_EXP = 500;
+export const GUILD_DONATE_MIN = 100;
+export const GUILD_BOSS_MAX_HP = 100_000_000;
+
+/** IDs reais em `public/ui/guild-banners/` (alguns números ausentes no pack). */
+const GUILD_BANNER_IDS = [
+  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+  31, 32, 33, 34, 35, 36, 38, 39, 40,
+] as const;
+
+const GUILD_BANNER_LABELS: Record<number, string> = {
+  1: 'Folha de Konoha',
+  2: 'Clã Uchiha',
+  3: 'Nuvem Vermelha',
+  4: 'Tropa de Exploração',
+  5: 'Piratas do Chapéu de Palha',
+};
+
+export const GUILD_EMBLEMS = GUILD_BANNER_IDS.map((id) => ({
+  id,
   icon: `/ui/guild-banners/banner-${String(id).padStart(2, '0')}.png`,
-  label,
+  label: GUILD_BANNER_LABELS[id] ?? `Banner ${String(id).padStart(2, '0')}`,
 }));
 
 /** Estandarte padrão quando o salvo não existe mais. */
-export const GUILD_DEFAULT_EMBLEM = GUILD_EMBLEMS[0].icon;
+export const GUILD_DEFAULT_EMBLEM = GUILD_EMBLEMS[0]?.icon ?? '/ui/guild-banners/banner-01.png';
+
+export function isGuildEmblemIcon(value: string | null | undefined): boolean {
+  if (!value) return false;
+  return GUILD_EMBLEMS.some((entry) => entry.icon === value);
+}
 
 /** Cores rápidas; o seletor livre permite qualquer cor hexadecimal. */
 export const GUILD_COLORS = [
@@ -87,5 +97,3 @@ export const GUILD_COLORS = [
   '#334155',
   '#171717',
 ] as const;
-
-export const GUILD_BOSS_MAX_HP = 100_000_000;

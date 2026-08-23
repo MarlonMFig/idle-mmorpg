@@ -1,17 +1,16 @@
 import { INVENTORY_SLOT_COUNT } from '@/constants/inventory';
 import { getItem } from '@/data/items';
-import { WONSR_STARTER_LOADOUT } from '@/data/wonsr-equip-subset';
-import { emitItemGained } from '@/lib/item-events';
+import { STARTER_INVENTORY_LOADOUT } from '@/data/starter-loadout';
+import { emitItemConsumed, emitItemGained, type ItemGainSource } from '@/lib/item-events';
+import {
+  parsePersistedInventory,
+  snapshotInventorySlots,
+  slotsFromPersisted,
+  type PersistedInventory,
+} from '@/lib/inventory-persist';
 import { attributesStore } from '@/stores/attributes-store';
 import { createStore } from '@/stores/create-store';
-import type {
-  EquipmentState,
-  InventoryItemStack,
-  InventorySlot,
-  InventoryState,
-} from '@/types/inventory';
-import type { EquipSlot } from '@/types/attributes';
-import { createEmptyEquipment } from '@/utils/equipment';
+import type { InventoryItemStack, InventorySlot, InventoryState } from '@/types/inventory';
 
 function emptySlots(): InventorySlot[] {
   return Array.from({ length: INVENTORY_SLOT_COUNT }, () => null);
@@ -19,17 +18,6 @@ function emptySlots(): InventorySlot[] {
 
 function cloneSlots(slots: InventorySlot[]): InventorySlot[] {
   return slots.map((slot) => (slot ? { ...slot } : null));
-}
-
-function cloneEquipment(equipment: EquipmentState): EquipmentState {
-  return {
-    bandana: equipment.bandana ? { ...equipment.bandana } : null,
-    weapon: equipment.weapon ? { ...equipment.weapon } : null,
-    clothing: equipment.clothing ? { ...equipment.clothing } : null,
-    gloves: equipment.gloves ? { ...equipment.gloves } : null,
-    boots: equipment.boots ? { ...equipment.boots } : null,
-    accessory: equipment.accessory ? { ...equipment.accessory } : null,
-  };
 }
 
 /** Tenta inserir stack; retorna restante ou null se coube tudo. */
@@ -61,7 +49,6 @@ function insertStack(slots: InventorySlot[], stack: InventoryItemStack): Invento
 
 const store = createStore<InventoryState>({
   slots: emptySlots(),
-  equipment: createEmptyEquipment(),
   selectedIndex: null,
   isOpen: false,
 });
@@ -72,7 +59,7 @@ function commit(next: InventoryState): void {
 
 /**
  * Inventário (React) — mover, empilhar, descartar.
- * Equipamento removido do jogo (sem slots de equip).
+ * Sem sistema de Equipment (Item 36).
  */
 export const inventoryStore = {
   subscribe: store.subscribe,
@@ -81,20 +68,45 @@ export const inventoryStore = {
   reset(): void {
     const slots = emptySlots();
     let index = 0;
-    for (const entry of WONSR_STARTER_LOADOUT) {
+    for (const entry of STARTER_INVENTORY_LOADOUT) {
       if (!getItem(entry.itemId) || index >= INVENTORY_SLOT_COUNT) continue;
       slots[index] = { itemId: entry.itemId, quantity: entry.quantity };
       index += 1;
     }
 
-    const equipment = createEmptyEquipment();
     store.setState({
       slots,
-      equipment,
       selectedIndex: null,
       isOpen: false,
     });
     attributesStore.recalculate(true);
+  },
+
+  /**
+   * Restaura slots do session save.
+   * Não altera isOpen. Campos equipment legados no save são ignorados.
+   */
+  hydrate(persisted: PersistedInventory | null | undefined): void {
+    if (!persisted) {
+      this.reset();
+      return;
+    }
+    const slots = slotsFromPersisted(persisted);
+    store.setState({
+      slots,
+      selectedIndex: null,
+      isOpen: false,
+    });
+    attributesStore.recalculate(true);
+  },
+
+  /** Snapshot oficial para session (somente slots / itens). */
+  getPersistedInventory(): PersistedInventory {
+    return snapshotInventorySlots(store.getSnapshot().slots);
+  },
+
+  parsePersistedInventory(raw: unknown): PersistedInventory | null {
+    return parsePersistedInventory(raw);
   },
 
   toggleOpen(): void {
@@ -112,7 +124,7 @@ export const inventoryStore = {
     commit({ ...store.getSnapshot(), selectedIndex: index });
   },
 
-  addItem(itemId: string, quantity: number): number {
+  addItem(itemId: string, quantity: number, source: ItemGainSource = 'unknown'): number {
     const def = getItem(itemId);
     if (!def || quantity <= 0) return quantity;
 
@@ -123,7 +135,7 @@ export const inventoryStore = {
 
     const remaining = leftover?.quantity ?? 0;
     const gained = quantity - remaining;
-    if (gained > 0) emitItemGained(itemId, gained);
+    if (gained > 0) emitItemGained(itemId, gained, source);
 
     return remaining;
   },
@@ -174,16 +186,6 @@ export const inventoryStore = {
     this.moveSlot(selectedIndex, index);
   },
 
-  /** Removido do jogo — mantido como no-op para não quebrar imports legados. */
-  equipFromSlot(_index: number): boolean {
-    return false;
-  },
-
-  /** Removido do jogo — mantido como no-op. */
-  unequip(_slot: EquipSlot): boolean {
-    return false;
-  },
-
   discardSlot(index: number, quantity?: number): boolean {
     const state = store.getSnapshot();
     const slots = cloneSlots(state.slots);
@@ -202,7 +204,6 @@ export const inventoryStore = {
     return true;
   },
 
-  /** Quantidade total de um item no inventário (todos os stacks). */
   countItem(itemId: string): number {
     return store.getSnapshot().slots.reduce((total, slot) => {
       if (!slot || slot.itemId !== itemId) return total;
@@ -210,7 +211,17 @@ export const inventoryStore = {
     }, 0);
   },
 
-  /** Remove quantidade de um item; falha sem alterar nada se não houver estoque. */
+  canFit(items: readonly { itemId: string; quantity: number }[]): boolean {
+    const slots = cloneSlots(store.getSnapshot().slots);
+    for (const row of items) {
+      if (row.quantity <= 0) continue;
+      if (!getItem(row.itemId)) return false;
+      const leftover = insertStack(slots, { itemId: row.itemId, quantity: row.quantity });
+      if (leftover) return false;
+    }
+    return true;
+  },
+
   removeItem(itemId: string, quantity: number): boolean {
     if (quantity <= 0) return true;
     if (this.countItem(itemId) < quantity) return false;
@@ -237,10 +248,12 @@ export const inventoryStore = {
     return remaining === 0;
   },
 
-  /**
-   * Compra transacional: só desconta moeda se o item caber no inventário.
-   * @returns null em sucesso, ou motivo da falha.
-   */
+  consumeItem(itemId: string, quantity: number): boolean {
+    const ok = this.removeItem(itemId, quantity);
+    if (ok && quantity > 0) emitItemConsumed(itemId, quantity);
+    return ok;
+  },
+
   buyItem(params: {
     itemId: string;
     quantity: number;
@@ -262,7 +275,6 @@ export const inventoryStore = {
     if (!this.removeItem(currencyItemId, totalCost)) return 'no-funds';
     const remaining = this.addItem(itemId, quantity);
     if (remaining > 0) {
-      // Reembolso defensivo — não deveria ocorrer após o trial.
       this.addItem(currencyItemId, totalCost);
       this.removeItem(itemId, quantity - remaining);
       return 'no-space';
@@ -270,9 +282,6 @@ export const inventoryStore = {
     return 'ok';
   },
 
-  /**
-   * Venda transacional: remove o item e credita moeda.
-   */
   sellItem(params: {
     itemId: string;
     quantity: number;

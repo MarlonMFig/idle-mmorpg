@@ -5,7 +5,9 @@ import { listWonsrRenderedMaps } from '@/data/wonsr-rendered-maps';
 import { WONSR_SPRITE_INDEX_URL } from '@/data/wonsr-sprites';
 import { getPlayerSession } from '@/game/registry';
 import { GameScene } from '@/game/scenes/game-scene';
-import { getActiveCharacterPack } from '@/lib/active-character';
+import { getSpawnCharacterPack } from '@/lib/active-character';
+import { isDevMode } from '@/config/devConfig';
+import { runDevCharacterValidation } from '@/data/characters';
 import { MapLoader, MAP_KEYS } from '@/maps';
 import { EnemyManager, LootManager, NPCManager, SkillVfx } from '@/systems';
 
@@ -25,7 +27,7 @@ export class PreloadScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#000000');
 
     const session = getPlayerSession(this.registry);
-    const pack = getActiveCharacterPack(session?.starterCharacterId ?? 'naruto-classic');
+    const pack = getSpawnCharacterPack(session?.starterCharacterId ?? 'naruto-classic');
     preloadCharacterPack(this, pack);
     this.registry.set('characterPackId', pack.id);
 
@@ -39,6 +41,8 @@ export class PreloadScene extends Phaser.Scene {
     // Mapas podem compartilhar arte; carregar a mesma key duas vezes gera aviso.
     const loadedImages = new Set<string>();
     for (const rendered of listWonsrRenderedMaps()) {
+      // Top-down 5k: carrega só ao entrar na caça (VRAM + WebGL).
+      if (rendered.cameraFollow && rendered.width >= 4096) continue;
       if (!loadedImages.has(rendered.imageKey)) {
         loadedImages.add(rendered.imageKey);
         this.load.image(rendered.imageKey, rendered.imageUrl);
@@ -90,13 +94,19 @@ export class PreloadScene extends Phaser.Scene {
       .queue(MAP_KEYS.huntSalaDoTempo)
       .queue(MAP_KEYS.huntDesertoSaiyajin)
       .queue(MAP_KEYS.huntTesteEquipe)
-      .queue(MAP_KEYS.huntTesteFarmWonsr)
+      .queue(MAP_KEYS.wonsrFarmAnbu)
       .queue(MAP_KEYS.academy)
       .preload();
   }
 
   async create(): Promise<void> {
     this.cameras.main.setBackgroundColor('#000000');
+
+    if (isDevMode()) {
+      const session = getPlayerSession(this.registry);
+      const pack = getSpawnCharacterPack(session?.starterCharacterId ?? 'naruto-classic');
+      runDevCharacterValidation(this, pack);
+    }
 
     try {
       await this.mapLoader.hydrate();

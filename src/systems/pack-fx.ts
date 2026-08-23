@@ -1,7 +1,13 @@
 import * as Phaser from 'phaser';
 import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
+import { RENDER_LAYER, vfxDepthForLayer } from '@/constants/render-layers';
 import type { CharacterSkillAnimDef } from '@/data/character-packs';
+import { getVfxDefinition } from '@/data/vfx/registry';
+import type { VfxRenderLayer } from '@/data/vfx/types';
 import type { Player } from '@/entities/player';
+import { DEFAULT_TRAVEL_SPEED_PX } from '@/lib/dev/lab-save-fields';
+import { logVfxLifecycle } from '@/lib/vfx-lifecycle-log';
+import { characterLabStore, isCharacterLabSession } from '@/stores/character-lab-store';
 
 export interface PackFxOptions {
   ground?: boolean;
@@ -10,6 +16,106 @@ export interface PackFxOptions {
   blend?: 'normal' | 'add';
   scaleMult?: number;
   originX?: number;
+  offsetX?: number;
+  offsetY?: number;
+  independentScale?: boolean;
+  frameRate?: number;
+  frameCount?: number;
+  loop?: boolean;
+  vfxId?: string | null;
+  renderLayer?: VfxRenderLayer;
+  onEffectStart?: () => void;
+  onArrival?: () => void;
+  onSpawn?: (sprite: Phaser.GameObjects.Sprite) => void;
+  /** Mantém o sprite até o caller destruir (beam / persistent). */
+  persist?: boolean;
+}
+
+export interface SkillFxHooks {
+  onEffectStart?: () => void;
+  onArrival?: () => void;
+  onSpawn?: (sprite: Phaser.GameObjects.Sprite) => void;
+  persist?: boolean;
+}
+
+/** Pontos de mira do VFX (centros visuais). Offsets vêm de `anim.targeting`. */
+export interface SkillFxAim {
+  startX: number;
+  startY: number;
+  targetX: number;
+  targetY: number;
+}
+
+export function computeSkillFxAim(
+  caster: Player,
+  target: { sprite: Phaser.GameObjects.Sprite } | null,
+): SkillFxAim {
+  const start = caster.sprite.getBounds();
+  const dest = target?.sprite.getBounds();
+  return {
+    startX: start.centerX,
+    startY: start.centerY,
+    targetX: dest?.centerX ?? caster.x + 80 * caster.worldScale,
+    targetY: dest?.centerY ?? caster.y,
+  };
+}
+
+const labTimers: Phaser.Time.TimerEvent[] = [];
+const labTweens: Phaser.Tweens.Tween[] = [];
+const labSprites: Phaser.GameObjects.Sprite[] = [];
+
+function trackLabTimer(timer: Phaser.Time.TimerEvent): Phaser.Time.TimerEvent {
+  if (isCharacterLabSession()) labTimers.push(timer);
+  return timer;
+}
+
+function trackLabTween(tween: Phaser.Tweens.Tween): Phaser.Tweens.Tween {
+  if (isCharacterLabSession()) labTweens.push(tween);
+  return tween;
+}
+
+function trackLabSprite(sprite: Phaser.GameObjects.Sprite): Phaser.GameObjects.Sprite {
+  if (isCharacterLabSession()) labSprites.push(sprite);
+  return sprite;
+}
+
+/** Cancela VFX/tweens/timers do Test Lab (reset, troca de skill, fechar). */
+export function clearLabForcedFx(): void {
+  for (const timer of labTimers) timer.remove(false);
+  labTimers.length = 0;
+  for (const tween of labTweens) {
+    try {
+      tween.stop();
+    } catch {
+      // ignore
+    }
+  }
+  labTweens.length = 0;
+  for (const sprite of labSprites) {
+    if (sprite.active) sprite.destroy();
+  }
+  labSprites.length = 0;
+  if (isCharacterLabSession()) characterLabStore.setActiveVfx(null);
+}
+
+function applyFxDepth(
+  fx: Phaser.GameObjects.Sprite,
+  y: number,
+  vfxId?: string | null,
+  renderLayer?: VfxRenderLayer,
+): void {
+  const catalog = vfxId ? getVfxDefinition(vfxId) : null;
+  fx.setDepth(vfxDepthForLayer(renderLayer ?? catalog?.renderLayer, y));
+}
+
+function noteLabVfx(textureKey: string, sprite: Phaser.GameObjects.Sprite): void {
+  if (!isCharacterLabSession()) return;
+  characterLabStore.setActiveVfx(textureKey);
+  sprite.once(Phaser.GameObjects.Events.DESTROY, () => {
+    if (characterLabStore.getSnapshot().activeVfxKey === textureKey) {
+      characterLabStore.setActiveVfx(null);
+    }
+  });
 }
 
 /** Altura do corpo do caster em px de mundo (acompanha o layoutScale do mapa). */
@@ -82,7 +188,14 @@ export function playPackFx(
   opts?: PackFxOptions,
 ): void {
   const animKey = `fx-${textureKey}`;
-  if (!scene.textures.exists(textureKey)) return;
+  if (!scene.textures.exists(textureKey)) {
+    logVfxLifecycle('spawn failed', {
+      reason: 'asset 404',
+      key: textureKey,
+      vfxId: opts?.vfxId ?? null,
+    });
+    return;
+  }
 
   const ground = opts?.ground === true;
   // Native FX sheets stay 1:1 pixels; fit to the character body so a 200px
@@ -99,49 +212,97 @@ export function playPackFx(
   const scaleMult = opts?.scaleMult && opts.scaleMult > 0 ? opts.scaleMult : 1;
   // Ground kick dust / rock slam sits at feet (origin bottom); flash is mid-body.
   const bodyLift = bodyLiftOf(caster);
-  const fx = scene.add.sprite(x, ground ? y : y - bodyLift * 0.5, textureKey, 0);
+  const fx = trackLabSprite(scene.add.sprite(x, ground ? y : y - bodyLift * 0.5, textureKey, 0));
   // O eixo MUGEN marca de onde o efeito sai (boca, mão). Espelha junto com o
   // caster, senão o jato nasce nas costas quando ele olha para a esquerda.
   const facingLeft = caster.sprite.flipX;
   const originX = opts?.originX ?? 0.5;
+  const offsetX = (opts?.offsetX ?? 0) * (facingLeft ? -1 : 1);
+  const offsetY = opts?.offsetY ?? 0;
+  fx.x += offsetX;
+  fx.y += offsetY;
   fx.setOrigin(facingLeft ? 1 - originX : originX, ground ? 1 : 0.5);
   fx.setFlipX(facingLeft);
-  fx.setDepth(22);
-  fx.setScale(caster.sprite.scaleX * (ground ? 1.05 : 1.15) * fit * scaleMult);
+  applyFxDepth(fx, fx.y, opts?.vfxId, opts?.renderLayer);
+  noteLabVfx(textureKey, fx);
+  opts?.onSpawn?.(fx);
+  logVfxLifecycle('spawn', { key: textureKey, vfxId: opts?.vfxId ?? null });
+  opts?.onEffectStart?.();
+  opts?.onArrival?.();
+  if (isCharacterLabSession() && characterLabStore.getSnapshot().showVfxOrigin) {
+    const mark = scene.add.circle(fx.x, fx.y, 4, 0x66d4ff, 0.95).setDepth(RENDER_LAYER.ui + 1);
+    scene.time.delayedCall(700, () => mark.destroy());
+  }
+  const independent = opts?.independentScale === true;
+  if (independent) {
+    fx.setScale(caster.worldScale * scaleMult);
+  } else {
+    fx.setScale(caster.sprite.scaleX * (ground ? 1.05 : 1.15) * fit * scaleMult);
+  }
   if (!ground) clampAboveFloor(fx, y, bodyLift);
   if (opts?.blend === 'add') {
     fx.setBlendMode(Phaser.BlendModes.ADD);
   }
 
   const sheetFrames = tex.getFrameNames().filter((name) => name !== '__BASE').length;
-  if (!scene.anims.exists(animKey) && sheetFrames > 1) {
-    ensureSpriteAnim(scene, animKey, textureKey, 0, sheetFrames - 1, 12, 0);
+  const playFrames =
+    opts?.frameCount && opts.frameCount > 0 ? Math.min(opts.frameCount, sheetFrames) : sheetFrames;
+  const fps = opts?.frameRate && opts.frameRate > 0 ? opts.frameRate : 12;
+  const persist = opts?.persist === true;
+  const repeat = persist || opts?.loop ? -1 : 0;
+  if (playFrames > 1) {
+    const existing = scene.anims.exists(animKey) ? scene.anims.get(animKey) : null;
+    const needsRebuild =
+      !existing ||
+      existing.frames.length !== playFrames ||
+      existing.frameRate !== fps ||
+      existing.repeat !== repeat;
+    if (needsRebuild) {
+      if (scene.anims.exists(animKey)) scene.anims.remove(animKey);
+      ensureSpriteAnim(scene, animKey, textureKey, 0, playFrames - 1, fps, repeat);
+    }
   }
 
   if (scene.anims.exists(animKey)) {
     fx.play(animKey);
+    if (persist) return;
     // Single-frame hold/fade; multi-frame plays through then destroys.
-    if (sheetFrames <= 1) {
+    if (sheetFrames <= 1 || playFrames <= 1) {
+      trackLabTween(
+        scene.tweens.add({
+          targets: fx,
+          alpha: 0,
+          scaleX: fx.scaleX * 1.12,
+          scaleY: fx.scaleY * 1.12,
+          duration: 320,
+          delay: ground ? 40 : 90,
+          onComplete: () => fx.destroy(),
+        }),
+      );
+    } else if (opts?.loop) {
+      const holdMs = Math.max(600, Math.round((playFrames / fps) * 1000));
+      trackLabTimer(scene.time.delayedCall(holdMs, () => {
+        if (fx.active) fx.destroy();
+      }));
+    } else {
+      fx.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+        logVfxLifecycle('animation finished', { key: textureKey });
+        logVfxLifecycle('cleanup', { key: textureKey });
+        fx.destroy();
+      });
+    }
+  } else if (persist) {
+    return;
+  } else {
+    trackLabTween(
       scene.tweens.add({
         targets: fx,
         alpha: 0,
-        scaleX: fx.scaleX * 1.12,
-        scaleY: fx.scaleY * 1.12,
-        duration: 320,
-        delay: ground ? 40 : 90,
+        scale: 1.2,
+        duration: 280,
         onComplete: () => fx.destroy(),
-      });
-    } else {
-      fx.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => fx.destroy());
-    }
-  } else {
-    scene.tweens.add({
-      targets: fx,
-      alpha: 0,
-      scale: 1.2,
-      duration: 280,
-      onComplete: () => fx.destroy(),
-    });
+      }),
+    );
   }
 }
 
@@ -159,7 +320,7 @@ export function playPackThrowFx(
   toX: number,
   toY: number,
   travelMs: number,
-  opts?: { rotate?: boolean; flip?: boolean; bodyH?: number; fxH?: number },
+  opts?: { rotate?: boolean; flip?: boolean; bodyH?: number; fxH?: number; vfxId?: string | null; hooks?: SkillFxHooks },
 ): void {
   const textureKey = fxDef.key;
   if (!scene.textures.exists(textureKey)) return;
@@ -191,9 +352,12 @@ export function playPackThrowFx(
   const fxH = opts?.fxH ?? 0;
   const fit = bodyH > 0 && fxH > bodyH * 1.35 ? Math.min(1, (bodyH * 1.85) / fxH) : 1;
 
-  const rock = scene.add.sprite(startX, startY, textureKey, 0);
+  const rock = trackLabSprite(scene.add.sprite(startX, startY, textureKey, 0));
   rock.setOrigin(0.5, 0.5);
-  rock.setDepth(22);
+  applyFxDepth(rock, endY, opts?.vfxId);
+  noteLabVfx(textureKey, rock);
+  opts?.hooks?.onSpawn?.(rock);
+  opts?.hooks?.onEffectStart?.();
   rock.setScale(caster.sprite.scaleX * 1.2 * fit);
   clampAboveFloor(rock, fromY, bodyLift);
   const landingY = Math.min(endY, toY + bodyLift * 0.1 - rock.displayHeight / 2);
@@ -206,32 +370,347 @@ export function playPackThrowFx(
 
   safePlay(scene, rock, flightAnimKey);
 
-  scene.tweens.add({
-    targets: rock,
-    x: endX,
-    y: landingY,
-    duration: travelMs,
-    ease: 'Cubic.easeIn',
-    onComplete: () => {
-      if (!rock.active) return;
-      rock.setRotation(0);
-      if (safePlay(scene, rock, impactAnimKey)) {
-        rock.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => rock.destroy());
-      } else {
-        scene.tweens.add({
-          targets: rock,
-          alpha: 0,
-          duration: 200,
-          onComplete: () => rock.destroy(),
+  trackLabTween(
+    scene.tweens.add({
+      targets: rock,
+      x: endX,
+      y: landingY,
+      duration: travelMs,
+      ease: 'Cubic.easeIn',
+      onComplete: () => {
+        opts?.hooks?.onArrival?.();
+        if (!rock.active) return;
+        rock.setRotation(0);
+        if (safePlay(scene, rock, impactAnimKey)) {
+          rock.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => rock.destroy());
+        } else {
+          trackLabTween(
+            scene.tweens.add({
+              targets: rock,
+              alpha: 0,
+              duration: 200,
+              onComplete: () => rock.destroy(),
+            }),
+          );
+        }
+      },
+    }),
+  );
+}
+
+function labDelay(scene: Phaser.Scene, delay: number, fn: () => void): void {
+  trackLabTimer(scene.time.delayedCall(delay, fn));
+}
+
+function labTravelMs(distance: number, speedPx: number): number {
+  if (speedPx <= 0) return 0;
+  return Math.max(0, Math.round((distance / speedPx) * 1000));
+}
+
+function resolveAim(
+  anim: CharacterSkillAnimDef,
+  aim: SkillFxAim | null | undefined,
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+): { spawnX: number; spawnY: number; destX: number; destY: number; facingLeft: boolean } {
+  const targeting = anim.targeting;
+  const startX = aim?.startX ?? from.x;
+  const startY = aim?.startY ?? from.y;
+  const targetX = aim?.targetX ?? to.x;
+  const targetY = aim?.targetY ?? to.y;
+  const facingLeft = targetX < startX;
+  const spawnX = startX + (targeting?.spawnOffsetX ?? 0) * (facingLeft ? -1 : 1);
+  const spawnY = startY + (targeting?.spawnOffsetY ?? 0);
+  const destX = targetX + (targeting?.targetOffsetX ?? 0);
+  const destY = targetY + (targeting?.targetOffsetY ?? 0);
+  return { spawnX, spawnY, destX, destY, facingLeft };
+}
+
+function playTravelFx(
+  scene: Phaser.Scene,
+  caster: Player,
+  anim: CharacterSkillAnimDef,
+  spawnX: number,
+  spawnY: number,
+  destX: number,
+  destY: number,
+  travelMs: number,
+  hooks?: SkillFxHooks,
+): void {
+  const fxDef = anim.fx;
+  if (!fxDef) return;
+  const textureKey = fxDef.key;
+  if (!scene.textures.exists(textureKey)) {
+    logVfxLifecycle('spawn failed', {
+      reason: 'asset 404',
+      key: textureKey,
+      vfxId: anim.vfxId ?? null,
+    });
+    return;
+  }
+
+  const facingLeft = destX < spawnX;
+  const originX = fxDef.originX ?? 0.5;
+  const visualX = (fxDef.offsetX ?? 0) * (facingLeft ? -1 : 1);
+  const visualY = fxDef.offsetY ?? 0;
+  const instant = travelMs <= 0;
+  const startX = (instant ? destX : spawnX) + visualX;
+  const startY = (instant ? destY : spawnY) + visualY;
+  const endX = destX + visualX;
+  const endY = destY + visualY;
+
+  const bodyH = anim.contentHeight ?? 0;
+  const fxH = fxDef.contentHeight ?? fxDef.frameHeight;
+  const tex = scene.textures.get(textureKey);
+  const frame = tex.get(0);
+  const fxW = frame && typeof frame.width === 'number' ? frame.width : 0;
+  const fitH = bodyH > 0 && fxH > bodyH * 1.35 ? Math.min(1, (bodyH * 1.85) / fxH) : 1;
+  const fitW = bodyH > 0 && fxW > bodyH * 2.8 ? Math.min(1, (bodyH * 3.2) / fxW) : 1;
+  const fit = Math.min(fitH, fitW);
+  const scaleMult = anim.fxScale && anim.fxScale > 0 ? anim.fxScale : 1;
+
+  const fx = trackLabSprite(scene.add.sprite(startX, startY, textureKey, 0));
+  fx.setOrigin(facingLeft ? 1 - originX : originX, 0.5);
+  fx.setFlipX(facingLeft);
+  applyFxDepth(fx, endY, anim.vfxId);
+  noteLabVfx(textureKey, fx);
+  hooks?.onSpawn?.(fx);
+  hooks?.onEffectStart?.();
+  if (anim.fxIndependentScale) {
+    fx.setScale(caster.worldScale * scaleMult);
+  } else {
+    fx.setScale(caster.sprite.scaleX * 1.15 * fit * scaleMult);
+  }
+  if (anim.fxBlend === 'add') fx.setBlendMode(Phaser.BlendModes.ADD);
+
+  const travelKey = `fx-${textureKey}-lab-travel`;
+  const snapKey = `fx-${textureKey}-lab-snap`;
+  const sheetFrames = tex.getFrameNames().filter((name) => name !== '__BASE').length;
+  const playFrames =
+    anim.vfxId && fxDef.frameCount > 0 ? Math.min(fxDef.frameCount, sheetFrames) : sheetFrames;
+  const fps = fxDef.frameRate && fxDef.frameRate > 0 ? fxDef.frameRate : 12;
+  if (playFrames > 1) {
+    ensureSpriteAnim(scene, travelKey, textureKey, 0, playFrames - 1, fps, -1);
+    ensureSpriteAnim(scene, snapKey, textureKey, 0, playFrames - 1, fps, 0);
+  }
+
+  const fadeOut = () => {
+    if (!fx.active) return;
+    trackLabTween(
+      scene.tweens.add({
+        targets: fx,
+        alpha: 0,
+        duration: 180,
+        onComplete: () => {
+          logVfxLifecycle('cleanup', { key: textureKey, reason: 'fade' });
+          fx.destroy();
+        },
+      }),
+    );
+  };
+
+  const playOnceThenDestroy = () => {
+    if (!fx.active) return;
+    if (scene.anims.exists(snapKey) && playFrames > 1) {
+      fx.anims.stop();
+      if (safePlay(scene, fx, snapKey)) {
+        fx.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+          logVfxLifecycle('animation finished', { key: textureKey });
+          logVfxLifecycle('cleanup', { key: textureKey });
+          fx.destroy();
         });
+        return;
       }
-    },
+    }
+    fadeOut();
+  };
+
+  const persist = hooks?.persist === true;
+  const holdAtDest = () => {
+    if (!fx.active) return;
+    if (scene.anims.exists(travelKey) && playFrames > 1) safePlay(scene, fx, travelKey);
+  };
+
+  if (instant) {
+    hooks?.onArrival?.();
+    logVfxLifecycle('arrival', { key: textureKey, mode: 'instant' });
+    if (persist) {
+      holdAtDest();
+      return;
+    }
+    if (scene.anims.exists(snapKey) && playFrames > 1 && safePlay(scene, fx, snapKey)) {
+      fx.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+        logVfxLifecycle('animation finished', { key: textureKey });
+        logVfxLifecycle('cleanup', { key: textureKey });
+        fx.destroy();
+      });
+      return;
+    }
+    fadeOut();
+    return;
+  }
+
+  if (scene.anims.exists(travelKey)) safePlay(scene, fx, travelKey);
+  trackLabTween(
+    scene.tweens.add({
+      targets: fx,
+      x: endX,
+      y: endY,
+      duration: travelMs,
+      ease: 'Linear',
+      onComplete: () => {
+        logVfxLifecycle('arrival', { key: textureKey, mode: 'travel' });
+        hooks?.onArrival?.();
+        if (persist) {
+          holdAtDest();
+          return;
+        }
+        playOnceThenDestroy();
+      },
+    }),
+  );
+}
+
+function scheduleTargetedPrimary(
+  scene: Phaser.Scene,
+  caster: Player,
+  anim: CharacterSkillAnimDef,
+  hitDelay: number,
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  aim: SkillFxAim | null | undefined,
+  instant: boolean,
+  hooks?: SkillFxHooks,
+): void {
+  const resolved = resolveAim(anim, aim, from, to);
+  const speedPx = instant ? 0 : (anim.targeting?.travelSpeed ?? DEFAULT_TRAVEL_SPEED_PX);
+  const distance = Phaser.Math.Distance.Between(resolved.spawnX, resolved.spawnY, resolved.destX, resolved.destY);
+  const travelMs = instant ? 0 : labTravelMs(distance, speedPx);
+  if (isCharacterLabSession()) {
+    characterLabStore.setTravelDebug({
+      forceOn: true,
+      mode: instant ? 'instant-target' : 'travel-to-target',
+      startX: Math.round(resolved.spawnX),
+      startY: Math.round(resolved.spawnY),
+      targetX: Math.round(resolved.destX),
+      targetY: Math.round(resolved.destY),
+      distance: Math.round(distance),
+      speedPx,
+      estimatedImpactMs: travelMs,
+      note: instant ? 'targetMode: instant-target' : 'targetMode: travel-to-target',
+    });
+  }
+
+  const flightN = anim.fxFlightFrameCount ?? 0;
+  const releaseAt =
+    flightN > 0
+      ? (anim.fxReleaseMs ?? Math.max(0, Math.floor(hitDelay * 0.72)))
+      : (anim.fxReleaseMs ?? Math.max(0, hitDelay - 80));
+
+  labDelay(scene, releaseAt, () => {
+    try {
+      if (flightN > 0 && !instant) {
+        playPackThrowFx(
+          scene,
+          caster,
+          anim.fx!,
+          flightN,
+          resolved.spawnX,
+          resolved.spawnY,
+          resolved.destX,
+          resolved.destY,
+          travelMs,
+          {
+            rotate: anim.fxFlightRotate !== false && !anim.fxFlightFlip,
+            flip: true,
+            bodyH: anim.contentHeight,
+            fxH: anim.fx!.contentHeight ?? anim.fx!.frameHeight,
+            vfxId: anim.vfxId,
+            hooks,
+          },
+        );
+      } else {
+        playTravelFx(scene, caster, anim, resolved.spawnX, resolved.spawnY, resolved.destX, resolved.destY, travelMs, hooks);
+      }
+    } catch (error) {
+      console.warn('[PackFx] falha no VFX direcionado', error);
+    }
   });
 }
 
+function scheduleLegacyPrimary(
+  scene: Phaser.Scene,
+  caster: Player,
+  anim: CharacterSkillAnimDef,
+  hitDelay: number,
+  from: { x: number; y: number },
+  to: { x: number; y: number },
+  aim: SkillFxAim | null | undefined,
+  hooks?: SkillFxHooks,
+): void {
+  const flightN = anim.fxFlightFrameCount ?? 0;
+  if (flightN > 0) {
+    const releaseAt = anim.fxReleaseMs ?? Math.max(0, Math.floor(hitDelay * 0.72));
+    const speed = anim.targeting?.travelSpeed;
+    const resolved = resolveAim(anim, aim, from, to);
+    const distance = Phaser.Math.Distance.Between(resolved.spawnX, resolved.spawnY, resolved.destX, resolved.destY);
+    const travelMs =
+      speed && speed > 0 ? labTravelMs(distance, speed) : Math.max(140, hitDelay - releaseAt);
+    labDelay(scene, releaseAt, () => {
+      try {
+        playPackThrowFx(scene, caster, anim.fx!, flightN, from.x, from.y, to.x, to.y, travelMs, {
+          rotate: anim.fxFlightRotate !== false && !anim.fxFlightFlip,
+          flip: Boolean(anim.fxFlightFlip),
+          bodyH: anim.contentHeight,
+          fxH: anim.fx!.contentHeight ?? anim.fx!.frameHeight,
+          vfxId: anim.vfxId,
+          hooks,
+        });
+      } catch (error) {
+        console.warn('[PackFx] falha no FX de projétil', error);
+      }
+    });
+    return;
+  }
+
+  const releaseAt = anim.fxReleaseMs ?? Math.max(0, hitDelay - 80);
+  const attach = anim.fxAttach ?? 'target';
+  const fxX = attach === 'caster' ? from.x : to.x;
+  const fxY = attach === 'caster' ? from.y : to.y;
+  labDelay(scene, releaseAt, () => {
+    playPackFx(scene, caster, anim.fx!.key, fxX, fxY, {
+      ground: anim.fxGround ?? attach === 'caster',
+      bodyH: anim.contentHeight,
+      fxH: anim.fx!.contentHeight ?? anim.fx!.frameHeight,
+      scaleMult: anim.fxScale,
+      originX: anim.fx!.originX,
+      offsetX: anim.fx!.offsetX,
+      offsetY: anim.fx!.offsetY,
+      independentScale: anim.fxIndependentScale,
+      blend: anim.fxBlend,
+      ...catalogFxOpts(anim),
+      persist: hooks?.persist,
+      onSpawn: hooks?.onSpawn,
+      onEffectStart: hooks?.onEffectStart,
+      onArrival: hooks?.onArrival,
+    });
+  });
+}
+
+function catalogFxOpts(anim: CharacterSkillAnimDef): Pick<PackFxOptions, 'frameRate' | 'frameCount' | 'loop' | 'vfxId'> {
+  if (!anim.vfxId || !anim.fx) return { vfxId: anim.vfxId };
+  const catalog = getVfxDefinition(anim.vfxId);
+  return {
+    frameRate: anim.fx.frameRate ?? catalog?.frameRate,
+    frameCount: anim.fx.frameCount ?? catalog?.frameCount,
+    loop: catalog?.loop,
+    vfxId: anim.vfxId,
+  };
+}
+
 /**
- * Agenda o FX de uma folha de jutsu: projétil (com voo), efeito no alvo/caster
- * e o secundário de impacto. Mesma rotina para o líder e para os aliados.
+ * Agenda o FX de uma folha de jutsu: legado (`fxAttach` / projétil) ou
+ * `targeting.mode` oficial. Skills sem `targeting` não mudam.
  */
 export function scheduleSkillFx(
   scene: Phaser.Scene,
@@ -240,55 +719,60 @@ export function scheduleSkillFx(
   hitDelay: number,
   from: { x: number; y: number },
   to: { x: number; y: number },
+  aim?: SkillFxAim | null,
+  hooks?: SkillFxHooks,
 ): void {
-  if (anim.fx) {
-    const flightN = anim.fxFlightFrameCount ?? 0;
-    if (flightN > 0) {
-      // Projétil só sai no frame de arremesso (nunca no wind-up / levantar).
-      const releaseAt = anim.fxReleaseMs ?? Math.max(0, Math.floor(hitDelay * 0.72));
-      // Chega no (ou logo antes do) hitDelay — sem estourar o impact cedo no alvo.
-      const travelMs = Math.max(140, hitDelay - releaseAt);
-      scene.time.delayedCall(releaseAt, () => {
-        try {
-          playPackThrowFx(scene, caster, anim.fx!, flightN, from.x, from.y, to.x, to.y, travelMs, {
-            rotate: anim.fxFlightRotate !== false && !anim.fxFlightFlip,
-            flip: Boolean(anim.fxFlightFlip),
-            bodyH: anim.contentHeight,
-            fxH: anim.fx!.contentHeight ?? anim.fx!.frameHeight,
-          });
-        } catch (error) {
-          console.warn('[PackFx] falha no FX de projétil', error);
-        }
+  const labSession = isCharacterLabSession();
+  const mode = anim.targeting?.mode;
+  if (anim.vfxId && !getVfxDefinition(anim.vfxId)) {
+    logVfxLifecycle('spawn failed', { reason: 'VFX ID not found', vfxId: anim.vfxId });
+  } else if (anim.vfxId && !anim.fx) {
+    logVfxLifecycle('spawn failed', { reason: 'frame definition invalid', vfxId: anim.vfxId });
+  }
+  if (labSession && (mode === 'travel-to-target' || mode === 'instant-target' || characterLabStore.getSnapshot().loopSkill)) {
+    clearLabForcedFx();
+  }
+
+  if (anim.fx && (mode === 'travel-to-target' || mode === 'instant-target')) {
+    scheduleTargetedPrimary(scene, caster, anim, hitDelay, from, to, aim, mode === 'instant-target', hooks);
+  } else if (anim.fx && mode === 'caster') {
+    const releaseAt = anim.fxReleaseMs ?? Math.max(0, hitDelay - 80);
+    labDelay(scene, releaseAt, () => {
+      playPackFx(scene, caster, anim.fx!.key, from.x, from.y, {
+        ground: anim.fxGround ?? true,
+        bodyH: anim.contentHeight,
+        fxH: anim.fx!.contentHeight ?? anim.fx!.frameHeight,
+        scaleMult: anim.fxScale,
+        originX: anim.fx!.originX,
+        offsetX: anim.fx!.offsetX,
+        offsetY: anim.fx!.offsetY,
+        independentScale: anim.fxIndependentScale,
+        blend: anim.fxBlend,
+        ...catalogFxOpts(anim),
+        persist: hooks?.persist,
+        onSpawn: hooks?.onSpawn,
+        onEffectStart: hooks?.onEffectStart,
+        onArrival: hooks?.onArrival,
       });
-    } else {
-      const releaseAt = anim.fxReleaseMs ?? Math.max(0, hitDelay - 80);
-      const attach = anim.fxAttach ?? 'target';
-      const fxX = attach === 'caster' ? from.x : to.x;
-      const fxY = attach === 'caster' ? from.y : to.y;
-      scene.time.delayedCall(releaseAt, () => {
-        playPackFx(scene, caster, anim.fx!.key, fxX, fxY, {
-          ground: anim.fxGround ?? attach === 'caster',
-          bodyH: anim.contentHeight,
-          fxH: anim.fx!.contentHeight ?? anim.fx!.frameHeight,
-          scaleMult: anim.fxScale,
-          originX: anim.fx!.originX,
-          blend: anim.fxBlend,
-        });
-      });
-    }
+    });
+  } else if (anim.fx) {
+    scheduleLegacyPrimary(scene, caster, anim, hitDelay, from, to, aim, hooks);
   }
 
   if (anim.fxSecondary) {
+    const secondary = anim.fxSecondary;
     const releaseAt = anim.fxSecondaryReleaseMs ?? hitDelay;
     const attach = anim.fxSecondaryAttach ?? 'caster';
-    // Re-read live feet at impact (o caster pode ter avançado durante o cast).
-    scene.time.delayedCall(releaseAt, () => {
+    labDelay(scene, releaseAt, () => {
       const fxX = attach === 'caster' ? caster.x : to.x;
       const fxY = attach === 'caster' ? caster.y : to.y;
-      playPackFx(scene, caster, anim.fxSecondary!.key, fxX, fxY, {
+      playPackFx(scene, caster, secondary.key, fxX, fxY, {
         ground: attach === 'caster',
         bodyH: anim.contentHeight,
-        fxH: anim.fxSecondary!.contentHeight ?? anim.fxSecondary!.frameHeight,
+        fxH: secondary.contentHeight ?? secondary.frameHeight,
+        originX: secondary.originX,
+        offsetX: secondary.offsetX,
+        offsetY: secondary.offsetY,
       });
     });
   }

@@ -1,7 +1,7 @@
 'use client';
 
 import { ATTRIBUTE_LABELS, ATTRIBUTE_ORDER, ATTRIBUTE_SHORT_LABELS } from '@/constants/attributes';
-import { STAR_BONUS_PER_STAR } from '@/constants/character-progression';
+import { STAR_BONUS_PER_LEVEL } from '@/constants/character-progression';
 import { useAttributesStore } from '@/hooks/use-attributes-store';
 import { useStore } from '@/hooks/use-store';
 import { teamStore } from '@/stores/team-store';
@@ -25,7 +25,7 @@ export function AttributesPanel() {
     return active?.stars ?? 0;
   });
 
-  const starPct = Math.round(stars * STAR_BONUS_PER_STAR * 100);
+  const starPct = Math.round(stars * STAR_BONUS_PER_LEVEL * 100);
 
   return (
     <div className="hud-attributes" aria-label="Atributos">

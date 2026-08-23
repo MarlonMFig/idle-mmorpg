@@ -1,3 +1,4 @@
+import { getPotionHealPercent } from '@/config/gameConfig';
 import { getHelperConsumable } from '@/data/helper-items';
 import { emitSystemMessage } from '@/lib/system-log';
 import { tryVipRestockPotion } from '@/lib/vip-bonuses';
@@ -38,10 +39,11 @@ export const autoHelperSystem = {
     if (!consumable || consumable.kind !== 'heal-percent') return;
 
     if (inventoryStore.countItem(potionId) < 1) return;
-    if (!inventoryStore.removeItem(potionId, 1)) return;
+    if (!inventoryStore.consumeItem(potionId, 1)) return;
 
     lastPotionAt = nowMs;
-    const amount = Math.max(1, Math.floor(hpMax * (consumable.healPercent ?? 0.35)));
+    const healPercent = consumable.healPercent ?? getPotionHealPercent(potionId) ?? 0.35;
+    const amount = Math.max(1, Math.floor(hpMax * healPercent));
     vitalsStore.heal(amount);
   },
 
@@ -65,7 +67,7 @@ export const autoHelperSystem = {
       return false;
     }
 
-    if (!inventoryStore.removeItem(reviveId, 1)) return false;
+    if (!inventoryStore.consumeItem(reviveId, 1)) return false;
     return true;
   },
 

@@ -1,3 +1,4 @@
+export { CharacterLabSystem } from '@/systems/character-lab-system';
 export { NPCManager } from '@/systems/npc-manager';
 export { EnemyManager } from '@/systems/enemy-manager';
 export { DialogueInteractor } from '@/systems/dialogue-interactor';
@@ -10,6 +11,11 @@ export { RemotePlayerManager } from '@/systems/remote-player-manager';
 export { PlayerSyncSystem } from '@/systems/player-sync-system';
 export { PlayerInputSystem } from '@/systems/player-input-system';
 export { HubInteractableManager } from '@/systems/hub-interactable-manager';
+export { HubBirdFlockSystem } from '@/systems/hub-bird-flock';
+export { HubChimneySmokeSystem } from '@/systems/hub-chimney-smoke';
 export { TeamCompanionSystem } from '@/systems/team-companion-system';
 export { TargetClaims, LEADER_CLAIM_ID } from '@/systems/target-claims';
 export { rollDropTable } from '@/systems/loot-table';
+export { resolveLoot } from '@/systems/loot-engine';
+export { attemptCapture, getCaptureChance } from '@/systems/capture-engine';
+export { applyRewardResult, addItemsToInventory, consumeItem } from '@/systems/reward-application';

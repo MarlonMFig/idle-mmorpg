@@ -89,11 +89,11 @@ function normalizedStats(level, source) {
  * Sem vocations/monstros brutos do WONSR.
  */
 function isActiveCharacterLookType(lookType) {
-  // Rotação atual: Naruto (incluindo o novo lote NUN5) e Dragon Ball.
+  // Rotação atual: Naruto + Dragon Ball + Ichigo (Bleach, lookType 9073).
   return (
     lookType <= 9027 ||
     (lookType >= 9030 && lookType <= 9036) ||
-    (lookType >= 9074 && lookType <= 9086)
+    (lookType >= 9073 && lookType <= 9086)
   );
 }
 
@@ -629,11 +629,24 @@ function huntName(index, targets) {
   return `Mapa de ${targetName}`;
 }
 
-/** Arenas de caça (laterais 4K). */
-const HUNT_ARENA_KEYS = [
+/** Aba WONSR: 8 mapas top-down Naruto 4992². */
+const HUNT_WONSR_TOPDOWN_MAP_KEYS = [
+  'huntWonsrFlorestaDaMorte',
+  'huntWonsrCampoTreinamento',
+  'huntWonsrCavernaAkatsuki',
+  'huntWonsrDesertoAreia',
+  'huntWonsrEsconderijoOrochimaru',
+  'huntWonsrPaisDoFerro',
+  'huntWonsrPonteDaNevoa',
+  'huntWonsrValeDasEstatuas',
+  'huntWonsrClareiraEquipe7',
+  'huntWonsrLaboratorioOrochimaru',
+];
+
+/** Arenas laterais 4K (Naruto World / fallback temático). */
+const HUNT_NARUTO_MAP_KEYS = [
   'huntCampoTreinamento',
   'huntArenaExameChunin',
-  'huntArenaExameChunnin',
   'huntPontePaisOnda',
   'huntValeDoFim',
   'huntPaisDoVento',
@@ -643,8 +656,14 @@ const HUNT_ARENA_KEYS = [
   'huntMonteMyoboku',
   'huntDistritoUchiha',
   'huntCampoGuerraNinja',
-  'huntArredoresReinoClover',
   'huntForestClearing',
+  'huntArenaExameChunnin',
+];
+
+/** Arenas de caça (laterais 4K). */
+const HUNT_ARENA_KEYS = [
+  ...HUNT_NARUTO_MAP_KEYS,
+  'huntArredoresReinoClover',
   'huntNamekusei',
   'huntTorneioArtesMarciais',
   'huntSalaDoTempo',
@@ -768,7 +787,274 @@ function buildTestHunt(characters) {
   };
 }
 
-/** Clareira de treinamento (arte 4096×2160) usada como segundo mapa de teste. */
+function hashPick(keys, seed) {
+  let h = 2166136261;
+  const text = String(seed);
+  for (let i = 0; i < text.length; i += 1) {
+    h = Math.imul(h ^ text.charCodeAt(i), 16777619);
+  }
+  return keys[Math.abs(h) % keys.length];
+}
+
+function mapMonsterAttacks(monster, effectIds, missileIds) {
+  const attacks = Array.isArray(monster.attacks) ? monster.attacks : [];
+  return attacks.map((attack) => {
+    const name = cleanName(attack.name) || 'melee';
+    const range = Number(attack.range) || 1;
+    const mapped = {
+      name,
+      intervalMs: Number(attack.intervalMs) || 1500,
+      min: Number(attack.min) || 0,
+      max: Number(attack.max) || 0,
+      range,
+      element: String(attack.element || ''),
+      effectId: hashPick(effectIds, `${monster.id}:${name}:fx`),
+    };
+    if (range > 1 || /shuriken|throw|ball|follow|missile|projectile/i.test(name)) {
+      mapped.missileId = hashPick(missileIds, `${monster.id}:${name}:ms`);
+    }
+    return mapped;
+  });
+}
+
+function buildWonsrTabHunts() {
+  const monsters = readJson(path.join(DATA_DIR, 'monsters.json'));
+  const index = readJson(path.join(DATA_DIR, 'sprite-index.json'));
+  const outfits = index.groups?.outfits ?? {};
+  const effectIds = Object.keys(index.groups?.effects ?? {});
+  const missileIds = Object.keys(index.groups?.missiles ?? {});
+  const picked = [];
+  const seenLooks = new Set();
+  const pool = [...monsters]
+    .filter((monster) => Array.isArray(monster.attacks) && monster.attacks.length >= 2)
+    .sort((a, b) => (a.health || 0) - (b.health || 0));
+
+  for (const monster of pool) {
+    const lookType = Number(monster.lookType);
+    if (!Number.isFinite(lookType) || lookType < 1 || lookType >= 9000) continue;
+    if (!outfits[String(lookType)]) continue;
+    if (seenLooks.has(lookType)) continue;
+    const name = cleanName(monster.name);
+    if (!name) continue;
+    seenLooks.add(lookType);
+    picked.push(monster);
+    if (picked.length >= 20) break;
+  }
+
+  return picked.map((monster, index) => {
+    const level = 1 + index;
+    const stats = normalizedStats(level, monster);
+    const attacks = mapMonsterAttacks(monster, effectIds, missileIds);
+    return {
+      id: `hunt-wonsr-${slug(monster.name) || monster.id}-${monster.lookType}`,
+      name: `WONSR: ${cleanName(monster.name)}`,
+      requiredLevel: level,
+      mapKey: HUNT_WONSR_TOPDOWN_MAP_KEYS[index % HUNT_WONSR_TOPDOWN_MAP_KEYS.length],
+      tab: 'wonsr',
+      description: `Caça WONSR: ${cleanName(monster.name)} usa ${attacks
+        .map((attack) => attack.name)
+        .join(', ')}.`,
+      targets: [
+        {
+          id: monster.id,
+          sourceId: monster.id,
+          name: cleanName(monster.name),
+          category: monster.category || 'monstro',
+          source: `wonsr/${monster.source || monster.id}`,
+          lookType: monster.lookType,
+          hasSprite: false,
+          requiredLevel: level,
+          ...stats,
+          attacks,
+          loot: monster.loot || [],
+        },
+      ],
+    };
+  });
+}
+
+function bossHuntStats(level, source) {
+  const base = normalizedStats(level, source);
+  const health = Number(source?.health) || 0;
+  const experience = Number(source?.experience) || 0;
+  return {
+    ...base,
+    hp: Math.max(base.hp, Math.round(health / 40)),
+    xp: Math.max(base.xp, Math.round(experience / 20)),
+  };
+}
+
+function pickBossMapKey(index, monster) {
+  const blob = `${monster.category || ''} ${monster.name || ''}`.toLowerCase();
+  if (/shukaku|gaara|areia|kokuou/.test(blob)) return 'huntWonsrDesertoAreia';
+  if (/kurama|gyuki|juubi|son goku/.test(blob)) return 'huntWonsrValeDasEstatuas';
+  if (/isobu|saiken|nevoa|kiba/.test(blob)) return 'huntWonsrPonteDaNevoa';
+  if (/hollow|ichiro|kioji/.test(blob)) return 'huntWonsrCavernaAkatsuki';
+  if (/matatabi|choumei/.test(blob)) return 'huntWonsrFlorestaDaMorte';
+  return HUNT_WONSR_TOPDOWN_MAP_KEYS[index % HUNT_WONSR_TOPDOWN_MAP_KEYS.length];
+}
+
+function huntFromWonsrMonster(monster, level, index, tab, namePrefix, effectIds, missileIds) {
+  const attacks = mapMonsterAttacks(monster, effectIds, missileIds);
+  const stats = bossHuntStats(level, monster);
+  return {
+    id: `hunt-${tab}-${slug(monster.name) || monster.id}-${monster.lookType}`,
+    name: `${namePrefix}: ${cleanName(monster.name)}`,
+    requiredLevel: level,
+    mapKey: pickBossMapKey(index, monster),
+    tab,
+    description: `${namePrefix}: ${cleanName(monster.name)} usa ${attacks
+      .map((attack) => attack.name)
+      .join(', ')}.`,
+    targets: [
+      {
+        id: monster.id,
+        sourceId: monster.id,
+        name: cleanName(monster.name),
+        category: monster.category || 'boss',
+        source: `wonsr/${monster.source || monster.id}`,
+        lookType: monster.lookType,
+        hasSprite: false,
+        requiredLevel: level,
+        ...stats,
+        attacks,
+        loot: monster.loot || [],
+      },
+    ],
+  };
+}
+
+function buildBossesTabHunts() {
+  const monsters = readJson(path.join(DATA_DIR, 'monsters.json'));
+  const index = readJson(path.join(DATA_DIR, 'sprite-index.json'));
+  const outfits = index.groups?.outfits ?? {};
+  const effectIds = Object.keys(index.groups?.effects ?? {});
+  const missileIds = Object.keys(index.groups?.missiles ?? {});
+
+  const usable = (monster) => {
+    const lookType = Number(monster.lookType);
+    return Number.isFinite(lookType) && lookType >= 1 && outfits[String(lookType)] && cleanName(monster.name);
+  };
+
+  const hunts = [...monsters].filter((monster) => monster.category === 'boss hunts' && usable(monster));
+  hunts.sort((a, b) => (a.health || 0) - (b.health || 0) || cleanName(a.name).localeCompare(cleanName(b.name)));
+
+  const bijuus = [...monsters].filter((monster) => monster.category === 'bijuu' && usable(monster));
+  bijuus.sort((a, b) => cleanName(a.name).localeCompare(cleanName(b.name)));
+
+  const huntEntries = hunts.map((monster, i) =>
+    huntFromWonsrMonster(monster, 25 + i * 5, i, 'bosses', 'Boss Hunt', effectIds, missileIds),
+  );
+  const bijuuEntries = bijuus.map((monster, i) =>
+    huntFromWonsrMonster(monster, 70 + i, hunts.length + i, 'bosses', 'Bijuu', effectIds, missileIds),
+  );
+  return [...huntEntries, ...bijuuEntries];
+}
+
+function buildWonsrMonsterTestHunt() {
+  const level = 1;
+  const stats = normalizedStats(level, null);
+  const monsters = readJson(path.join(DATA_DIR, 'monsters.json'));
+  const index = readJson(path.join(DATA_DIR, 'sprite-index.json'));
+  const outfits = index.groups?.outfits ?? {};
+  const picked = [];
+  const seenLooks = new Set();
+  const pool = [...monsters].sort((a, b) => {
+    const aSaga = a.category === 'saga' ? 1 : 0;
+    const bSaga = b.category === 'saga' ? 1 : 0;
+    if (aSaga !== bSaga) return aSaga - bSaga;
+    return (a.health || 0) - (b.health || 0);
+  });
+  for (const monster of pool) {
+    const lookType = Number(monster.lookType);
+    if (!Number.isFinite(lookType) || lookType < 1) continue;
+    if (lookType >= 9000) continue;
+    if (!outfits[String(lookType)]) continue;
+    if (seenLooks.has(lookType)) continue;
+    const name = cleanName(monster.name);
+    if (!name) continue;
+    seenLooks.add(lookType);
+    picked.push(monster);
+    if (picked.length >= 8) break;
+  }
+  if (picked.length < 4) {
+    for (const lookType of [2, 3, 4, 5, 8, 12, 15, 25]) {
+      if (!outfits[String(lookType)] || seenLooks.has(lookType)) continue;
+      picked.push({
+        id: `wonsr-outfit-${lookType}`,
+        name: `WONSR ${lookType}`,
+        source: `outfits/${lookType}.png`,
+        lookType,
+        loot: [],
+      });
+      seenLooks.add(lookType);
+      if (picked.length >= 8) break;
+    }
+  }
+  const targets = picked.map((monster) => ({
+    id: monster.id,
+    sourceId: monster.id,
+    name: cleanName(monster.name),
+    category: 'monstro',
+    source: `wonsr/${monster.source || monster.id}`,
+    lookType: monster.lookType,
+    hasSprite: false,
+    requiredLevel: level,
+    ...stats,
+    loot: monster.loot || [],
+  }));
+  return {
+    id: 'hunt-teste-wonsr-monsters',
+    name: 'Teste: Monstros WONSR',
+    requiredLevel: level,
+    mapKey: 'huntTesteWonsrMonsters',
+    description:
+      'Floresta aberta (5008²): inimigos com sprites WONSR (outfit lookType), sem pack lateral curado.',
+    targets,
+  };
+}
+
+function buildDemonTestHunt() {
+  const level = 1;
+  const stats = normalizedStats(level, null);
+  const targets = [
+    {
+      id: 'curated-enemy-demon-a',
+      sourceId: 'curated-enemy-demon-a',
+      name: 'Demon A',
+      category: 'monstro',
+      source: 'tiny-rpg/demon-a',
+      lookType: 9100,
+      hasSprite: false,
+      requiredLevel: level,
+      ...stats,
+      loot: [],
+    },
+    {
+      id: 'curated-enemy-blood-monster-a',
+      sourceId: 'curated-enemy-blood-monster-a',
+      name: 'Blood Monster A',
+      category: 'monstro',
+      source: 'tiny-rpg/blood-monster-a',
+      lookType: 9101,
+      hasSprite: false,
+      requiredLevel: level,
+      ...stats,
+      loot: [],
+    },
+  ];
+  return {
+    id: 'hunt-teste-demon',
+    name: 'Teste: Demon A',
+    requiredLevel: level,
+    mapKey: 'huntTesteDemon',
+    description:
+      'Mesmo mapa aberto da floresta teste (5008², câmera no líder): Demon_A e Blood Monster_A.',
+    targets,
+  };
+}
+
+/** Floresta upscale 5016² (crop 5008) — primeiro mapa de caça / teste. */
 function buildFarmTestHunt(characters) {
   const wanted = ['Asuma Sarutobi', 'Kiba Inuzuka', 'Shino Aburame'];
   const picked = wanted
@@ -791,11 +1077,11 @@ function buildFarmTestHunt(characters) {
 
   return {
     id: 'hunt-teste-farm-wonsr',
-    name: 'Teste: Clareira de Treinamento',
+    name: 'Teste: Mapa Floresta',
     requiredLevel: level,
     mapKey: 'huntTesteFarmWonsr',
     description:
-      'Clareira de treinamento 4096×2160: mesma resolução do hub, câmera enquadrando o mapa e equipe completa.',
+      'Floresta upscale 5016×5016 (crop 5008²): top-down explorável, câmera no líder e equipe completa.',
     targets,
   };
 }
@@ -942,6 +1228,10 @@ async function main() {
   const monsterCharacters = buildMonsterCharacters();
   const characters = [...baseCharacters, ...monsterCharacters];
   const hunts = [
+    ...buildWonsrTabHunts(),
+    ...buildBossesTabHunts(),
+    buildWonsrMonsterTestHunt(),
+    buildDemonTestHunt(),
     buildFarmTestHunt(characters),
     buildTestHunt(characters),
     ...buildHunts(characters),
@@ -985,7 +1275,11 @@ async function main() {
   console.log('Saída:', path.relative(ROOT, HUNTS_FILE));
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+module.exports = { buildWonsrTabHunts, buildBossesTabHunts };
+
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}

@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import type { Player } from '@/entities/player';
 import { dialogueStore } from '@/stores/dialogue-store';
+import { isTypingInField } from '@/utils/dom-focus';
 
 export interface PlayerInputOptions {
   /** Hub de perfil: ignora o eixo vertical (senão o clamp do chão treme). */
@@ -36,11 +37,21 @@ export class PlayerInputSystem {
       return;
     }
 
-    this.cursors = keyboard.createCursorKeys();
-    this.keyW = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-    this.keyA = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-    this.keyS = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-    this.keyD = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    // enableCapture=false: senão o Phaser dá preventDefault em W/A/S/D/setas
+    // e essas teclas somem do chat, busca, apelido e demais inputs da HUD.
+    this.cursors = keyboard.addKeys(
+      {
+        up: Phaser.Input.Keyboard.KeyCodes.UP,
+        down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+        left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+        right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+      },
+      false,
+    ) as Phaser.Types.Input.Keyboard.CursorKeys;
+    this.keyW = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W, false);
+    this.keyA = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A, false);
+    this.keyS = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S, false);
+    this.keyD = keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D, false);
   }
 
   setEnabled(enabled: boolean): void {
@@ -50,8 +61,8 @@ export class PlayerInputSystem {
 
   /** @returns true enquanto alguma tecla de direção estiver pressionada. */
   update(): boolean {
-    if (!this.enabled || dialogueStore.isOpen()) {
-      if (dialogueStore.isOpen()) this.player.stop();
+    if (!this.enabled || dialogueStore.isOpen() || isTypingInField()) {
+      if (dialogueStore.isOpen() || isTypingInField()) this.player.stop();
       this.wasMoving = false;
       return false;
     }

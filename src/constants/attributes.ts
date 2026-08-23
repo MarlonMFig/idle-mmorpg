@@ -29,7 +29,7 @@ export const ATTRIBUTE_SHORT_LABELS: Record<AttributeId, string> = {
   critical: 'CRT',
 };
 
-/** Atributos base (nível 1, sem equipamento/buffs). */
+/** Atributos base (nível 1, sem buffs). */
 export const BASE_ATTRIBUTES: AttributeValues = {
   hp: 100,
   strength: 12,

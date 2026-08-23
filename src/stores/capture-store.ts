@@ -1,4 +1,4 @@
-import { DEFAULT_OBTAIN_QUALITY } from '@/constants/character-progression';
+import { resolveEnemyCaptureQuality } from '@/lib/resolve-character-quality';
 import { createStore } from '@/stores/create-store';
 import type { CharacterQuality } from '@/types/character-meta';
 import type { EnemyDefinition } from '@/types/enemy';
@@ -48,7 +48,7 @@ export const captureStore = {
       name: seal.name,
       level,
       lookType: seal.lookType,
-      quality: DEFAULT_OBTAIN_QUALITY,
+      quality: resolveEnemyCaptureQuality(definition),
       definition,
     };
 

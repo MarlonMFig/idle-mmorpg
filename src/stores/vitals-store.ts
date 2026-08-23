@@ -1,5 +1,7 @@
 import { DEFAULT_VITALS } from '@/constants/hud';
-import { xpRequiredForLevel } from '@/data/xp-stages';
+import { addExperience, getXpRequiredForLevel } from '@/lib/player-progression';
+import { isPlayerInvincible } from '@/config/devConfig';
+import { characterLabStore, isCharacterLabSession } from '@/stores/character-lab-store';
 import { createStore } from '@/stores/create-store';
 import type { VitalsState } from '@/types/hud';
 
@@ -8,7 +10,7 @@ const store = createStore<VitalsState>({ ...DEFAULT_VITALS });
 /**
  * Vitals do jogador — HP atual + XP.
  * Cap de HP vem de `attributesStore` via `applyAttributeCaps`.
- * Curva de XP usa estágios WONSR (`xp-stages`).
+ * Curva de XP: `@/lib/player-progression` (`LEVEL_RULES`).
  * Level/XP entram no snapshot `idle-mmorpg:session-v1`.
  */
 export const vitalsStore = {
@@ -23,7 +25,7 @@ export const vitalsStore = {
     const level = initial.level || 1;
     store.setState({
       ...initial,
-      xpMax: initial.xpMax || xpRequiredForLevel(level),
+      xpMax: getXpRequiredForLevel(level),
     });
   },
 
@@ -55,6 +57,12 @@ export const vitalsStore = {
    * Retorna o dano efetivo e se o jogador morreu.
    */
   applyDamage(rawAmount: number, defense = 0): { damage: number; died: boolean } {
+    if (
+      isPlayerInvincible() ||
+      (isCharacterLabSession() && characterLabStore.getSnapshot().playerInvincible)
+    ) {
+      return { damage: 0, died: false };
+    }
     if (rawAmount <= 0) return { damage: 0, died: false };
     const state = store.getSnapshot();
     if (state.hp <= 0) return { damage: 0, died: true };
@@ -65,6 +73,23 @@ export const vitalsStore = {
     return { damage: mitigated, died: hp <= 0 };
   },
 
+  /** HP já mitigado (defesa + elemento). Não reaplica defesa. 0 permanece 0. */
+  applyHpLoss(amount: number): { damage: number; died: boolean } {
+    if (
+      isPlayerInvincible() ||
+      (isCharacterLabSession() && characterLabStore.getSnapshot().playerInvincible)
+    ) {
+      return { damage: 0, died: false };
+    }
+    if (amount <= 0) return { damage: 0, died: false };
+    const state = store.getSnapshot();
+    if (state.hp <= 0) return { damage: 0, died: true };
+    const loss = Math.max(0, Math.floor(amount));
+    const hp = Math.max(0, state.hp - loss);
+    store.setState({ ...state, hp });
+    return { damage: loss, died: hp <= 0 };
+  },
+
   isDead(): boolean {
     return store.getSnapshot().hp <= 0;
   },
@@ -73,19 +98,14 @@ export const vitalsStore = {
     if (amount <= 0) return false;
 
     const state = store.getSnapshot();
-    let { xp, xpMax, level } = state;
-    const { hp, hpMax } = state;
-    xp += amount;
-    let leveled = false;
-
-    while (xp >= xpMax) {
-      xp -= xpMax;
-      level += 1;
-      xpMax = xpRequiredForLevel(level);
-      leveled = true;
-    }
-
-    store.setState({ hp, hpMax, xp, xpMax, level });
-    return leveled;
+    const next = addExperience(state.level, state.xp, amount);
+    store.setState({
+      hp: state.hp,
+      hpMax: state.hpMax,
+      xp: next.xp,
+      xpMax: next.xpMax,
+      level: next.level,
+    });
+    return next.leveled;
   },
 };

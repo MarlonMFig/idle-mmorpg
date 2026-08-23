@@ -4,12 +4,15 @@ import { huntAnalyzerStore } from '@/stores/hunt-analyzer-store';
 import { vitalsStore } from '@/stores/vitals-store';
 
 export type GameMode = 'hub' | 'combat';
+export type EncounterKind = 'hunt' | 'boss';
 
 export interface LocationState {
   mode: GameMode;
   mapKey: MapKey;
   /** Caça lógica selecionada; várias caças podem reutilizar o mesmo TMX. */
   huntId: string | null;
+  encounterKind: EncounterKind;
+  bossId: string | null;
   /** Incrementa a cada viagem — GameScene reinicia ao mudar. */
   travelSeq: number;
   /** false até o primeiro create da sessão Phaser. */
@@ -20,6 +23,8 @@ const store = createStore<LocationState>({
   mode: 'hub',
   mapKey: MAP_KEYS.leafVillage,
   huntId: null,
+  encounterKind: 'hunt',
+  bossId: null,
   travelSeq: 0,
   sessionStarted: false,
 });
@@ -36,6 +41,8 @@ export const locationStore = {
       mode: 'hub',
       mapKey: MAP_KEYS.leafVillage,
       huntId: null,
+      encounterKind: 'hunt',
+      bossId: null,
       travelSeq: 0,
       sessionStarted: false,
     });
@@ -49,15 +56,20 @@ export const locationStore = {
     mode: GameMode;
     mapKey: MapKey;
     huntId: string | null;
+    encounterKind?: EncounterKind;
+    bossId?: string | null;
   }): void {
+    const restoreBossCombat = location.encounterKind === 'boss' && location.mode === 'combat';
     store.setState({
-      mode: location.mode,
-      mapKey: location.mapKey,
-      huntId: location.huntId,
+      mode: restoreBossCombat ? 'hub' : location.mode,
+      mapKey: restoreBossCombat ? MAP_KEYS.leafVillage : location.mapKey,
+      huntId: restoreBossCombat ? null : location.huntId,
+      encounterKind: 'hunt',
+      bossId: null,
       travelSeq: 0,
       sessionStarted: true,
     });
-    huntAnalyzerStore.onHuntChanged(location.huntId);
+    huntAnalyzerStore.onHuntChanged(restoreBossCombat ? null : location.huntId);
   },
 
   markSessionStarted(): void {
@@ -83,6 +95,8 @@ export const locationStore = {
       mode: 'hub',
       mapKey: MAP_KEYS.leafVillage,
       huntId: null,
+      encounterKind: 'hunt',
+      bossId: null,
       travelSeq: state.travelSeq + 1,
       sessionStarted: true,
     });
@@ -96,6 +110,23 @@ export const locationStore = {
       mode: 'combat',
       mapKey,
       huntId,
+      encounterKind: 'hunt',
+      bossId: null,
+      travelSeq: state.travelSeq + 1,
+      sessionStarted: true,
+    });
+  },
+
+  enterBoss(mapKey: MapKey, bossId: string): void {
+    const state = store.getSnapshot();
+    huntAnalyzerStore.onHuntChanged(null);
+    store.setState({
+      ...state,
+      mode: 'combat',
+      mapKey,
+      huntId: null,
+      encounterKind: 'boss',
+      bossId,
       travelSeq: state.travelSeq + 1,
       sessionStarted: true,
     });

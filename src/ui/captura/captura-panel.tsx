@@ -12,7 +12,7 @@ import { captureStore, type CaptureOffer } from '@/stores/capture-store';
 import { helperStore } from '@/stores/helper-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { locationStore } from '@/stores/location-store';
-import { recordSealAnalytics, trySealEnemy } from '@/systems/sealing';
+import { attemptCapture } from '@/systems/capture-engine';
 
 function formatQty(n: number): string {
   return n.toLocaleString('pt-BR');
@@ -89,10 +89,13 @@ export function CapturaPanel() {
     if (!offer) return;
 
     setBusyId(id);
-    const seal = trySealEnemy(offer.definition, Math.random, { manual: true });
-    recordSealAnalytics(seal);
+    const result = attemptCapture({
+      target: offer.definition,
+      source: 'manual',
+      attemptKey: offer.id,
+    });
 
-    if (seal.kind === 'skipped' && seal.reason === 'no-scroll') {
+    if (!result.success && (result.reason === 'no-scroll' || result.reason === 'in-flight')) {
       setBusyId(null);
       return;
     }

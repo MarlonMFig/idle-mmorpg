@@ -1,9 +1,12 @@
-import type { EquipSlot, ItemDefinition, ItemRarity } from '@/types/loot';
-import { formatModifierLine } from '@/utils/attributes';
+import type { ItemCategory, ItemDefinition, ItemRarity } from '@/types/loot';
+import { isItemRarity } from '@/types/loot';
 import { ANIME_LOOT_ITEMS } from '@/data/anime-items';
 import { HELPER_ITEM_DEFS } from '@/data/helper-items';
-import { WONSR_EQUIP_ITEMS } from '@/data/wonsr-equip-subset';
 
+/**
+ * Catálogo de itens (Item 36 — sem Equipment).
+ * Bandana / Amuleto preservados como drop/quest (não equipáveis).
+ */
 export const ITEMS: Record<string, ItemDefinition> = {
   'item-slime-gel': {
     id: 'item-slime-gel',
@@ -17,6 +20,8 @@ export const ITEMS: Record<string, ItemDefinition> = {
     rarity: 'common',
     stackMax: 999999,
     iconSrc: '/ui/items/copper-coin.png',
+    sellable: false,
+    sellValue: 0,
   },
   'item-wolf-fang': {
     id: 'item-wolf-fang',
@@ -36,53 +41,28 @@ export const ITEMS: Record<string, ItemDefinition> = {
     rarity: 'rare',
     stackMax: 20,
   },
+  'item-awakening-material': {
+    id: 'item-awakening-material',
+    name: 'Material de Despertar (DEV)',
+    rarity: 'rare',
+    stackMax: 999,
+    category: 'material',
+  },
+  /** Quest reward — colecionável / simbólico (não equipável). */
   'item-leaf-band': {
     id: 'item-leaf-band',
     name: 'Bandana da Folha',
     rarity: 'common',
-    stackMax: 1,
-    equipSlot: 'bandana',
-    bonuses: { defense: 1, hp: 5, accuracy: 3 },
+    stackMax: 99,
+    category: 'quest',
   },
-  'item-kunai': {
-    id: 'item-kunai',
-    name: 'Kunai',
-    rarity: 'uncommon',
-    stackMax: 1,
-    equipSlot: 'weapon',
-    bonuses: { strength: 6, critical: 2 },
-  },
-  'item-flak-vest': {
-    id: 'item-flak-vest',
-    name: 'Roupa Shinobi',
-    rarity: 'uncommon',
-    stackMax: 1,
-    equipSlot: 'clothing',
-    bonuses: { defense: 4, hp: 15 },
-  },
-  'item-shinobi-gloves': {
-    id: 'item-shinobi-gloves',
-    name: 'Luvas Shinobi',
-    rarity: 'common',
-    stackMax: 1,
-    equipSlot: 'gloves',
-    bonuses: { strength: 2, defense: 1, accuracy: 2 },
-  },
-  'item-shinobi-boots': {
-    id: 'item-shinobi-boots',
-    name: 'Botas Shinobi',
-    rarity: 'common',
-    stackMax: 1,
-    equipSlot: 'boots',
-    bonuses: { defense: 2, speed: 15, hp: 5 },
-  },
+  /** Loot drop — colecionável (não equipável). */
   'item-lucky-charm': {
     id: 'item-lucky-charm',
     name: 'Amuleto da Sorte',
     rarity: 'rare',
-    stackMax: 1,
-    equipSlot: 'accessory',
-    bonuses: { strength: 3, hp: 10, critical: 5 },
+    stackMax: 99,
+    category: 'material',
   },
   'item-sealing-scroll': {
     id: 'item-sealing-scroll',
@@ -114,21 +94,16 @@ export const ITEMS: Record<string, ItemDefinition> = {
   },
   ...HELPER_ITEM_DEFS,
   ...ANIME_LOOT_ITEMS,
-  ...Object.fromEntries(WONSR_EQUIP_ITEMS.map((item) => [item.id, item])),
 };
 
-/** Ids conhecidos do catálogo (fechado em compile-time quando possível). */
 export type ItemId =
   | 'item-slime-gel'
   | 'item-copper-coin'
   | 'item-wolf-fang'
   | 'item-wood-scrap'
   | 'item-chakra-shard'
+  | 'item-awakening-material'
   | 'item-leaf-band'
-  | 'item-kunai'
-  | 'item-flak-vest'
-  | 'item-shinobi-gloves'
-  | 'item-shinobi-boots'
   | 'item-lucky-charm'
   | 'item-sealing-scroll'
   | 'item-sealing-scroll-rare'
@@ -137,8 +112,7 @@ export type ItemId =
   | 'item-hp-potion'
   | 'item-hp-potion-ultra'
   | 'item-hp-potion-ultra-concentrada'
-  | 'item-revive'
-  | `wonsr-item-${number}`;
+  | 'item-revive';
 
 export const RARITY_COLOR: Record<ItemRarity, number> = {
   common: 0xb0b0b0,
@@ -162,17 +136,46 @@ export function getItem(itemId: string): ItemDefinition | undefined {
   return ITEMS[itemId];
 }
 
-export function isEquippable(itemId: string): boolean {
-  return getItem(itemId)?.equipSlot != null;
+export function getItemDefinition(itemId: string): ItemDefinition | undefined {
+  return getItem(itemId);
 }
 
-export function getEquipSlot(itemId: string): EquipSlot | undefined {
-  return getItem(itemId)?.equipSlot;
+export function listItemDefinitions(): ItemDefinition[] {
+  return Object.values(ITEMS);
 }
 
-/** Texto curto dos bônus para tooltip. */
-export function formatItemBonuses(itemId: string): string {
-  const bonuses = getItem(itemId)?.bonuses;
-  if (!bonuses) return '';
-  return formatModifierLine(bonuses);
+export function getItemStackLimit(itemId: string): number {
+  return Math.max(1, getItem(itemId)?.stackMax ?? 1);
+}
+
+export function inferItemCategory(item: ItemDefinition): ItemCategory {
+  if (item.category) return item.category;
+  if (item.id === 'item-copper-coin') return 'currency';
+  if (item.id.includes('sealing-scroll')) return 'scroll';
+  if (item.id.includes('fragmento') || item.id.includes('fragment')) return 'fragment';
+  if (item.id.includes('potion') || item.id.includes('revive') || item.id.includes('pocao')) {
+    return 'consumable';
+  }
+  if (item.id.includes('quest')) return 'quest';
+  return 'material';
+}
+
+export function validateItemRegistry(): string[] {
+  const warnings: string[] = [];
+  const seen = new Set<string>();
+  for (const item of listItemDefinitions()) {
+    if (seen.has(item.id)) warnings.push(`ID duplicado: ${item.id}`);
+    seen.add(item.id);
+    if (!isItemRarity(item.rarity)) warnings.push(`${item.id}: raridade inválida`);
+    if (!Number.isFinite(item.stackMax) || item.stackMax < 1) {
+      warnings.push(`${item.id}: stackLimit inválido`);
+    }
+    if (item.sellValue != null && item.sellValue < 0) {
+      warnings.push(`${item.id}: sellValue negativo`);
+    }
+    if (item.iconSrc && !item.iconSrc.startsWith('/')) {
+      warnings.push(`${item.id}: iconSrc deve ser caminho /public`);
+    }
+  }
+  return warnings;
 }

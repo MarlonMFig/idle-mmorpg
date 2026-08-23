@@ -230,6 +230,11 @@ export const ANIME_LOOT_ITEMS: Record<string, ItemDefinition> = {
     'mythic',
     'fragmento_personagem.svg',
   ),
+  /**
+   * Legado: existia só para refino de Potencial (Poder/Sorte/Fortuna), removido.
+   * Permanece no registry para não quebrar inventários/saves. Sem uso no jogo.
+   * Pode ser apagado definitivamente numa limpeza futura de itens mortos.
+   */
   'item-cristal-refinamento': animeItem(
     'item-cristal-refinamento',
     'Cristal de Refinamento',

@@ -7,12 +7,17 @@ import { TEAM_SLOT_COUNT } from '@/constants/sealing';
 import { useDraggablePanel } from '@/hooks/use-draggable-panel';
 import { useStore } from '@/hooks/use-store';
 import { switchActiveCharacter } from '@/lib/active-character';
-import { xpRequiredForLevel } from '@/data/xp-stages';
+import { getXpBarPercent, isMaxLevel } from '@/lib/player-progression';
 import { guildStore } from '@/stores/guild-store';
+import { achievementsStore } from '@/stores/achievements-store';
+import { getTitleDefinition } from '@/data/achievements/title-registry';
 import { teamStore } from '@/stores/team-store';
 import { vitalsStore } from '@/stores/vitals-store';
+import { combatEnergyStore } from '@/stores/combat-energy-store';
+import { combatStatusHudStore } from '@/stores/combat-status-hud-store';
+import type { CombatStatusHudIcon } from '@/stores/combat-status-hud-store';
 import type { SealedCharacter } from '@/types/team';
-import { computePlayerAttributes } from '@/utils/attributes';
+import { computeInstanceTotals } from '@/lib/character-instance-stats';
 
 function formatCompact(value: number): string {
   const n = Math.max(0, value);
@@ -29,8 +34,13 @@ function formatCompact(value: number): string {
   return String(Math.round(n));
 }
 
-function estimateHpMax(stars: number, level: number): number {
-  return Math.max(1, Math.round(computePlayerAttributes({ level, stars }).totals.hp));
+function estimateHpMax(member: SealedCharacter, level: number): number {
+  return Math.max(
+    1,
+    Math.round(
+      computeInstanceTotals(member, level).hp,
+    ),
+  );
 }
 
 function ActiveTeamRow({
@@ -39,19 +49,32 @@ function ActiveTeamRow({
   level,
   hp,
   hpMax,
+  energy,
+  energyMax,
   expPct,
+  atMaxLevel,
+  statusIcons,
 }: {
   member: SealedCharacter;
   isActive: boolean;
   level: number;
   hp: number;
   hpMax: number;
+  energy: number | null;
+  energyMax: number | null;
   expPct: number;
+  atMaxLevel: boolean;
+  statusIcons: CombatStatusHudIcon[];
 }) {
   const qualityColor = CHARACTER_QUALITY_COLORS[member.quality];
   const hpSafe = Math.max(1, hpMax);
   const hpPct = Math.max(0, Math.min(100, (hp / hpSafe) * 100));
   const expSafe = Math.max(0, Math.min(100, expPct));
+  const energySafeMax = Math.max(1, energyMax ?? 1);
+  const energyPct =
+    energy != null && energyMax != null
+      ? Math.max(0, Math.min(100, (energy / energySafeMax) * 100))
+      : null;
 
   return (
     <button
@@ -84,7 +107,10 @@ function ActiveTeamRow({
             </span>{' '}
             {member.name}
           </span>
-          <span className="active-team__lv">Lv.{level}</span>
+          <span className="active-team__lv">
+            Lv.{level}
+            {atMaxLevel ? ' MAX' : ''}
+          </span>
         </div>
         <div className="active-team__bar active-team__bar--hp">
           <span className="active-team__bar-fill" style={{ width: `${hpPct}%` }} />
@@ -92,13 +118,37 @@ function ActiveTeamRow({
             {formatCompact(hp)}/{formatCompact(hpMax)}
           </span>
         </div>
+        {energyPct != null && energy != null && energyMax != null ? (
+          <div className="active-team__bar active-team__bar--energy" title="ENERGIA">
+            <span className="active-team__bar-fill" style={{ width: `${energyPct}%` }} />
+            <span className="active-team__bar-label">
+              ENERGIA {formatCompact(Math.floor(energy))}/{formatCompact(Math.floor(energyMax))}
+            </span>
+          </div>
+        ) : null}
+        {statusIcons.length > 0 ? (
+          <div className="active-team__status" aria-label="Status ativos">
+            {entryIcons(statusIcons)}
+          </div>
+        ) : null}
         <div className="active-team__bar active-team__bar--exp">
           <span className="active-team__bar-fill" style={{ width: `${expSafe}%` }} />
-          <span className="active-team__bar-label">EXP {Math.round(expSafe)}%</span>
+          <span className="active-team__bar-label">
+            {atMaxLevel ? 'EXP MAX' : `EXP ${Math.round(expSafe)}%`}
+          </span>
         </div>
       </div>
     </button>
   );
+}
+
+function entryIcons(statusIcons: CombatStatusHudIcon[]) {
+  return statusIcons.map((entry) => (
+    <span key={entry.statusId} title={`${entry.statusId}${entry.stacks > 1 ? ` x${entry.stacks}` : ''}`}>
+      {entry.icon}
+      {entry.stacks > 1 ? entry.stacks : ''}
+    </span>
+  ));
 }
 
 function ActiveTeamEmpty({ index }: { index: number }) {
@@ -134,11 +184,15 @@ export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
   const activeId = useStore(teamStore, (s) => s.activeId);
   const guildId = useStore(guildStore, (s) => s.guildId);
   const guildRegistryTick = useStore(guildStore, (s) => s.registryTick);
+  const equippedTitleId = useStore(achievementsStore, (s) => s.equippedTitleId);
+  const equippedTitle = getTitleDefinition(equippedTitleId);
 
   useEffect(() => {
     teamStore.refreshPreviews();
   }, []);
   const vitals = useStore(vitalsStore, (s) => s);
+  const energyState = useStore(combatEnergyStore, (s) => s);
+  const statusIcons = useStore(combatStatusHudStore, (s) => s.playerIcons);
   const { panelRef, style, isDragging, handleProps } = useDraggablePanel('active-team', {
     zIndex: 32,
     dragZIndex: 95,
@@ -176,24 +230,31 @@ export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
       >
         <p className="active-team__brand">Equipe</p>
         <h2 className="active-team__player">
-          <span className="active-team__nick">{nickname || 'Shinobi'}</span>
+          <span className="active-team__nick-wrap">
+            <span className="active-team__nick">{nickname || 'Shinobi'}</span>
+            {equippedTitle ? (
+              <span className="active-team__title" title={equippedTitle.description}>
+                [{equippedTitle.name}]
+              </span>
+            ) : null}
+          </span>
           {guild ? (
             <span
               className="active-team__guild"
-              style={{ ['--g' as string]: guild.emblemBg }}
+              style={{ ['--g' as string]: guild.legacy?.emblemBg ?? '#7f1d1d' }}
               title={`Guild ${guild.name} [${guild.tag}]`}
             >
-              {guild.emblemIcon.startsWith('/') ? (
+              {(guild.legacy?.emblemIcon ?? '').startsWith('/') ? (
                 <Image
                   className="active-team__guild-emblem"
-                  src={guild.emblemIcon}
+                  src={guild.legacy!.emblemIcon!}
                   alt=""
                   width={22}
                   height={28}
                   unoptimized
                 />
               ) : (
-                <span className="active-team__guild-emblem">{guild.emblemIcon}</span>
+                <span className="active-team__guild-emblem">[{guild.tag}]</span>
               )}
               <span className="active-team__guild-name">{guild.name}</span>
             </span>
@@ -201,6 +262,7 @@ export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
         </h2>
         <p className="active-team__sub">
           Conta Nv. {vitals.level}
+          {isMaxLevel(vitals.level) ? ' (máx.)' : ''}
           {activeMember ? ` — ${activeMember.name} Nv.${Math.max(1, activeMember.level || 1)}` : ''}
         </p>
       </header>
@@ -217,13 +279,12 @@ export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
 
           const isActive = member.id === activeId;
           const memberLevel = Math.max(1, member.level || 1);
+          const atMaxLevel = isMaxLevel(memberLevel);
           const hpMax = isActive
             ? Math.max(1, vitals.hpMax)
-            : estimateHpMax(member.stars, memberLevel);
+            : estimateHpMax(member, memberLevel);
           const hp = isActive ? vitals.hp : hpMax;
-          const xpMax = xpRequiredForLevel(memberLevel);
-          const expPct =
-            xpMax > 0 ? Math.max(0, Math.min(100, (member.xp / xpMax) * 100)) : 0;
+          const expPct = getXpBarPercent(member.xp, memberLevel);
 
           return (
             <li key={member.id}>
@@ -233,7 +294,11 @@ export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
                 level={memberLevel}
                 hp={hp}
                 hpMax={hpMax}
+                energy={isActive ? energyState.currentEnergy : null}
+                energyMax={isActive ? energyState.maxEnergy : null}
                 expPct={expPct}
+                atMaxLevel={atMaxLevel}
+                statusIcons={isActive ? statusIcons : []}
               />
             </li>
           );

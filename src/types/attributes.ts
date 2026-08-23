@@ -7,20 +7,20 @@ export type AttributeId =
   | 'accuracy'
   | 'critical';
 
-/** Modificadores parciais (equipamento, buffs, nível, etc.). */
+/** Modificadores parciais (buffs, nível, etc.). */
 export type AttributeModifiers = Partial<Record<AttributeId, number>>;
 
 /** Valores completos de todos os atributos. */
 export type AttributeValues = Record<AttributeId, number>;
 
 /**
- * Bônus de item — mesmo shape dos atributos (parcial).
- * Mantido como alias para clareza no loot/itens.
+ * Bônus de item (legado de tooltips) — alias de AttributeModifiers.
+ * Equipment removido (Item 36); mantido se algum item ainda declara bonuses decorativos.
  */
 export type ItemBonuses = AttributeModifiers;
 
-/** Origem de uma camada de modificadores (buffs futuros usam `buff`). */
-export type AttributeLayerSource = 'base' | 'level' | 'equipment' | 'buff';
+/** Origem de uma camada de modificadores. */
+export type AttributeLayerSource = 'base' | 'level' | 'buff' | 'awakening' | 'lineage';
 
 export interface AttributeBuff {
   id: string;
@@ -31,20 +31,15 @@ export interface AttributeBuff {
 
 /** Snapshot público dos atributos (totais + camadas para UI/debug). */
 export interface PlayerAttributes {
-  /** Totais finais (base + nível + equipamento + buffs). */
+  /** Totais finais (base + nível + awakening + lineage + buffs). Sem Equipment. */
   totals: AttributeValues;
   base: AttributeValues;
   level: AttributeModifiers;
-  equipment: AttributeModifiers;
-  /** Soma atual dos buffs ativos — preparado para sistema de buffs. */
+  /** Soma atual dos buffs ativos. */
   buffs: AttributeModifiers;
+  /** Camada derivada do Despertar (percentuais). Não altera base. */
+  awakening: AttributeModifiers;
+  /** Camada derivada da Especialização de Linhagem (percentuais). Não altera base. */
+  lineage: AttributeModifiers;
   activeBuffs: readonly AttributeBuff[];
 }
-
-export type EquipSlot =
-  | 'bandana'
-  | 'weapon'
-  | 'clothing'
-  | 'gloves'
-  | 'boots'
-  | 'accessory';

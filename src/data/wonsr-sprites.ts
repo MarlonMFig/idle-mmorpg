@@ -1,4 +1,5 @@
-import * as Phaser from 'phaser';
+/** Avoid runtime `phaser` import — VFX catalog / character packs run during SSR. */
+import type * as Phaser from 'phaser';
 
 /**
  * Índice dos spritesheets exportados do WONSR (`npm run wonsr:sheets`).
@@ -223,9 +224,58 @@ export function loadOutfitSheets(
   if (queued === 0) return Promise.resolve();
 
   return new Promise((resolve) => {
-    scene.load.once(Phaser.Loader.Events.COMPLETE, () => resolve());
+    scene.load.once('complete', () => resolve());
     scene.load.start();
   });
+}
+
+/** Animação one-shot da primeira variante de um efeito/míssil WONSR. */
+export function ensureWonsrFxAnim(
+  scene: Phaser.Scene,
+  group: 'effects' | 'missiles',
+  id: number | string,
+  sheet: WonsrAnimationSheet,
+  frameRate = 14,
+): string {
+  const textureKey = wonsrTextureKey(group, id);
+  const animKey = `${textureKey}-fx`;
+  if (scene.anims.exists(animKey)) return animKey;
+  scene.anims.create({
+    key: animKey,
+    frames: Array.from({ length: Math.max(1, sheet.phases) }, (_, phase) => ({
+      key: textureKey,
+      frame: wonsrFrameIndex(sheet, 0, phase),
+    })),
+    frameRate,
+    repeat: 0,
+  });
+  return animKey;
+}
+
+export function collectHuntFxSheets(
+  hunt: { targets: Array<{ attacks?: Array<{ effectId?: string; missileId?: string }> }> } | undefined,
+): Array<{ group: 'effects' | 'missiles'; id: string }> {
+  const extra: Array<{ group: 'effects' | 'missiles'; id: string }> = [];
+  const seen = new Set<string>();
+  for (const target of hunt?.targets ?? []) {
+    for (const attack of target.attacks ?? []) {
+      if (attack.effectId) {
+        const ref = `effects:${attack.effectId}`;
+        if (!seen.has(ref)) {
+          seen.add(ref);
+          extra.push({ group: 'effects', id: attack.effectId });
+        }
+      }
+      if (attack.missileId) {
+        const ref = `missiles:${attack.missileId}`;
+        if (!seen.has(ref)) {
+          seen.add(ref);
+          extra.push({ group: 'missiles', id: attack.missileId });
+        }
+      }
+    }
+  }
+  return extra;
 }
 
 let cached: Promise<WonsrSpriteIndex> | null = null;

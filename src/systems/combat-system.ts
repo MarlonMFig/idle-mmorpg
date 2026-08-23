@@ -1,46 +1,93 @@
 import * as Phaser from 'phaser';
 import {
+  IDLE_AGGRO_RANGE,
   PLAYER_ATTACK_COOLDOWN_MS,
   PLAYER_ATTACK_RANGE,
   PLAYER_DEATH_RESPAWN_MS,
   PLAYER_JUTSU_GAP_MS,
 } from '@/constants/combat';
+import { isSkillCooldownIgnored, scaleOutgoingDamage } from '@/config/devConfig';
+import { characterLabStore, isLabBlockingHuntGameplay } from '@/stores/character-lab-store';
 import { SKILL_DEFAULT_RANGE } from '@/constants/skill';
-import { getSkill } from '@/data/skills';
+import { resolveSkillEnergyCost } from '@/data/skill-ai-def';
+import { BASIC_ATTACK_ELEMENT, resolveSkillElement, type DamageElement } from '@/data/damage-elements';
+import { resolveAwakeningRuntime } from '@/lib/awakening-runtime';
+import { resolveEffectiveSkill } from '@/lib/resolve-effective-skill';
 import type { Player } from '@/entities/player';
 import type { Enemy } from '@/entities/enemy';
 import { STAR_3_SPECIAL_DAMAGE_BONUS } from '@/constants/character-progression';
-import { attributesStore } from '@/stores/attributes-store';
 import { teamStore } from '@/stores/team-store';
 import { dialogueStore } from '@/stores/dialogue-store';
 import { helperStore } from '@/stores/helper-store';
 import { skillsStore } from '@/stores/skills-store';
+import { locationStore } from '@/stores/location-store';
+import { combatEnergyStore } from '@/stores/combat-energy-store';
 import { vitalsStore } from '@/stores/vitals-store';
+import { bossStore } from '@/stores/boss-store';
+import { createBossAiState, decideBossAction } from '@/lib/boss-ai';
+import { getSkill } from '@/data/skills';
 import { autoHelperSystem } from '@/systems/auto-helper-system';
 import { handleEnemyKill } from '@/systems/combat-rewards';
+import {
+  getEffectiveCombatStats,
+  PLAYER_STATUS_UNIT_ID,
+  scaledAttackCooldown,
+} from '@/systems/combat-stats';
 import type { EnemyManager } from '@/systems/enemy-manager';
 import { findNearestAliveEnemy, findUnclaimedEnemy } from '@/systems/find-nearest-enemy';
 import type { LootManager } from '@/systems/loot-manager';
-import { playPackFx, scheduleSkillFx } from '@/systems/pack-fx';
+import { computeSkillFxAim, playPackFx, type SkillFxAim } from '@/systems/pack-fx';
 import { playPlayerPulse } from '@/systems/player-feedback';
 import { SkillVfx } from '@/systems/skill-vfx';
+import {
+  scheduleOfficialSkillFx,
+  SkillExecutionRuntime,
+  type SkillExecution,
+  type SkillImpact,
+} from '@/systems/skill-execution';
+import { tryApplySkillStatuses } from '@/systems/skill-status-apply';
+import {
+  createSkillRotationCursor,
+  decideNextAction,
+  formatCombatAiDecision,
+  noteSkillRotationUsed,
+  type CombatAiSlotInput,
+  type SkillRotationCursor,
+} from '@/systems/combat-decision';
+import {
+  applyDirectDamage,
+  getStatusRuntime,
+  type StatusEffectRuntime,
+} from '@/systems/status-runtime';
+import { warnHotbarSlotIssues } from '@/lib/dev/skill-visual-validation';
 import { LEADER_CLAIM_ID, type TargetClaims } from '@/systems/target-claims';
 import type { SkillDefinition } from '@/types/skill';
+import type { CharacterSkillAnimDef } from '@/data/character-packs';
 
 /**
- * Combate idle: ataque básico; jutsus da hotbar quando existirem.
+ * Combate idle: Decision Engine escolhe Slot vs ataque básico.
  * Inimigos perseguem e golpeiam o jogador dentro de `chaseRadius`.
- * VFX de effects/missiles WONSR ficam desligados — só animação do personagem
- * e o SkillVfx genérico quando não há sheet de jutsu.
+ * Pose / Cast Delay / VFX / Damage Trigger vêm da SkillDefinition + pack.
  */
 export class CombatSystem {
   private readonly vfx: SkillVfx;
-  /** Próximo índice da rotação na hotbar. */
-  private step = 0;
   private lastActionAt = 0;
   private lastJutsuAt = 0;
+  private lastAiDebugKey = '';
+  private skillRotation: SkillRotationCursor = createSkillRotationCursor();
+  private rotationHuntId: string | null | undefined = undefined;
+  private rotationCharacterId: string | null = null;
+  /** Último tick de regen passiva (scene time) — delta, não por frame. */
+  private lastEnergyTickAt = 0;
   /** Quando o jogador pode reviver após a morte (ms scene). */
   private playerRespawnAt = 0;
+  /** Mira visual do VFX (`targeting`). */
+  private pendingFxAim: SkillFxAim | null = null;
+  private readonly executions = new SkillExecutionRuntime();
+  private readonly statuses: StatusEffectRuntime;
+  private lastBossTick = 0;
+  private readonly bossAi = createBossAiState();
+  private lastBossActionAt = 0;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -51,11 +98,137 @@ export class CombatSystem {
     private readonly claims: TargetClaims | null = null,
   ) {
     this.vfx = new SkillVfx(scene);
+    this.statuses = getStatusRuntime(scene);
+    this.bindStatusHooks();
+    warnHotbarSlotIssues(player.pack);
+  }
+
+  destroy(): void {
+    this.executions.cancelAll();
+    this.statuses.clearAll();
+  }
+
+  private effectiveSkill(skillId: string) {
+    return resolveEffectiveSkill(
+      skillId,
+      resolveAwakeningRuntime({
+        characterId: this.player.pack.id,
+        instanceId: this.player.instanceId,
+      }),
+    );
+  }
+
+  /** Test Lab: executa a skill real (animação + VFX + hitDelay) no alvo. */
+  castLabSkill(skillId: string, target: Enemy | null): boolean {
+    const skill = this.effectiveSkill(skillId);
+    if (!skill) return false;
+    if (!skillsStore.isReady(skillId)) return false;
+
+    const toX = target?.sprite.x ?? this.player.x + 80 * this.player.worldScale;
+    const toY = target?.sprite.y ?? this.player.y;
+    characterLabStore.pushEvent(`${skill.name} started`);
+    const anim = this.player.getSkillAnim(skillId);
+    const configured = anim?.hitDelayMs ?? skill.animation.durationMs ?? 280;
+    const startedAt = this.scene.time.now;
+    characterLabStore.setHitDebug({ configuredMs: configured, appliedAtMs: -1 });
+
+    if (skill.effect === 'heal') {
+      this.lastActionAt = this.scene.time.now;
+      this.lastJutsuAt = this.scene.time.now;
+      this.cast(skill, this.player.x, this.player.y, () => {
+        const current = vitalsStore.getSnapshot();
+        const amount = Math.max(1, Math.floor(current.hpMax * (skill.healPercent ?? 0)));
+        const healed = vitalsStore.heal(amount);
+        if (healed > 0) this.vfx.healNumber(this.player.x, this.player.y, healed);
+        characterLabStore.pushEvent('heal applied');
+        characterLabStore.setHitDebug({
+          configuredMs: configured,
+          appliedAtMs: Math.round(this.scene.time.now - startedAt),
+        });
+      }, null);
+      return true;
+    }
+
+    this.lastActionAt = this.scene.time.now;
+    this.lastJutsuAt = this.scene.time.now;
+    this.pendingFxAim = computeSkillFxAim(this.player, target);
+    this.cast(skill, toX, toY, (impact, execution) => {
+      characterLabStore.pushEvent('hit applied');
+      characterLabStore.setHitDebug({
+        configuredMs: configured,
+        appliedAtMs: Math.round(this.scene.time.now - startedAt),
+      });
+      this.applySkillImpact(skill, target, impact, execution, this.player.getSkillAnim(skillId));
+    }, target?.id ?? null);
+    if (anim?.fx) characterLabStore.pushEvent('VFX spawned');
+    return true;
+  }
+
+  strikeLabBasic(target: Enemy | null): void {
+    const toX = target?.sprite.x ?? this.player.x + 60;
+    const toY = target?.sprite.y ?? this.player.y;
+    this.player.faceToward(toX, toY);
+    const hitDelay = this.player.playAttack();
+    if (hitDelay <= 0) return;
+    characterLabStore.pushEvent('attack started');
+    const attackSheet = this.player.getCurrentAttackSheet();
+    if (attackSheet?.fx) {
+      const releaseAt = attackSheet.fxReleaseMs ?? Math.max(0, Math.floor(hitDelay * 0.55));
+      this.scene.time.delayedCall(releaseAt, () => {
+        playPackFx(this.scene, this.player, attackSheet.fx!.key, this.player.x, this.player.y, {
+          ground: attackSheet.fxGround ?? true,
+          bodyH: attackSheet.contentHeight,
+          fxH: attackSheet.fx!.contentHeight ?? attackSheet.fx!.frameHeight,
+          blend: attackSheet.fxBlend,
+          scaleMult: attackSheet.fxScale,
+          originX: attackSheet.fx!.originX,
+          offsetX: attackSheet.fx!.offsetX,
+          offsetY: attackSheet.fx!.offsetY,
+        });
+        characterLabStore.pushEvent('VFX spawned');
+      });
+    }
+    this.scene.time.delayedCall(hitDelay, () => {
+      characterLabStore.pushEvent('hit applied');
+      if (!target?.isAlive) return;
+      const damage = scaleOutgoingDamage(
+        8 + Math.floor(getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).attack * 0.85),
+      );
+      if (this.hitEnemy(target, damage, PLAYER_STATUS_UNIT_ID)) {
+        combatEnergyStore.gainFromBasicHit(1);
+      }
+    });
+  }
+
+  clearLabVfx(): void {
+    // VFX do pack já se destroi sozinho ao terminar a animação.
   }
 
   update(time: number): void {
+    this.bindStatusHooks();
+    this.executions.updateFollow();
+    this.statuses.updateFollow();
+
+    // Item 41 correção: regen passiva no update de combate (delta time), inclusive
+    // durante busy/skill/CD — mas NÃO após morte.
     if (this.player.isDead() || vitalsStore.isDead()) {
+      this.lastEnergyTickAt = time;
+    } else {
+      this.tickPlayerEnergyRegen(time);
+    }
+
+    if (isLabBlockingHuntGameplay()) {
       this.enemyManager.update(time);
+      return;
+    }
+    if (this.player.isDead() || vitalsStore.isDead()) {
+      this.executions.cancelAll();
+      this.statuses.clearTarget(PLAYER_STATUS_UNIT_ID);
+      this.enemyManager.update(time);
+      if (this.isBossFight()) {
+        if (bossStore.getSnapshot().runtime) bossStore.finishDefeat('player-death');
+        return;
+      }
       // Ligou Auto Revive depois de morrer: agenda tentativa.
       if (this.playerRespawnAt <= 0 && helperStore.getSnapshot().autoRevive) {
         this.playerRespawnAt = time + PLAYER_DEATH_RESPAWN_MS;
@@ -67,7 +240,17 @@ export class CombatSystem {
     const enemyHits = this.enemyManager.update(time, this.player.x, this.player.y);
     for (const raw of enemyHits) {
       this.applyEnemyHit(raw);
-      if (this.player.isDead() || vitalsStore.isDead()) return;
+      if (this.player.isDead() || vitalsStore.isDead()) {
+        if (this.isBossFight() && bossStore.getSnapshot().runtime) {
+          bossStore.finishDefeat('player-death');
+        }
+        return;
+      }
+    }
+
+    if (this.isBossFight()) {
+      this.updateBossEncounter(time);
+      if (bossStore.getSnapshot().result) return;
     }
 
     autoHelperSystem.tick(time);
@@ -75,40 +258,133 @@ export class CombatSystem {
     skillsStore.consumePendingCast();
 
     if (dialogueStore.isOpen()) return;
+    if (this.statuses.isStunned(PLAYER_STATUS_UNIT_ID)) return;
     if (this.player.isBusy()) return;
+    if (this.executions.blocksNewAction(this.player.pack.id)) return;
     if (time - this.lastActionAt < 140) return;
 
+    const vitals = vitalsStore.getSnapshot();
+    const nearest = findNearestAliveEnemy(
+      this.enemyManager,
+      this.player.x,
+      this.player.y,
+      IDLE_AGGRO_RANGE,
+    );
     const level = Math.max(1, teamStore.getActive()?.level || 1);
     const hotbar = skillsStore.getSnapshot().hotbar;
-    const filled = hotbar.filter((id): id is string => {
-      if (!id) return false;
-      const skill = getSkill(id);
-      return Boolean(skill && level >= (skill.requiredLevel ?? 1));
+    const slots: CombatAiSlotInput[] = ([1, 2, 3, 4] as const).map((slot) => {
+      const skillId = hotbar[slot - 1] ?? null;
+      const skill = skillId ? this.effectiveSkill(skillId) ?? null : null;
+      if (skill && level < (skill.requiredLevel ?? 1)) {
+        return { slot, skillId, skill: null, animAi: undefined };
+      }
+      return {
+        slot,
+        skillId,
+        skill,
+        animAi: skillId ? this.player.getSkillAnim(skillId)?.ai : undefined,
+      };
     });
 
-    if (filled.length === 0 || time - this.lastJutsuAt < PLAYER_JUTSU_GAP_MS) {
-      this.tryBasicAttack(time);
-      return;
+    const jutsuGap = scaledAttackCooldown(PLAYER_JUTSU_GAP_MS, PLAYER_STATUS_UNIT_ID);
+    this.syncSkillRotationScope();
+    const decision = decideNextAction({
+      now: time,
+      stunned: false,
+      actionBlocked: false,
+      skillGapBlocked: !isSkillCooldownIgnored() && time - this.lastJutsuAt < jutsuGap,
+      selfHpRatio: vitals.hpMax > 0 ? vitals.hp / vitals.hpMax : 1,
+      targetHpRatio:
+        nearest && nearest.stats.hpMax > 0 ? nearest.stats.hp / nearest.stats.hpMax : null,
+      energy: combatEnergyStore.getDecisionEnergy(),
+      isSkillReady: (skillId) => skillsStore.isReady(skillId),
+      getCooldownRemainingMs: (skillId) => skillsStore.getCooldownRemainingMs(skillId),
+      hasStatus: (who, statusId) =>
+        this.statuses.hasStatus(who === 'self' ? PLAYER_STATUS_UNIT_ID : (nearest?.id ?? ''), statusId),
+      slots,
+      nextSkillSlot: this.skillRotation.nextSlot,
+    });
+
+    this.publishSkillRotationDebug(decision);
+
+    if (characterLabStore.getSnapshot().showAiDecisions) {
+      characterLabStore.setAiDecision(decision);
+      const key = formatCombatAiDecision(decision).join('|');
+      if (key !== this.lastAiDebugKey) {
+        this.lastAiDebugKey = key;
+        if (process.env.NODE_ENV !== 'production') {
+          for (const line of formatCombatAiDecision(decision)) {
+            console.info(line);
+          }
+        }
+      }
     }
 
-    const readyOffset = Array.from({ length: filled.length }, (_, offset) => offset).find(
-      (offset) => skillsStore.isReady(filled[(this.step + offset) % filled.length]),
-    );
-    if (readyOffset == null) {
-      this.tryBasicAttack(time);
+    if (decision.action.kind === 'wait') return;
+    if (decision.action.kind === 'skill') {
+      if (this.tryCastSkill(time, decision.action.skillId)) {
+        noteSkillRotationUsed(this.skillRotation, decision.action.slot, time);
+        this.publishSkillRotationDebug(decision);
+      }
       return;
     }
+    this.tryBasicAttack(time);
+  }
 
-    this.tryJutsu(time, this.step + readyOffset, filled);
+  private syncSkillRotationScope(): void {
+    const huntId = locationStore.getSnapshot().huntId;
+    const characterId = this.player.pack.id;
+    if (this.rotationHuntId === huntId && this.rotationCharacterId === characterId) return;
+    this.skillRotation = createSkillRotationCursor();
+    this.rotationHuntId = huntId;
+    this.rotationCharacterId = characterId;
+    // Nova Hunt / troca de personagem: Energia cheia. Entre inimigos da mesma Hunt: persiste.
+    combatEnergyStore.reset();
+    this.lastEnergyTickAt = 0;
+  }
+
+  /** Regen passiva: energyRegenPerSecond * deltaSeconds (mesmo `time` do Combat Engine). */
+  private tickPlayerEnergyRegen(time: number): void {
+    if (this.lastEnergyTickAt <= 0) {
+      this.lastEnergyTickAt = time;
+      return;
+    }
+    const deltaSeconds = Math.max(0, (time - this.lastEnergyTickAt) / 1000);
+    this.lastEnergyTickAt = time;
+    if (deltaSeconds <= 0) return;
+    combatEnergyStore.tickPassiveRegen(deltaSeconds);
+  }
+
+  private publishSkillRotationDebug(decision: ReturnType<typeof decideNextAction>): void {
+    const action =
+      decision.action.kind === 'skill'
+        ? `Slot ${decision.action.slot} selected`
+        : decision.action.kind === 'basic-attack'
+          ? 'Basic Attack selected'
+          : 'wait';
+    characterLabStore.setSkillRotationDebug({
+      nextSlot: this.skillRotation.nextSlot,
+      lastUsedSlot: this.skillRotation.lastUsedSlot,
+      slots: decision.slotStatuses,
+      decision: action,
+    });
   }
 
   private applyEnemyHit(rawDamage: number): void {
     if (rawDamage <= 0 || this.player.isDead()) return;
-
-    const { damage, died } = vitalsStore.applyDamage(rawDamage, attributesStore.getDefense());
-    if (damage <= 0) return;
-
-    if (died) {
+    const hpBefore = vitalsStore.getSnapshot().hp;
+    applyDirectDamage({
+      runtime: this.statuses,
+      targetId: PLAYER_STATUS_UNIT_ID,
+      rawAmount: rawDamage,
+      sourceId: 'enemy',
+      enemy: null,
+      element: BASIC_ATTACK_ELEMENT,
+      onKill: () => undefined,
+    });
+    if (this.player.isDead() || vitalsStore.isDead()) {
+      this.executions.cancelAll();
+      this.statuses.clearTarget(PLAYER_STATUS_UNIT_ID);
       this.player.playDeath();
       if (helperStore.getSnapshot().autoRevive) {
         this.playerRespawnAt = this.scene.time.now + PLAYER_DEATH_RESPAWN_MS;
@@ -117,6 +393,7 @@ export class CombatSystem {
       }
       return;
     }
+    if (vitalsStore.getSnapshot().hp >= hpBefore) return;
 
     this.player.playHurt();
     if (!this.player.isCastingSkill()) {
@@ -151,7 +428,9 @@ export class CombatSystem {
   }
 
   private tryBasicAttack(time: number): void {
-    if (time - this.lastActionAt < PLAYER_ATTACK_COOLDOWN_MS) return;
+    if (time - this.lastActionAt < scaledAttackCooldown(PLAYER_ATTACK_COOLDOWN_MS, PLAYER_STATUS_UNIT_ID)) {
+      return;
+    }
 
     const target = findUnclaimedEnemy(
       this.enemyManager,
@@ -185,6 +464,8 @@ export class CombatSystem {
           blend: attackSheet.fxBlend,
           scaleMult: attackSheet.fxScale,
           originX: attackSheet.fx!.originX,
+          offsetX: attackSheet.fx!.offsetX,
+          offsetY: attackSheet.fx!.offsetY,
         });
       });
     }
@@ -194,33 +475,32 @@ export class CombatSystem {
       const dropX = target.sprite.x;
       const dropY = target.sprite.y;
       this.vfx.playComboHit(dropX, dropY, this.player.sprite.scaleX * 0.95);
-      const damage = 8 + Math.floor(attributesStore.getStrength() * 0.85);
-      const killed = target.takeDamage(damage);
-      if (killed) {
-        this.onKill(target, dropX, dropY);
+      const damage = scaleOutgoingDamage(
+        8 + Math.floor(getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).attack * 0.85),
+      );
+      // Item 41: Energia só no hit confirmado de Basic Attack (applyDirectDamage true).
+      if (this.hitEnemy(target, damage, PLAYER_STATUS_UNIT_ID)) {
+        combatEnergyStore.gainFromBasicHit(1);
       }
     });
   }
 
-  private tryJutsu(time: number, hotbarIndex: number, filled: string[]): void {
-    const index = hotbarIndex % filled.length;
-    const skillId = filled[index];
-    if (!skillsStore.isReady(skillId)) return;
+  private skillEnergyCost(skill: SkillDefinition): number {
+    return resolveSkillEnergyCost({
+      ...skill.ai,
+      ...this.player.getSkillAnim(skill.id)?.ai,
+    });
+  }
 
-    const skill = getSkill(skillId);
-    if (!skill) {
-      this.advanceStep(filled.length);
-      return;
-    }
+  private tryCastSkill(time: number, skillId: string): boolean {
+    if (!skillsStore.isReady(skillId)) return false;
+
+    const skill = this.effectiveSkill(skillId);
+    if (!skill) return false;
 
     if (skill.effect === 'heal') {
-      const vitals = vitalsStore.getSnapshot();
-      if (vitals.hp >= vitals.hpMax) {
-        this.step = (index + 1) % filled.length;
-        this.tryBasicAttack(time);
-        return;
-      }
-
+      // Consumo no commit real (antes de cast / cooldown) — uma vez.
+      if (!combatEnergyStore.spend(this.skillEnergyCost(skill))) return false;
       this.lastActionAt = time;
       this.lastJutsuAt = time;
       this.cast(skill, this.player.x, this.player.y, () => {
@@ -228,57 +508,32 @@ export class CombatSystem {
         const amount = Math.max(1, Math.floor(current.hpMax * (skill.healPercent ?? 0)));
         const healed = vitalsStore.heal(amount);
         if (healed > 0) this.vfx.healNumber(this.player.x, this.player.y, healed);
-      });
-      this.step = (index + 1) % filled.length;
-      return;
+      }, null);
+      return true;
     }
 
     const range = (skill.range ?? SKILL_DEFAULT_RANGE) * this.player.worldScale;
     const target = findNearestAliveEnemy(this.enemyManager, this.player.x, this.player.y, range);
-    if (!target) return;
+    if (!target) return false;
+
+    if (!combatEnergyStore.spend(this.skillEnergyCost(skill))) return false;
 
     this.lastActionAt = time;
     this.lastJutsuAt = time;
-    this.cast(skill, target.sprite.x, target.sprite.y, () => {
-      let damage = skill.damage + Math.floor(attributesStore.getStrength() * 0.35);
-      const active = teamStore.getActive();
-      if (active && active.stars >= 3 && STAR_3_SPECIAL_DAMAGE_BONUS != null) {
-        damage = Math.floor(damage * (1 + STAR_3_SPECIAL_DAMAGE_BONUS));
-      }
-      if (skill.areaRadius != null) {
-        for (const enemy of this.enemyManager.values()) {
-          if (!enemy.isAlive) continue;
-          const distance = Phaser.Math.Distance.Between(
-            target.sprite.x,
-            target.sprite.y,
-            enemy.sprite.x,
-            enemy.sprite.y,
-          );
-          if (distance > skill.areaRadius) continue;
-          const dropX = enemy.sprite.x;
-          const dropY = enemy.sprite.y;
-          if (enemy.takeDamage(damage)) {
-            this.onKill(enemy, dropX, dropY);
-          }
-        }
-      } else if (target.isAlive) {
-        const dropX = target.sprite.x;
-        const dropY = target.sprite.y;
-        if (target.takeDamage(damage)) {
-          this.onKill(target, dropX, dropY);
-        }
-      }
-    });
-
-    this.step = (index + 1) % filled.length;
+    this.pendingFxAim = computeSkillFxAim(this.player, target);
+    this.cast(skill, target.sprite.x, target.sprite.y, (impact, execution) => {
+      this.applySkillImpact(skill, target, impact, execution, this.player.getSkillAnim(skill.id));
+    }, target.id);
+    return true;
   }
 
-  private advanceStep(count: number): void {
-    if (count <= 0) return;
-    this.step = (this.step + 1) % count;
-  }
-
-  private cast(skill: SkillDefinition, toX: number, toY: number, onHit: () => void): void {
+  private cast(
+    skill: SkillDefinition,
+    toX: number,
+    toY: number,
+    onHit: (impact: SkillImpact, execution: SkillExecution) => void,
+    targetId: string | null,
+  ): void {
     skillsStore.startCooldown(skill.id, skill.cooldownMs);
     this.player.faceToward(toX, toY);
 
@@ -286,38 +541,171 @@ export class CombatSystem {
     const fromY = this.player.y;
     const skillAnim = this.player.getSkillAnim(skill.id);
     const duration = skill.animation.durationMs ?? 280;
+    const aim = this.pendingFxAim;
+    this.pendingFxAim = null;
+    const impactOnce: SkillImpact = { multiplier: 1, kind: 'single', index: 0 };
+    const primary = targetId ? this.enemyManager.get(targetId) ?? null : null;
 
     if (skill.animation.kind === 'character' || skillAnim) {
-      const hitDelay = this.player.playSkillAnim(skill.id);
-      if (hitDelay != null) {
-        if (skill.dashToTarget) {
-          this.dashPlayerToTarget(toX, toY, hitDelay, skill);
-        }
-        if (skillAnim) {
-          scheduleSkillFx(
-            this.scene,
-            this.player,
-            skillAnim,
-            hitDelay,
-            { x: fromX, y: fromY },
-            { x: toX, y: toY },
-          );
-        }
-        this.scene.time.delayedCall(hitDelay, onHit);
-        return;
-      }
-      // Pack/character: só a sheet do personagem — sem orb/impacto genérico no alvo.
-      const fallbackDelay = skillAnim?.durationMs ?? duration;
+      const hitDelay = this.player.playSkillAnim(skill.id) ?? skillAnim?.hitDelayMs ?? duration;
       if (skill.dashToTarget) {
-        this.dashPlayerToTarget(toX, toY, fallbackDelay, skill);
+        this.dashPlayerToTarget(toX, toY, hitDelay, skill);
       }
-      this.scene.time.delayedCall(fallbackDelay, onHit);
+      scheduleOfficialSkillFx({
+        scene: this.scene,
+        runtime: this.executions,
+        player: this.player,
+        skill,
+        anim: skillAnim,
+        from: { x: fromX, y: fromY },
+        to: { x: toX, y: toY },
+        aim,
+        targetId,
+        hitDelayMs: hitDelay,
+        isCasterDead: () => this.player.isDead(),
+        isOriginalTargetDead: () => {
+          if (!targetId) return false;
+          const enemy = this.enemyManager.get(targetId);
+          return !enemy || !enemy.isAlive;
+        },
+        getTargetPos: () => {
+          if (!targetId) return { x: toX, y: toY };
+          const enemy = this.enemyManager.get(targetId);
+          if (!enemy) return null;
+          return { x: enemy.sprite.x, y: enemy.sprite.y };
+        },
+        onHit,
+        onStatusMoment: (moment, execution) => {
+          this.applyStatuses(skill, skillAnim, moment, execution, primary, primary ? [primary] : [], 0);
+        },
+      });
       return;
     }
 
     this.vfx.play(skill, { fromX, fromY, toX, toY });
     playPlayerPulse(this.scene, this.player.sprite, 1.06, 0.96, 60);
-    this.scene.time.delayedCall(duration, onHit);
+    const synthetic: SkillExecution = {
+      executionId: `legacy-${skill.id}`,
+      characterId: this.player.pack.id,
+      skillId: skill.id,
+      slot: null,
+      targetId,
+      startedAt: this.scene.time.now,
+      endsAt: null,
+      phase: 'impact',
+      executionType: 'single-hit',
+      currentHit: 0,
+      tickCount: 0,
+      damageApplied: false,
+      damageArmed: true,
+      cancelled: false,
+      appliedKeys: new Set(),
+      statusRolled: new Set(),
+      activeVfx: [],
+      followMode: null,
+    };
+    this.applyStatuses(skill, skillAnim, 'on-start', synthetic, primary, primary ? [primary] : [], 0);
+    this.scene.time.delayedCall(duration, () => {
+      onHit(impactOnce, synthetic);
+      this.applyStatuses(skill, skillAnim, 'on-end', synthetic, primary, primary ? [primary] : [], 0);
+    });
+  }
+
+  private applySkillImpact(
+    skill: SkillDefinition,
+    target: Enemy | null,
+    impact: SkillImpact,
+    execution: SkillExecution,
+    anim: CharacterSkillAnimDef | undefined,
+  ): void {
+    if (impact.multiplier <= 0) return;
+    let damage = scaleOutgoingDamage(
+      Math.max(
+        0,
+        Math.floor(
+          (skill.damage + Math.floor(getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).attack * 0.35)) *
+            impact.multiplier,
+        ),
+      ),
+    );
+    const active = teamStore.getActive();
+    if (active && active.stars >= 3 && STAR_3_SPECIAL_DAMAGE_BONUS != null) {
+      damage = Math.floor(damage * (1 + STAR_3_SPECIAL_DAMAGE_BONUS));
+    }
+    if (damage <= 0) return;
+
+    const radius = impact.kind === 'area' ? (impact.radius ?? skill.areaRadius) : skill.areaRadius;
+    const origin = target?.isAlive ? target : null;
+    const hit: Enemy[] = [];
+    if (radius != null && radius > 0) {
+      const ox = origin?.sprite.x ?? this.player.x;
+      const oy = origin?.sprite.y ?? this.player.y;
+      for (const enemy of this.enemyManager.values()) {
+        if (!enemy.isAlive) continue;
+        const distance = Phaser.Math.Distance.Between(ox, oy, enemy.sprite.x, enemy.sprite.y);
+        if (distance > radius) continue;
+        hit.push(enemy);
+        this.hitEnemy(enemy, damage, PLAYER_STATUS_UNIT_ID, resolveSkillElement(skill, anim));
+      }
+    } else if (origin?.isAlive) {
+      hit.push(origin);
+      this.hitEnemy(origin, damage, PLAYER_STATUS_UNIT_ID, resolveSkillElement(skill, anim));
+    }
+    this.applyStatuses(skill, anim, 'on-hit', execution, target, hit, impact.index);
+  }
+
+  private hitEnemy(
+    enemy: Enemy,
+    damage: number,
+    sourceId: string,
+    element: DamageElement = BASIC_ATTACK_ELEMENT,
+  ): boolean {
+    return applyDirectDamage({
+      runtime: this.statuses,
+      targetId: enemy.id,
+      rawAmount: damage,
+      sourceId,
+      enemy,
+      element,
+      onKill: (killed) => this.onKill(killed, killed.sprite.x, killed.sprite.y),
+    });
+  }
+
+  private applyStatuses(
+    skill: SkillDefinition,
+    anim: CharacterSkillAnimDef | undefined,
+    moment: 'on-start' | 'on-hit' | 'on-end',
+    execution: SkillExecution,
+    primary: Enemy | null,
+    hitTargets: Enemy[],
+    hitIndex: number,
+  ): void {
+    tryApplySkillStatuses({
+      scene: this.scene,
+      skill,
+      anim,
+      moment,
+      executionId: execution.executionId,
+      rolledKeys: execution.statusRolled,
+      casterId: PLAYER_STATUS_UNIT_ID,
+      primaryTargetId: primary?.id ?? execution.targetId,
+      hitTargets,
+      hitIndex,
+    });
+  }
+
+  private bindStatusHooks(): void {
+    this.statuses.setHooks({
+      getEnemy: (id) => this.enemyManager.get(id) ?? null,
+      getTargetPos: (id) => {
+        if (id === PLAYER_STATUS_UNIT_ID) return { x: this.player.x, y: this.player.y };
+        const enemy = this.enemyManager.get(id);
+        if (!enemy) return null;
+        return { x: enemy.sprite.x, y: enemy.sprite.y };
+      },
+      isPlayerDead: () => this.player.isDead() || vitalsStore.isDead(),
+      onEnemyKilled: (enemy) => this.onKill(enemy, enemy.sprite.x, enemy.sprite.y),
+    });
   }
 
   /**
@@ -378,7 +766,84 @@ export class CombatSystem {
     });
   }
 
+  private isBossFight(): boolean {
+    return locationStore.getSnapshot().encounterKind === 'boss' || bossStore.isEncounterActive();
+  }
+
+  private updateBossEncounter(time: number): void {
+    const runtime = bossStore.getSnapshot().runtime;
+    if (!runtime) {
+      this.enemyManager.setHuntPaused(true);
+      return;
+    }
+    const dt = this.lastBossTick > 0 ? time - this.lastBossTick : 0;
+    this.lastBossTick = time;
+    const pendingHp = bossStore.consumePendingHp();
+    const bossEnemy = this.enemyManager.get(runtime.bossId);
+    if (bossEnemy && pendingHp != null) {
+      bossEnemy.setHp(pendingHp);
+      if (pendingHp <= 0) {
+        this.onKill(bossEnemy, bossEnemy.sprite.x, bossEnemy.sprite.y);
+        return;
+      }
+    }
+    if (bossEnemy) bossStore.syncFromEnemy(bossEnemy.stats.hp, bossEnemy.stats.hpMax);
+    if (bossStore.getSnapshot().runtime?.guildContext) {
+      void import('@/stores/guild-boss-store').then(({ guildBossStore }) => {
+        guildBossStore.pollSharedDefeat();
+      });
+    }
+    if (bossStore.getSnapshot().runtime?.worldBossContext) {
+      void import('@/stores/world-boss-store').then(({ worldBossStore }) => {
+        worldBossStore.pollSharedDefeat();
+      });
+    }
+    if (bossStore.tickTimer(dt)) {
+      bossStore.finishDefeat('timeout');
+      this.executions.cancelAll();
+      this.statuses.clearAll();
+      this.enemyManager.setHuntPaused(true);
+      return;
+    }
+    if (!bossEnemy?.isAlive) return;
+    if (time - this.lastBossActionAt < 220) return;
+    if (this.statuses.isStunned(bossEnemy.id)) return;
+    const skills = bossStore.currentSkills();
+    const decision = decideBossAction({
+      now: time,
+      state: this.bossAi,
+      skillIds: skills,
+      stunned: false,
+      skillGapMs: 700,
+      selfHpRatio: bossEnemy.stats.hpMax > 0 ? bossEnemy.stats.hp / bossEnemy.stats.hpMax : 1,
+      targetHpRatio: (() => {
+        const v = vitalsStore.getSnapshot();
+        return v.hpMax > 0 ? v.hp / v.hpMax : 1;
+      })(),
+    });
+    if (decision.action.kind === 'wait') return;
+    this.lastBossActionAt = time;
+    if (decision.action.kind === 'basic-attack') {
+      bossStore.noteSkill(null);
+      const dmg = bossEnemy.triggerBasicAttack(time);
+      if (dmg != null) this.applyEnemyHit(Math.floor(dmg * bossStore.currentDamageMul()));
+      return;
+    }
+    const skill = getSkill(decision.action.skillId);
+    bossStore.noteSkill(decision.action.skillId);
+    if (!skill) return;
+    const damage = Math.max(1, Math.floor((skill.damage ?? 8) * bossStore.currentDamageMul()));
+    this.applyEnemyHit(damage);
+  }
+
   private onKill(enemy: Enemy, dropX: number, dropY: number): void {
+    if (this.isBossFight()) {
+      bossStore.syncFromEnemy(0, enemy.stats.hpMax);
+      bossStore.finishVictory({ officialReward: true });
+      this.executions.cancelAll();
+      this.enemyManager.setHuntPaused(true);
+      return;
+    }
     handleEnemyKill(enemy, this.lootManager, dropX, dropY);
     this.enemyManager.onEnemyKilled(enemy.id);
   }

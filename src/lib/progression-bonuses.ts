@@ -3,16 +3,14 @@ import { VIP_EXP_MULT, VIP_LOOT_MULT } from '@/constants/vip';
 import { guildStore } from '@/stores/guild-store';
 import { vipStore } from '@/stores/vip-store';
 
-function guildBonusPercent(kind: 'exp' | 'loot' | 'copper'): number {
-  const guild = guildStore.getMyGuild();
-  if (!guild) return 0;
-  let total = 0;
-  for (const [skillId, spec] of Object.entries(GUILD_SKILL_BONUS)) {
-    if (spec.kind !== kind) continue;
-    const level = guild.skillLevels[skillId] ?? 0;
-    total += level * spec.percentPerLevel;
-  }
-  return total;
+/**
+ * Item 28: Guild não aplica bônus de combate.
+ * Skills legadas podem existir no save, mas retornam 0.
+ */
+function guildBonusPercent(_kind: 'exp' | 'loot' | 'copper'): number {
+  void guildStore;
+  void GUILD_SKILL_BONUS;
+  return 0;
 }
 
 function clampCombinedBonus(vipPart: number, guildPart: number): number {
@@ -37,7 +35,7 @@ export function guildLootBonusMultiplier(): number {
   return 1 + Math.min(GUILD_COMBINED_BONUS_CAP, guildPart);
 }
 
-/** Multiplicador de cobre por kill (guild Prosperidade + potencial Fortuna externo). */
+/** Multiplicador de cobre por kill (guild Prosperidade). */
 export function guildCopperBonusMultiplier(): number {
   const guildPart = guildBonusPercent('copper');
   return 1 + Math.min(GUILD_COMBINED_BONUS_CAP, guildPart);

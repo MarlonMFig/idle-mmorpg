@@ -1,42 +1,23 @@
-import {
-  GUILD_BOSS_MAX_HP,
-  GUILD_CHECKIN_COINS,
-  GUILD_CHECKIN_EXP,
-  GUILD_CREATE_MIN_LEVEL,
-  GUILD_DEFAULT_EMBLEM,
-  GUILD_DONATE_MIN,
-  GUILD_EMBLEMS,
-  GUILD_MAX_MEMBERS,
-  GUILD_NAME_MAX,
-  GUILD_NAME_MIN,
-  GUILD_TAG_MAX,
-  GUILD_TAG_MIN,
-  guildExpForLevel,
-} from '@/constants/guild';
-import { GUILD_MISSION_DEFS, GUILD_SHOP_DEFS, GUILD_SKILL_DEFS } from '@/data/guild-content';
-import { GUILD_FRAGMENT_DAILY_LIMIT } from '@/constants/aiw-guild';
-import { fragmentPriceForCharacter, pickDailyFragmentCharacter } from '@/lib/guild-fragment-shop';
-import { NARUTO_CHARACTER_LABEL, narutoFragmentItemId } from '@/data/naruto-loot-tiers';
-import { SHOP_CURRENCY_ITEM_ID } from '@/constants/sealing';
+import { GUILD_CREATE_MIN_LEVEL, GUILD_CREATE_COST } from '@/constants/guild';
 import { emitSystemMessage } from '@/lib/system-log';
+import { getGuildProvider, getGuildProviderId } from '@/lib/guild-provider';
+import { resolveSocialProviderMode } from '@/config/social-backend';
+import { ensureGuestAuth, loadGuestAuth } from '@/lib/guest-auth';
+import { isValidGuildName, isValidGuildTag, normalizeGuildName, normalizeGuildTag } from '@/lib/guild-xp';
 import { createStore } from '@/stores/create-store';
-import { inventoryStore } from '@/stores/inventory-store';
-import { vipStore } from '@/stores/vip-store';
 import { vitalsStore } from '@/stores/vitals-store';
-import type { Guild, GuildBannerStyle, GuildMember, GuildMemberRole } from '@/types/guild';
-import { isLeadershipRole } from '@/types/guild';
+import type { Guild, GuildJoinMode, GuildMemberRole, GuildUiTabId } from '@/types/guild';
 
-const GUILDS_STORAGE_KEY = 'idle-mmorpg:guilds-v2';
+export { isValidGuildName, isValidGuildTag, normalizeGuildName, normalizeGuildTag };
 
+/** Progresso pessoal legado (session-persist). Item 28 não usa Guild Coin. */
 export interface GuildPlayerProgress {
   guildCoins: number;
   lastCheckInDay: string | null;
-  /** Missões reivindicadas (id → true). */
   claimedMissions: Record<string, boolean>;
   missionProgress: Record<string, number>;
   bossDamage: number;
   bossAttacks: number;
-  /** Compras do fragmento rotativo no dia corrente. */
   fragmentShopDay: string | null;
   fragmentShopPurchases: number;
 }
@@ -48,6 +29,10 @@ export interface GuildState {
   nickname: string | null;
   registryTick: number;
   progress: GuildPlayerProgress;
+  uiTab: GuildUiTabId;
+  lobbyMode: 'home' | 'create' | 'search';
+  error: string | null;
+  providerId: string;
 }
 
 const emptyProgress = (): GuildPlayerProgress => ({
@@ -68,214 +53,15 @@ const store = createStore<GuildState>({
   nickname: null,
   registryTick: 0,
   progress: emptyProgress(),
+  uiTab: 'overview',
+  lobbyMode: 'home',
+  error: null,
+  providerId: getGuildProviderId(),
 });
-
-function todayKey(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
-function ensureGuildDailyFragment(guildId: string): Guild | null {
-  const registry = loadRegistry();
-  const guild = registry[guildId];
-  if (!guild) return null;
-  const day = todayKey();
-  if (guild.dailyFragmentDay === day && guild.dailyFragmentCharId) return guild;
-  const updated: Guild = {
-    ...guild,
-    dailyFragmentDay: day,
-    dailyFragmentCharId: pickDailyFragmentCharacter(day),
-  };
-  registry[guildId] = updated;
-  saveRegistry(registry);
-  bump();
-  return updated;
-}
-
-function ensureFragmentPurchaseDay(): void {
-  const day = todayKey();
-  const state = store.getSnapshot();
-  if (state.progress.fragmentShopDay === day) return;
-  patchProgress({ fragmentShopDay: day, fragmentShopPurchases: 0 });
-}
 
 function bump(): void {
   const s = store.getSnapshot();
   store.setState({ ...s, registryTick: s.registryTick + 1 });
-}
-
-function patchProgress(partial: Partial<GuildPlayerProgress>): void {
-  const s = store.getSnapshot();
-  store.setState({
-    ...s,
-    progress: { ...s.progress, ...partial },
-    registryTick: s.registryTick + 1,
-  });
-}
-
-function loadRegistry(): Record<string, Guild> {
-  if (typeof window === 'undefined') return {};
-  try {
-    const raw =
-      window.localStorage.getItem(GUILDS_STORAGE_KEY) ??
-      window.localStorage.getItem('idle-mmorpg:guilds-v1');
-    if (!raw) return {};
-    const parsed = JSON.parse(raw) as unknown;
-    if (!parsed || typeof parsed !== 'object') return {};
-    const out: Record<string, Guild> = {};
-    for (const [id, value] of Object.entries(parsed as Record<string, unknown>)) {
-      const g = normalizeGuild(value);
-      if (g) out[id] = g;
-    }
-    return out;
-  } catch {
-    return {};
-  }
-}
-
-function saveRegistry(registry: Record<string, Guild>): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(GUILDS_STORAGE_KEY, JSON.stringify(registry));
-  } catch {
-    // ignore
-  }
-}
-
-function roleFromRaw(value: unknown): GuildMemberRole {
-  if (value === 'leader' || value === 'LÍDER') return 'leader';
-  if (value === 'vice' || value === 'VICE-LÍDER') return 'vice';
-  if (value === 'officer' || value === 'OFICIAL') return 'officer';
-  return 'member';
-}
-
-function bannerStyleFromRaw(value: unknown): GuildBannerStyle {
-  if (
-    value === 'shield' ||
-    value === 'standard' ||
-    value === 'pennant' ||
-    value === 'swallowtail' ||
-    value === 'round' ||
-    value === 'diamond'
-  ) {
-    return value;
-  }
-  return 'shield';
-}
-
-function defaultSkillLevels(): Record<string, number> {
-  const levels: Record<string, number> = {};
-  for (const sk of GUILD_SKILL_DEFS) levels[sk.id] = 0;
-  return levels;
-}
-
-function defaultShopStock(): Record<string, number> {
-  const stock: Record<string, number> = {};
-  for (const item of GUILD_SHOP_DEFS) stock[item.id] = item.maxStock;
-  return stock;
-}
-
-/** Estandartes descontinuados caem no padrão para não virarem imagem quebrada. */
-function normalizeEmblemIcon(value: unknown): string {
-  if (typeof value !== 'string' || !value) return GUILD_DEFAULT_EMBLEM;
-  if (!value.startsWith('/')) return value;
-  return GUILD_EMBLEMS.some((em) => em.icon === value) ? value : GUILD_DEFAULT_EMBLEM;
-}
-
-function normalizeGuild(raw: unknown): Guild | null {
-  if (!raw || typeof raw !== 'object') return null;
-  const data = raw as Record<string, unknown>;
-  if (typeof data.id !== 'string' || !data.id) return null;
-  if (typeof data.name !== 'string' || !data.name.trim()) return null;
-  if (typeof data.tag !== 'string' || !data.tag.trim()) return null;
-  if (typeof data.leaderId !== 'string' || !data.leaderId) return null;
-  if (!Array.isArray(data.members) || data.members.length === 0) return null;
-
-  const members: GuildMember[] = [];
-  for (const entry of data.members) {
-    if (!entry || typeof entry !== 'object') continue;
-    const m = entry as Record<string, unknown>;
-    if (typeof m.playerId !== 'string' || typeof m.nickname !== 'string') continue;
-    members.push({
-      playerId: m.playerId,
-      nickname: m.nickname.trim() || 'Jogador',
-      role: roleFromRaw(m.role),
-      joinedAt:
-        typeof m.joinedAt === 'number' && Number.isFinite(m.joinedAt) ? m.joinedAt : Date.now(),
-      coinsDonated:
-        typeof m.coinsDonated === 'number' && Number.isFinite(m.coinsDonated)
-          ? Math.max(0, Math.floor(m.coinsDonated))
-          : 0,
-      expContributed:
-        typeof m.expContributed === 'number' && Number.isFinite(m.expContributed)
-          ? Math.max(0, Math.floor(m.expContributed))
-          : 0,
-    });
-  }
-  if (members.length === 0) return null;
-
-  const maxMembers =
-    typeof data.maxMembers === 'number' && data.maxMembers > 0
-      ? Math.min(GUILD_MAX_MEMBERS, Math.floor(data.maxMembers))
-      : GUILD_MAX_MEMBERS;
-
-  const level = typeof data.level === 'number' && data.level >= 1 ? Math.floor(data.level) : 1;
-  const exp = typeof data.exp === 'number' && data.exp >= 0 ? Math.floor(data.exp) : 0;
-  const funds = typeof data.funds === 'number' && data.funds >= 0 ? Math.floor(data.funds) : 0;
-  const bossMaxHp =
-    typeof data.bossMaxHp === 'number' && data.bossMaxHp > 0
-      ? Math.floor(data.bossMaxHp)
-      : GUILD_BOSS_MAX_HP;
-  const bossHp =
-    typeof data.bossHp === 'number' && data.bossHp >= 0
-      ? Math.min(bossMaxHp, Math.floor(data.bossHp))
-      : bossMaxHp;
-
-  const skillLevels = {
-    ...defaultSkillLevels(),
-    ...(data.skillLevels && typeof data.skillLevels === 'object'
-      ? (data.skillLevels as Record<string, number>)
-      : {}),
-  };
-  const shopStock = {
-    ...defaultShopStock(),
-    ...(data.shopStock && typeof data.shopStock === 'object'
-      ? (data.shopStock as Record<string, number>)
-      : {}),
-  };
-
-  return {
-    id: data.id,
-    name: data.name.trim().slice(0, GUILD_NAME_MAX),
-    tag: data.tag.trim().toUpperCase().slice(0, GUILD_TAG_MAX),
-    leaderId: data.leaderId,
-    members: members.slice(0, maxMembers),
-    maxMembers,
-    createdAt:
-      typeof data.createdAt === 'number' && Number.isFinite(data.createdAt)
-        ? data.createdAt
-        : Date.now(),
-    level,
-    exp,
-    funds,
-    notice:
-      typeof data.notice === 'string' && data.notice.trim()
-        ? data.notice.trim().slice(0, 280)
-        : 'Bem-vindos à guild! Marquem presença e doem para fortalecer a equipe.',
-    emblemIcon: normalizeEmblemIcon(data.emblemIcon),
-    emblemBg: typeof data.emblemBg === 'string' && data.emblemBg ? data.emblemBg : '#7f1d1d',
-    bannerStyle: bannerStyleFromRaw(data.bannerStyle),
-    bossHp,
-    bossMaxHp,
-    skillLevels,
-    shopStock,
-    dailyFragmentDay:
-      typeof data.dailyFragmentDay === 'string' || data.dailyFragmentDay === null
-        ? (data.dailyFragmentDay as string | null)
-        : null,
-    dailyFragmentCharId:
-      typeof data.dailyFragmentCharId === 'string' ? data.dailyFragmentCharId : null,
-  };
 }
 
 function newPlayerId(): string {
@@ -285,67 +71,62 @@ function newPlayerId(): string {
   return `p-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
-function newGuildId(): string {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return `g-${crypto.randomUUID()}`;
-  }
-  return `g-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+function provider() {
+  return getGuildProvider();
 }
 
-function addGuildExp(guild: Guild, amount: number): Guild {
-  let { level, exp } = guild;
-  exp += Math.max(0, Math.floor(amount));
-  let need = guildExpForLevel(level);
-  while (exp >= need && level < 99) {
-    exp -= need;
-    level += 1;
-    need = guildExpForLevel(level);
-  }
-  return { ...guild, level, exp };
+/** Local DEV only — not on GuildProvider interface. */
+function localListAll(): Guild[] | null {
+  const p = provider() as { listAll?: () => Guild[] };
+  return typeof p.listAll === 'function' ? p.listAll() : null;
 }
 
-function updateGuild(guildId: string, updater: (g: Guild) => Guild): Guild | null {
-  const registry = loadRegistry();
-  const current = registry[guildId];
-  if (!current) return null;
-  const next = updater(current);
-  registry[guildId] = next;
-  saveRegistry(registry);
+let myGuildCache: Guild | null = null;
+
+async function refreshMyGuildCache(): Promise<void> {
+  const { guildId } = store.getSnapshot();
+  if (guildId) {
+    myGuildCache = await provider().getGuild(guildId);
+  } else {
+    myGuildCache = null;
+  }
   bump();
-  return next;
 }
 
-export function normalizeGuildName(value: string): string {
-  return value.trim().replace(/\s+/g, ' ').slice(0, GUILD_NAME_MAX);
+let providerBound = false;
+
+function bindProvider(): void {
+  if (providerBound || typeof window === 'undefined') return;
+  providerBound = true;
+  const p = provider();
+  if (typeof p.onChange === 'function') {
+    p.onChange(() => {
+      void refreshMyGuildCache();
+    });
+  }
 }
 
-export function normalizeGuildTag(value: string): string {
-  return value
-    .trim()
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, '')
-    .slice(0, GUILD_TAG_MAX);
-}
-
-export function isValidGuildName(name: string): boolean {
-  const n = normalizeGuildName(name);
-  return n.length >= GUILD_NAME_MIN && n.length <= GUILD_NAME_MAX;
-}
-
-export function isValidGuildTag(tag: string): boolean {
-  const t = normalizeGuildTag(tag);
-  return t.length >= GUILD_TAG_MIN && t.length <= GUILD_TAG_MAX;
+async function syncGuildIdFromProvider(): Promise<void> {
+  const state = store.getSnapshot();
+  if (!state.playerId) return;
+  const find = provider().findGuildIdByPlayer;
+  if (!find) return;
+  const found = await find.call(provider(), state.playerId);
+  if (found !== state.guildId) {
+    store.setState({ ...store.getSnapshot(), guildId: found });
+  }
 }
 
 /**
- * Sistema de guild (criar/entrar + economia local da janela).
- * Registro: `idle-mmorpg:guilds-v2`.
+ * Facade UI + sessão do jogador.
+ * Dados de Guild via GuildProvider (local DEV ou backend PROD). Mock local NÃO migra para produção.
  */
 export const guildStore = {
   subscribe: store.subscribe,
   getSnapshot: store.getSnapshot,
 
   reset(): void {
+    myGuildCache = null;
     store.setState({
       isOpen: false,
       playerId: null,
@@ -353,6 +134,10 @@ export const guildStore = {
       nickname: null,
       registryTick: 0,
       progress: emptyProgress(),
+      uiTab: 'overview',
+      lobbyMode: 'home',
+      error: null,
+      providerId: getGuildProviderId(),
     });
   },
 
@@ -362,98 +147,149 @@ export const guildStore = {
     nickname?: string | null;
     progress?: Partial<GuildPlayerProgress> | null;
   }): void {
+    bindProvider();
+    const mode = resolveSocialProviderMode();
+    const guest = loadGuestAuth();
+
     let playerId =
       typeof partial.playerId === 'string' && partial.playerId.trim()
         ? partial.playerId.trim()
         : null;
-    if (!playerId) playerId = newPlayerId();
+
+    if (mode === 'backend') {
+      if (guest?.playerId) playerId = guest.playerId;
+      else if (!playerId) playerId = newPlayerId();
+    } else if (!playerId) {
+      playerId = newPlayerId();
+    }
 
     let guildId =
       typeof partial.guildId === 'string' && partial.guildId.trim() ? partial.guildId.trim() : null;
-
     const nickname =
       typeof partial.nickname === 'string' && partial.nickname.trim()
         ? partial.nickname.trim()
         : null;
 
-    if (guildId) {
-      const registry = loadRegistry();
-      const guild = registry[guildId];
-      if (!guild || !guild.members.some((m) => m.playerId === playerId)) {
-        guildId = null;
-      } else if (nickname) {
-        guild.members = guild.members.map((m) =>
-          m.playerId === playerId ? { ...m, nickname } : m,
-        );
-        registry[guildId] = guild;
-        saveRegistry(registry);
+    if (mode === 'backend') {
+      // Mock local NÃO migra para produção — descartar guildId de sessão mock.
+      guildId = null;
+    } else {
+      const p = provider() as {
+        findGuildIdByPlayer?: (id: string) => string | null | Promise<string | null>;
+        listAll?: () => Guild[];
+      };
+      const foundSync = p.findGuildIdByPlayer?.(playerId);
+      if (typeof foundSync === 'string' && foundSync) {
+        guildId = foundSync;
+      } else if (foundSync == null && guildId && typeof p.listAll === 'function') {
+        const g = p.listAll().find((row) => row.id === guildId);
+        if (!g || !g.members.some((m) => m.playerId === playerId)) guildId = null;
       }
     }
 
     const base = emptyProgress();
-    const p = partial.progress;
+    const progressPartial = partial.progress;
     store.setState({
       isOpen: false,
       playerId,
       guildId,
       nickname,
       registryTick: 0,
+      uiTab: 'overview',
+      lobbyMode: 'home',
+      error: null,
+      providerId: getGuildProviderId(),
       progress: {
         guildCoins:
-          typeof p?.guildCoins === 'number' && p.guildCoins >= 0
-            ? Math.floor(p.guildCoins)
+          typeof progressPartial?.guildCoins === 'number' && progressPartial.guildCoins >= 0
+            ? Math.floor(progressPartial.guildCoins)
             : base.guildCoins,
-        lastCheckInDay: typeof p?.lastCheckInDay === 'string' ? p.lastCheckInDay : null,
+        lastCheckInDay:
+          typeof progressPartial?.lastCheckInDay === 'string'
+            ? progressPartial.lastCheckInDay
+            : null,
         claimedMissions:
-          p?.claimedMissions && typeof p.claimedMissions === 'object'
-            ? { ...p.claimedMissions }
+          progressPartial?.claimedMissions && typeof progressPartial.claimedMissions === 'object'
+            ? { ...progressPartial.claimedMissions }
             : {},
         missionProgress:
-          p?.missionProgress && typeof p.missionProgress === 'object'
-            ? { ...p.missionProgress }
+          progressPartial?.missionProgress && typeof progressPartial.missionProgress === 'object'
+            ? { ...progressPartial.missionProgress }
             : {},
         bossDamage:
-          typeof p?.bossDamage === 'number' && p.bossDamage >= 0 ? Math.floor(p.bossDamage) : 0,
+          typeof progressPartial?.bossDamage === 'number' && progressPartial.bossDamage >= 0
+            ? Math.floor(progressPartial.bossDamage)
+            : 0,
         bossAttacks:
-          typeof p?.bossAttacks === 'number' && p.bossAttacks >= 0 ? Math.floor(p.bossAttacks) : 0,
-        fragmentShopDay: typeof p?.fragmentShopDay === 'string' ? p.fragmentShopDay : null,
+          typeof progressPartial?.bossAttacks === 'number' && progressPartial.bossAttacks >= 0
+            ? Math.floor(progressPartial.bossAttacks)
+            : 0,
+        fragmentShopDay:
+          typeof progressPartial?.fragmentShopDay === 'string'
+            ? progressPartial.fragmentShopDay
+            : null,
         fragmentShopPurchases:
-          typeof p?.fragmentShopPurchases === 'number' && p.fragmentShopPurchases >= 0
-            ? Math.floor(p.fragmentShopPurchases)
+          typeof progressPartial?.fragmentShopPurchases === 'number' &&
+          progressPartial.fragmentShopPurchases >= 0
+            ? Math.floor(progressPartial.fragmentShopPurchases)
             : 0,
       },
     });
+
+    if (mode === 'backend') {
+      void syncGuildIdFromProvider().then(() => refreshMyGuildCache());
+    } else {
+      void refreshMyGuildCache();
+    }
   },
 
   ensurePlayerId(): string {
+    bindProvider();
     const state = store.getSnapshot();
     if (state.playerId) return state.playerId;
-    const playerId = newPlayerId();
+
+    let playerId: string | null = null;
+    if (resolveSocialProviderMode() === 'backend') {
+      const guest = loadGuestAuth();
+      if (guest?.playerId) playerId = guest.playerId;
+    }
+    if (!playerId) playerId = newPlayerId();
+
     store.setState({ ...state, playerId });
     return playerId;
   },
 
   setNickname(nickname: string): void {
     const state = store.getSnapshot();
-    const next = nickname.trim() || null;
-    store.setState({ ...state, nickname: next });
-    if (state.guildId && state.playerId && next) {
-      updateGuild(state.guildId, (g) => ({
-        ...g,
-        members: g.members.map((m) =>
-          m.playerId === state.playerId ? { ...m, nickname: next } : m,
-        ),
-      }));
-    }
+    store.setState({ ...state, nickname: nickname.trim() || null });
   },
 
   toggleOpen(): void {
-    const state = store.getSnapshot();
-    store.setState({ ...state, isOpen: !state.isOpen });
+    this.setOpen(!store.getSnapshot().isOpen);
   },
 
   setOpen(isOpen: boolean): void {
-    store.setState({ ...store.getSnapshot(), isOpen });
+    bindProvider();
+    if (isOpen && resolveSocialProviderMode() === 'backend') {
+      const nick = store.getSnapshot().nickname?.trim() || 'Jogador';
+      void ensureGuestAuth(nick);
+    }
+    void syncGuildIdFromProvider();
+    void refreshMyGuildCache();
+    store.setState({
+      ...store.getSnapshot(),
+      isOpen,
+      uiTab: 'overview',
+      error: null,
+    });
+  },
+
+  setUiTab(tab: GuildUiTabId): void {
+    store.setState({ ...store.getSnapshot(), uiTab: tab });
+  },
+
+  setLobbyMode(mode: GuildState['lobbyMode']): void {
+    store.setState({ ...store.getSnapshot(), lobbyMode: mode });
   },
 
   isJoinUnlocked(level = vitalsStore.getLevel()): boolean {
@@ -461,546 +297,309 @@ export const guildStore = {
   },
 
   isCreateUnlocked(level = vitalsStore.getLevel()): boolean {
-    return this.isJoinUnlocked(level) && vipStore.isActive();
+    return this.isJoinUnlocked(level);
   },
 
-  isCheckedInToday(): boolean {
-    return store.getSnapshot().progress.lastCheckInDay === todayKey();
+  getCreateCost(): typeof GUILD_CREATE_COST {
+    return GUILD_CREATE_COST;
   },
 
   getMyGuild(): Guild | null {
+    void store.getSnapshot().registryTick;
+    if (myGuildCache) return myGuildCache;
     const { guildId } = store.getSnapshot();
     if (!guildId) return null;
-    return loadRegistry()[guildId] ?? null;
+    const list = localListAll();
+    if (list) {
+      myGuildCache = list.find((g) => g.id === guildId) ?? null;
+      return myGuildCache;
+    }
+    return null;
   },
 
   getMyRole(): GuildMemberRole | null {
-    const { guildId, playerId } = store.getSnapshot();
-    if (!guildId || !playerId) return null;
-    const guild = loadRegistry()[guildId];
-    return guild?.members.find((m) => m.playerId === playerId)?.role ?? null;
+    const guild = this.getMyGuild();
+    const { playerId } = store.getSnapshot();
+    if (!guild || !playerId) return null;
+    return guild.members.find((m) => m.playerId === playerId)?.role ?? null;
   },
 
   listGuilds(): Guild[] {
     void store.getSnapshot().registryTick;
-    return Object.values(loadRegistry()).sort((a, b) => {
-      if (b.level !== a.level) return b.level - a.level;
-      if (b.funds !== a.funds) return b.funds - a.funds;
-      return a.name.localeCompare(b.name, 'pt-BR');
-    });
+    const list = localListAll();
+    if (list) {
+      return [...list].sort((a, b) => b.level - a.level || a.name.localeCompare(b.name, 'pt-BR'));
+    }
+    return myGuildCache ? [myGuildCache] : [];
   },
 
-  serverRank(guildId: string): number {
-    const list = this.listGuilds();
-    const idx = list.findIndex((g) => g.id === guildId);
-    return idx >= 0 ? idx + 1 : list.length + 1;
+  async searchGuilds(query: string, page = 0) {
+    try {
+      return await provider().searchGuilds({ query, page, pageSize: 20 });
+    } catch (error) {
+      store.setState({
+        ...store.getSnapshot(),
+        error: error instanceof Error ? error.message : 'Falha ao buscar Guilds.',
+      });
+      return { guilds: [], total: 0, page: 0, pageSize: 20 };
+    }
   },
 
-  createGuild(params: {
+  async createGuild(params: {
     name: string;
     tag: string;
+    description?: string;
+    joinMode?: GuildJoinMode;
     emblemIcon?: string;
     emblemBg?: string;
-    bannerStyle?: GuildBannerStyle;
-  }): boolean {
+  }): Promise<boolean> {
     const state = store.getSnapshot();
     if (state.guildId) {
-      emitSystemMessage('Você já está em uma guild.');
+      emitSystemMessage('Você já está em uma Guild.');
       return false;
     }
     if (!this.isCreateUnlocked()) {
-      emitSystemMessage(
-        vipStore.isActive()
-          ? `Guilds liberam no nível ${GUILD_CREATE_MIN_LEVEL}.`
-          : 'Criar guild é exclusivo VIP.',
-      );
+      emitSystemMessage(`Guilds liberam no nível ${GUILD_CREATE_MIN_LEVEL}.`);
       return false;
     }
+    void GUILD_CREATE_COST;
 
-    const name = normalizeGuildName(params.name);
-    const tag = normalizeGuildTag(params.tag);
-    if (!isValidGuildName(name) || !isValidGuildTag(tag)) {
-      emitSystemMessage('Nome ou tag inválidos.');
-      return false;
-    }
-
-    const registry = loadRegistry();
-    if (Object.values(registry).some((g) => g.name.toLowerCase() === name.toLowerCase())) {
-      emitSystemMessage('Já existe uma guild com esse nome.');
-      return false;
-    }
-    if (Object.values(registry).some((g) => g.tag === tag)) {
-      emitSystemMessage('Essa tag já está em uso.');
-      return false;
-    }
-
-    const playerId = this.ensurePlayerId();
-    const nickname = state.nickname?.trim() || 'Shinobi';
-    const id = newGuildId();
-    const now = Date.now();
-    const guild: Guild = {
-      id,
-      name,
-      tag,
-      leaderId: playerId,
-      members: [
+    try {
+      const playerId = this.ensurePlayerId();
+      const guild = await provider().createGuild(
+        {
+          name: params.name,
+          tag: params.tag,
+          description: params.description,
+          joinMode: params.joinMode,
+          emblemIcon: params.emblemIcon,
+          emblemBg: params.emblemBg,
+        },
         {
           playerId,
-          nickname,
-          role: 'leader',
-          joinedAt: now,
-          coinsDonated: 0,
-          expContributed: 0,
+          nickname: state.nickname?.trim() || 'Jogador',
+          playerLevel: vitalsStore.getLevel(),
         },
-      ],
-      maxMembers: GUILD_MAX_MEMBERS,
-      createdAt: now,
-      level: 1,
-      exp: 0,
-      funds: 0,
-      notice:
-        '⚡ [AVISO]: Marquem presença diária e doem cobre para subir as habilidades da guilda!',
-      emblemIcon: normalizeEmblemIcon(params.emblemIcon),
-      emblemBg: params.emblemBg || '#7f1d1d',
-      bannerStyle: params.bannerStyle ?? 'shield',
-      bossHp: GUILD_BOSS_MAX_HP,
-      bossMaxHp: GUILD_BOSS_MAX_HP,
-      skillLevels: defaultSkillLevels(),
-      shopStock: defaultShopStock(),
-      dailyFragmentDay: todayKey(),
-      dailyFragmentCharId: pickDailyFragmentCharacter(todayKey()),
-    };
-
-    registry[id] = guild;
-    saveRegistry(registry);
-    store.setState({
-      ...store.getSnapshot(),
-      playerId,
-      guildId: id,
-      registryTick: store.getSnapshot().registryTick + 1,
-    });
-    emitSystemMessage(`Guild [${tag}] ${name} criada (${GUILD_MAX_MEMBERS} vagas).`);
-    return true;
+      );
+      myGuildCache = guild;
+      store.setState({
+        ...store.getSnapshot(),
+        playerId,
+        guildId: guild.id,
+        lobbyMode: 'home',
+        uiTab: 'overview',
+        error: null,
+        registryTick: store.getSnapshot().registryTick + 1,
+      });
+      emitSystemMessage(`Guild [${guild.tag}] ${guild.name} criada.`);
+      void import('@/lib/achievement-listeners').then((m) => m.notifyAchievementGuild());
+      return true;
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Não foi possível criar a Guild.';
+      emitSystemMessage(msg);
+      store.setState({ ...store.getSnapshot(), error: msg });
+      return false;
+    }
   },
 
-  joinGuild(guildId: string): boolean {
+  async joinGuild(guildId: string): Promise<boolean> {
     const state = store.getSnapshot();
     if (state.guildId) {
-      emitSystemMessage('Você já está em uma guild.');
+      emitSystemMessage('Você já está em uma Guild.');
       return false;
     }
     if (!this.isJoinUnlocked()) {
       emitSystemMessage(`Guilds liberam no nível ${GUILD_CREATE_MIN_LEVEL}.`);
       return false;
     }
-
-    const registry = loadRegistry();
-    const guild = registry[guildId];
-    if (!guild) {
-      emitSystemMessage('Guild não encontrada.');
-      return false;
-    }
-    if (guild.members.length >= guild.maxMembers) {
-      emitSystemMessage('A guild está cheia.');
-      return false;
-    }
-
     const playerId = this.ensurePlayerId();
-    if (guild.members.some((m) => m.playerId === playerId)) {
-      store.setState({ ...state, guildId: guild.id });
+    const result = await provider().joinGuild(guildId, {
+      playerId,
+      nickname: state.nickname?.trim() || 'Jogador',
+      playerLevel: vitalsStore.getLevel(),
+    });
+    if (!result.ok) {
+      emitSystemMessage(result.error ?? 'Não foi possível entrar.');
+      return false;
+    }
+    if (result.pending) {
+      emitSystemMessage('Solicitação enviada. Aguarde aprovação.');
+      bump();
       return true;
     }
-
-    const nickname = state.nickname?.trim() || 'Shinobi';
-    guild.members = [
-      ...guild.members,
-      {
-        playerId,
-        nickname,
-        role: 'member',
-        joinedAt: Date.now(),
-        coinsDonated: 0,
-        expContributed: 0,
-      },
-    ];
-    registry[guildId] = guild;
-    saveRegistry(registry);
     store.setState({
       ...store.getSnapshot(),
       playerId,
       guildId,
+      lobbyMode: 'home',
+      error: null,
       registryTick: store.getSnapshot().registryTick + 1,
     });
-    emitSystemMessage(`Você entrou em [${guild.tag}] ${guild.name}.`);
+    await refreshMyGuildCache();
+    emitSystemMessage('Você entrou na Guild.');
+    void import('@/lib/achievement-listeners').then((m) => m.notifyAchievementGuild());
     return true;
   },
 
-  leaveGuild(): boolean {
+  async leaveGuild(): Promise<boolean> {
     const state = store.getSnapshot();
     if (!state.guildId || !state.playerId) {
-      emitSystemMessage('Você não está em uma guild.');
+      emitSystemMessage('Você não está em uma Guild.');
       return false;
     }
-
-    const registry = loadRegistry();
-    const guild = registry[state.guildId];
-    if (!guild) {
-      store.setState({ ...state, guildId: null });
-      return true;
+    const result = await provider().leaveGuild(state.guildId, state.playerId);
+    if (!result.ok) {
+      emitSystemMessage(result.error ?? 'Não foi possível sair.');
+      return false;
     }
+    myGuildCache = null;
+    store.setState({
+      ...store.getSnapshot(),
+      guildId: null,
+      lobbyMode: 'home',
+      registryTick: store.getSnapshot().registryTick + 1,
+    });
+    emitSystemMessage('Você saiu da Guild.');
+    return true;
+  },
 
-    const remaining = guild.members.filter((m) => m.playerId !== state.playerId);
-    if (remaining.length === 0) {
-      delete registry[guild.id];
-      saveRegistry(registry);
-      store.setState({
-        ...store.getSnapshot(),
-        guildId: null,
-        registryTick: store.getSnapshot().registryTick + 1,
-      });
-      emitSystemMessage(`Guild [${guild.tag}] ${guild.name} dissolvida.`);
-      return true;
+  async dissolveGuild(): Promise<boolean> {
+    const state = store.getSnapshot();
+    if (!state.guildId || !state.playerId) return false;
+    const result = await provider().dissolveGuild(state.guildId, state.playerId);
+    if (!result.ok) {
+      emitSystemMessage(result.error ?? 'Não foi possível dissolver.');
+      return false;
     }
+    myGuildCache = null;
+    store.setState({
+      ...store.getSnapshot(),
+      guildId: null,
+      lobbyMode: 'home',
+      registryTick: store.getSnapshot().registryTick + 1,
+    });
+    emitSystemMessage('Guild dissolvida.');
+    return true;
+  },
 
-    let next: Guild = { ...guild, members: remaining };
-    if (guild.leaderId === state.playerId) {
-      const sorted = [...remaining].sort((a, b) => a.joinedAt - b.joinedAt);
-      const newLeader = sorted[0];
-      next = {
-        ...next,
-        leaderId: newLeader.playerId,
-        members: remaining.map((m) =>
-          m.playerId === newLeader.playerId
-            ? { ...m, role: 'leader' as const }
-            : m.role === 'leader'
-              ? { ...m, role: 'member' as const }
-              : m,
-        ),
-      };
-      emitSystemMessage(`Você saiu. ${newLeader.nickname} agora é o líder.`);
-    } else {
-      emitSystemMessage(`Você saiu de [${guild.tag}] ${guild.name}.`);
+  async transferLeadership(newLeaderId: string): Promise<boolean> {
+    const state = store.getSnapshot();
+    if (!state.guildId || !state.playerId) return false;
+    const result = await provider().transferLeadership(state.guildId, state.playerId, newLeaderId);
+    if (!result.ok) {
+      emitSystemMessage(result.error ?? 'Transferência falhou.');
+      return false;
     }
+    await refreshMyGuildCache();
+    emitSystemMessage('Liderança transferida.');
+    return true;
+  },
 
-    registry[guild.id] = next;
-    saveRegistry(registry);
+  async kickMember(targetId: string): Promise<boolean> {
+    const state = store.getSnapshot();
+    if (!state.guildId || !state.playerId) return false;
+    const result = await provider().kickMember(state.guildId, state.playerId, targetId);
+    if (!result.ok) {
+      emitSystemMessage(result.error ?? 'Expulsão bloqueada.');
+      return false;
+    }
+    await refreshMyGuildCache();
+    return true;
+  },
+
+  async setMemberRole(targetId: string, role: GuildMemberRole): Promise<boolean> {
+    const state = store.getSnapshot();
+    if (!state.guildId || !state.playerId) return false;
+    const result = await provider().updateMemberRole(state.guildId, state.playerId, targetId, role);
+    if (!result.ok) {
+      emitSystemMessage(result.error ?? 'Alteração de cargo bloqueada.');
+      return false;
+    }
+    await refreshMyGuildCache();
+    return true;
+  },
+
+  async editGuild(patch: {
+    name?: string;
+    description?: string;
+    joinMode?: GuildJoinMode;
+    emblemIcon?: string;
+    emblemBg?: string;
+  }): Promise<boolean> {
+    const state = store.getSnapshot();
+    if (!state.guildId || !state.playerId) return false;
+    const result = await provider().editGuild(state.guildId, state.playerId, patch);
+    if (!result.ok) {
+      emitSystemMessage(result.error ?? 'Edição bloqueada.');
+      return false;
+    }
+    await refreshMyGuildCache();
+    return true;
+  },
+
+  async approveApplication(applicantId: string): Promise<boolean> {
+    const state = store.getSnapshot();
+    if (!state.guildId || !state.playerId) return false;
+    const result = await provider().approveApplication(state.guildId, state.playerId, applicantId);
+    if (!result.ok) {
+      emitSystemMessage(result.error ?? 'Aprovação falhou.');
+      return false;
+    }
+    await refreshMyGuildCache();
+    return true;
+  },
+
+  async rejectApplication(applicantId: string): Promise<boolean> {
+    const state = store.getSnapshot();
+    if (!state.guildId || !state.playerId) return false;
+    const result = await provider().rejectApplication(state.guildId, state.playerId, applicantId);
+    if (!result.ok) {
+      emitSystemMessage(result.error ?? 'Rejeição falhou.');
+      return false;
+    }
+    await refreshMyGuildCache();
+    return true;
+  },
+
+  notifyOnlineKill(opts?: { source?: 'online' | 'offline' | 'dev' }): void {
+    const state = store.getSnapshot();
+    if (!state.guildId || !state.playerId) return;
+    void provider()
+      .grantOnlineKillProgress(state.guildId, state.playerId, {
+        source: opts?.source ?? 'online',
+      })
+      .then(() => refreshMyGuildCache())
+      .catch(() => undefined);
+  },
+
+  async devAddGuildXp(amount: number): Promise<void> {
+    const g = this.getMyGuild();
+    if (!g) return;
+    const updated = await provider().addGuildXp(g.id, amount);
+    if (updated) myGuildCache = updated;
+    else await refreshMyGuildCache();
+  },
+
+  async devSeedMock(): Promise<void> {
+    await provider().seedMockGuild?.({ memberCount: 10 });
+    await refreshMyGuildCache();
+  },
+
+  async devResetGuildData(): Promise<void> {
+    await provider().resetAll?.();
+    myGuildCache = null;
     store.setState({
       ...store.getSnapshot(),
       guildId: null,
       registryTick: store.getSnapshot().registryTick + 1,
     });
-    return true;
   },
 
-  checkIn(): boolean {
-    const state = store.getSnapshot();
-    if (!state.guildId) return false;
-    if (this.isCheckedInToday()) {
-      emitSystemMessage('Presença de hoje já marcada.');
-      return false;
-    }
-    updateGuild(state.guildId, (g) => addGuildExp(g, GUILD_CHECKIN_EXP));
-    const coins = state.progress.guildCoins + GUILD_CHECKIN_COINS;
-    const missionProgress = {
-      ...state.progress.missionProgress,
-      'm-checkin': 1,
-    };
-    store.setState({
-      ...store.getSnapshot(),
-      progress: {
-        ...store.getSnapshot().progress,
-        guildCoins: coins,
-        lastCheckInDay: todayKey(),
-        missionProgress,
-      },
-      registryTick: store.getSnapshot().registryTick + 1,
-    });
-    emitSystemMessage(
-      `Presença marcada! +${GUILD_CHECKIN_COINS} moedas de guilda, +${GUILD_CHECKIN_EXP} EXP.`,
-    );
-    return true;
+  async devForceFail(fail: boolean): Promise<void> {
+    provider().setForceFail?.(fail);
   },
 
-  /** Doa cobre do inventário → fundos da guild. */
-  donate(amount: number): boolean {
-    const state = store.getSnapshot();
-    if (!state.guildId || !state.playerId) return false;
-    const value = Math.floor(amount);
-    if (value < GUILD_DONATE_MIN) {
-      emitSystemMessage(`Doação mínima: ${GUILD_DONATE_MIN} cobre.`);
-      return false;
-    }
-    if (!inventoryStore.removeItem(SHOP_CURRENCY_ITEM_ID, value)) {
-      emitSystemMessage('Cobre insuficiente no inventário.');
-      return false;
-    }
-
-    const personalCoins = Math.floor(value * 0.1);
-    const guildExp = value * 2;
-
-    updateGuild(state.guildId, (g) => {
-      const withExp = addGuildExp({ ...g, funds: g.funds + value }, guildExp);
-      return {
-        ...withExp,
-        members: withExp.members.map((m) =>
-          m.playerId === state.playerId
-            ? {
-                ...m,
-                coinsDonated: m.coinsDonated + value,
-                expContributed: m.expContributed + guildExp,
-              }
-            : m,
-        ),
-      };
-    });
-
-    const prevDonate = state.progress.missionProgress['m-donation'] ?? 0;
-    patchProgress({
-      guildCoins: state.progress.guildCoins + personalCoins,
-      missionProgress: {
-        ...state.progress.missionProgress,
-        'm-donation': prevDonate + value,
-      },
-    });
-    emitSystemMessage(
-      `Você doou ${value.toLocaleString('pt-BR')} cobre (+${personalCoins} moedas de guilda).`,
-    );
-    return true;
-  },
-
-  claimMission(missionId: string): boolean {
-    const state = store.getSnapshot();
-    if (!state.guildId) return false;
-    const def = GUILD_MISSION_DEFS.find((m) => m.id === missionId);
-    if (!def) return false;
-    if (state.progress.claimedMissions[missionId]) {
-      emitSystemMessage('Recompensa já resgatada.');
-      return false;
-    }
-    const progress = state.progress.missionProgress[missionId] ?? 0;
-    if (progress < def.target) {
-      emitSystemMessage('Missão ainda incompleta.');
-      return false;
-    }
-    updateGuild(state.guildId, (g) => addGuildExp(g, def.rewardExp));
-    patchProgress({
-      guildCoins: state.progress.guildCoins + def.rewardCoins,
-      claimedMissions: { ...state.progress.claimedMissions, [missionId]: true },
-    });
-    emitSystemMessage(`Missão concluída: +${def.rewardCoins} moedas, +${def.rewardExp} EXP.`);
-    return true;
-  },
-
-  claimAllMissions(): number {
-    let n = 0;
-    for (const def of GUILD_MISSION_DEFS) {
-      if (this.claimMission(def.id)) n += 1;
-    }
-    return n;
-  },
-
-  attackBoss(): boolean {
-    const state = store.getSnapshot();
-    if (!state.guildId || !state.playerId) return false;
-    const guild = this.getMyGuild();
-    if (!guild || guild.bossHp <= 0) {
-      emitSystemMessage('Boss já foi derrotado. Aguardando nova wave.');
-      return false;
-    }
-
-    const dmg = Math.floor(800_000 + Math.random() * 1_700_000);
-    const crit = Math.random() < 0.25;
-    const finalDmg = crit ? Math.floor(dmg * 2.2) : dmg;
-
-    updateGuild(state.guildId, (g) => ({
-      ...g,
-      bossHp: Math.max(0, g.bossHp - finalDmg),
-    }));
-
-    patchProgress({
-      guildCoins: state.progress.guildCoins + 50,
-      bossDamage: state.progress.bossDamage + finalDmg,
-      bossAttacks: state.progress.bossAttacks + 1,
-      missionProgress: {
-        ...state.progress.missionProgress,
-        'm-boss': 1,
-      },
-    });
-
-    const left = Math.max(0, guild.bossHp - finalDmg);
-    emitSystemMessage(
-      `Boss: ${finalDmg.toLocaleString('pt-BR')} de dano${crit ? ' (CRÍTICO!)' : ''}. HP restante: ${left.toLocaleString('pt-BR')}.`,
-    );
-    if (left <= 0) {
-      updateGuild(state.guildId, (g) => addGuildExp(g, 5_000));
-      patchProgress({
-        guildCoins: store.getSnapshot().progress.guildCoins + 200,
-      });
-      emitSystemMessage('Boss derrotado! A guilda ganhou recompensas extras.');
-    }
-    return true;
-  },
-
-  upgradeSkill(skillId: string): boolean {
-    const state = store.getSnapshot();
-    const role = this.getMyRole();
-    if (!state.guildId || !role || !isLeadershipRole(role)) {
-      emitSystemMessage('Apenas Líder/Vice pode aprimorar habilidades.');
-      return false;
-    }
-    const def = GUILD_SKILL_DEFS.find((s) => s.id === skillId);
-    if (!def) return false;
-
-    const guild = this.getMyGuild();
-    if (!guild) return false;
-    const level = guild.skillLevels[skillId] ?? 0;
-    if (level >= def.maxLevel) {
-      emitSystemMessage('Habilidade no nível máximo.');
-      return false;
-    }
-
-    const costFunds = Math.floor(def.baseFunds * Math.pow(1.25, level));
-    const costCoins = Math.floor(def.baseCoins * Math.pow(1.2, level));
-    if (guild.funds < costFunds) {
-      emitSystemMessage('Fundos da guilda insuficientes.');
-      return false;
-    }
-    if (state.progress.guildCoins < costCoins) {
-      emitSystemMessage('Moedas de guilda insuficientes.');
-      return false;
-    }
-
-    updateGuild(state.guildId, (g) => ({
-      ...g,
-      funds: g.funds - costFunds,
-      skillLevels: { ...g.skillLevels, [skillId]: level + 1 },
-    }));
-    patchProgress({ guildCoins: state.progress.guildCoins - costCoins });
-    emitSystemMessage(`${def.name} → nível ${level + 1}.`);
-    return true;
-  },
-
-  buyShopItem(itemId: string): boolean {
-    const state = store.getSnapshot();
-    if (!state.guildId) return false;
-    const def = GUILD_SHOP_DEFS.find((i) => i.id === itemId);
-    if (!def) return false;
-    const guild = this.getMyGuild();
-    if (!guild) return false;
-    if (guild.level < def.reqGuildLevel) {
-      emitSystemMessage(`Requer guilda nível ${def.reqGuildLevel}.`);
-      return false;
-    }
-    const stock = guild.shopStock[itemId] ?? 0;
-    if (stock <= 0) {
-      emitSystemMessage('Item sem estoque.');
-      return false;
-    }
-    if (state.progress.guildCoins < def.priceCoins) {
-      emitSystemMessage('Moedas de guilda insuficientes.');
-      return false;
-    }
-
-    updateGuild(state.guildId, (g) => ({
-      ...g,
-      shopStock: { ...g.shopStock, [itemId]: stock - 1 },
-    }));
-    patchProgress({
-      guildCoins: state.progress.guildCoins - def.priceCoins,
-      missionProgress: {
-        ...state.progress.missionProgress,
-        'm-shop': 1,
-      },
-    });
-
-    if (def.copperReward > 0) {
-      inventoryStore.addItem(SHOP_CURRENCY_ITEM_ID, def.copperReward);
-      emitSystemMessage(`Comprou ${def.name}. +${def.copperReward} cobre no inventário.`);
-    } else {
-      emitSystemMessage(`Comprou ${def.name}.`);
-    }
-    return true;
-  },
-
-  getDailyFragmentOffer(): {
-    characterId: string;
-    label: string;
-    itemId: string;
-    priceCoins: number;
-    purchasesLeft: number;
-  } | null {
-    const state = store.getSnapshot();
-    if (!state.guildId) return null;
-    ensureFragmentPurchaseDay();
-    const guild = ensureGuildDailyFragment(state.guildId);
-    if (!guild?.dailyFragmentCharId) return null;
-    const characterId = guild.dailyFragmentCharId;
-    const progress = store.getSnapshot().progress;
-    const purchasesLeft = Math.max(
-      0,
-      GUILD_FRAGMENT_DAILY_LIMIT - progress.fragmentShopPurchases,
-    );
-    return {
-      characterId,
-      label: NARUTO_CHARACTER_LABEL[characterId] ?? characterId,
-      itemId: narutoFragmentItemId(characterId),
-      priceCoins: fragmentPriceForCharacter(characterId),
-      purchasesLeft,
-    };
-  },
-
-  buyDailyFragment(): boolean {
-    const state = store.getSnapshot();
-    if (!state.guildId) {
-      emitSystemMessage('Entre em uma guild para comprar fragmentos.');
-      return false;
-    }
-    const offer = this.getDailyFragmentOffer();
-    if (!offer) return false;
-    if (offer.purchasesLeft <= 0) {
-      emitSystemMessage('Limite diário de fragmentos atingido (2/dia).');
-      return false;
-    }
-    if (state.progress.guildCoins < offer.priceCoins) {
-      emitSystemMessage('Selos de Aliança insuficientes.');
-      return false;
-    }
-    if (!inventoryStore.addItem(offer.itemId, 1)) {
-      emitSystemMessage('Inventário cheio.');
-      return false;
-    }
-    patchProgress({
-      guildCoins: state.progress.guildCoins - offer.priceCoins,
-      fragmentShopPurchases: state.progress.fragmentShopPurchases + 1,
-    });
-    emitSystemMessage(
-      `Fragmento de ${offer.label} comprado (${offer.purchasesLeft - 1} restantes hoje).`,
-    );
-    return true;
-  },
-
-  updateNotice(notice: string): boolean {
-    const state = store.getSnapshot();
-    const role = this.getMyRole();
-    if (!state.guildId || !role || !isLeadershipRole(role)) return false;
-    updateGuild(state.guildId, (g) => ({
-      ...g,
-      notice: notice.trim().slice(0, 280) || g.notice,
-    }));
-    emitSystemMessage('Mural oficial atualizado.');
-    return true;
-  },
-
-  updateEmblem(icon: string, bg: string, bannerStyle?: GuildBannerStyle): boolean {
-    const state = store.getSnapshot();
-    const role = this.getMyRole();
-    if (!state.guildId || !role || !isLeadershipRole(role)) return false;
-    updateGuild(state.guildId, (g) => ({
-      ...g,
-      emblemIcon: icon,
-      emblemBg: bg,
-      bannerStyle: bannerStyle ?? g.bannerStyle,
-    }));
-    return true;
+  getProviderId(): string {
+    return getGuildProviderId();
   },
 };

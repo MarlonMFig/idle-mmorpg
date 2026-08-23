@@ -55,7 +55,11 @@ export class MapLoader {
    */
   hydrate(): Promise<void> {
     for (const entry of this.pending) {
-      this.registerMap(entry.key, entry.url);
+      try {
+        this.registerMap(entry.key, entry.url);
+      } catch (error) {
+        console.warn(`[MapLoader] mapa ignorado (${entry.key})`, error);
+      }
     }
 
     const imagesToLoad = this.collectMissingImages();
@@ -75,6 +79,12 @@ export class MapLoader {
 
       this.scene.load.start();
     });
+  }
+
+  /** Parseia um TMX já baixado (`tmx:mapKey`) para o cache de tilemap. */
+  registerFromTextCache(mapKey: string): void {
+    if (this.scene.cache.tilemap.exists(mapKey)) return;
+    this.registerMap(mapKey, MAP_FILES[mapKey as MapKey] ?? `/${mapKey}.tmx`);
   }
 
   /** Indica se o mapa já está no cache de tilemaps do Phaser. */

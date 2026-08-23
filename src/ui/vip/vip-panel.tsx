@@ -8,7 +8,7 @@ import { useStore } from '@/hooks/use-store';
 import { emitSystemMessage } from '@/lib/system-log';
 import { vipStore } from '@/stores/vip-store';
 
-export const VIP_ICON_SRC = '/ui/hub-menu/anime-coins.png';
+export const VIP_ICON_SRC = '/ui/hub-menu/vip.png?v=color';
 
 function formatExpiry(expiresAt: number | null): string {
   if (!expiresAt) return '';
@@ -114,7 +114,7 @@ export function VipPanel() {
             data-no-drag
             onClick={() => {
               vipStore.activate();
-              emitSystemMessage('VIP Shinobi ativado — bônus de EXP, loot, poção e guild.');
+              emitSystemMessage('VIP Shinobi ativado — bônus de EXP, loot e poção.');
             }}
           >
             Ativar VIP

@@ -37,31 +37,32 @@ export interface HubBackgroundDef {
   /**
    * `contain` mostra a arte inteira (letterbox).
    * `cover` preenche o viewport (corta bordas).
-   * `follow` segue o jogador com zoom fixo (mapas grandes tipo WONSR).
+   * `follow` segue o jogador com zoom fixo.
    */
   cameraMode?: HubCameraMode;
+  /** Escala dos personagens no hub (default: HUB_CHARACTER_SCALE). */
+  layoutScale?: number;
+  /** Zoom fixo opcional (senão cover/contain/follow calculado). */
+  cameraZoom?: number;
 }
 
 /**
- * Mundo do hub. 4096×2160 é a proporção exata da ilustração (1.8963) — em 16:9
- * os prédios das pontas seriam cortados. A arte vem de um render 10752×5670
- * reduzido 2.625× (ver scripts/install-interdimensional-hub.js).
+ * Mundo do hub — PNG nativo 8000×4216 (sem resample).
+ * Fonte: Hub upscale.rar / Hub_Anime_Visao_Aerea_4096x2160_upscaled.png
  */
-export const HUB_NATIVE_WIDTH = 4096;
-export const HUB_NATIVE_HEIGHT = 2160;
+export const HUB_NATIVE_WIDTH = 8000;
+export const HUB_NATIVE_HEIGHT = 4216;
 /** Fator contra o layout legado de 1024 de largura. */
 export const HUB_LAYOUT_SCALE = HUB_NATIVE_WIDTH / 1024;
 
 /**
- * Escala da UI de mundo do hub (nome do prédio no hover). Menor que
- * `HUB_LAYOUT_SCALE` porque a câmera do hub 4K dá zoom ~0.5 em 1080p: 2.2 deixa
- * o texto em ~25px de tela.
+ * Escala da UI de mundo. Cover em 1080p ≈ 0.256; 4.3 ≈ 25px de tela.
  */
-export const HUB_UI_SCALE = 2.2;
+export const HUB_UI_SCALE = 4.3;
 
-/** Passeio de pedra da plataforma — ver scripts/install-interdimensional-hub.js. */
-const HUB_FLOOR_Y = 1489;
-const HUB_ART = '/hubs/hub-interdimensional.png?v=3';
+/** Centro da praça (folha) — hub isométrico, caminhar 2D. */
+const HUB_SPAWN = { x: 4000, y: 2520 };
+const HUB_ART = '/hubs/hub-interdimensional.png?v=hub-upscale-8000';
 
 export const HUB_BACKGROUNDS: Record<HubKey, HubBackgroundDef> = {
   [HUB_KEYS.interdimensional]: {
@@ -69,19 +70,33 @@ export const HUB_BACKGROUNDS: Record<HubKey, HubBackgroundDef> = {
     url: HUB_ART,
     width: HUB_NATIVE_WIDTH,
     height: HUB_NATIVE_HEIGHT,
-    // Em frente à casa central, no meio da plataforma.
-    spawn: { x: 2048, y: HUB_FLOOR_Y },
-    cameraMode: 'follow',
+    spawn: { x: HUB_SPAWN.x, y: HUB_SPAWN.y },
+    cameraMode: 'cover',
     tilemapKey: MAP_KEYS.hubInterdimensional,
     tilemapImageKey: 'hub-interdimensional-img',
     tilemapImageUrl: HUB_ART,
     tilemapWidth: HUB_NATIVE_WIDTH,
     tilemapHeight: HUB_NATIVE_HEIGHT,
-    tilemapSpawn: { x: 2048, y: HUB_FLOOR_Y },
-    lateralFloorY: HUB_FLOOR_Y,
+    tilemapSpawn: { x: HUB_SPAWN.x, y: HUB_SPAWN.y },
+    layoutScale: 4.8,
   },
 };
 
 export function getActiveHub(): HubBackgroundDef {
   return HUB_BACKGROUNDS[HUB_KEYS.interdimensional];
+}
+
+/** Zoom inteiro opcional (Map Viewport Lab). Default: 1 se sem preferred. */
+export function integerHubCameraZoom(
+  _viewW: number,
+  _viewH: number,
+  _worldW: number,
+  _worldH: number,
+  preferred?: number | null,
+): number {
+  if (preferred != null && Number.isFinite(preferred)) {
+    const z = Math.round(preferred);
+    return Math.min(3, Math.max(1, z));
+  }
+  return 1;
 }

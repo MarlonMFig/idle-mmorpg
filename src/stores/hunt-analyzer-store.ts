@@ -1,5 +1,6 @@
 import { SEALING_SCROLL_PRICE, SHOP_CURRENCY_ITEM_ID } from '@/constants/sealing';
-import { getNpcSellPrice } from '@/data/shop';
+import { isTestAnalyzerSession } from '@/config/devConfig';
+import { getItemSellValue } from '@/data/shop';
 import { createStore } from '@/stores/create-store';
 
 export interface HuntDropEntry {
@@ -17,9 +18,13 @@ export interface HuntAnalyzerState {
   huntId: string | null;
   /** Timestamp do início da sessão de contagem. */
   sessionStartedAt: number | null;
+  /** True quando DEV MODE está ativo — não usar em ranking oficial. */
+  isTestSession: boolean;
   kills: number;
   sealed: number;
+  captureAttempts: number;
   xpGained: number;
+  masteryXpGained: number;
   lootCopper: number;
   lootItems: number;
   /** Custo estimado em cobre dos pergaminhos consumidos. */
@@ -28,6 +33,9 @@ export interface HuntAnalyzerState {
   /** itemId → quantidade nesta sessão. */
   drops: Record<string, number>;
   sealLogs: string[];
+  qualityKills: Record<string, number>;
+  qualityCaptures: Record<string, number>;
+  qualityFails: Record<string, number>;
 }
 
 const MAX_SEAL_LOGS = 48;
@@ -43,15 +51,21 @@ const SCROLL_COST: Record<string, number> = {
 const emptySession = (): Omit<HuntAnalyzerState, 'isOpen'> => ({
   huntId: null,
   sessionStartedAt: null,
+  isTestSession: isTestAnalyzerSession(),
   kills: 0,
   sealed: 0,
+  captureAttempts: 0,
   xpGained: 0,
+  masteryXpGained: 0,
   lootCopper: 0,
   lootItems: 0,
   supplyCopper: 0,
   scrollsUsed: 0,
   drops: {},
   sealLogs: [],
+  qualityKills: {},
+  qualityCaptures: {},
+  qualityFails: {},
 });
 
 const store = createStore<HuntAnalyzerState>({
@@ -79,7 +93,7 @@ function perHour(value: number, ms: number): number {
 /** Valor unitário em cobre (NPC). Cobre = 1. */
 export function huntItemNpcValue(itemId: string): number {
   if (itemId === SHOP_CURRENCY_ITEM_ID) return 1;
-  return getNpcSellPrice(itemId);
+  return getItemSellValue(itemId);
 }
 
 /** Valor total dos drops da sessão (cobre + materiais na tabela de venda). */
@@ -137,20 +151,26 @@ export const huntAnalyzerStore = {
     });
   },
 
-  recordKill(params: { xp: number; copper: number }): void {
+  recordKill(params: { xp: number; copper: number; masteryXp?: number; quality?: string }): void {
     ensureSession();
     const state = store.getSnapshot();
     const copper = Math.max(0, params.copper);
+    const masteryXp = Math.max(0, params.masteryXp ?? 0);
     const drops = { ...state.drops };
     if (copper > 0) {
       drops[SHOP_CURRENCY_ITEM_ID] = (drops[SHOP_CURRENCY_ITEM_ID] ?? 0) + copper;
     }
+    const qualityKills = params.quality
+      ? { ...state.qualityKills, [params.quality]: (state.qualityKills[params.quality] ?? 0) + 1 }
+      : state.qualityKills;
     store.setState({
       ...state,
       kills: state.kills + 1,
       xpGained: state.xpGained + Math.max(0, params.xp),
+      masteryXpGained: state.masteryXpGained + masteryXp,
       lootCopper: state.lootCopper + copper,
       drops,
+      qualityKills,
     });
   },
 
@@ -171,25 +191,35 @@ export const huntAnalyzerStore = {
     });
   },
 
-  recordSealAttempt(params: { scrollId: string }): void {
+  recordSealAttempt(params: { scrollId: string; quality?: string; success?: boolean }): void {
     ensureSession();
     const cost = SCROLL_COST[params.scrollId] ?? SEALING_SCROLL_PRICE;
     const state = store.getSnapshot();
+    const qualityFails =
+      params.quality && params.success === false
+        ? { ...state.qualityFails, [params.quality]: (state.qualityFails[params.quality] ?? 0) + 1 }
+        : state.qualityFails;
     store.setState({
       ...state,
+      captureAttempts: state.captureAttempts + 1,
       scrollsUsed: state.scrollsUsed + 1,
       supplyCopper: state.supplyCopper + cost,
+      qualityFails,
     });
   },
 
-  recordSealSuccess(name: string): void {
+  recordSealSuccess(name: string, quality?: string): void {
     ensureSession();
     const state = store.getSnapshot();
-    const line = `${name} selado`;
+    const line = quality ? `${name} selado (${quality})` : `${name} selado`;
+    const qualityCaptures = quality
+      ? { ...state.qualityCaptures, [quality]: (state.qualityCaptures[quality] ?? 0) + 1 }
+      : state.qualityCaptures;
     store.setState({
       ...state,
       sealed: state.sealed + 1,
       sealLogs: [...state.sealLogs, line].slice(-MAX_SEAL_LOGS),
+      qualityCaptures,
     });
   },
 
@@ -230,6 +260,7 @@ export const huntAnalyzerStore = {
       lootPerHour: perHour(lootValue, ms),
       balancePerHour: perHour(balance, ms),
       xpPerHour: perHour(state.xpGained, ms),
+      masteryXpPerHour: perHour(state.masteryXpGained, ms),
       killsPerHour: perHour(state.kills, ms),
       balance,
       supplyCopper: state.supplyCopper,

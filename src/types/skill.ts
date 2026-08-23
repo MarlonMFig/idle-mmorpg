@@ -1,6 +1,10 @@
-/** Elementos de jutsu / habilidade. */
-export type SkillElement =
-  'fire' | 'water' | 'wind' | 'earth' | 'lightning' | 'yin' | 'yang' | 'neutral';
+import type { SkillAiConfig } from '@/data/skill-ai-def';
+import type { DamageElement } from '@/data/damage-elements';
+import type { SkillExecutionDef } from '@/data/skill-execution-def';
+import type { SkillStatusApplication } from '@/data/status-effect-def';
+
+/** Elementos de jutsu / habilidade. Ausente = `neutral` (legado). */
+export type SkillElement = DamageElement;
 
 /**
  * Tipo de animação visual no Phaser.
@@ -8,6 +12,19 @@ export type SkillElement =
  */
 export type SkillAnimationKind =
   'burst' | 'projectile' | 'slash' | 'aura' | 'beam' | 'character' | 'heal' | 'sprite';
+
+/**
+ * Um impacto da skill. Ausente `hits` na SkillDefinition = um impacto
+ * no `hitDelayMs` da animação do pack (comportamento atual).
+ */
+export interface SkillHitSpec {
+  /** Delay desde o início do cast (ms). */
+  delayMs: number;
+  /** Fração do `damage` da skill. Default 1. */
+  damageFactor?: number;
+  /** `tick` reserva DoT / contínuo; o engine ainda não executa. */
+  kind?: 'instant' | 'tick';
+}
 
 export interface SkillAnimationDef {
   kind: SkillAnimationKind;
@@ -28,7 +45,8 @@ export interface SkillAnimationDef {
 export interface SkillDefinition {
   id: string;
   name: string;
-  element: SkillElement;
+  /** Ausente = `neutral`. Não inferir pelo VFX. */
+  element?: SkillElement;
   /** Efeito principal. Ausente mantém o comportamento legado de dano. */
   effect?: 'damage' | 'heal';
   /** Nível do jogador necessário para usar a habilidade. */
@@ -68,7 +86,30 @@ export interface SkillDefinition {
   dashDurationMs?: number;
   /** Raio do dano em área; ausente significa alvo único. */
   areaRadius?: number;
+  /**
+   * Impactos futuros (combo / contínuo / DoT). Sem este campo o combate
+   * usa um único hit no `hitDelayMs` da animação do personagem.
+   * Preferir `execution` (Item 8). Este campo não dispara Multi-Hit sozinho.
+   */
+  hits?: readonly SkillHitSpec[];
+  /**
+   * Execução avançada. Ausente = single-hit.
+   * O Lab também pode gravar o mesmo bloco em `CharacterSkillAnimDef.execution`.
+   */
+  execution?: SkillExecutionDef;
+  /**
+   * Status Effects aplicados por esta Skill. Ausente = nenhum.
+   * Não migrar Skills antigas automaticamente.
+   */
+  statusEffects?: SkillStatusApplication[];
+  /** IA automática (catálogo). Overlay do pack (`skillAnims.ai`) tem prioridade. */
+  ai?: SkillAiConfig;
   description?: string;
+  /**
+   * Skill criada no Test Lab só para teste visual.
+   * Combat trata como skill normal com dano/cooldown mínimos.
+   */
+  developmentStatus?: 'visual-test' | 'ready';
 }
 
 export type HotbarSlot = string | null;

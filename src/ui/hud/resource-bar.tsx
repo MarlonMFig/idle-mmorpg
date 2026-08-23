@@ -2,7 +2,7 @@ interface ResourceBarProps {
   label: string;
   value: number;
   max: number;
-  variant: 'hp' | 'xp';
+  variant: 'hp' | 'xp' | 'energy';
 }
 
 export function ResourceBar({ label, value, max, variant }: ResourceBarProps) {

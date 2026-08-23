@@ -1,6 +1,6 @@
 {
   "source": "curated character packs only (no WONSR vocations/monsters)",
-  "generatedAt": "2026-08-17T01:29:24.910Z",
+  "generatedAt": "2026-08-22T20:44:49.103Z",
   "progression": {
     "targetsPerHunt": 1,
     "charactersPerLevelTier": 5,
@@ -8,9 +8,9 @@
     "levelStep": 10
   },
   "counts": {
-    "hunts": 50,
-    "targets": 48,
-    "baseCharacters": 48,
+    "hunts": 90,
+    "targets": 49,
+    "baseCharacters": 49,
     "monsterVariants": 0,
     "uniqueLookTypes": 0
   },
@@ -22,11 +22,3027 @@
   },
   "hunts": [
     {
+      "id": "hunt-wonsr-clone-das-sombras-192",
+      "name": "WONSR: Clone Das Sombras",
+      "requiredLevel": 1,
+      "mapKey": "huntWonsrFlorestaDaMorte",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Clone Das Sombras usa melee, Oodama Rasengan.",
+      "targets": [
+        {
+          "id": "wonsr-monster-clone-das-sombras",
+          "sourceId": "wonsr-monster-clone-das-sombras",
+          "name": "Clone Das Sombras",
+          "category": "geral",
+          "source": "wonsr/clone das sombras.xml",
+          "lookType": 192,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 92,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 2000,
+              "min": 0,
+              "max": 0,
+              "range": 1,
+              "element": "",
+              "effectId": "600"
+            },
+            {
+              "name": "Oodama Rasengan",
+              "intervalMs": 1000,
+              "min": 500,
+              "max": 1000,
+              "range": 1,
+              "element": "",
+              "effectId": "287"
+            }
+          ],
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-suna-bunshin-1222",
+      "name": "WONSR: Suna Bunshin",
+      "requiredLevel": 2,
+      "mapKey": "huntWonsrCampoTreinamento",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Suna Bunshin usa melee, Garra Follow.",
+      "targets": [
+        {
+          "id": "wonsr-monster-1-a-100-suna-bunshin",
+          "sourceId": "wonsr-monster-1-a-100-suna-bunshin",
+          "name": "Suna Bunshin",
+          "category": "1 a 100",
+          "source": "wonsr/1 a 100/suna bunshin.xml",
+          "lookType": 1222,
+          "hasSprite": false,
+          "requiredLevel": 2,
+          "level": 2,
+          "hp": 82,
+          "xp": 17,
+          "speed": 42,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 110,
+              "max": 140,
+              "range": 1,
+              "element": "",
+              "effectId": "1133"
+            },
+            {
+              "name": "Garra Follow",
+              "intervalMs": 1000,
+              "min": 440,
+              "max": 440,
+              "range": 1,
+              "element": "",
+              "effectId": "385",
+              "missileId": "78"
+            }
+          ],
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-samurai-529",
+      "name": "WONSR: Samurai",
+      "requiredLevel": 3,
+      "mapKey": "huntWonsrCavernaAkatsuki",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Samurai usa melee, Throw Shuriken No Jutsu.",
+      "targets": [
+        {
+          "id": "wonsr-monster-1-a-100-samurai",
+          "sourceId": "wonsr-monster-1-a-100-samurai",
+          "name": "Samurai",
+          "category": "1 a 100",
+          "source": "wonsr/1 a 100/samurai.xml",
+          "lookType": 529,
+          "hasSprite": false,
+          "requiredLevel": 3,
+          "level": 3,
+          "hp": 100,
+          "xp": 21,
+          "speed": 42,
+          "targetDistance": 2,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 1110,
+              "max": 1140,
+              "range": 1,
+              "element": "",
+              "effectId": "643"
+            },
+            {
+              "name": "Throw Shuriken No Jutsu",
+              "intervalMs": 1000,
+              "min": 740,
+              "max": 900,
+              "range": 1,
+              "element": "",
+              "effectId": "844",
+              "missileId": "33"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-2545",
+              "clientId": 2545,
+              "chance": 0.16,
+              "countMax": 100
+            },
+            {
+              "itemId": "wonsr-item-2417",
+              "clientId": 2417,
+              "chance": 0.25,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-fire-shinobi-522",
+      "name": "WONSR: Fire Shinobi",
+      "requiredLevel": 4,
+      "mapKey": "huntWonsrDesertoAreia",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Fire Shinobi usa melee, Fogofogo.",
+      "targets": [
+        {
+          "id": "wonsr-monster-1-a-100-fire-shinobi",
+          "sourceId": "wonsr-monster-1-a-100-fire-shinobi",
+          "name": "Fire Shinobi",
+          "category": "1 a 100",
+          "source": "wonsr/1 a 100/fire shinobi.xml",
+          "lookType": 522,
+          "hasSprite": false,
+          "requiredLevel": 4,
+          "level": 4,
+          "hp": 119,
+          "xp": 24,
+          "speed": 42,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 0,
+              "max": 0,
+              "range": 1,
+              "element": "",
+              "effectId": "912"
+            },
+            {
+              "name": "Fogofogo",
+              "intervalMs": 1000,
+              "min": 2140,
+              "max": 3400,
+              "range": 1,
+              "element": "",
+              "effectId": "198"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-5468",
+              "clientId": 5468,
+              "chance": 0.1,
+              "countMax": 10
+            },
+            {
+              "itemId": "wonsr-item-3983",
+              "clientId": 3983,
+              "chance": 0.06,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-12327",
+              "clientId": 12327,
+              "chance": 0.07,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-human-1334",
+      "name": "WONSR: Human",
+      "requiredLevel": 5,
+      "mapKey": "huntWonsrEsconderijoOrochimaru",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Human usa melee, Anko Cobras.",
+      "targets": [
+        {
+          "id": "wonsr-monster-1-a-100-human",
+          "sourceId": "wonsr-monster-1-a-100-human",
+          "name": "Human",
+          "category": "1 a 100",
+          "source": "wonsr/1 a 100/human.xml",
+          "lookType": 1334,
+          "hasSprite": false,
+          "requiredLevel": 5,
+          "level": 5,
+          "hp": 138,
+          "xp": 28,
+          "speed": 58,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 110,
+              "max": 140,
+              "range": 1,
+              "element": "",
+              "effectId": "1104"
+            },
+            {
+              "name": "Anko Cobras",
+              "intervalMs": 1700,
+              "min": 740,
+              "max": 840,
+              "range": 1,
+              "element": "",
+              "effectId": "1120"
+            }
+          ],
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-sound-shinobi-549",
+      "name": "WONSR: Sound Shinobi",
+      "requiredLevel": 6,
+      "mapKey": "huntWonsrPaisDoFerro",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Sound Shinobi usa melee, Suitonagua.",
+      "targets": [
+        {
+          "id": "wonsr-monster-1-a-100-sound-shinobi",
+          "sourceId": "wonsr-monster-1-a-100-sound-shinobi",
+          "name": "Sound Shinobi",
+          "category": "1 a 100",
+          "source": "wonsr/1 a 100/sound shinobi.xml",
+          "lookType": 549,
+          "hasSprite": false,
+          "requiredLevel": 6,
+          "level": 6,
+          "hp": 158,
+          "xp": 31,
+          "speed": 42,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 110,
+              "max": 140,
+              "range": 1,
+              "element": "",
+              "effectId": "1224"
+            },
+            {
+              "name": "Suitonagua",
+              "intervalMs": 2000,
+              "min": 1440,
+              "max": 1440,
+              "range": 1,
+              "element": "",
+              "effectId": "1167"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-2148",
+              "clientId": 2148,
+              "chance": 0.17,
+              "countMax": 85
+            },
+            {
+              "itemId": "wonsr-item-2152",
+              "clientId": 2152,
+              "chance": 0.13,
+              "countMax": 17
+            },
+            {
+              "itemId": "wonsr-item-12303",
+              "clientId": 12303,
+              "chance": 0.11,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-guarda-73",
+      "name": "WONSR: Guarda",
+      "requiredLevel": 7,
+      "mapKey": "huntWonsrPonteDaNevoa",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Guarda usa melee, physical.",
+      "targets": [
+        {
+          "id": "wonsr-monster-eventos-guarda",
+          "sourceId": "wonsr-monster-eventos-guarda",
+          "name": "Guarda",
+          "category": "eventos",
+          "source": "wonsr/eventos/Guarda.xml",
+          "lookType": 73,
+          "hasSprite": false,
+          "requiredLevel": 7,
+          "level": 7,
+          "hp": 177,
+          "xp": 35,
+          "speed": 45,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 2000,
+              "min": 0,
+              "max": 0,
+              "range": 1,
+              "element": "",
+              "effectId": "362"
+            },
+            {
+              "name": "physical",
+              "intervalMs": 2000,
+              "min": 200,
+              "max": 420,
+              "range": 7,
+              "element": "",
+              "effectId": "590",
+              "missileId": "110"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-2491",
+              "clientId": 2491,
+              "chance": 0.012,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2148",
+              "clientId": 2148,
+              "chance": 0,
+              "countMax": 100
+            },
+            {
+              "itemId": "wonsr-item-2120",
+              "clientId": 2120,
+              "chance": 0.2,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-1949",
+              "clientId": 1949,
+              "chance": 0.1,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2456",
+              "clientId": 2456,
+              "chance": 0.1,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2661",
+              "clientId": 2661,
+              "chance": 0.12,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2681",
+              "clientId": 2681,
+              "chance": 0.1,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2121",
+              "clientId": 2121,
+              "chance": 0.06666,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2666",
+              "clientId": 2666,
+              "chance": 0,
+              "countMax": 3
+            },
+            {
+              "itemId": "wonsr-item-5911",
+              "clientId": 5911,
+              "chance": 0,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-1987",
+              "clientId": 1987,
+              "chance": 1,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2377",
+              "clientId": 2377,
+              "chance": 0.015,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2487",
+              "clientId": 2487,
+              "chance": 0.006,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2392",
+              "clientId": 2392,
+              "chance": 0.007,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2519",
+              "clientId": 2519,
+              "chance": 0.009,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2488",
+              "clientId": 2488,
+              "chance": 0.008,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2071",
+              "clientId": 2071,
+              "chance": 0.1,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2544",
+              "clientId": 2544,
+              "chance": 0,
+              "countMax": 13
+            },
+            {
+              "itemId": "wonsr-item-2652",
+              "clientId": 2652,
+              "chance": 0.1,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2164",
+              "clientId": 2164,
+              "chance": 0.01,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-7364",
+              "clientId": 7364,
+              "chance": 0.02,
+              "countMax": 8
+            },
+            {
+              "itemId": "wonsr-item-2391",
+              "clientId": 2391,
+              "chance": 0.01333,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2744",
+              "clientId": 2744,
+              "chance": 0.2,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-mizuki-994",
+      "name": "WONSR: Mizuki",
+      "requiredLevel": 8,
+      "mapKey": "huntWonsrValeDasEstatuas",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Mizuki usa melee, manadrain, Venenodark, Fogofogo.",
+      "targets": [
+        {
+          "id": "wonsr-monster-saga-mizukii",
+          "sourceId": "wonsr-monster-saga-mizukii",
+          "name": "Mizuki",
+          "category": "saga",
+          "source": "wonsr/saga/mizukii.xml",
+          "lookType": 994,
+          "hasSprite": false,
+          "requiredLevel": 8,
+          "level": 8,
+          "hp": 196,
+          "xp": 38,
+          "speed": 52,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 1180,
+              "max": 1400,
+              "range": 1,
+              "element": "",
+              "effectId": "909"
+            },
+            {
+              "name": "manadrain",
+              "intervalMs": 2500,
+              "min": 860,
+              "max": 1215,
+              "range": 7,
+              "element": "",
+              "effectId": "873",
+              "missileId": "58"
+            },
+            {
+              "name": "Venenodark",
+              "intervalMs": 5000,
+              "min": 440,
+              "max": 600,
+              "range": 1,
+              "element": "",
+              "effectId": "1201"
+            },
+            {
+              "name": "Fogofogo",
+              "intervalMs": 2000,
+              "min": 440,
+              "max": 600,
+              "range": 1,
+              "element": "",
+              "effectId": "1118"
+            }
+          ],
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-sword-man-602",
+      "name": "WONSR: Sword Man",
+      "requiredLevel": 9,
+      "mapKey": "huntWonsrClareiraEquipe7",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Sword Man usa melee, Fogofogo.",
+      "targets": [
+        {
+          "id": "wonsr-monster-201-a-300-sword-man",
+          "sourceId": "wonsr-monster-201-a-300-sword-man",
+          "name": "Sword Man",
+          "category": "201 a 300",
+          "source": "wonsr/201 a 300/sword man.xml",
+          "lookType": 602,
+          "hasSprite": false,
+          "requiredLevel": 9,
+          "level": 9,
+          "hp": 216,
+          "xp": 42,
+          "speed": 48,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 0,
+              "max": 0,
+              "range": 1,
+              "element": "",
+              "effectId": "832"
+            },
+            {
+              "name": "Fogofogo",
+              "intervalMs": 1000,
+              "min": 2140,
+              "max": 3400,
+              "range": 1,
+              "element": "",
+              "effectId": "316"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-2417",
+              "clientId": 2417,
+              "chance": 0.04,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2480",
+              "clientId": 2480,
+              "chance": 0.04,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-master-shinobi-577",
+      "name": "WONSR: Master Shinobi",
+      "requiredLevel": 10,
+      "mapKey": "huntWonsrLaboratorioOrochimaru",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Master Shinobi usa melee, Fogofogo.",
+      "targets": [
+        {
+          "id": "wonsr-monster-101-a-200-master-shinobi",
+          "sourceId": "wonsr-monster-101-a-200-master-shinobi",
+          "name": "Master Shinobi",
+          "category": "101 a 200",
+          "source": "wonsr/101 a 200/master shinobi.xml",
+          "lookType": 577,
+          "hasSprite": false,
+          "requiredLevel": 10,
+          "level": 10,
+          "hp": 235,
+          "xp": 45,
+          "speed": 48,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 1890,
+              "max": 2310,
+              "range": 1,
+              "element": "",
+              "effectId": "928"
+            },
+            {
+              "name": "Fogofogo",
+              "intervalMs": 1000,
+              "min": 1140,
+              "max": 2400,
+              "range": 1,
+              "element": "",
+              "effectId": "501"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-5468",
+              "clientId": 5468,
+              "chance": 0.23,
+              "countMax": 10
+            },
+            {
+              "itemId": "wonsr-item-3983",
+              "clientId": 3983,
+              "chance": 0.11,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-11080",
+              "clientId": 11080,
+              "chance": 0.08,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-tiger-782",
+      "name": "WONSR: Tiger",
+      "requiredLevel": 11,
+      "mapKey": "huntWonsrFlorestaDaMorte",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Tiger usa melee, Garra Follow.",
+      "targets": [
+        {
+          "id": "wonsr-monster-101-a-200-tiger",
+          "sourceId": "wonsr-monster-101-a-200-tiger",
+          "name": "Tiger",
+          "category": "101 a 200",
+          "source": "wonsr/101 a 200/tiger.xml",
+          "lookType": 782,
+          "hasSprite": false,
+          "requiredLevel": 11,
+          "level": 11,
+          "hp": 255,
+          "xp": 49,
+          "speed": 75,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 3110,
+              "max": 4140,
+              "range": 1,
+              "element": "",
+              "effectId": "233"
+            },
+            {
+              "name": "Garra Follow",
+              "intervalMs": 3000,
+              "min": 2140,
+              "max": 3400,
+              "range": 1,
+              "element": "",
+              "effectId": "75",
+              "missileId": "167"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-2671",
+              "clientId": 2671,
+              "chance": 0.8,
+              "countMax": 15
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-insect-620",
+      "name": "WONSR: Insect",
+      "requiredLevel": 12,
+      "mapKey": "huntWonsrCampoTreinamento",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Insect usa melee, venenodark.",
+      "targets": [
+        {
+          "id": "wonsr-monster-101-a-200-insect",
+          "sourceId": "wonsr-monster-101-a-200-insect",
+          "name": "Insect",
+          "category": "101 a 200",
+          "source": "wonsr/101 a 200/insect.xml",
+          "lookType": 620,
+          "hasSprite": false,
+          "requiredLevel": 12,
+          "level": 12,
+          "hp": 275,
+          "xp": 52,
+          "speed": 58,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 110,
+              "max": 140,
+              "range": 1,
+              "element": "",
+              "effectId": "1141"
+            },
+            {
+              "name": "venenodark",
+              "intervalMs": 2000,
+              "min": 2440,
+              "max": 31440,
+              "range": 1,
+              "element": "",
+              "effectId": "216"
+            }
+          ],
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-corrupted-613",
+      "name": "WONSR: Corrupted",
+      "requiredLevel": 13,
+      "mapKey": "huntWonsrCavernaAkatsuki",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Corrupted usa melee, corrupt chidori.",
+      "targets": [
+        {
+          "id": "wonsr-monster-101-a-200-corrupted",
+          "sourceId": "wonsr-monster-101-a-200-corrupted",
+          "name": "Corrupted",
+          "category": "101 a 200",
+          "source": "wonsr/101 a 200/corrupted.xml",
+          "lookType": 613,
+          "hasSprite": false,
+          "requiredLevel": 13,
+          "level": 13,
+          "hp": 294,
+          "xp": 56,
+          "speed": 75,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 3110,
+              "max": 4140,
+              "range": 1,
+              "element": "",
+              "effectId": "1063"
+            },
+            {
+              "name": "corrupt chidori",
+              "intervalMs": 1500,
+              "min": 2440,
+              "max": 3900,
+              "range": 1,
+              "element": "",
+              "effectId": "633"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-3983",
+              "clientId": 3983,
+              "chance": 0.08,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-12317",
+              "clientId": 12317,
+              "chance": 0.02,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-12284",
+              "clientId": 12284,
+              "chance": 0.04,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-posion-karasu-819",
+      "name": "WONSR: Posion Karasu",
+      "requiredLevel": 14,
+      "mapKey": "huntWonsrDesertoAreia",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Posion Karasu usa melee, Wrath of Nature.",
+      "targets": [
+        {
+          "id": "wonsr-monster-101-a-200-posion-karasu",
+          "sourceId": "wonsr-monster-101-a-200-posion-karasu",
+          "name": "Posion Karasu",
+          "category": "101 a 200",
+          "source": "wonsr/101 a 200/posion karasu.xml",
+          "lookType": 819,
+          "hasSprite": false,
+          "requiredLevel": 14,
+          "level": 14,
+          "hp": 314,
+          "xp": 59,
+          "speed": 58,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 2110,
+              "max": 3140,
+              "range": 1,
+              "element": "",
+              "effectId": "831"
+            },
+            {
+              "name": "Wrath of Nature",
+              "intervalMs": 1000,
+              "min": 3040,
+              "max": 4200,
+              "range": 1,
+              "element": "",
+              "effectId": "1187"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-17435",
+              "clientId": 17435,
+              "chance": 0.06,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-dark-snake-668",
+      "name": "WONSR: Dark Snake",
+      "requiredLevel": 15,
+      "mapKey": "huntWonsrEsconderijoOrochimaru",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Dark Snake usa melee, dark snake.",
+      "targets": [
+        {
+          "id": "wonsr-monster-101-a-200-dark-snake",
+          "sourceId": "wonsr-monster-101-a-200-dark-snake",
+          "name": "Dark Snake",
+          "category": "101 a 200",
+          "source": "wonsr/101 a 200/dark snake.xml",
+          "lookType": 668,
+          "hasSprite": false,
+          "requiredLevel": 15,
+          "level": 15,
+          "hp": 334,
+          "xp": 63,
+          "speed": 92,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 110,
+              "max": 140,
+              "range": 1,
+              "element": "",
+              "effectId": "759"
+            },
+            {
+              "name": "dark snake",
+              "intervalMs": 1000,
+              "min": 3440,
+              "max": 4440,
+              "range": 1,
+              "element": "",
+              "effectId": "912"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-10712",
+              "clientId": 10712,
+              "chance": 0.07,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2487",
+              "clientId": 2487,
+              "chance": 0.07,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-dog-fear-661",
+      "name": "WONSR: Dog Fear",
+      "requiredLevel": 16,
+      "mapKey": "huntWonsrPaisDoFerro",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Dog Fear usa melee, venenodark.",
+      "targets": [
+        {
+          "id": "wonsr-monster-101-a-200-dog-fear",
+          "sourceId": "wonsr-monster-101-a-200-dog-fear",
+          "name": "Dog Fear",
+          "category": "101 a 200",
+          "source": "wonsr/101 a 200/dog fear.xml",
+          "lookType": 661,
+          "hasSprite": false,
+          "requiredLevel": 16,
+          "level": 16,
+          "hp": 354,
+          "xp": 66,
+          "speed": 75,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 110,
+              "max": 140,
+              "range": 1,
+              "element": "",
+              "effectId": "26"
+            },
+            {
+              "name": "venenodark",
+              "intervalMs": 1000,
+              "min": 2440,
+              "max": 3440,
+              "range": 1,
+              "element": "",
+              "effectId": "839"
+            }
+          ],
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-giant-fear-637",
+      "name": "WONSR: Giant Fear",
+      "requiredLevel": 17,
+      "mapKey": "huntWonsrPonteDaNevoa",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Giant Fear usa melee, Great Ball.",
+      "targets": [
+        {
+          "id": "wonsr-monster-101-a-200-giant-fear",
+          "sourceId": "wonsr-monster-101-a-200-giant-fear",
+          "name": "Giant Fear",
+          "category": "101 a 200",
+          "source": "wonsr/101 a 200/giant fear.xml",
+          "lookType": 637,
+          "hasSprite": false,
+          "requiredLevel": 17,
+          "level": 17,
+          "hp": 374,
+          "xp": 70,
+          "speed": 42,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 1880,
+              "max": 2100,
+              "range": 1,
+              "element": "",
+              "effectId": "585"
+            },
+            {
+              "name": "Great Ball",
+              "intervalMs": 3000,
+              "min": 1440,
+              "max": 2600,
+              "range": 1,
+              "element": "",
+              "effectId": "438",
+              "missileId": "164"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-2666",
+              "clientId": 2666,
+              "chance": 0.2,
+              "countMax": 5
+            },
+            {
+              "itemId": "wonsr-item-11191",
+              "clientId": 11191,
+              "chance": 0.1,
+              "countMax": 2
+            },
+            {
+              "itemId": "wonsr-item-12257",
+              "clientId": 12257,
+              "chance": 0.1,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-nukenin-622",
+      "name": "WONSR: Nukenin",
+      "requiredLevel": 18,
+      "mapKey": "huntWonsrValeDasEstatuas",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Nukenin usa melee, Suitonagua, SuitonBomba.",
+      "targets": [
+        {
+          "id": "wonsr-monster-101-a-200-nukenin",
+          "sourceId": "wonsr-monster-101-a-200-nukenin",
+          "name": "Nukenin",
+          "category": "101 a 200",
+          "source": "wonsr/101 a 200/nukenin.xml",
+          "lookType": 622,
+          "hasSprite": false,
+          "requiredLevel": 18,
+          "level": 18,
+          "hp": 394,
+          "xp": 73,
+          "speed": 75,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 110,
+              "max": 140,
+              "range": 1,
+              "element": "",
+              "effectId": "866"
+            },
+            {
+              "name": "Suitonagua",
+              "intervalMs": 2000,
+              "min": 4440,
+              "max": 5940,
+              "range": 1,
+              "element": "",
+              "effectId": "139"
+            },
+            {
+              "name": "SuitonBomba",
+              "intervalMs": 1000,
+              "min": 2440,
+              "max": 3440,
+              "range": 1,
+              "element": "",
+              "effectId": "202"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-13925",
+              "clientId": 13925,
+              "chance": 0.07,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2654",
+              "clientId": 2654,
+              "chance": 0.07,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-12442",
+              "clientId": 12442,
+              "chance": 0.07,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-shinobi-skys-616",
+      "name": "WONSR: Shinobi Skys",
+      "requiredLevel": 19,
+      "mapKey": "huntWonsrClareiraEquipe7",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Shinobi Skys usa melee, fogofogo, Hyuton.",
+      "targets": [
+        {
+          "id": "wonsr-monster-101-a-200-shinobi-skys",
+          "sourceId": "wonsr-monster-101-a-200-shinobi-skys",
+          "name": "Shinobi Skys",
+          "category": "101 a 200",
+          "source": "wonsr/101 a 200/shinobi skys.xml",
+          "lookType": 616,
+          "hasSprite": false,
+          "requiredLevel": 19,
+          "level": 19,
+          "hp": 414,
+          "xp": 77,
+          "speed": 75,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 110,
+              "max": 140,
+              "range": 1,
+              "element": "",
+              "effectId": "739"
+            },
+            {
+              "name": "fogofogo",
+              "intervalMs": 1000,
+              "min": 3440,
+              "max": 4440,
+              "range": 1,
+              "element": "",
+              "effectId": "723"
+            },
+            {
+              "name": "Hyuton",
+              "intervalMs": 3000,
+              "min": 200,
+              "max": 300,
+              "range": 1,
+              "element": "",
+              "effectId": "825"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-12317",
+              "clientId": 12317,
+              "chance": 0.06,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-12289",
+              "clientId": 12289,
+              "chance": 0.06,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-wonsr-dosu-617",
+      "name": "WONSR: Dosu",
+      "requiredLevel": 20,
+      "mapKey": "huntWonsrLaboratorioOrochimaru",
+      "tab": "wonsr",
+      "description": "Caça WONSR: Dosu usa melee, Suitonagua.",
+      "targets": [
+        {
+          "id": "wonsr-monster-101-a-200-dosu",
+          "sourceId": "wonsr-monster-101-a-200-dosu",
+          "name": "Dosu",
+          "category": "101 a 200",
+          "source": "wonsr/101 a 200/dosu.xml",
+          "lookType": 617,
+          "hasSprite": false,
+          "requiredLevel": 20,
+          "level": 20,
+          "hp": 434,
+          "xp": 80,
+          "speed": 58,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 110,
+              "max": 140,
+              "range": 1,
+              "element": "",
+              "effectId": "119"
+            },
+            {
+              "name": "Suitonagua",
+              "intervalMs": 1700,
+              "min": 5440,
+              "max": 6440,
+              "range": 1,
+              "element": "",
+              "effectId": "141"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-2152",
+              "clientId": 2152,
+              "chance": 0.1,
+              "countMax": 89
+            },
+            {
+              "itemId": "wonsr-item-12303",
+              "clientId": 12303,
+              "chance": 0.16,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-kiba-boss-635",
+      "name": "Boss Hunt: Kiba Boss",
+      "requiredLevel": 25,
+      "mapKey": "huntWonsrPonteDaNevoa",
+      "tab": "bosses",
+      "description": "Boss Hunt: Kiba Boss usa melee, manadrain, Tsuuga Kiba.",
+      "targets": [
+        {
+          "id": "wonsr-monster-boss-hunts-kiba-boss",
+          "sourceId": "wonsr-monster-boss-hunts-kiba-boss",
+          "name": "Kiba Boss",
+          "category": "boss hunts",
+          "source": "wonsr/boss hunts/kiba boss.xml",
+          "lookType": 635,
+          "hasSprite": false,
+          "requiredLevel": 25,
+          "level": 25,
+          "hp": 2281,
+          "xp": 180,
+          "speed": 42,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 1110,
+              "max": 1140,
+              "range": 1,
+              "element": "",
+              "effectId": "1214"
+            },
+            {
+              "name": "manadrain",
+              "intervalMs": 1000,
+              "min": 1160,
+              "max": 1215,
+              "range": 7,
+              "element": "",
+              "effectId": "791",
+              "missileId": "127"
+            },
+            {
+              "name": "Tsuuga Kiba",
+              "intervalMs": 3000,
+              "min": 2140,
+              "max": 3400,
+              "range": 1,
+              "element": "",
+              "effectId": "20"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-12446",
+              "clientId": 12446,
+              "chance": 0.7,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-2148",
+              "clientId": 2148,
+              "chance": 0.9,
+              "countMax": 87
+            },
+            {
+              "itemId": "wonsr-item-2152",
+              "clientId": 2152,
+              "chance": 0.7,
+              "countMax": 77
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-hollow-boss-517",
+      "name": "Boss Hunt: hollow Boss",
+      "requiredLevel": 30,
+      "mapKey": "huntWonsrCavernaAkatsuki",
+      "tab": "bosses",
+      "description": "Boss Hunt: hollow Boss usa melee, manadrain, VENENODARK.",
+      "targets": [
+        {
+          "id": "wonsr-monster-boss-hunts-hollow-boss",
+          "sourceId": "wonsr-monster-boss-hunts-hollow-boss",
+          "name": "hollow Boss",
+          "category": "boss hunts",
+          "source": "wonsr/boss hunts/hollow boss.xml",
+          "lookType": 517,
+          "hasSprite": false,
+          "requiredLevel": 30,
+          "level": 30,
+          "hp": 5731,
+          "xp": 995,
+          "speed": 87,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 1110,
+              "max": 1140,
+              "range": 1,
+              "element": "",
+              "effectId": "736"
+            },
+            {
+              "name": "manadrain",
+              "intervalMs": 1000,
+              "min": 1160,
+              "max": 1215,
+              "range": 7,
+              "element": "",
+              "effectId": "291",
+              "missileId": "19"
+            },
+            {
+              "name": "VENENODARK",
+              "intervalMs": 1000,
+              "min": 4140,
+              "max": 6140,
+              "range": 1,
+              "element": "",
+              "effectId": "679"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-12446",
+              "clientId": 12446,
+              "chance": 0.4,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-naruto-boss-799",
+      "name": "Boss Hunt: Naruto BOSS",
+      "requiredLevel": 35,
+      "mapKey": "huntWonsrCavernaAkatsuki",
+      "tab": "bosses",
+      "description": "Boss Hunt: Naruto BOSS usa melee, manadrain, dead.",
+      "targets": [
+        {
+          "id": "wonsr-monster-boss-hunts-naruto-boss",
+          "sourceId": "wonsr-monster-boss-hunts-naruto-boss",
+          "name": "Naruto BOSS",
+          "category": "boss hunts",
+          "source": "wonsr/boss hunts/naruto boss.xml",
+          "lookType": 799,
+          "hasSprite": false,
+          "requiredLevel": 35,
+          "level": 35,
+          "hp": 34781,
+          "xp": 1280,
+          "speed": 42,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 1110,
+              "max": 1140,
+              "range": 1,
+              "element": "",
+              "effectId": "699"
+            },
+            {
+              "name": "manadrain",
+              "intervalMs": 1000,
+              "min": 1160,
+              "max": 1215,
+              "range": 7,
+              "element": "",
+              "effectId": "311",
+              "missileId": "13"
+            },
+            {
+              "name": "dead",
+              "intervalMs": 2000,
+              "min": 52140,
+              "max": 93400,
+              "range": 1,
+              "element": "",
+              "effectId": "1227"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-2160",
+              "clientId": 2160,
+              "chance": 0.02,
+              "countMax": 100
+            },
+            {
+              "itemId": "wonsr-item-11199",
+              "clientId": 11199,
+              "chance": 0.05,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-demon-799",
+      "name": "Boss Hunt: Demon",
+      "requiredLevel": 40,
+      "mapKey": "huntWonsrDesertoAreia",
+      "tab": "bosses",
+      "description": "Boss Hunt: Demon usa melee, manadrain, dead.",
+      "targets": [
+        {
+          "id": "wonsr-monster-boss-hunts-demon",
+          "sourceId": "wonsr-monster-boss-hunts-demon",
+          "name": "Demon",
+          "category": "boss hunts",
+          "source": "wonsr/boss hunts/demon.xml",
+          "lookType": 799,
+          "hasSprite": false,
+          "requiredLevel": 40,
+          "level": 40,
+          "hp": 59781,
+          "xp": 1280,
+          "speed": 42,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 1110,
+              "max": 1140,
+              "range": 1,
+              "element": "",
+              "effectId": "1084"
+            },
+            {
+              "name": "manadrain",
+              "intervalMs": 1000,
+              "min": 1160,
+              "max": 1215,
+              "range": 7,
+              "element": "",
+              "effectId": "451",
+              "missileId": "131"
+            },
+            {
+              "name": "dead",
+              "intervalMs": 2000,
+              "min": 52140,
+              "max": 93400,
+              "range": 1,
+              "element": "",
+              "effectId": "879"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-10388",
+              "clientId": 10388,
+              "chance": 0.1,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-kioji-1770",
+      "name": "Boss Hunt: kioji",
+      "requiredLevel": 45,
+      "mapKey": "huntWonsrCavernaAkatsuki",
+      "tab": "bosses",
+      "description": "Boss Hunt: kioji usa melee, manadrain, dead, attackgaara, infernal.",
+      "targets": [
+        {
+          "id": "wonsr-monster-boss-hunts-kioji",
+          "sourceId": "wonsr-monster-boss-hunts-kioji",
+          "name": "kioji",
+          "category": "boss hunts",
+          "source": "wonsr/boss hunts/kioji.xml",
+          "lookType": 1770,
+          "hasSprite": false,
+          "requiredLevel": 45,
+          "level": 45,
+          "hp": 70641,
+          "xp": 1280,
+          "speed": 48,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 1110,
+              "max": 1140,
+              "range": 1,
+              "element": "",
+              "effectId": "1068"
+            },
+            {
+              "name": "manadrain",
+              "intervalMs": 1000,
+              "min": 1160,
+              "max": 1215,
+              "range": 7,
+              "element": "",
+              "effectId": "156",
+              "missileId": "140"
+            },
+            {
+              "name": "dead",
+              "intervalMs": 4000,
+              "min": 22140,
+              "max": 23400,
+              "range": 1,
+              "element": "",
+              "effectId": "843"
+            },
+            {
+              "name": "attackgaara",
+              "intervalMs": 1500,
+              "min": 12140,
+              "max": 23400,
+              "range": 1,
+              "element": "",
+              "effectId": "1174"
+            },
+            {
+              "name": "infernal",
+              "intervalMs": 1000,
+              "min": 7140,
+              "max": 9400,
+              "range": 1,
+              "element": "",
+              "effectId": "528"
+            }
+          ],
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-raiden-1772",
+      "name": "Boss Hunt: Raiden",
+      "requiredLevel": 50,
+      "mapKey": "huntWonsrPaisDoFerro",
+      "tab": "bosses",
+      "description": "Boss Hunt: Raiden usa melee, fuyukitarget, helicederaio.",
+      "targets": [
+        {
+          "id": "wonsr-monster-boss-hunts-raiden",
+          "sourceId": "wonsr-monster-boss-hunts-raiden",
+          "name": "Raiden",
+          "category": "boss hunts",
+          "source": "wonsr/boss hunts/raiden.xml",
+          "lookType": 1772,
+          "hasSprite": false,
+          "requiredLevel": 50,
+          "level": 50,
+          "hp": 131391,
+          "xp": 880,
+          "speed": 92,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 1110,
+              "max": 1140,
+              "range": 1,
+              "element": "",
+              "effectId": "544"
+            },
+            {
+              "name": "fuyukitarget",
+              "intervalMs": 3850,
+              "min": 22140,
+              "max": 23400,
+              "range": 1,
+              "element": "",
+              "effectId": "844"
+            },
+            {
+              "name": "helicederaio",
+              "intervalMs": 1250,
+              "min": 25140,
+              "max": 29400,
+              "range": 1,
+              "element": "",
+              "effectId": "1151"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-10199",
+              "clientId": 10199,
+              "chance": 0.1,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-riki-1774",
+      "name": "Boss Hunt: Riki",
+      "requiredLevel": 55,
+      "mapKey": "huntWonsrPonteDaNevoa",
+      "tab": "bosses",
+      "description": "Boss Hunt: Riki usa melee, fogohittarget, Katon Gamabunta Ryukaa.",
+      "targets": [
+        {
+          "id": "wonsr-monster-boss-hunts-riki",
+          "sourceId": "wonsr-monster-boss-hunts-riki",
+          "name": "Riki",
+          "category": "boss hunts",
+          "source": "wonsr/boss hunts/riki.xml",
+          "lookType": 1774,
+          "hasSprite": false,
+          "requiredLevel": 55,
+          "level": 55,
+          "hp": 156391,
+          "xp": 980,
+          "speed": 92,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 1110,
+              "max": 1140,
+              "range": 1,
+              "element": "",
+              "effectId": "275"
+            },
+            {
+              "name": "fogohittarget",
+              "intervalMs": 4750,
+              "min": 17140,
+              "max": 18400,
+              "range": 1,
+              "element": "",
+              "effectId": "72"
+            },
+            {
+              "name": "Katon Gamabunta Ryukaa",
+              "intervalMs": 1000,
+              "min": 22140,
+              "max": 23400,
+              "range": 1,
+              "element": "",
+              "effectId": "311"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-10203",
+              "clientId": 10203,
+              "chance": 0.1,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-ichiro-1773",
+      "name": "Boss Hunt: Ichiro",
+      "requiredLevel": 60,
+      "mapKey": "huntWonsrCavernaAkatsuki",
+      "tab": "bosses",
+      "description": "Boss Hunt: Ichiro usa melee, soaguadezabuza, shiroiarea2.",
+      "targets": [
+        {
+          "id": "wonsr-monster-boss-hunts-ichiro",
+          "sourceId": "wonsr-monster-boss-hunts-ichiro",
+          "name": "Ichiro",
+          "category": "boss hunts",
+          "source": "wonsr/boss hunts/ichiro.xml",
+          "lookType": 1773,
+          "hasSprite": false,
+          "requiredLevel": 60,
+          "level": 60,
+          "hp": 231391,
+          "xp": 730,
+          "speed": 92,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1000,
+              "min": 1110,
+              "max": 1140,
+              "range": 1,
+              "element": "",
+              "effectId": "153"
+            },
+            {
+              "name": "soaguadezabuza",
+              "intervalMs": 4150,
+              "min": 22140,
+              "max": 23400,
+              "range": 1,
+              "element": "",
+              "effectId": "381"
+            },
+            {
+              "name": "shiroiarea2",
+              "intervalMs": 1700,
+              "min": 22140,
+              "max": 23400,
+              "range": 1,
+              "element": "",
+              "effectId": "108"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-10201",
+              "clientId": 10201,
+              "chance": 0.1,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-choumei-506",
+      "name": "Bijuu: Choumei",
+      "requiredLevel": 70,
+      "mapKey": "huntWonsrFlorestaDaMorte",
+      "tab": "bosses",
+      "description": "Bijuu: Choumei usa melee, manadrain, Ultimatee Bijuu Dama, Bijuu Dama, Mushikui, Rinpun Bakusai, speed.",
+      "targets": [
+        {
+          "id": "wonsr-monster-bijuu-choumei",
+          "sourceId": "wonsr-monster-bijuu-choumei",
+          "name": "Choumei",
+          "category": "bijuu",
+          "source": "wonsr/bijuu/choumei.xml",
+          "lookType": 506,
+          "hasSprite": false,
+          "requiredLevel": 70,
+          "level": 70,
+          "hp": 223250,
+          "xp": 1250,
+          "speed": 92,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1500,
+              "min": 1280,
+              "max": 1700,
+              "range": 1,
+              "element": "",
+              "effectId": "349"
+            },
+            {
+              "name": "manadrain",
+              "intervalMs": 1000,
+              "min": 60,
+              "max": 575,
+              "range": 7,
+              "element": "",
+              "effectId": "362",
+              "missileId": "115"
+            },
+            {
+              "name": "Ultimatee Bijuu Dama",
+              "intervalMs": 4000,
+              "min": 11300,
+              "max": 13500,
+              "range": 1,
+              "element": "",
+              "effectId": "131"
+            },
+            {
+              "name": "Bijuu Dama",
+              "intervalMs": 5000,
+              "min": 16300,
+              "max": 17500,
+              "range": 1,
+              "element": "",
+              "effectId": "321"
+            },
+            {
+              "name": "Mushikui",
+              "intervalMs": 1000,
+              "min": 9300,
+              "max": 10500,
+              "range": 1,
+              "element": "",
+              "effectId": "98"
+            },
+            {
+              "name": "Rinpun Bakusai",
+              "intervalMs": 3000,
+              "min": 10300,
+              "max": 11500,
+              "range": 1,
+              "element": "",
+              "effectId": "636"
+            },
+            {
+              "name": "speed",
+              "intervalMs": 8000,
+              "min": 0,
+              "max": 0,
+              "range": 1,
+              "element": "",
+              "effectId": "450"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-10702",
+              "clientId": 10702,
+              "chance": 0.04,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-13893",
+              "clientId": 13893,
+              "chance": 0.25,
+              "countMax": 35
+            },
+            {
+              "itemId": "wonsr-item-2160",
+              "clientId": 2160,
+              "chance": 0.25,
+              "countMax": 25
+            },
+            {
+              "itemId": "wonsr-item-17200",
+              "clientId": 17200,
+              "chance": 0.05,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-gyuki-747",
+      "name": "Bijuu: Gyuki",
+      "requiredLevel": 71,
+      "mapKey": "huntWonsrValeDasEstatuas",
+      "tab": "bosses",
+      "description": "Bijuu: Gyuki usa melee, manadrain, Ultimatee Bijuu Dama, Bijuu Dama, Bijuu Hachimaki, Dai Sumi Sakusei, speed.",
+      "targets": [
+        {
+          "id": "wonsr-monster-bijuu-gyuki",
+          "sourceId": "wonsr-monster-bijuu-gyuki",
+          "name": "Gyuki",
+          "category": "bijuu",
+          "source": "wonsr/bijuu/gyuki.xml",
+          "lookType": 747,
+          "hasSprite": false,
+          "requiredLevel": 71,
+          "level": 71,
+          "hp": 223250,
+          "xp": 1284,
+          "speed": 92,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1500,
+              "min": 1280,
+              "max": 1700,
+              "range": 1,
+              "element": "",
+              "effectId": "433"
+            },
+            {
+              "name": "manadrain",
+              "intervalMs": 1000,
+              "min": 60,
+              "max": 575,
+              "range": 7,
+              "element": "",
+              "effectId": "272",
+              "missileId": "24"
+            },
+            {
+              "name": "Ultimatee Bijuu Dama",
+              "intervalMs": 4000,
+              "min": 11300,
+              "max": 13500,
+              "range": 1,
+              "element": "",
+              "effectId": "812"
+            },
+            {
+              "name": "Bijuu Dama",
+              "intervalMs": 5000,
+              "min": 16300,
+              "max": 17500,
+              "range": 1,
+              "element": "",
+              "effectId": "1215"
+            },
+            {
+              "name": "Bijuu Hachimaki",
+              "intervalMs": 1000,
+              "min": 9300,
+              "max": 10500,
+              "range": 1,
+              "element": "",
+              "effectId": "922"
+            },
+            {
+              "name": "Dai Sumi Sakusei",
+              "intervalMs": 3000,
+              "min": 9300,
+              "max": 11500,
+              "range": 1,
+              "element": "",
+              "effectId": "492"
+            },
+            {
+              "name": "speed",
+              "intervalMs": 8000,
+              "min": 0,
+              "max": 0,
+              "range": 1,
+              "element": "",
+              "effectId": "175"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-10704",
+              "clientId": 10704,
+              "chance": 0.04,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-13893",
+              "clientId": 13893,
+              "chance": 0.25,
+              "countMax": 35
+            },
+            {
+              "itemId": "wonsr-item-2160",
+              "clientId": 2160,
+              "chance": 0.25,
+              "countMax": 25
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-isobu-507",
+      "name": "Bijuu: Isobu",
+      "requiredLevel": 72,
+      "mapKey": "huntWonsrPonteDaNevoa",
+      "tab": "bosses",
+      "description": "Bijuu: Isobu usa melee, manadrain, Ultimatee Bijuu Dama, Bijuu Dama, Gensou Kiri, Sango Renshou, speed.",
+      "targets": [
+        {
+          "id": "wonsr-monster-bijuu-isobu",
+          "sourceId": "wonsr-monster-bijuu-isobu",
+          "name": "Isobu",
+          "category": "bijuu",
+          "source": "wonsr/bijuu/isobu.xml",
+          "lookType": 507,
+          "hasSprite": false,
+          "requiredLevel": 72,
+          "level": 72,
+          "hp": 223250,
+          "xp": 1080,
+          "speed": 92,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1500,
+              "min": 1280,
+              "max": 1700,
+              "range": 1,
+              "element": "",
+              "effectId": "1197"
+            },
+            {
+              "name": "manadrain",
+              "intervalMs": 1000,
+              "min": 60,
+              "max": 575,
+              "range": 7,
+              "element": "",
+              "effectId": "780",
+              "missileId": "133"
+            },
+            {
+              "name": "Ultimatee Bijuu Dama",
+              "intervalMs": 4000,
+              "min": 11300,
+              "max": 13500,
+              "range": 1,
+              "element": "",
+              "effectId": "298"
+            },
+            {
+              "name": "Bijuu Dama",
+              "intervalMs": 5000,
+              "min": 16300,
+              "max": 17500,
+              "range": 1,
+              "element": "",
+              "effectId": "750"
+            },
+            {
+              "name": "Gensou Kiri",
+              "intervalMs": 1000,
+              "min": 9300,
+              "max": 10500,
+              "range": 1,
+              "element": "",
+              "effectId": "22"
+            },
+            {
+              "name": "Sango Renshou",
+              "intervalMs": 3000,
+              "min": 9300,
+              "max": 11500,
+              "range": 1,
+              "element": "",
+              "effectId": "689"
+            },
+            {
+              "name": "speed",
+              "intervalMs": 8000,
+              "min": 0,
+              "max": 0,
+              "range": 1,
+              "element": "",
+              "effectId": "1176"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-10699",
+              "clientId": 10699,
+              "chance": 0.04,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-13893",
+              "clientId": 13893,
+              "chance": 0.25,
+              "countMax": 35
+            },
+            {
+              "itemId": "wonsr-item-2160",
+              "clientId": 2160,
+              "chance": 0.25,
+              "countMax": 25
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-kokuou-509",
+      "name": "Bijuu: Kokuou",
+      "requiredLevel": 73,
+      "mapKey": "huntWonsrDesertoAreia",
+      "tab": "bosses",
+      "description": "Bijuu: Kokuou usa melee, manadrain, Ultimatee Bijuu Dama, Bijuu Dama, Gobi no Nami, Tsunoori, speed.",
+      "targets": [
+        {
+          "id": "wonsr-monster-bijuu-kokuou",
+          "sourceId": "wonsr-monster-bijuu-kokuou",
+          "name": "Kokuou",
+          "category": "bijuu",
+          "source": "wonsr/bijuu/kokuou.xml",
+          "lookType": 509,
+          "hasSprite": false,
+          "requiredLevel": 73,
+          "level": 73,
+          "hp": 223250,
+          "xp": 1473,
+          "speed": 92,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1500,
+              "min": 1280,
+              "max": 1700,
+              "range": 1,
+              "element": "",
+              "effectId": "945"
+            },
+            {
+              "name": "manadrain",
+              "intervalMs": 1000,
+              "min": 60,
+              "max": 575,
+              "range": 7,
+              "element": "",
+              "effectId": "710",
+              "missileId": "11"
+            },
+            {
+              "name": "Ultimatee Bijuu Dama",
+              "intervalMs": 4000,
+              "min": 11300,
+              "max": 14500,
+              "range": 1,
+              "element": "",
+              "effectId": "481"
+            },
+            {
+              "name": "Bijuu Dama",
+              "intervalMs": 5000,
+              "min": 16300,
+              "max": 17500,
+              "range": 1,
+              "element": "",
+              "effectId": "437"
+            },
+            {
+              "name": "Gobi no Nami",
+              "intervalMs": 1000,
+              "min": 9300,
+              "max": 10500,
+              "range": 1,
+              "element": "",
+              "effectId": "762"
+            },
+            {
+              "name": "Tsunoori",
+              "intervalMs": 3000,
+              "min": 11300,
+              "max": 12500,
+              "range": 1,
+              "element": "",
+              "effectId": "849"
+            },
+            {
+              "name": "speed",
+              "intervalMs": 8000,
+              "min": 0,
+              "max": 0,
+              "range": 1,
+              "element": "",
+              "effectId": "1153"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-10701",
+              "clientId": 10701,
+              "chance": 0.04,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-13893",
+              "clientId": 13893,
+              "chance": 0.25,
+              "countMax": 35
+            },
+            {
+              "itemId": "wonsr-item-2160",
+              "clientId": 2160,
+              "chance": 0.25,
+              "countMax": 25
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-kurama-511",
+      "name": "Bijuu: Kurama",
+      "requiredLevel": 74,
+      "mapKey": "huntWonsrValeDasEstatuas",
+      "tab": "bosses",
+      "description": "Bijuu: Kurama usa melee, manadrain, Ultimatee Bijuu Dama, Bijuu Dama, speed.",
+      "targets": [
+        {
+          "id": "wonsr-monster-bijuu-kurama",
+          "sourceId": "wonsr-monster-bijuu-kurama",
+          "name": "Kurama",
+          "category": "bijuu",
+          "source": "wonsr/bijuu/kurama.xml",
+          "lookType": 511,
+          "hasSprite": false,
+          "requiredLevel": 74,
+          "level": 74,
+          "hp": 223250,
+          "xp": 269,
+          "speed": 92,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1500,
+              "min": 1280,
+              "max": 1700,
+              "range": 1,
+              "element": "",
+              "effectId": "532"
+            },
+            {
+              "name": "manadrain",
+              "intervalMs": 1000,
+              "min": 60,
+              "max": 575,
+              "range": 7,
+              "element": "",
+              "effectId": "1181",
+              "missileId": "162"
+            },
+            {
+              "name": "Ultimatee Bijuu Dama",
+              "intervalMs": 1000,
+              "min": 11300,
+              "max": 18500,
+              "range": 1,
+              "element": "",
+              "effectId": "838"
+            },
+            {
+              "name": "Bijuu Dama",
+              "intervalMs": 2000,
+              "min": 16300,
+              "max": 17500,
+              "range": 1,
+              "element": "",
+              "effectId": "298"
+            },
+            {
+              "name": "speed",
+              "intervalMs": 8000,
+              "min": 0,
+              "max": 0,
+              "range": 1,
+              "element": "",
+              "effectId": "160"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-10705",
+              "clientId": 10705,
+              "chance": 0.06,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-13893",
+              "clientId": 13893,
+              "chance": 0.25,
+              "countMax": 35
+            },
+            {
+              "itemId": "wonsr-item-2160",
+              "clientId": 2160,
+              "chance": 0.25,
+              "countMax": 25
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-matatabi-510",
+      "name": "Bijuu: Matatabi",
+      "requiredLevel": 75,
+      "mapKey": "huntWonsrFlorestaDaMorte",
+      "tab": "bosses",
+      "description": "Bijuu: Matatabi usa melee, manadrain, Ultimatee Bijuu Dama, Bijuu Dama, Daira Ayatsuri Yatai Hibashiri, Ten en Byoka, speed.",
+      "targets": [
+        {
+          "id": "wonsr-monster-bijuu-matatabi",
+          "sourceId": "wonsr-monster-bijuu-matatabi",
+          "name": "Matatabi",
+          "category": "bijuu",
+          "source": "wonsr/bijuu/matatabi.xml",
+          "lookType": 510,
+          "hasSprite": false,
+          "requiredLevel": 75,
+          "level": 75,
+          "hp": 223250,
+          "xp": 1563,
+          "speed": 92,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1500,
+              "min": 1280,
+              "max": 1700,
+              "range": 1,
+              "element": "",
+              "effectId": "892"
+            },
+            {
+              "name": "manadrain",
+              "intervalMs": 1000,
+              "min": 60,
+              "max": 575,
+              "range": 7,
+              "element": "",
+              "effectId": "968",
+              "missileId": "60"
+            },
+            {
+              "name": "Ultimatee Bijuu Dama",
+              "intervalMs": 4000,
+              "min": 11300,
+              "max": 13500,
+              "range": 1,
+              "element": "",
+              "effectId": "692"
+            },
+            {
+              "name": "Bijuu Dama",
+              "intervalMs": 5000,
+              "min": 16300,
+              "max": 17500,
+              "range": 1,
+              "element": "",
+              "effectId": "4"
+            },
+            {
+              "name": "Daira Ayatsuri Yatai Hibashiri",
+              "intervalMs": 1000,
+              "min": 8300,
+              "max": 9500,
+              "range": 1,
+              "element": "",
+              "effectId": "1034"
+            },
+            {
+              "name": "Ten en Byoka",
+              "intervalMs": 3000,
+              "min": 10300,
+              "max": 11500,
+              "range": 1,
+              "element": "",
+              "effectId": "974"
+            },
+            {
+              "name": "speed",
+              "intervalMs": 8000,
+              "min": 0,
+              "max": 0,
+              "range": 1,
+              "element": "",
+              "effectId": "633"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-10698",
+              "clientId": 10698,
+              "chance": 0.06,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-11677",
+              "clientId": 11677,
+              "chance": 0.3,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-13893",
+              "clientId": 13893,
+              "chance": 0.25,
+              "countMax": 35
+            },
+            {
+              "itemId": "wonsr-item-2160",
+              "clientId": 2160,
+              "chance": 0.25,
+              "countMax": 25
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-saiken-505",
+      "name": "Bijuu: Saiken",
+      "requiredLevel": 76,
+      "mapKey": "huntWonsrPonteDaNevoa",
+      "tab": "bosses",
+      "description": "Bijuu: Saiken usa melee, Ultimatee Bijuu Dama, Bijuu Dama, San Toppuu, Firudorimujinsutikki, speed.",
+      "targets": [
+        {
+          "id": "wonsr-monster-bijuu-saiken",
+          "sourceId": "wonsr-monster-bijuu-saiken",
+          "name": "Saiken",
+          "category": "bijuu",
+          "source": "wonsr/bijuu/saiken.xml",
+          "lookType": 505,
+          "hasSprite": false,
+          "requiredLevel": 76,
+          "level": 76,
+          "hp": 223250,
+          "xp": 276,
+          "speed": 92,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1500,
+              "min": 1280,
+              "max": 1700,
+              "range": 1,
+              "element": "",
+              "effectId": "1165"
+            },
+            {
+              "name": "Ultimatee Bijuu Dama",
+              "intervalMs": 4000,
+              "min": 13300,
+              "max": 15500,
+              "range": 1,
+              "element": "",
+              "effectId": "180"
+            },
+            {
+              "name": "Bijuu Dama",
+              "intervalMs": 5000,
+              "min": 16300,
+              "max": 17500,
+              "range": 1,
+              "element": "",
+              "effectId": "566"
+            },
+            {
+              "name": "San Toppuu",
+              "intervalMs": 1000,
+              "min": 7300,
+              "max": 8500,
+              "range": 1,
+              "element": "",
+              "effectId": "1172"
+            },
+            {
+              "name": "Firudorimujinsutikki",
+              "intervalMs": 3000,
+              "min": 8300,
+              "max": 9500,
+              "range": 1,
+              "element": "",
+              "effectId": "705"
+            },
+            {
+              "name": "speed",
+              "intervalMs": 8000,
+              "min": 0,
+              "max": 0,
+              "range": 1,
+              "element": "",
+              "effectId": "293"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-10703",
+              "clientId": 10703,
+              "chance": 0.04,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-13893",
+              "clientId": 13893,
+              "chance": 0.25,
+              "countMax": 10
+            },
+            {
+              "itemId": "wonsr-item-2160",
+              "clientId": 2160,
+              "chance": 0.25,
+              "countMax": 25
+            },
+            {
+              "itemId": "wonsr-item-16125",
+              "clientId": 16125,
+              "chance": 0.04,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-shukaku-1186",
+      "name": "Bijuu: Shukaku",
+      "requiredLevel": 77,
+      "mapKey": "huntWonsrDesertoAreia",
+      "tab": "bosses",
+      "description": "Bijuu: Shukaku usa melee, manadrain, Ultimatee Bijuu Dama, Bijuu Dama, Suna Mihui, Fuuton Sasandan, speed.",
+      "targets": [
+        {
+          "id": "wonsr-monster-bijuu-shukaku",
+          "sourceId": "wonsr-monster-bijuu-shukaku",
+          "name": "Shukaku",
+          "category": "bijuu",
+          "source": "wonsr/bijuu/shukaku.xml",
+          "lookType": 1186,
+          "hasSprite": false,
+          "requiredLevel": 77,
+          "level": 77,
+          "hp": 223250,
+          "xp": 1157,
+          "speed": 92,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1500,
+              "min": 1280,
+              "max": 1700,
+              "range": 1,
+              "element": "",
+              "effectId": "773"
+            },
+            {
+              "name": "manadrain",
+              "intervalMs": 1000,
+              "min": 60,
+              "max": 575,
+              "range": 7,
+              "element": "",
+              "effectId": "1003",
+              "missileId": "19"
+            },
+            {
+              "name": "Ultimatee Bijuu Dama",
+              "intervalMs": 4000,
+              "min": 11300,
+              "max": 12500,
+              "range": 1,
+              "element": "",
+              "effectId": "1041"
+            },
+            {
+              "name": "Bijuu Dama",
+              "intervalMs": 5000,
+              "min": 16300,
+              "max": 17500,
+              "range": 1,
+              "element": "",
+              "effectId": "763"
+            },
+            {
+              "name": "Suna Mihui",
+              "intervalMs": 1000,
+              "min": 8300,
+              "max": 9500,
+              "range": 1,
+              "element": "",
+              "effectId": "614"
+            },
+            {
+              "name": "Fuuton Sasandan",
+              "intervalMs": 3000,
+              "min": 2300,
+              "max": 3500,
+              "range": 1,
+              "element": "",
+              "effectId": "237"
+            },
+            {
+              "name": "speed",
+              "intervalMs": 8000,
+              "min": 0,
+              "max": 0,
+              "range": 1,
+              "element": "",
+              "effectId": "1077"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-10697",
+              "clientId": 10697,
+              "chance": 0.04,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-13893",
+              "clientId": 13893,
+              "chance": 0.25,
+              "countMax": 35
+            },
+            {
+              "itemId": "wonsr-item-2160",
+              "clientId": 2160,
+              "chance": 0.25,
+              "countMax": 25
+            },
+            {
+              "itemId": "wonsr-item-17200",
+              "clientId": 17200,
+              "chance": 0.05,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-bosses-son-goku-508",
+      "name": "Bijuu: Son Goku",
+      "requiredLevel": 78,
+      "mapKey": "huntWonsrValeDasEstatuas",
+      "tab": "bosses",
+      "description": "Bijuu: Son Goku usa melee, manadrain, Ultimatee Bijuu Dama, Bijuu Dama, Youton Shakuka Taihou, Shakuka Daifunka, speed.",
+      "targets": [
+        {
+          "id": "wonsr-monster-bijuu-son-goku",
+          "sourceId": "wonsr-monster-bijuu-son-goku",
+          "name": "Son Goku",
+          "category": "bijuu",
+          "source": "wonsr/bijuu/son goku.xml",
+          "lookType": 508,
+          "hasSprite": false,
+          "requiredLevel": 78,
+          "level": 78,
+          "hp": 223250,
+          "xp": 1225,
+          "speed": 92,
+          "targetDistance": 1,
+          "attacks": [
+            {
+              "name": "melee",
+              "intervalMs": 1500,
+              "min": 1280,
+              "max": 1700,
+              "range": 1,
+              "element": "",
+              "effectId": "653"
+            },
+            {
+              "name": "manadrain",
+              "intervalMs": 1000,
+              "min": 60,
+              "max": 575,
+              "range": 7,
+              "element": "",
+              "effectId": "807",
+              "missileId": "116"
+            },
+            {
+              "name": "Ultimatee Bijuu Dama",
+              "intervalMs": 4000,
+              "min": 11300,
+              "max": 18500,
+              "range": 1,
+              "element": "",
+              "effectId": "327"
+            },
+            {
+              "name": "Bijuu Dama",
+              "intervalMs": 5000,
+              "min": 16300,
+              "max": 17500,
+              "range": 1,
+              "element": "",
+              "effectId": "371"
+            },
+            {
+              "name": "Youton Shakuka Taihou",
+              "intervalMs": 1000,
+              "min": 8300,
+              "max": 9500,
+              "range": 1,
+              "element": "",
+              "effectId": "1194"
+            },
+            {
+              "name": "Shakuka Daifunka",
+              "intervalMs": 2000,
+              "min": 11300,
+              "max": 12500,
+              "range": 1,
+              "element": "",
+              "effectId": "1102"
+            },
+            {
+              "name": "speed",
+              "intervalMs": 8000,
+              "min": 0,
+              "max": 0,
+              "range": 1,
+              "element": "",
+              "effectId": "353"
+            }
+          ],
+          "loot": [
+            {
+              "itemId": "wonsr-item-10700",
+              "clientId": 10700,
+              "chance": 0.04,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-11678",
+              "clientId": 11678,
+              "chance": 0.4,
+              "countMax": 1
+            },
+            {
+              "itemId": "wonsr-item-13893",
+              "clientId": 13893,
+              "chance": 0.25,
+              "countMax": 35
+            },
+            {
+              "itemId": "wonsr-item-2160",
+              "clientId": 2160,
+              "chance": 0.25,
+              "countMax": 25
+            },
+            {
+              "itemId": "wonsr-item-17200",
+              "clientId": 17200,
+              "chance": 0.05,
+              "countMax": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-teste-wonsr-monsters",
+      "name": "Teste: Monstros WONSR",
+      "requiredLevel": 1,
+      "mapKey": "huntTesteWonsrMonsters",
+      "description": "Floresta aberta (5008²): inimigos com sprites WONSR (outfit lookType), sem pack lateral curado.",
+      "targets": [
+        {
+          "id": "wonsr-monster-clone",
+          "sourceId": "wonsr-monster-clone",
+          "name": "Clone",
+          "category": "monstro",
+          "source": "wonsr/clone.xml",
+          "lookType": 192,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        },
+        {
+          "id": "wonsr-monster-1-a-100-snake",
+          "sourceId": "wonsr-monster-1-a-100-snake",
+          "name": "Snake",
+          "category": "monstro",
+          "source": "wonsr/1 a 100/snake.xml",
+          "lookType": 663,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        },
+        {
+          "id": "wonsr-monster-1-a-100-beezer",
+          "sourceId": "wonsr-monster-1-a-100-beezer",
+          "name": "Beezer",
+          "category": "monstro",
+          "source": "wonsr/1 a 100/beezer.xml",
+          "lookType": 1001,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        },
+        {
+          "id": "wonsr-monster-1-a-100-mind-bat",
+          "sourceId": "wonsr-monster-1-a-100-mind-bat",
+          "name": "Mind Bat",
+          "category": "monstro",
+          "source": "wonsr/1 a 100/mind bat.xml",
+          "lookType": 1235,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        },
+        {
+          "id": "wonsr-monster-1-a-100-mouse",
+          "sourceId": "wonsr-monster-1-a-100-mouse",
+          "name": "Mouse",
+          "category": "monstro",
+          "source": "wonsr/1 a 100/mouse.xml",
+          "lookType": 798,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        },
+        {
+          "id": "wonsr-monster-1-a-100-wolf",
+          "sourceId": "wonsr-monster-1-a-100-wolf",
+          "name": "Wolf",
+          "category": "monstro",
+          "source": "wonsr/1 a 100/wolf.xml",
+          "lookType": 652,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        },
+        {
+          "id": "wonsr-monster-1-a-100-spider",
+          "sourceId": "wonsr-monster-1-a-100-spider",
+          "name": "Spider",
+          "category": "monstro",
+          "source": "wonsr/1 a 100/spider.xml",
+          "lookType": 1234,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        },
+        {
+          "id": "wonsr-monster-1-a-100-sand-bug",
+          "sourceId": "wonsr-monster-1-a-100-sand-bug",
+          "name": "Sand Bug",
+          "category": "monstro",
+          "source": "wonsr/1 a 100/sand bug.xml",
+          "lookType": 1225,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": [
+            {
+              "itemId": "wonsr-item-12266",
+              "clientId": 12266,
+              "chance": 0.11,
+              "countMax": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hunt-teste-demon",
+      "name": "Teste: Demon A",
+      "requiredLevel": 1,
+      "mapKey": "huntTesteDemon",
+      "description": "Mesmo mapa aberto da floresta teste (5008², câmera no líder): Demon_A e Blood Monster_A.",
+      "targets": [
+        {
+          "id": "curated-enemy-demon-a",
+          "sourceId": "curated-enemy-demon-a",
+          "name": "Demon A",
+          "category": "monstro",
+          "source": "tiny-rpg/demon-a",
+          "lookType": 9100,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        },
+        {
+          "id": "curated-enemy-blood-monster-a",
+          "sourceId": "curated-enemy-blood-monster-a",
+          "name": "Blood Monster A",
+          "category": "monstro",
+          "source": "tiny-rpg/blood-monster-a",
+          "lookType": 9101,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
       "id": "hunt-teste-farm-wonsr",
-      "name": "Teste: Clareira de Treinamento",
+      "name": "Teste: Mapa Floresta",
       "requiredLevel": 1,
       "mapKey": "huntTesteFarmWonsr",
-      "description": "Clareira de treinamento 4096×2160: mesma resolução do hub, câmera enquadrando o mapa e equipe completa.",
+      "description": "Floresta upscale 5016×5016 (crop 5008²): top-down explorável, câmera no líder e equipe completa.",
       "targets": [
         {
           "id": "curated-character-asuma",
@@ -862,18 +3878,18 @@
     },
     {
       "id": "wonsr-hunt-030",
-      "name": "Mapa de Asuma Sarutobi",
+      "name": "Mapa de Ichigo Kurosaki",
       "requiredLevel": 50,
-      "mapKey": "huntCampoGuerraNinja",
-      "description": "Caça automática de Asuma Sarutobi para níveis 50+.",
+      "mapKey": "huntArenaExameChunnin",
+      "description": "Caça automática de Ichigo Kurosaki para níveis 50+.",
       "targets": [
         {
-          "id": "curated-character-asuma",
-          "sourceId": "curated-character-asuma",
-          "name": "Asuma Sarutobi",
+          "id": "curated-character-ichigo",
+          "sourceId": "curated-character-ichigo",
+          "name": "Ichigo Kurosaki",
           "category": "personagem",
-          "source": "curated/asuma",
-          "lookType": 9080,
+          "source": "curated/ichigo",
+          "lookType": 9073,
           "hasSprite": false,
           "requiredLevel": 50,
           "level": 50,
@@ -887,6 +3903,31 @@
     },
     {
       "id": "wonsr-hunt-031",
+      "name": "Mapa de Asuma Sarutobi",
+      "requiredLevel": 60,
+      "mapKey": "huntArenaExameChunnin",
+      "description": "Caça automática de Asuma Sarutobi para níveis 60+.",
+      "targets": [
+        {
+          "id": "curated-character-asuma",
+          "sourceId": "curated-character-asuma",
+          "name": "Asuma Sarutobi",
+          "category": "personagem",
+          "source": "curated/asuma",
+          "lookType": 9080,
+          "hasSprite": false,
+          "requiredLevel": 60,
+          "level": 60,
+          "hp": 1256,
+          "xp": 220,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-032",
       "name": "Mapa de Bardock",
       "requiredLevel": 60,
       "mapKey": "huntArredoresReinoClover",
@@ -911,10 +3952,10 @@
       ]
     },
     {
-      "id": "wonsr-hunt-032",
+      "id": "wonsr-hunt-033",
       "name": "Mapa de Beerus",
       "requiredLevel": 60,
-      "mapKey": "huntForestClearing",
+      "mapKey": "huntNamekusei",
       "description": "Caça automática de Beerus para níveis 60+.",
       "targets": [
         {
@@ -936,7 +3977,7 @@
       ]
     },
     {
-      "id": "wonsr-hunt-033",
+      "id": "wonsr-hunt-034",
       "name": "Mapa de Broly",
       "requiredLevel": 60,
       "mapKey": "huntDesertoSaiyajin",
@@ -961,10 +4002,10 @@
       ]
     },
     {
-      "id": "wonsr-hunt-034",
+      "id": "wonsr-hunt-035",
       "name": "Mapa de Chiyo",
       "requiredLevel": 60,
-      "mapKey": "huntTorneioArtesMarciais",
+      "mapKey": "huntSalaDoTempo",
       "description": "Caça automática de Chiyo para níveis 60+.",
       "targets": [
         {
@@ -986,11 +4027,11 @@
       ]
     },
     {
-      "id": "wonsr-hunt-035",
+      "id": "wonsr-hunt-036",
       "name": "Mapa de Freeza",
-      "requiredLevel": 60,
+      "requiredLevel": 70,
       "mapKey": "huntNamekusei",
-      "description": "Caça automática de Freeza para níveis 60+.",
+      "description": "Caça automática de Freeza para níveis 70+.",
       "targets": [
         {
           "id": "curated-character-freeza",
@@ -1000,10 +4041,10 @@
           "source": "curated/freeza",
           "lookType": 9033,
           "hasSprite": false,
-          "requiredLevel": 60,
-          "level": 60,
-          "hp": 1256,
-          "xp": 220,
+          "requiredLevel": 70,
+          "level": 70,
+          "hp": 1466,
+          "xp": 255,
           "speed": 50,
           "targetDistance": 1,
           "loot": []
@@ -1011,10 +4052,10 @@
       ]
     },
     {
-      "id": "wonsr-hunt-036",
+      "id": "wonsr-hunt-037",
       "name": "Mapa de Gohan (Adulto)",
       "requiredLevel": 70,
-      "mapKey": "huntDesertoSaiyajin",
+      "mapKey": "huntCampoTreinamento",
       "description": "Caça automática de Gohan (Adulto) para níveis 70+.",
       "targets": [
         {
@@ -1036,7 +4077,7 @@
       ]
     },
     {
-      "id": "wonsr-hunt-037",
+      "id": "wonsr-hunt-038",
       "name": "Mapa de Gotenks",
       "requiredLevel": 70,
       "mapKey": "huntTorneioArtesMarciais",
@@ -1061,7 +4102,7 @@
       ]
     },
     {
-      "id": "wonsr-hunt-038",
+      "id": "wonsr-hunt-039",
       "name": "Mapa de Haku",
       "requiredLevel": 70,
       "mapKey": "huntPontePaisOnda",
@@ -1086,10 +4127,10 @@
       ]
     },
     {
-      "id": "wonsr-hunt-039",
+      "id": "wonsr-hunt-040",
       "name": "Mapa de Hiruzen Sarutobi",
       "requiredLevel": 70,
-      "mapKey": "huntArenaExameChunnin",
+      "mapKey": "huntValeDoFim",
       "description": "Caça automática de Hiruzen Sarutobi para níveis 70+.",
       "targets": [
         {
@@ -1111,11 +4152,11 @@
       ]
     },
     {
-      "id": "wonsr-hunt-040",
+      "id": "wonsr-hunt-041",
       "name": "Mapa de Kiba Inuzuka (Kid)",
-      "requiredLevel": 70,
+      "requiredLevel": 80,
       "mapKey": "huntForestClearing",
-      "description": "Caça automática de Kiba Inuzuka (Kid) para níveis 70+.",
+      "description": "Caça automática de Kiba Inuzuka (Kid) para níveis 80+.",
       "targets": [
         {
           "id": "curated-character-kiba-kid",
@@ -1125,10 +4166,10 @@
           "source": "curated/kiba-kid",
           "lookType": 9075,
           "hasSprite": false,
-          "requiredLevel": 70,
-          "level": 70,
-          "hp": 1466,
-          "xp": 255,
+          "requiredLevel": 80,
+          "level": 80,
+          "hp": 1677,
+          "xp": 290,
           "speed": 50,
           "targetDistance": 1,
           "loot": []
@@ -1136,7 +4177,7 @@
       ]
     },
     {
-      "id": "wonsr-hunt-041",
+      "id": "wonsr-hunt-042",
       "name": "Mapa de Konohamaru Sarutobi",
       "requiredLevel": 80,
       "mapKey": "huntCampoTreinamento",
@@ -1161,7 +4202,7 @@
       ]
     },
     {
-      "id": "wonsr-hunt-042",
+      "id": "wonsr-hunt-043",
       "name": "Mapa de Majin Boo",
       "requiredLevel": 80,
       "mapKey": "huntSalaDoTempo",
@@ -1186,7 +4227,7 @@
       ]
     },
     {
-      "id": "wonsr-hunt-043",
+      "id": "wonsr-hunt-044",
       "name": "Mapa de Naruto Shippuden",
       "requiredLevel": 80,
       "mapKey": "huntValeDoFim",
@@ -1211,7 +4252,7 @@
       ]
     },
     {
-      "id": "wonsr-hunt-044",
+      "id": "wonsr-hunt-045",
       "name": "Mapa de Piccolo",
       "requiredLevel": 80,
       "mapKey": "huntNamekusei",
@@ -1236,11 +4277,11 @@
       ]
     },
     {
-      "id": "wonsr-hunt-045",
+      "id": "wonsr-hunt-046",
       "name": "Mapa de Sakon e Ukon",
-      "requiredLevel": 80,
+      "requiredLevel": 90,
       "mapKey": "huntLabOrochimaru",
-      "description": "Caça automática de Sakon e Ukon para níveis 80+.",
+      "description": "Caça automática de Sakon e Ukon para níveis 90+.",
       "targets": [
         {
           "id": "curated-character-sakon",
@@ -1250,10 +4291,10 @@
           "source": "curated/sakon",
           "lookType": 9082,
           "hasSprite": false,
-          "requiredLevel": 80,
-          "level": 80,
-          "hp": 1677,
-          "xp": 290,
+          "requiredLevel": 90,
+          "level": 90,
+          "hp": 1890,
+          "xp": 325,
           "speed": 50,
           "targetDistance": 1,
           "loot": []
@@ -1261,7 +4302,7 @@
       ]
     },
     {
-      "id": "wonsr-hunt-046",
+      "id": "wonsr-hunt-047",
       "name": "Mapa de Sasori (Hiruko)",
       "requiredLevel": 90,
       "mapKey": "huntEsconderijoAkatsuki",
@@ -1286,7 +4327,7 @@
       ]
     },
     {
-      "id": "wonsr-hunt-047",
+      "id": "wonsr-hunt-048",
       "name": "Mapa de Son Goku",
       "requiredLevel": 90,
       "mapKey": "huntDesertoSaiyajin",
@@ -1311,7 +4352,7 @@
       ]
     },
     {
-      "id": "wonsr-hunt-048",
+      "id": "wonsr-hunt-049",
       "name": "Mapa de Zabuza Momochi",
       "requiredLevel": 90,
       "mapKey": "huntPontePaisOnda",
