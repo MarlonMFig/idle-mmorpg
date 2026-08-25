@@ -322,7 +322,7 @@ export function attemptCapture(input: AttemptCaptureInput): CaptureResult {
     }
 
     emitSystemMessage(
-      `RECRUTAMENTO CONCLUÍDO — ${seal.name} · Raridade: ${stored.quality} · ${stored.grade} · Adicionado à coleção (Nv.${CAPTURE_INITIAL_LEVEL}).`,
+      `RECRUTAMENTO CONCLUÍDO — ${seal.name} · Raridade: ${stored.quality} · Adicionado à coleção (Nv.${CAPTURE_INITIAL_LEVEL}).`,
     );
     applyHuntCaptureToOfficialFreeze(stored, scroll.itemId);
     emitCharacterCaptured({

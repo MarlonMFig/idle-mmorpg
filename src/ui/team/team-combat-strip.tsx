@@ -3,7 +3,6 @@
 import Image from 'next/image';
 import { useEffect, useMemo, type RefObject } from 'react';
 import { CHARACTER_QUALITY_COLORS } from '@/constants/character-progression';
-import { formatCharacterGrade } from '@/constants/character-quality-stats';
 import { TEAM_SLOT_COUNT } from '@/constants/sealing';
 import { useDraggablePanel } from '@/hooks/use-draggable-panel';
 import { useStore } from '@/hooks/use-store';
@@ -83,7 +82,7 @@ function ActiveTeamRow({
           unoptimized
         />
         <span className="active-team__rank" style={{ background: qualityColor }}>
-          {member.quality} {formatCharacterGrade(member.grade)}
+          {member.quality}
         </span>
       </div>
 
@@ -91,7 +90,7 @@ function ActiveTeamRow({
         <div className="active-team__title-row">
           <span className="active-team__name">
             <span className="active-team__name-quality" style={{ color: qualityColor }}>
-              [{member.quality} · {formatCharacterGrade(member.grade)}]
+              [{member.quality}]
             </span>{' '}
             {member.name}
           </span>

@@ -14,7 +14,7 @@ import type {
 } from '@/types/attributes';
 import type { LineageSpecializationModifiers } from '@/types/lineage';
 import { applyQualityToPrimaryBase, resolveQualityStatMultiplier } from '@/constants/character-quality-stats';
-import type { CharacterQuality } from '@/types/character-meta';
+import type { CharacterPotential, CharacterQuality } from '@/types/character-meta';
 import { applyStarBonusToBase } from '@/utils/star-bonus';
 import { getAwakeningStatModifiers } from '@/lib/awakening-rewards';
 import { getLineageSpecializationStatModifiers } from '@/lib/lineage-specialization-modifiers';
@@ -87,6 +87,7 @@ export function computePlayerAttributes(input: {
   stars?: number;
   quality?: CharacterQuality | null;
   qualityStatMultiplier?: number | null;
+  potential?: CharacterPotential | null;
   buffs?: readonly AttributeBuff[];
   now?: number;
   characterId?: string | null;
@@ -104,7 +105,8 @@ export function computePlayerAttributes(input: {
   addModifiers(progressed, level);
   const afterQuality = applyQualityToPrimaryBase(
     progressed,
-    resolveQualityStatMultiplier(input.quality, input.qualityStatMultiplier),
+    resolveQualityStatMultiplier(input.quality, input.qualityStatMultiplier, input.potential),
+    { quality: input.quality, potential: input.potential },
   );
   const awakening = getAwakeningStatModifiers(
     afterQuality,

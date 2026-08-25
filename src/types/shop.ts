@@ -42,3 +42,6 @@ export const SHOP_CATEGORY_LABEL: Record<ShopCategoryId, string> = {
   materials: 'Materiais',
   specials: 'Especiais',
 };
+
+/** Abas da loja do hub (sem Materiais / Especiais). */
+export const SHOP_HUB_CATEGORIES = ['consumables', 'scrolls'] as const;

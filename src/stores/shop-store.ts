@@ -16,7 +16,7 @@ import { getDailyCycleId, getWeeklyCycleId } from '@/lib/mission-cycle';
 import { inventoryStore } from '@/stores/inventory-store';
 import { vitalsStore } from '@/stores/vitals-store';
 import type { ShopCategoryId } from '@/types/shop';
-import { SHOP_CATEGORY_LABEL } from '@/types/shop';
+import { SHOP_CATEGORY_LABEL, SHOP_HUB_CATEGORIES } from '@/types/shop';
 
 export type ShopTabId = 'buy' | 'sell';
 
@@ -133,7 +133,10 @@ export const shopStore = {
   },
 
   setCategory(category: ShopCategoryId): void {
-    store.setState({ ...store.getSnapshot(), category, lastResult: null });
+    const next = (SHOP_HUB_CATEGORIES as readonly string[]).includes(category)
+      ? category
+      : 'consumables';
+    store.setState({ ...store.getSnapshot(), category: next, lastResult: null });
   },
 
   listOffers(): readonly ShopOffer[] {
@@ -141,7 +144,11 @@ export const shopStore = {
   },
 
   listOffersCurrentCategory(): readonly ShopOffer[] {
-    return listShopOffersByCategory(store.getSnapshot().category);
+    const raw = store.getSnapshot().category;
+    const category = (SHOP_HUB_CATEGORIES as readonly string[]).includes(raw)
+      ? raw
+      : 'consumables';
+    return listShopOffersByCategory(category);
   },
 
   categoryLabel(id: ShopCategoryId): string {

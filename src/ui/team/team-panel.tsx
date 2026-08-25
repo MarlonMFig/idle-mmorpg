@@ -6,7 +6,7 @@ import {
   CHARACTER_QUALITY_COLORS,
   CHARACTER_QUALITY_LABELS,
 } from '@/constants/character-progression';
-import { formatQualityStatMultiplier, formatCharacterGrade } from '@/constants/character-quality-stats';
+import { formatQualityStatMultiplier, qualityMeterFillPercent } from '@/constants/character-quality-stats';
 import { FRAGMENTS_PER_STAR } from '@/constants/aiw-quality';
 import { getMaxStarsForRarity } from '@/config/gameConfig';
 import { TEAM_SLOT_COUNT, SHOP_CURRENCY_ITEM_ID } from '@/constants/sealing';
@@ -485,7 +485,7 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
                   <div className="team-mgr__slot-card-top">
                     <div className="team-mgr__slot-tags">
                       <span className="team-mgr__quality" style={{ ['--q' as string]: qColor }}>
-                        {CHARACTER_QUALITY_LABELS[member.quality]} · {formatCharacterGrade(member.grade)}{' '}
+                        {CHARACTER_QUALITY_LABELS[member.quality]}{' '}
                         {formatQualityStatMultiplier(member.qualityStatMultiplier)}
                       </span>
                       {isActive ? (
@@ -615,7 +615,7 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
                             ['--q' as string]: CHARACTER_QUALITY_COLORS[selected.quality],
                           }}
                         >
-                          {CHARACTER_QUALITY_LABELS[selected.quality]} · {formatCharacterGrade(selected.grade)}
+                          {CHARACTER_QUALITY_LABELS[selected.quality]}
                         </span>
                       </p>
                       <h3 className="team-mgr__inspector-name">{selected.name}</h3>
@@ -671,7 +671,9 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
                       <div className="team-mgr__meter-track">
                         <span
                           className="team-mgr__meter-fill is-atk"
-                          style={{ width: `${Math.min(100, (selectedAtk / 80) * 100)}%` }}
+                          style={{
+                            width: `${qualityMeterFillPercent(selected.quality, selected.potential?.forca)}%`,
+                          }}
                         />
                       </div>
                     </div>
@@ -683,7 +685,9 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
                       <div className="team-mgr__meter-track">
                         <span
                           className="team-mgr__meter-fill is-def"
-                          style={{ width: `${Math.min(100, (selectedDef / 40) * 100)}%` }}
+                          style={{
+                            width: `${qualityMeterFillPercent(selected.quality, selected.potential?.defesa)}%`,
+                          }}
                         />
                       </div>
                     </div>
@@ -712,7 +716,7 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
                         <span
                           className="team-mgr__meter-fill is-spd"
                           style={{
-                            width: `${Math.min(100, (selectedTotals.speed / 200) * 100)}%`,
+                            width: `${qualityMeterFillPercent(selected.quality)}%`,
                           }}
                         />
                       </div>
@@ -968,7 +972,7 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
                         {inTeam ? <span className="team-mgr__box-dot" aria-hidden /> : null}
                         <div className="team-mgr__box-card-top">
                           <span className="team-mgr__quality" style={{ ['--q' as string]: qColor }}>
-                            {CHARACTER_QUALITY_LABELS[member.quality]} · {formatCharacterGrade(member.grade)} {formatQualityStatMultiplier(member.qualityStatMultiplier)}
+                            {CHARACTER_QUALITY_LABELS[member.quality]} {formatQualityStatMultiplier(member.qualityStatMultiplier)}
                           </span>
                           {inTeam ? (
                             <span className="team-mgr__mini-badge">

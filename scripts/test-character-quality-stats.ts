@@ -347,6 +347,21 @@ assert(
 const overlap = clampQualityStatMultiplier('A', 1.08);
 assert('epic 1.08 stays epic range', overlap === 1.08);
 
+const highDef = computePlayerAttributes({
+  level: 1,
+  stars: 0,
+  quality: 'A',
+  potential: { hp: 10, forca: 2, defesa: 20 },
+});
+const lowDef = computePlayerAttributes({
+  level: 1,
+  stars: 0,
+  quality: 'A',
+  potential: { hp: 10, forca: 20, defesa: 2 },
+});
+assert('defesa roll altera DEF', highDef.totals.defense > lowDef.totals.defense);
+assert('forca roll altera ATK', lowDef.totals.strength > highDef.totals.strength);
+
 DEV_FLAGS.enabled = true;
 setCaptureForceMode('success');
 setForceSpawnQuality('SS');

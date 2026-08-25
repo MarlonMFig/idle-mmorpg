@@ -101,34 +101,6 @@ export const SHOP_OFFERS: readonly ShopOffer[] = [
     stock: null,
     provisionalPrice: true,
   },
-  // —— Especiais (Anime Coins — conveniência, não P2W) ——
-  {
-    id: 'offer-special-potion-pack',
-    itemId: HP_POTION_ITEM_ID,
-    category: 'specials',
-    currency: 'animeCoins',
-    price: 5,
-    quantityPerPurchase: 5,
-    purchaseLimit: 1,
-    resetType: 'daily',
-    stock: null,
-    provisionalPrice: true,
-    requireConfirm: true,
-    description: 'Pacote de 5 Poções (conveniência diária). BALANCEAMENTO PROVISÓRIO.',
-  },
-  // —— Materiais (itens já existentes; 1 oferta weekly para ciclo) ——
-  {
-    id: 'offer-material-bandagem',
-    itemId: 'item-anime-naruto-bandagem',
-    category: 'materials',
-    currency: 'copper',
-    price: 20,
-    quantityPerPurchase: 1,
-    purchaseLimit: 5,
-    resetType: 'weekly',
-    stock: null,
-    provisionalPrice: true,
-  },
 ];
 
 /** @deprecated Alias — currency item id for copper offers. */

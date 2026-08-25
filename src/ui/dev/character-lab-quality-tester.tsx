@@ -3,7 +3,6 @@
 import { useMemo, useState } from 'react';
 import { CHARACTER_QUALITY_LABELS } from '@/constants/character-progression';
 import {
-  CHARACTER_GRADE_LABELS,
   derivePotentialFields,
   formatQualityStatMultiplier,
   QUALITY_STAT_RANGES,
@@ -36,12 +35,18 @@ function defaultPotential(): CharacterPotential {
   };
 }
 
-function statsFor(characterId: string, quality: CharacterQuality, multiplier: number) {
+function statsFor(
+  characterId: string,
+  quality: CharacterQuality,
+  multiplier: number,
+  pot: CharacterPotential,
+) {
   const totals = computePlayerAttributes({
     level: TEST_LEVEL,
     stars: TEST_STARS,
     quality,
     qualityStatMultiplier: multiplier,
+    potential: pot,
     characterId,
     awakeningLevel: TEST_AWAKENING,
   }).totals;
@@ -54,6 +59,7 @@ function statsFor(characterId: string, quality: CharacterQuality, multiplier: nu
       stars: TEST_STARS,
       quality,
       qualityStatMultiplier: multiplier,
+      potential: pot,
       characterId,
       awakeningLevel: TEST_AWAKENING,
     }),
@@ -63,17 +69,17 @@ function statsFor(characterId: string, quality: CharacterQuality, multiplier: nu
 export function CharacterLabQualityTester() {
   const [characterId, setCharacterId] = useState<string>(TEST_CHARACTERS[0].id);
   const [quality, setQuality] = useState<CharacterQuality>('SS');
-  const [potential, setPotential] = useState<CharacterPotential>(defaultPotential);
+  const [potential, setPotential] = useState<CharacterPotential>(defaultPotential());
 
   const derived = derivePotentialFields(quality, potential);
   const range = QUALITY_STAT_RANGES[quality];
-  const live = statsFor(characterId, quality, derived.qualityStatMultiplier);
+  const live = statsFor(characterId, quality, derived.qualityStatMultiplier, potential);
 
   const midpointTable = useMemo(
     () =>
       CHARACTER_QUALITIES.map((q) => {
         const mid = qualityStatMidpoint(q);
-        return { quality: q, mid, ...statsFor(characterId, q, mid) };
+        return { quality: q, mid, ...statsFor(characterId, q, mid, defaultPotential()) };
       }),
     [characterId],
   );
@@ -115,8 +121,7 @@ export function CharacterLabQualityTester() {
         </select>
       </label>
       <p className="character-lab__hint">
-        Quality: {CHARACTER_QUALITY_LABELS[quality]} · Grau: {CHARACTER_GRADE_LABELS[derived.grade]}{' '}
-        · Range: {range.min.toFixed(2)}x – {range.max.toFixed(2)}x
+        Quality: {CHARACTER_QUALITY_LABELS[quality]} · Range: {range.min.toFixed(2)}x – {range.max.toFixed(2)}x
       </p>
       {CONFIG.atributos.map((key) => (
         <label key={key} className="character-lab__hint">

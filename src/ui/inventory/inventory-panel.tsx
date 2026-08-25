@@ -7,7 +7,7 @@ import {
   CHARACTER_QUALITY_LABELS,
   FORGE_MATERIAL_COST_BY_QUALITY,
 } from '@/constants/character-progression';
-import { formatQualityStatMultiplier, formatCharacterGrade } from '@/constants/character-quality-stats';
+import { formatQualityStatMultiplier } from '@/constants/character-quality-stats';
 import { formatMaxStarsReachedMessage, getMaxStarsForRarity } from '@/config/gameConfig';
 import { ATTRIBUTE_LABELS, ATTRIBUTE_ORDER } from '@/constants/attributes';
 import { INVENTORY_COLUMNS, inventoryDisplaySlotCount } from '@/constants/inventory';
@@ -80,7 +80,7 @@ function Portrait({
           unoptimized
         />
         <span className="char-portrait__rank" style={{ background: qualityColor }}>
-          {member.quality} {formatCharacterGrade(member.grade)}
+          {member.quality}
         </span>
         {member.isFavorite ? (
           <span className="char-portrait__flag char-portrait__flag--fav" title="Favorito">
@@ -235,7 +235,7 @@ export function ForgeTab() {
                     <span className="char-forge__roster-copy">
                       <strong>{entry.name}</strong>
                       <small>
-                        {CHARACTER_QUALITY_LABELS[entry.quality]} · {formatCharacterGrade(entry.grade)}{' '}
+                        {CHARACTER_QUALITY_LABELS[entry.quality]}{' '}
                         {formatQualityStatMultiplier(entry.qualityStatMultiplier)}
                       </small>
                     </span>
@@ -266,7 +266,7 @@ export function ForgeTab() {
                 </div>
                 <div className="char-forge__hero-copy">
                   <p>
-                    {CHARACTER_QUALITY_LABELS[target.quality]} · {formatCharacterGrade(target.grade)} · Nível{' '}
+                    {CHARACTER_QUALITY_LABELS[target.quality]} · Nível{' '}
                     {target.level}
                   </p>
                   <h3>{target.name}</h3>

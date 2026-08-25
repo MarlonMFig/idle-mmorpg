@@ -25,6 +25,7 @@ export function computeInstanceAttributes(
       instance.qualityStatMultiplier,
       instance.potential,
     ),
+    potential: instance.potential,
     characterId: instance.characterId,
     awakeningLevel: instance.awakeningLevel,
   });

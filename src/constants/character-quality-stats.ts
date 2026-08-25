@@ -5,6 +5,7 @@ import {
   CONFIG,
   gradeFromPotential,
   potentialTotal,
+  qualityStatMultiplierFromComponent,
   qualityStatMultiplierFromPotential,
 } from '@/lib/raridade-potencial.js';
 
@@ -133,13 +134,41 @@ export function scaleQualityPrimaryStat(base: number, multiplier: number): numbe
   return Math.floor(base * m);
 }
 
+const POTENTIAL_STAT_KEYS = {
+  hp: 'hp',
+  strength: 'forca',
+  defense: 'defesa',
+} as const;
+
 export function applyQualityToPrimaryBase(
   base: AttributeValues,
   multiplier: number,
+  extras?: { quality?: CharacterQuality | null; potential?: CharacterPotential | null },
 ): AttributeValues {
   const next = { ...base };
+  const quality = extras?.quality && CHARACTER_QUALITIES.includes(extras.quality) ? extras.quality : 'D';
+  const potential = extras?.potential;
   for (const id of QUALITY_PRIMARY_STAT_IDS) {
-    next[id] = scaleQualityPrimaryStat(base[id], multiplier);
+    const rolled =
+      isCharacterPotential(potential)
+        ? qualityStatMultiplierFromComponent(quality, potential[POTENTIAL_STAT_KEYS[id]])
+        : multiplier;
+    next[id] = scaleQualityPrimaryStat(base[id], rolled);
   }
   return next;
+}
+
+/** Preenchimento 0–100 da barra: roll do atributo (1–20) ou rank da qualidade. */
+export function qualityMeterFillPercent(
+  quality: CharacterQuality | null | undefined,
+  component?: number | null,
+): number {
+  const { componenteMin: min, componenteMax: max } = CONFIG.potencial;
+  if (typeof component === 'number' && Number.isFinite(component)) {
+    const pos = Math.min(1, Math.max(0, (component - min) / (max - min)));
+    return Math.round(8 + pos * 92);
+  }
+  const q = quality && CHARACTER_QUALITIES.includes(quality) ? quality : 'D';
+  const rank = CHARACTER_QUALITIES.indexOf(q);
+  return Math.round(((rank + 1) / CHARACTER_QUALITIES.length) * 100);
 }

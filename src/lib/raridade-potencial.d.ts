@@ -36,6 +36,10 @@ export function qualityStatMultiplierFromPotential(
   quality: CharacterQuality,
   potential: CharacterPotential,
 ): number;
+export function qualityStatMultiplierFromComponent(
+  quality: CharacterQuality,
+  component: number,
+): number;
 export function rollCaptureBundle(opts?: { rng?: () => number; sorte?: number }): {
   quality: CharacterQuality;
   potential: CharacterPotential;

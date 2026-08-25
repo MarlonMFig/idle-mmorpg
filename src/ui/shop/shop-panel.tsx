@@ -14,7 +14,7 @@ import { gemStore } from '@/stores/gem-store';
 import { shopStore, type ShopTabId } from '@/stores/shop-store';
 import { MgrWindow } from '@/ui/mgr';
 import type { ShopCategoryId } from '@/types/shop';
-import { SHOP_CATEGORY_LABEL } from '@/types/shop';
+import { SHOP_CATEGORY_LABEL, SHOP_HUB_CATEGORIES } from '@/types/shop';
 
 const QTY_PRESETS = [1, 5, 10] as const;
 
@@ -110,7 +110,7 @@ export function ShopPanel() {
     >
         {tab === 'buy' ? (
           <nav className="market-win__tabs market-win__tabs--cats" aria-label="Categorias">
-            {(Object.keys(SHOP_CATEGORY_LABEL) as ShopCategoryId[]).map((id) => (
+            {SHOP_HUB_CATEGORIES.map((id) => (
               <button
                 key={id}
                 type="button"

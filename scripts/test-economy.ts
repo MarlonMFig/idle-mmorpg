@@ -93,45 +93,19 @@ function main(): void {
   assert('buy extra stack ok', shopStore.buy('offer-hp-potion', 1));
   assert('potions beyond one stack', inventoryStore.countItem(HP_POTION_ITEM_ID) === stackMax + 1);
 
-  // 82 daily limit (pacote especial — pergaminhos não têm teto diário)
-  resetEconomy();
-  economyService.grantCurrency('animeCoins', 50, 'dev');
-  const dailyId = 'offer-special-potion-pack';
-  const dailyOffer = getShopOffer(dailyId)!;
-  assert('daily limit 1', dailyOffer.purchaseLimit === 1 && dailyOffer.resetType === 'daily');
-  assert('buy 1 pack', shopStore.buy(dailyId, 1));
-  assert('2nd blocked', !shopStore.buy(dailyId, 1));
-  assert('remaining 0', shopStore.getRemainingLimit(dailyId) === 0);
-
-  // 90 daily reset via same cycle service
   const dayA = getDailyCycleId();
-  shopStore.hydrate({
-    purchases: {
-      [dailyId]: { bought: 1, resetCycleId: '1999-01-01' },
-    },
-  });
-  assert('stale daily cycle resets remaining', shopStore.getRemainingLimit(dailyId) === 1);
-  assert('current daily cycle id stable', getDailyCycleId() === dayA);
-
-  // 91 weekly reset same principle
-  const weeklyId = 'offer-material-bandagem';
   const weekA = getWeeklyCycleId();
-  shopStore.hydrate({
-    purchases: {
-      [weeklyId]: { bought: 5, resetCycleId: '1999-W01' },
-    },
-  });
-  assert('weekly offer exists', getShopOffer(weeklyId)?.resetType === 'weekly');
-  assert('stale weekly resets', shopStore.getRemainingLimit(weeklyId) === 5);
-  assert('weekly cycle id', getWeeklyCycleId() === weekA);
+  assert('daily cycle id', typeof dayA === 'string' && dayA.length > 0);
+  assert('weekly cycle id', typeof weekA === 'string' && weekA.length > 0);
 
-  // 83 reload persistence shape
-  shopStore.buy(weeklyId, 2);
+  // persist purchases
+  shopStore.reset();
+  shopStore.buy('offer-hp-potion', 2);
   const persisted = shopStore.getPersistedPurchases();
-  assert('persist has weekly buy', (persisted[weeklyId]?.bought ?? 0) === 2);
+  assert('persist has potion buy', (persisted['offer-hp-potion']?.bought ?? 0) === 2);
   shopStore.reset();
   shopStore.hydrate({ purchases: persisted });
-  assert('hydrate restores bought', shopStore.getPurchased(weeklyId) === 2);
+  assert('hydrate restores bought', shopStore.getPurchased('offer-hp-potion') === 2);
 
   // 84 sell
   resetEconomy();
@@ -196,14 +170,6 @@ function main(): void {
   assert('cannot overspend', !economyService.spendCurrency('copper', 999_999_999, 'dev'));
   assert('balance >= 0', economyService.getBalance('copper') >= 0);
   assert('anime >= 0', economyService.getBalance('animeCoins') >= 0);
-
-  // Anime coins shop
-  resetEconomy();
-  economyService.grantCurrency('animeCoins', 5, 'dev');
-  assert('anime pack buy', shopStore.buy('offer-special-potion-pack', 1));
-  assert('anime spent', economyService.getBalance('animeCoins') === 0);
-  assert('5 potions', inventoryStore.countItem(HP_POTION_ITEM_ID) === 5);
-  assert('daily anime limit', !shopStore.buy('offer-special-potion-pack', 1));
 
   assert('offers count small', listShopOffers().length >= 5 && listShopOffers().length <= 15);
 

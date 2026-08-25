@@ -40,10 +40,8 @@ export const CONFIG = {
   ],
 
   _leiaPotencial:
-    'Um componente de 1 a 20 por atributo. O TOTAL define a posição dentro da ' +
-    'faixa da qualidade — é ele que vira o qualityStatMultiplier. A ' +
-    'distribuição entre os componentes fica guardada para quando você quiser ' +
-    'usá-la (formato da ficha), e não afeta o multiplicador global.',
+    'Um componente de 1 a 20 por atributo. Cada componente escala HP, força e ' +
+    'defesa na faixa da qualidade. O TOTAL ainda define o grau interno.',
   potencial: { componenteMin: 1, componenteMax: 20 },
 
   _leiaGrau:
@@ -124,6 +122,17 @@ export function qualityStatMultiplierFromPotential(quality, potential) {
   const q = CONFIG.qualidades.find((x) => x.id === quality);
   if (!q) return 1;
   const pos = potentialPosition(potentialTotal(potential));
+  return q.min + pos * (q.max - q.min);
+}
+
+/** Multiplicador de UM atributo a partir do componente 1–20. */
+export function qualityStatMultiplierFromComponent(quality, component) {
+  const q = CONFIG.qualidades.find((x) => x.id === quality);
+  if (!q) return 1;
+  const { componenteMin: min, componenteMax: max } = CONFIG.potencial;
+  const raw = Number(component);
+  const value = Number.isFinite(raw) ? raw : (min + max) / 2;
+  const pos = Math.min(1, Math.max(0, (value - min) / (max - min)));
   return q.min + pos * (q.max - q.min);
 }
 

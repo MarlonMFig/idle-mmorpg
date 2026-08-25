@@ -9,7 +9,7 @@ import type {
   PlayerAttributes,
 } from '@/types/attributes';
 import { resolveQualityStatMultiplier } from '@/constants/character-quality-stats';
-import type { CharacterQuality } from '@/types/character-meta';
+import type { CharacterPotential, CharacterQuality } from '@/types/character-meta';
 import { computePlayerAttributes, emptyModifiers } from '@/utils/attributes';
 import { resolveAwakeningRuntime } from '@/lib/awakening-runtime';
 
@@ -37,6 +37,7 @@ function buildState(
   awakening?: { characterId: string | null; awakeningLevel: number },
   quality: CharacterQuality = 'D',
   qualityStatMultiplier?: number,
+  potential?: CharacterPotential | null,
 ): PlayerAttributes {
   const runtime = awakening ?? resolveAwakeningRuntime();
   return computePlayerAttributes({
@@ -44,6 +45,7 @@ function buildState(
     stars,
     quality,
     qualityStatMultiplier,
+    potential,
     buffs: activeBuffs,
     characterId: runtime.characterId,
     awakeningLevel: runtime.awakeningLevel,
@@ -60,6 +62,7 @@ function liveState(): PlayerAttributes {
     undefined,
     activeQuality(),
     activeQualityStatMultiplier(),
+    teamStore.getActive()?.potential,
   );
 }
 
