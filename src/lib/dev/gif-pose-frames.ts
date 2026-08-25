@@ -43,7 +43,7 @@ export async function gifBufferToPngFrames(buffer: Buffer): Promise<{
       .raw()
       .toBuffer({ resolveWithObject: true });
 
-    let w = info.width;
+    const w = info.width;
     let h = info.height;
     let slice = data;
     if (pageHeight > 0 && h > pageHeight * 1.5) {

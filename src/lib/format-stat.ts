@@ -13,7 +13,7 @@ export function formatStat(value: number | Decimal | string): string {
   if (n.eq(0)) return '0';
 
   const sign = n.lt(0) ? '-' : '';
-  let abs = n.abs();
+  const abs = n.abs();
   const exp = abs.e;
   if (!Number.isFinite(exp) || exp < 3) {
     return sign + abs.round().toFixed(0);

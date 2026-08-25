@@ -146,7 +146,8 @@ export function stepFrameLoop(
   const dt = Math.max(0, frameDurationMs);
   const start0 = cfg.startFrame - 1;
   const end0 = cfg.endFrame - 1;
-  let { phase, frameIndex, loopElapsedMs } = state;
+  const { phase, loopElapsedMs } = state;
+  let { frameIndex } = state;
   frameIndex = Math.min(total - 1, Math.max(0, frameIndex));
 
   if (phase === 'done') {
