@@ -24,6 +24,7 @@ import {
 } from '@/systems/combat-stats';
 import { applyElementalResistance } from '@/systems/elemental-resistance';
 import { DEFAULT_SKILL_ELEMENT, type DamageElement } from '@/data/damage-elements';
+import { Decimal, d, type Decimal as DecimalValue } from '@/lib/decimal';
 
 export interface StatusInstance {
   instanceId: string;
@@ -202,20 +203,21 @@ export class StatusEffectRuntime {
     return instance;
   }
 
-  absorbShield(targetId: string, amount: number): number {
-    if (amount <= 0) return 0;
-    let remaining = amount;
+  absorbShield(targetId: string, amount: number | DecimalValue): DecimalValue {
+    const incoming = d(amount);
+    if (incoming.lte(0)) return d(0);
+    let remaining = incoming;
     const shields = this.listFor(targetId)
       .filter((row) => categoryForStatusType(row.def.type) === 'shield' && row.shieldRemaining > 0)
       .sort((a, b) => a.startedAt - b.startedAt);
     for (const row of shields) {
-      if (remaining <= 0) break;
-      const used = Math.min(row.shieldRemaining, remaining);
-      row.shieldRemaining -= used;
-      remaining -= used;
+      if (remaining.lte(0)) break;
+      const used = Decimal.min(d(row.shieldRemaining), remaining);
+      row.shieldRemaining = d(row.shieldRemaining).sub(used).toNumber();
+      remaining = remaining.sub(used);
       if (row.shieldRemaining <= 0) this.remove(row.instanceId, 'shield-break');
     }
-    return amount - remaining;
+    return incoming.sub(remaining);
   }
 
   clearTarget(targetId: string): void {
@@ -492,15 +494,17 @@ export class StatusEffectRuntime {
 export function applyDirectDamage(opts: {
   runtime: StatusEffectRuntime;
   targetId: string;
-  rawAmount: number;
+  rawAmount: number | DecimalValue;
   sourceId: string;
   enemy: Enemy | null;
   element?: DamageElement;
   onKill: (enemy: Enemy, sourceId: string) => void;
 }): boolean {
   const element = opts.element ?? DEFAULT_SKILL_ELEMENT;
-  const afterShield = opts.rawAmount - opts.runtime.absorbShield(opts.targetId, opts.rawAmount);
-  if (afterShield <= 0) return false;
+  const raw = d(opts.rawAmount);
+  const absorbed = opts.runtime.absorbShield(opts.targetId, raw);
+  const afterShield = raw.sub(absorbed);
+  if (afterShield.lte(0)) return false;
   const afterDefense = mitigateIncomingDamage(afterShield, getEffectiveCombatStats(opts.targetId));
   const profile = getCombatAffinity(opts.targetId, opts.enemy?.definition);
   const elemental = applyElementalResistance(
@@ -511,7 +515,7 @@ export function applyDirectDamage(opts: {
   );
   if (isCharacterLabSession()) {
     characterLabStore.setDamageDebug({
-      rawOutgoing: opts.rawAmount,
+      rawOutgoing: raw,
       afterShield,
       afterDefense,
       element,
@@ -527,7 +531,7 @@ export function applyDirectDamage(opts: {
 
   const incoming = elemental.finalDamage;
   if (opts.targetId === PLAYER_STATUS_UNIT_ID) {
-    if (elemental.immune || incoming <= 0) return false;
+    if (elemental.immune || incoming.lte(0)) return false;
     const { died } = vitalsStore.applyHpLoss(incoming);
     if (died) opts.runtime.clearTarget(PLAYER_STATUS_UNIT_ID);
     return true;
@@ -537,7 +541,7 @@ export function applyDirectDamage(opts: {
     opts.enemy.takeDamage(0, { tag: 'IMMUNE' });
     return false;
   }
-  if (incoming <= 0) return false;
+  if (incoming.lte(0)) return false;
   const died = opts.enemy.takeDamage(incoming, { tag: elemental.tag ?? undefined });
   if (died) {
     opts.runtime.clearTarget(opts.targetId);

@@ -21,7 +21,7 @@ export {
   starAttributeMultiplier,
 } from '@/constants/aiw-quality';
 
-/** Stats primários × qualityStatMultiplier da instância: `QUALITY_STAT_RANGES`. */
+/** Stats primários × qualityStatMultiplier derivado do potencial. */
 
 /**
  * Melhoria de dano da habilidade especial em 3★.

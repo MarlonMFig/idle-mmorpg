@@ -17,6 +17,7 @@ import { CAST_DELAY_PRESETS_MS } from '@/lib/dev/lab-save-fields';
 import { characterLabStore } from '@/stores/character-lab-store';
 import { useStore } from '@/hooks/use-store';
 import { VfxSheetPreview } from '@/ui/dev/vfx-sheet-preview';
+import { VisualSkillEditor } from '@/ui/dev/visual-skill-editor';
 import { ValueRow } from '@/ui/dev/character-lab-value-row';
 import { CharacterLabExecutionEditor } from '@/ui/dev/character-lab-execution';
 import type { LabSkillSlot } from '@/lib/dev/lab-skill-slots';
@@ -88,7 +89,8 @@ export function CharacterLabPoseEffect({
   const [previewSpeed, setPreviewSpeed] = useState(1);
   const [restartToken, setRestartToken] = useState(0);
   const [importBusy, setImportBusy] = useState(false);
-  const fileRef = useRef<HTMLInputElement | null>(null);
+  const gifRef = useRef<HTMLInputElement | null>(null);
+  const framesRef = useRef<HTMLInputElement | null>(null);
 
   const poseOptions = useMemo(() => (pack ? listCharacterPoseOptions(pack) : []), [pack]);
   const selectedPoseId = poseOptions.find(
@@ -125,6 +127,7 @@ export function CharacterLabPoseEffect({
         image?: { width: number; height: number };
         suggestedFrameCount?: number;
         sourceType?: string;
+        frameRate?: number;
       };
       if (!res.ok || !json.ok || !json.url || !json.key || !json.image) {
         onError(json.error ?? 'Não foi possível importar a pose.');
@@ -139,7 +142,7 @@ export function CharacterLabPoseEffect({
         frameWidth: sequence ? json.image.width : Math.round(json.image.width / frameCount) || json.image.width,
         frameHeight: json.image.height,
         frameCount,
-        frameRate: 12,
+        frameRate: json.frameRate ?? 12,
         loop: false,
         scaleX: 1,
         scaleY: 1,
@@ -153,7 +156,8 @@ export function CharacterLabPoseEffect({
       onError('Não foi possível importar a pose.');
     } finally {
       setImportBusy(false);
-      if (fileRef.current) fileRef.current.value = '';
+      if (gifRef.current) gifRef.current.value = '';
+      if (framesRef.current) framesRef.current.value = '';
     }
   };
 
@@ -171,7 +175,9 @@ export function CharacterLabPoseEffect({
 
       <h4>ANIMAÇÃO POSE</h4>
       <p className="character-lab__hint">
-        Pose atual: {poseSheet?.key || 'Nenhuma'}. Edição da spritesheet fica na aba SPRITE.
+        Pose atual: {poseSheet?.key || 'Nenhuma'}. GIF vira sequência de frames. Vários PNG/WEBP
+        entram na ordem do nome (frame-1, frame-2…). Tamanhos diferentes são
+        alinhados num canvas comum (pés na base). Spritesheet continua sendo um PNG só.
       </p>
       <label>
         Pose atual
@@ -192,21 +198,33 @@ export function CharacterLabPoseEffect({
         </select>
       </label>
       <div className="character-lab__actions">
-        <button type="button" disabled={!playerId || importBusy} onClick={() => fileRef.current?.click()}>
-          {importBusy ? 'Importando...' : '+ Importar Pose'}
+        <button type="button" disabled={!playerId || importBusy} onClick={() => gifRef.current?.click()}>
+          {importBusy ? 'Importando...' : '+ Importar GIF'}
+        </button>
+        <button type="button" disabled={!playerId || importBusy} onClick={() => framesRef.current?.click()}>
+          {importBusy ? 'Importando...' : '+ Importar frames'}
         </button>
         <button type="button" onClick={onEditSprite}>
           Editar na aba SPRITE
         </button>
         <input
-          ref={fileRef}
+          ref={gifRef}
           type="file"
-          accept="image/png,image/webp"
+          accept="image/gif,.gif"
+          hidden
+          onChange={(event) => void importPose(event.target.files)}
+        />
+        <input
+          ref={framesRef}
+          type="file"
+          accept="image/png,image/webp,.png,.webp"
           multiple
           hidden
           onChange={(event) => void importPose(event.target.files)}
         />
       </div>
+
+      <VisualSkillEditor saveBusy={saveBusy} canSave={canSave} onSave={requestSave} />
 
       {labPoseHasContent(poseSheet) && poseSheet ? (
         <>

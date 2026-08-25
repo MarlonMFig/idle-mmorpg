@@ -5,6 +5,7 @@ import {
   type StatusModifiers,
 } from '@/data/status-effect-def';
 import { getActiveLineageSpecializationModifiers } from '@/lib/lineage-specialization-modifiers';
+import { Decimal, d, floorNonNeg, type Decimal as DecimalValue } from '@/lib/decimal';
 
 export const PLAYER_STATUS_UNIT_ID = 'player';
 
@@ -23,8 +24,8 @@ export const PLAYER_STATUS_UNIT_ID = 'player';
  * Buffs/Debuffs NÃO escrevem em `character.attack` permanente.
  */
 export interface EffectiveCombatStats {
-  attack: number;
-  defense: number;
+  attack: DecimalValue;
+  defense: DecimalValue;
   movementSpeed: number;
   attackSpeedMultiplier: number;
   criticalChance: number;
@@ -91,8 +92,8 @@ export function getEffectiveCombatStats(
   const critDmgBase = bases?.criticalDamage ?? 1;
   const lineage = isPlayerLike ? lineageCombatExtras(unitId) : { attackSpeedPercent: 0, criticalDamage: 0 };
   return {
-    attack: Math.max(0, attackBase * product(mods.attackMultiplier)),
-    defense: Math.max(0, defenseBase * product(mods.defenseMultiplier)),
+    attack: Decimal.max(d(0), d(attackBase).mul(product(mods.attackMultiplier))),
+    defense: Decimal.max(d(0), d(defenseBase).mul(product(mods.defenseMultiplier))),
     movementSpeed: Math.max(0, moveBase * product(mods.movementSpeedMultiplier)),
     attackSpeedMultiplier: product(mods.attackSpeedMultiplier) * (1 + lineage.attackSpeedPercent),
     criticalChance: Math.max(0, critBase * product(mods.criticalChanceMultiplier)),
@@ -109,15 +110,19 @@ export function getEffectiveCombatStats(
  * (Hunt inalterado). Com `defenseMultiplier !== 1`, o dano recebido escala
  * por `1 / defenseMultiplier` para o Debuff não ser no-op em defesa 0.
  */
-export function mitigateIncomingDamage(rawAmount: number, stats: EffectiveCombatStats): number {
-  if (rawAmount <= 0) return 0;
-  if (stats.defense > 0) {
-    return Math.max(1, Math.floor(rawAmount - stats.defense * 0.35));
+export function mitigateIncomingDamage(
+  rawAmount: number | DecimalValue,
+  stats: EffectiveCombatStats,
+): DecimalValue {
+  const raw = d(rawAmount);
+  if (raw.lte(0)) return d(0);
+  if (stats.defense.gt(0)) {
+    return Decimal.max(d(1), raw.sub(stats.defense.mul(0.35)).floor());
   }
   if (stats.defenseMultiplier !== 1) {
-    return Math.max(1, Math.floor(rawAmount / stats.defenseMultiplier));
+    return Decimal.max(d(1), raw.div(stats.defenseMultiplier).floor());
   }
-  return Math.max(0, Math.floor(rawAmount));
+  return floorNonNeg(raw);
 }
 
 export function scaledAttackCooldown(baseMs: number, unitId: string): number {

@@ -101,9 +101,8 @@ export function CharacterLabCaptureInspector() {
     <section className="character-lab__section">
       <h4>CAPTURE QUALITY TESTER</h4>
       <p className="character-lab__hint">
-        Quality é rolada só após selamento com sucesso. A chance de selar é o poder do
-        pergaminho (sem quality no inimigo). Force quality aplica no personagem capturado, não
-        no HP da Hunt. Simular não altera o save.
+        Quality aparece no encontro (pesos do spec). A captura usa base da quality ×
+        multiplicador do pergaminho, teto 90%. Force quality aplica na aparição.
       </p>
       <label>
         Character
@@ -141,7 +140,7 @@ export function CharacterLabCaptureInspector() {
         >
           {SEALING_SCROLL_TIERS.map((tier) => (
             <option key={tier.itemId} value={tier.itemId}>
-              Tier {tier.rank} · {tier.label} · {Math.round(tier.successChance * 100)}%
+              Tier {tier.rank} · {tier.label} · ×{tier.multiplier}
             </option>
           ))}
         </select>

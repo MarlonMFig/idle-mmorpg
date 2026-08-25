@@ -1,0 +1,6 @@
+{
+  "name": "Recompensa Diária",
+  "description": "Interface refinada de recompensas diárias para jogos com itens colecionáveis, efeitos luminosos, animações suaves e sistema interativo de resgate.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

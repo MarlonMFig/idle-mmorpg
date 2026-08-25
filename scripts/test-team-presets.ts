@@ -25,7 +25,7 @@ import { locationStore } from '../src/stores/location-store';
 import { teamPresetStore } from '../src/stores/team-preset-store';
 import { teamStore } from '../src/stores/team-store';
 import { vitalsStore } from '../src/stores/vitals-store';
-import type { SealedCharacter } from '../src/types/team';
+import { buildSealedCharacter } from '../src/utils/character-identity';
 import { MAP_KEYS } from '../src/maps/map-registry';
 
 function assert(name: string, cond: boolean): void {
@@ -35,24 +35,15 @@ function assert(name: string, cond: boolean): void {
 
 function makeMember(id: string, name: string, lookType: number): SealedCharacter {
   return {
-    id,
-    characterId: `char-${lookType}`,
-    characterKey: `look:${lookType}`,
-    name,
-    lookType,
-    sourceId: null,
-    starterId: null,
+    ...buildSealedCharacter({
+      id,
+      name,
+      lookType,
+      sourceId: null,
+      starterId: null,
+      characterId: `char-${lookType}`,
+    }),
     previewUrl: '/sprites/npc.png',
-    quality: 'D',
-    stars: 0,
-    lineageId: 'ninja',
-    level: 1,
-    xp: 0,
-    masteryLevel: 0,
-    masteryXp: 0,
-    awakeningLevel: 0,
-    isFavorite: false,
-    isLocked: false,
   };
 }
 
@@ -200,7 +191,7 @@ function main(): void {
   // —— HP unchanged by preset ——
   vitalsStore.reset({ level: 1, xp: 0, xpMax: 100, hp: 40, hpMax: 100 });
   activateTeamPreset('preset-2');
-  assert('hp unchanged by preset', vitalsStore.getSnapshot().hp === 40);
+  assert('hp unchanged by preset', vitalsStore.getSnapshot().hp.eq(40));
 
   // —— Rename ——
   assert('rename ok', renameTeamPreset('preset-1', '  Farm  ').ok);
@@ -230,7 +221,7 @@ function main(): void {
     'migration preset1 = team',
     migrated!.teamPresets?.presets[0]?.slots[0] === 'inst-1',
   );
-  assert('session version bumped in parse', migrated!.version === 12);
+  assert('session version bumped in parse', migrated!.version === 13);
 
   // —— Reload round-trip ×10 ——
   seedCollection(['r1', 'r2', 'r3']);

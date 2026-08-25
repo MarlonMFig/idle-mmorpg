@@ -4,6 +4,7 @@ import {
   huntEnemyXpForLevel,
   legacyHuntEnemyXp,
 } from '@/lib/hunt-enemy-xp';
+import { decimalToUnsafeNumber, d } from '@/lib/decimal';
 import { computeHuntKillXp } from '@/lib/hunt-kill-xp';
 import { addExperience, getTotalXpToReachLevel, getXpRequiredForLevel } from '@/lib/player-progression';
 import type { HuntDefinition } from '@/types/hunt';
@@ -49,14 +50,14 @@ export function analyzeHuntForPlayer(
   const target = primaryHuntTarget(hunt);
   if (!target) return null;
   const enemyLevel = target.level;
-  const hp = target.hp || huntEnemyHpForLevel(enemyLevel);
+  const hp = huntEnemyHpForLevel(enemyLevel);
   const baseXp = options?.useLegacyEnemyXp
     ? legacyHuntEnemyXp(enemyLevel)
     : huntEnemyXpForLevel(enemyLevel);
   const breakdown = computeHuntKillXp({
     playerLevel,
     enemyLevel,
-    baseEnemyXp: baseXp,
+    enemyHp: hp,
     xpMultiplier: options?.xpMultiplier ?? XP_SIM_CALIBRATION.xpMultiplier,
     expBoostMultiplier: XP_SIM_CALIBRATION.expBoostMultiplier,
   });
@@ -66,13 +67,13 @@ export function analyzeHuntForPlayer(
     name: hunt.name,
     requiredLevel: hunt.requiredLevel,
     enemyLevel,
-    baseXp: breakdown.baseXp,
+    baseXp: decimalToUnsafeNumber(breakdown.baseXp),
     levelGap: breakdown.levelGap,
     gapMultiplier: breakdown.levelGapMultiplier,
-    finalXpPerKill: breakdown.finalXp,
-    hp,
+    finalXpPerKill: decimalToUnsafeNumber(breakdown.finalXp),
+    hp: decimalToUnsafeNumber(d(hp)),
     killsPerMin,
-    xpPerMin: killsPerMin * breakdown.finalXp,
+    xpPerMin: killsPerMin * decimalToUnsafeNumber(breakdown.finalXp),
   };
 }
 
@@ -142,7 +143,9 @@ function simulateRange(
   const huntMinutes = new Map<string, { huntName: string; minutes: number; kills: number }>();
   let minutesAccumulated = 0;
   let killsTotal = 0;
-  const totalXpRequired = getTotalXpToReachLevel(targetLevel) - getTotalXpToReachLevel(startLevel);
+  const totalXpRequired = decimalToUnsafeNumber(
+    getTotalXpToReachLevel(targetLevel).minus(getTotalXpToReachLevel(startLevel)),
+  );
 
   for (let level = startLevel; level < targetLevel; level += 1) {
     const row = options.lockHuntId
@@ -158,7 +161,7 @@ function simulateRange(
     if (!row || row.xpPerMin <= 0) {
       throw new Error(`Sem Hunt válida no Lv${level}`);
     }
-    const xpRequired = getXpRequiredForLevel(level);
+    const xpRequired = decimalToUnsafeNumber(getXpRequiredForLevel(level));
     const minutes = xpRequired / row.xpPerMin;
     minutesAccumulated += minutes;
     const kills = xpRequired / row.finalXpPerKill;
@@ -174,7 +177,7 @@ function simulateRange(
     levels.push({
       level,
       xpRequired,
-      totalXp: getTotalXpToReachLevel(level),
+      totalXp: decimalToUnsafeNumber(getTotalXpToReachLevel(level)),
       huntId: row.huntId,
       huntName: row.name,
       enemyLevel: row.enemyLevel,
@@ -242,7 +245,7 @@ export function simulateExactMinutes(
     });
     if (!row || row.xpPerMin <= 0) break;
     huntIds.add(row.huntId);
-    const xpMax = getXpRequiredForLevel(level);
+    const xpMax = decimalToUnsafeNumber(getXpRequiredForLevel(level));
     const need = xpMax - xp;
     const msToLevel = (need / row.xpPerMin) * 60_000;
     if (msToLevel <= remainingMs) {
@@ -250,19 +253,19 @@ export function simulateExactMinutes(
       kills += need / row.finalXpPerKill;
       const next = addExperience(level, xp, need);
       level = next.level;
-      xp = next.xp;
+      xp = decimalToUnsafeNumber(next.xp);
     } else {
       const gained = row.xpPerMin * (remainingMs / 60_000);
       if (gained <= 0) break;
       kills += gained / row.finalXpPerKill;
       const next = addExperience(level, xp, gained);
       level = next.level;
-      xp = next.xp;
+      xp = decimalToUnsafeNumber(next.xp);
       remainingMs = 0;
     }
   }
 
-  const xpMax = getXpRequiredForLevel(level);
+  const xpMax = decimalToUnsafeNumber(getXpRequiredForLevel(level));
   return {
     level,
     xp,

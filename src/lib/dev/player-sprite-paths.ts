@@ -40,6 +40,15 @@ export function destPoseSequenceDir(characterId: string, stem: string): string {
   return abs;
 }
 
+export function wipePoseSequenceImages(dir: string): void {
+  assertInside(dir, PUBLIC_SPRITES, 'public/sprites/player');
+  if (!fs.existsSync(dir)) return;
+  for (const name of fs.readdirSync(dir)) {
+    if (!/\.(png|webp)$/i.test(name)) continue;
+    fs.unlinkSync(path.join(dir, name));
+  }
+}
+
 export function toPublicPlayerUrl(absPath: string): string {
   assertInside(absPath, path.join(process.cwd(), 'public'), 'public');
   const rel = path.relative(path.join(process.cwd(), 'public'), absPath).replace(/\\/g, '/');

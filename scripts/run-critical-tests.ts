@@ -21,11 +21,15 @@ interface Suite {
 
 const SUITES: Suite[] = [
   { id: 'dev-isolation', file: 'scripts/test-dev-isolation.ts' },
-  { id: 'capture', file: 'scripts/test-capture-engine.ts' },
+  { id: 'capture-system', file: 'scripts/test-capture-system.ts' },
   { id: 'sealing-quality', file: 'scripts/test-sealing-quality.ts' },
   { id: 'character-quality-stats', file: 'scripts/test-character-quality-stats.ts' },
   { id: 'hunt-enemy-stat-consistency', file: 'scripts/test-hunt-enemy-stat-consistency.ts' },
   { id: 'xp-progression', file: 'scripts/test-xp-progression.ts' },
+  { id: 'hunt-kill-delta', file: 'scripts/test-hunt-kill-character-delta.ts' },
+  { id: 'decimal-save-roundtrip', file: 'scripts/test-decimal-save-roundtrip.ts' },
+  { id: 'decimal-hp-combat', file: 'scripts/test-decimal-hp-combat.ts' },
+  { id: 'geometric-combat', file: 'scripts/test-geometric-combat.ts' },
   { id: 'game-cycle', file: 'scripts/test-game-cycle.ts' },
   { id: 'daily-login-unify', file: 'scripts/test-daily-login-unify.ts' },
   { id: 'achievement-unify', file: 'scripts/test-achievement-unify.ts' },
@@ -37,6 +41,9 @@ const SUITES: Suite[] = [
   { id: 'social-backend', file: 'scripts/test-social-backend.ts', requiresDb: true },
   { id: 'world-boss', file: 'scripts/test-world-boss-backend.ts' },
   { id: 'guild-shop', file: 'scripts/test-guild-shop-backend.ts' },
+  { id: 'loot-economy', file: 'scripts/test-loot-economy.ts' },
+  { id: 'hunt-loot-pipeline', file: 'scripts/test-hunt-loot-pipeline.ts' },
+  { id: 'naruto-general-loot', file: 'scripts/test-naruto-general-loot.ts' },
 ];
 
 function parseArgs(argv: string[]): { repeat: number; shuffle: boolean; only?: string[] } {

@@ -12,6 +12,8 @@
  * (origem incerta). Isolation impede contaminação futura.
  */
 
+import { Decimal, d, floorNonNeg, type Decimal as DecimalValue } from '@/lib/decimal';
+
 export const OFFICIAL_SESSION_STORAGE_KEY = 'idle-mmorpg:session-v1';
 /** Save de playground DEV — nunca carregar no boot oficial. */
 export const DEV_SESSION_STORAGE_KEY = 'idle-mmorpg:session-dev-v1';
@@ -233,10 +235,11 @@ export function isSkillCooldownIgnored(): boolean {
   );
 }
 
-export function scaleOutgoingDamage(damage: number): number {
+export function scaleOutgoingDamage(damage: number | DecimalValue): DecimalValue {
   const mul = getDamageMultiplier();
-  if (mul === 1) return damage;
-  return Math.max(0, Math.floor(damage * mul));
+  const raw = d(damage);
+  if (mul === 1) return floorNonNeg(raw);
+  return Decimal.max(d(0), raw.mul(mul).floor());
 }
 
 export function hasArtificialCombatRules(): boolean {

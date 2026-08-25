@@ -1,0 +1,38 @@
+{
+  "captureBase": {
+    "D": 0.9,
+    "C": 0.7,
+    "B": 0.48,
+    "A": 0.3,
+    "S": 0.15,
+    "SS": 0.1,
+    "SSS": 0.05
+  },
+  "captureChanceCap": 0.9,
+  "scrollMultiplier": {
+    "item-sealing-scroll": 1.0,
+    "item-sealing-scroll-rare": 1.7,
+    "item-sealing-scroll-epic": 2.6,
+    "item-sealing-scroll-legendary": 4.2
+  },
+  "attemptsBeforeFlee": {
+    "D": 3,
+    "C": 3,
+    "B": 3,
+    "A": 3,
+    "S": 2,
+    "SS": 2,
+    "SSS": 2
+  },
+  "totalFail": {
+    "consolationFragmentsMin": 1,
+    "consolationFragmentsMax": 3
+  },
+  "scrollCraft": {
+    "perStep": 7
+  },
+  "notes": {
+    "ss": "SS (Mítico) não está no spec de 6 níveis; interpolado entre Lendário e Supremo. Supremo = SSS.",
+    "seal": "Este arquivo só guarda chance de SELAR (base, teto, pergaminho, tentativas). Qualidade na captura vem de CONFIG.qualidades."
+  }
+}

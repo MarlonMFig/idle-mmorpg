@@ -1,0 +1,6 @@
+{
+  "name": "Janela de Equipe - RPG",
+  "description": "Interface avançada, refinada e intuitiva para gerenciamento de equipe, personagens, raridades, maestria e despertar de heróis RPG.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -36,6 +36,7 @@ import {
   type SpriteAlignmentPoint,
 } from '@/lib/sprite-alignment';
 import { locationStore } from '@/stores/location-store';
+import { canonicalizeLoopMode, clampLoopRange, loopModeFromLegacy } from '@/lib/frame-loop';
 /** Overlay da Skill: só envia campos que a Skill já tinha ou que o usuário mudou no lab. */
 function labSkillVfxOverlay(
   lab: ReturnType<typeof characterLabStore.getSnapshot>,
@@ -365,6 +366,35 @@ export class Player {
     }
 
     const animKey = `skill-${def.key}`;
+    const loopMode = canonicalizeLoopMode(def.loopMode) ?? loopModeFromLegacy(def.loop);
+    const frameCount = Math.max(1, def.frames?.length || def.frameCount || 1);
+    if (loopMode === 'persistent-range' && frameCount > 1) {
+      const range = clampLoopRange(frameCount, def.loopStartFrame ?? 1, def.loopEndFrame ?? frameCount);
+      const firstKey = `${animKey}-first`;
+      const loopKey = `${animKey}-ploop`;
+      if (!createSpriteSheetAnimation(this.scene, def, firstKey, { start: 0, end: frameCount - 1, repeat: 0 })) {
+        this.labPoseScaleX = 1;
+        this.labPoseScaleY = 1;
+        this.applyBaseScale();
+        return def.hitDelayMs;
+      }
+      createSpriteSheetAnimation(this.scene, def, loopKey, {
+        start: range.startFrame - 1,
+        end: range.endFrame - 1,
+        repeat: -1,
+      });
+      this.labPoseScaleX = def.cast?.scaleX ?? def.cast?.scale ?? 1;
+      this.labPoseScaleY = def.cast?.scaleY ?? def.cast?.scale ?? 1;
+      this.applyBaseScale();
+      this.applySheetOrigin(def);
+      this.sprite.anims.play(firstKey, true);
+      this.sprite.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+        if (!this.sprite.active) return;
+        this.sprite.anims.play(loopKey, true);
+      });
+      this.refreshBodyOffset();
+      return def.hitDelayMs;
+    }
     if (!createSpriteSheetAnimation(this.scene, def, animKey)) {
       this.labPoseScaleX = 1;
       this.labPoseScaleY = 1;

@@ -17,6 +17,7 @@ import {
 import { onLineageRankPromoted } from '../src/lib/lineage-events';
 import type { LineageId } from '../src/types/character-meta';
 import type { SealedCharacter } from '../src/types/team';
+import { buildSealedCharacter } from '../src/utils/character-identity';
 
 function assert(name: string, cond: boolean): void {
   if (!cond) throw new Error(`FAIL ${name}`);
@@ -43,25 +44,24 @@ function mockNinjaChar(
   opts: Partial<SealedCharacter> = {},
 ): SealedCharacter {
   return {
-    id,
-    characterId,
-    characterKey: `look:${characterId}`,
-    name: characterId,
-    lookType: 1,
-    sourceId: null,
-    starterId: null,
-    previewUrl: '',
-    quality: 'B',
-    stars: 2,
-    lineageId: 'ninja',
-    level: 1,
-    xp: 0,
-    masteryLevel: 0,
-    masteryXp: 0,
-    awakeningLevel: 0,
-    isFavorite: false,
-    isLocked: false,
+    ...buildSealedCharacter({
+      id,
+      characterId,
+      name: characterId,
+      lookType: 1,
+      sourceId: null,
+      starterId: null,
+      quality: 'B',
+      stars: 2,
+      lineageId: 'ninja',
+      level: 1,
+      xp: 0,
+      masteryLevel: 0,
+      masteryXp: 0,
+      awakeningLevel: 0,
+    }),
     ...opts,
+    lineageId: opts.lineageId ?? 'ninja',
   };
 }
 

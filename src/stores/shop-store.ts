@@ -7,7 +7,7 @@ import {
   listShopOffersByCategory,
   type ShopOffer,
 } from '@/data/shop';
-import { getItem, getItemStackLimit } from '@/data/items';
+import { getItem } from '@/data/items';
 import { emitSystemMessage } from '@/lib/system-log';
 import { economyService } from '@/lib/economy-service';
 import { emitItemSold, emitShopPurchaseCompleted } from '@/lib/economy-events';
@@ -46,21 +46,9 @@ const store = createStore<ShopState>({
 
 const purchaseInFlight = new Set<string>();
 
-/** Espaço real no inventário para o item (stacks parciais + slots vazios). */
-function inventoryRoomFor(itemId: string): number {
-  const stackMax = getItemStackLimit(itemId);
-  if (stackMax <= 0) return 0;
-  let room = 0;
-  for (const slot of inventoryStore.getSnapshot().slots) {
-    if (!slot) {
-      room += stackMax;
-      continue;
-    }
-    if (slot.itemId === itemId) {
-      room += Math.max(0, stackMax - slot.quantity);
-    }
-  }
-  return room;
+/** Bolsa sem teto de slots — só empilha no stackMax do item. */
+function inventoryRoomFor(_itemId: string): number {
+  return Number.MAX_SAFE_INTEGER;
 }
 
 function cycleForOffer(offer: ShopOffer): string | null {
@@ -194,7 +182,7 @@ export const shopStore = {
     }
     const byStack = Math.floor(room / perPack);
     const byInv = offer.bundleRewards?.length ? Math.min(byStack, bundleExtra || byStack) : byStack;
-    return Math.max(0, Math.min(capped, byInv, 99));
+    return Math.max(0, Math.min(capped, byInv));
   },
 
   isEligible(offer: ShopOffer): { ok: boolean; reason?: string } {
@@ -272,6 +260,7 @@ export const shopStore = {
     purchaseInFlight.add(offerId);
     purchaseInFlight.add('*');
     try {
+      inventoryStore.repack();
       // Gasta primeiro; reembolsa se entrega falhar.
       if (!economyService.spendCurrency(offer.currency, totalCost, 'shopPurchase', {
         offerId,
@@ -371,6 +360,58 @@ export const shopStore = {
       });
       emitItemSold({ itemId, quantity: qty, unitPrice, totalCopper: total });
       const message = `Vendeu ${qty}× ${def?.name ?? itemId} por ${total} cobre.`;
+      emitSystemMessage(message);
+      store.setState({ ...store.getSnapshot(), lastResult: message });
+      return true;
+    } finally {
+      purchaseInFlight.delete('sell');
+      purchaseInFlight.delete('*');
+    }
+  },
+
+  /** Vende todos os stacks vendáveis de uma vez (mesmo critério de `listSellable`). */
+  sellAll(): boolean {
+    const entries = this.listSellable();
+    if (entries.length === 0) {
+      emitSystemMessage('Nada para vender.');
+      return false;
+    }
+    if (purchaseInFlight.has('sell') || purchaseInFlight.has('*')) return false;
+    purchaseInFlight.add('sell');
+    purchaseInFlight.add('*');
+    const removed: { itemId: string; quantity: number }[] = [];
+    try {
+      for (const entry of entries) {
+        if (!inventoryStore.removeItem(entry.itemId, entry.quantity)) {
+          for (const row of removed) {
+            inventoryStore.addItem(row.itemId, row.quantity, 'unknown');
+          }
+          emitSystemMessage('Não foi possível vender todos os itens.');
+          return false;
+        }
+        removed.push({ itemId: entry.itemId, quantity: entry.quantity });
+      }
+
+      let totalCopper = 0;
+      let totalQty = 0;
+      for (const entry of entries) {
+        const line = entry.unitPrice * entry.quantity;
+        totalCopper += line;
+        totalQty += entry.quantity;
+        emitItemSold({
+          itemId: entry.itemId,
+          quantity: entry.quantity,
+          unitPrice: entry.unitPrice,
+          totalCopper: line,
+        });
+      }
+
+      economyService.grantCurrency('copper', totalCopper, 'shopSale', {
+        bulk: true,
+        quantity: totalQty,
+        kinds: entries.length,
+      });
+      const message = `Vendeu ${totalQty} itens (${entries.length} tipos) por ${totalCopper} cobre.`;
       emitSystemMessage(message);
       store.setState({ ...store.getSnapshot(), lastResult: message });
       return true;

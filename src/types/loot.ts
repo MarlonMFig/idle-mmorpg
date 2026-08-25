@@ -51,6 +51,10 @@ export interface ItemDefinition {
   sellValue?: number;
   /** Fragmento de personagem. */
   relatedCharacterId?: string;
+  /** true se o item é Signature de pelo menos um personagem. */
+  signatureItem?: boolean;
+  lootRole?: 'signature' | 'generic';
+  associatedCharacterIds?: string[];
   iconSrc?: string;
   /**
    * @deprecated Item 36 — Equipment removido. Campo ignorado se presente em dados legados.
@@ -92,6 +96,8 @@ export interface RolledLoot {
   name: string;
   quantity: number;
   rarity: ItemRarity;
+  /** Origem técnica do roll (DEV / testes). Ausente = legado. */
+  lootSource?: 'general' | 'secondary' | 'signature' | 'fragment';
 }
 
 export interface GroundLootData {

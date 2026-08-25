@@ -1,0 +1,30 @@
+{
+  "atributos": ["poder", "sorte", "fortuna"],
+  "notas": [
+    { "nota": "F",   "faixa_min": 0,  "faixa_max": 15,  "bonus_percentual": 0,  "peso_populacao": 16 },
+    { "nota": "D",   "faixa_min": 16, "faixa_max": 30,  "bonus_percentual": 2,  "peso_populacao": 15 },
+    { "nota": "C",   "faixa_min": 31, "faixa_max": 45,  "bonus_percentual": 4,  "peso_populacao": 15 },
+    { "nota": "B",   "faixa_min": 46, "faixa_max": 60,  "bonus_percentual": 6,  "peso_populacao": 15 },
+    { "nota": "A",   "faixa_min": 61, "faixa_max": 75,  "bonus_percentual": 8,  "peso_populacao": 15 },
+    { "nota": "S",   "faixa_min": 76, "faixa_max": 88,  "bonus_percentual": 11, "peso_populacao": 13 },
+    { "nota": "SS",  "faixa_min": 89, "faixa_max": 97,  "bonus_percentual": 15, "peso_populacao": 9  },
+    { "nota": "SSS", "faixa_min": 98, "faixa_max": 100, "bonus_percentual": 20, "peso_populacao": 3  }
+  ],
+  "refinamento": {
+    "item": "Cristal de Refinamento",
+    "efeito": "reroll de 1 atributo à escolha, mantém o maior valor entre antigo e novo",
+    "fontes": [
+      {
+        "tipo": "drop",
+        "raridade_item": "raro_epico",
+        "limite": "sem limite, sujeito à taxa de drop do tier do personagem"
+      },
+      {
+        "tipo": "loja_premium",
+        "moeda": "gemas",
+        "limite_semanal": 2,
+        "escopo_limite": "conta_inteira"
+      }
+    ]
+  }
+}

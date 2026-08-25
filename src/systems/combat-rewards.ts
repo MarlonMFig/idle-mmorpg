@@ -1,9 +1,7 @@
 import { LAB_DUMMY_ID } from '@/stores/character-lab-store';
 import type { Enemy } from '@/entities/enemy';
-import { grantPlayerXp } from '@/lib/grant-player-xp';
-import { huntEnemyXpForLevel } from '@/lib/hunt-enemy-xp';
-import { xpLevelGapMultiplier } from '@/lib/xp-level-gap';
-import { vitalsStore } from '@/stores/vitals-store';
+import { decimalToUnsafeNumber } from '@/lib/decimal';
+import { grantHuntKillXp } from '@/lib/grant-player-xp';
 import { grantMasteryXpFromKills } from '@/lib/grant-mastery-xp';
 import { grantLineageOnlineKill } from '@/lib/promote-lineage-rank';
 import { isCharacterCompatibleWithLineage } from '@/lib/lineage-compatibility';
@@ -42,11 +40,8 @@ export function handleEnemyKill(
 
   questStore.onEnemyKilled(enemy.definition.id, enemy.definition.name);
   villageStore.onEnemyKilled();
-  const playerLevel = vitalsStore.getLevel();
   const enemyLevel = enemy.stats.level;
-  const baseXp = huntEnemyXpForLevel(enemyLevel);
-  const afterGap = baseXp * xpLevelGapMultiplier(playerLevel, enemyLevel);
-  const xpGranted = grantPlayerXp(afterGap);
+  const xpGranted = grantHuntKillXp(enemy.stats.hpMax, enemyLevel);
   const activeInstance = teamStore.getActive();
   const masteryGranted = activeInstance
     ? (grantMasteryXpFromKills(activeInstance.id, enemy.stats.level, 1)?.xpGranted ?? 0)
@@ -72,11 +67,14 @@ export function handleEnemyKill(
   }
 
   huntAnalyzerStore.recordKill({
-    xp: xpGranted,
+    xp: decimalToUnsafeNumber(xpGranted),
     copper: reward.copper,
     masteryXp: masteryGranted,
     quality: enemy.definition.sealable?.quality,
   });
+  for (const item of reward.items) {
+    huntAnalyzerStore.recordLootItems(item.itemId, item.quantity);
+  }
   lootManager.spawnRolled(rewardItemsToRolled(reward.items), dropX, dropY);
 
   const active = teamStore.getActive();
@@ -115,10 +113,10 @@ export function handleEnemyKill(
   }
 
   if (enemy.captureResolved) return;
-  enemy.captureResolved = true;
   attemptCapture({
     target: enemy.definition,
     source: 'auto',
     attemptKey: enemy.id,
   });
+  enemy.captureResolved = true;
 }

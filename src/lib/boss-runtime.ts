@@ -1,3 +1,5 @@
+import { hpRatio } from '@/lib/decimal';
+import type { Decimal } from '@/lib/decimal';
 import type {
   BossAttemptResetType,
   BossAttemptState,
@@ -5,9 +7,8 @@ import type {
   BossPhase,
 } from '@/types/boss';
 
-export function clampHpRatio(hp: number, hpMax: number): number {
-  if (!(hpMax > 0)) return 0;
-  return Math.max(0, Math.min(1, hp / hpMax));
+export function clampHpRatio(hp: number | Decimal, hpMax: number | Decimal): number {
+  return hpRatio(hp, hpMax);
 }
 
 /** Fase atual: a de maior threshold ainda ≥ HP%. HP atual não é resetado. */

@@ -241,7 +241,7 @@ if (forcedLevel != null) {
   const forced = huntEnemyStatsForLevel(forcedLevel);
   const hpMul = getEnemyHpMultiplier();
   console.log(
-    `Com FORCE ativo, todo alvo vira Lv ${forced.level}, XP ${forced.xp}, HP ${Math.round(forced.hp * hpMul)} (hp × ${hpMul}).`,
+    `Com FORCE ativo, todo alvo vira Lv ${forced.level}, XP ${forced.xp}, HP ${forced.hp.mul(hpMul).round().toString()} (hp × ${hpMul}).`,
   );
 }
 

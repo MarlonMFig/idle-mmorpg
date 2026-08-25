@@ -940,7 +940,7 @@ async function packMugenCharacter(cfg) {
   if (!idleSeq) throw new Error(`${id}: idle sprites missing`);
   let idlePacked = await packSprites(idleSeq.sprites);
 
-  const walkActionIds = cfg.walkActionIds || [20, 21];
+  const walkActionIds = cfg.walkActionIds || cfg.walkActionIds || [20, 21];
   let walkRefs = actionClips(air, walkActionIds[0]);
   if (walkRefs.length < 2) walkRefs = actionClips(air, walkActionIds[1]);
   if (walkRefs.length < 2) walkRefs = idleRefs;
@@ -974,7 +974,12 @@ async function packMugenCharacter(cfg) {
   // curvada e ataques fletidos são ampliados, e uma ação com frame de salto é
   // encolhida junto. `sameRipZoom` mantém tudo no pixel nativo.
   const bodyRuler = cfg.sameRipZoom ? null : contentHeight;
-  walkPacked = await matchPackedBodyHeight(walkPacked, bodyRuler);
+  // Walk MUGEN costuma ser mais baixo que o idle. Com sameRipZoom o personagem
+  // "encolhe" na corrida; matchWalkHeight faz upsample NN só no walk.
+  walkPacked = await matchPackedBodyHeight(
+    walkPacked,
+    cfg.matchWalkHeight ? contentHeight : bodyRuler,
+  );
   walkPacked = hardenPackedFeet(walkPacked);
 
   const comboIds = pickComboActions(air, cfg.comboActionIds);
@@ -1100,7 +1105,7 @@ async function packMugenCharacter(cfg) {
     { lockFeet: false },
   );
 
-  const specials = pickSpecials(air, cfg.specialIds);
+  const specials = pickSpecials(air, cfg.specialIds || cfg.specialIds);
   const omitSkills = new Set((cfg.omitSkillIndexes ?? []).map(Number));
   const skillAnims = [];
   for (let i = 0; i < specials.length; i += 1) {

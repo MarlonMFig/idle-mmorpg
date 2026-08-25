@@ -3,6 +3,8 @@ import { SKILL_ELEMENT_COLOR } from '@/constants/skill';
 import { resolveSkillElement } from '@/data/damage-elements';
 import { combatTextDepthForY, vfxDepthForLayer } from '@/constants/render-layers';
 import type { SkillDefinition } from '@/types/skill';
+import { formatStat } from '@/lib/format-stat';
+import type { Decimal } from '@/lib/decimal';
 
 export interface SkillVfxPoints {
   fromX: number;
@@ -288,9 +290,9 @@ export class SkillVfx {
   }
 
   /** "+N" verde subindo do jogador curado (igual ao texto animado do WONSR). */
-  healNumber(x: number, y: number, amount: number): void {
+  healNumber(x: number, y: number, amount: number | Decimal): void {
     const floater = this.scene.add
-      .text(x, y - 26, `+${Math.round(amount)}`, {
+      .text(x, y - 26, `+${formatStat(amount)}`, {
         fontFamily: 'Tahoma, "Segoe UI", sans-serif',
         fontSize: '12px',
         fontStyle: 'bold',

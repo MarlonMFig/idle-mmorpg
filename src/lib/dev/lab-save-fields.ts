@@ -20,12 +20,14 @@ import {
   resolveSkillElement,
   type DamageElement,
 } from '@/data/damage-elements';
+import { getVfxDefinition } from '@/data/vfx';
 import {
   cloneLabPoseSheet,
   poseSheetFromAnim,
   poseSheetsEqual,
   type LabPoseSheet,
 } from '@/lib/dev/lab-pose-sheet';
+import { canonicalizeLoopMode, loopModeFromLegacy, type FrameLoopMode } from '@/lib/frame-loop';
 import {
   normalizeSpriteAlignment,
   type SpriteAlignmentConfig,
@@ -71,6 +73,13 @@ export type LabSaveChanges = Partial<Record<LabSaveableNumberField, number>> & {
   ai?: SkillAiConfig;
   /** Alignment global Hub/Hunt — valores absolutos no Character Pack. */
   spriteAlignment?: SpriteAlignmentConfig;
+  vfxLoopMode?: FrameLoopMode;
+  vfxLoopStartFrame?: number;
+  vfxLoopEndFrame?: number;
+  vfxLoopDurationMs?: number;
+  vfxLoopUntilSkillEnd?: boolean;
+  vfxFlipX?: boolean;
+  vfxFlipY?: boolean;
 };
 
 /** Campos de sprite/animação do personagem — o único payload válido em `character-config` sem skillId. */
@@ -109,6 +118,13 @@ export interface LabSkillOriginals {
   vfxScale: number;
   vfxOffsetX: number;
   vfxOffsetY: number;
+  vfxLoopMode: FrameLoopMode;
+  vfxLoopStartFrame: number;
+  vfxLoopEndFrame: number;
+  vfxLoopDurationMs: number;
+  vfxLoopUntilSkillEnd: boolean;
+  vfxFlipX: boolean;
+  vfxFlipY: boolean;
   spawnOffsetX: number;
   spawnOffsetY: number;
   targetOffsetX: number;
@@ -169,6 +185,13 @@ export function readLabSkillOriginals(
     vfxScale: anim?.fxScale ?? 1,
     vfxOffsetX: anim?.vfxId ? (anim.vfxOffsetX ?? anim.fx?.offsetX ?? 0) : (anim?.fx?.offsetX ?? 0),
     vfxOffsetY: anim?.vfxId ? (anim.vfxOffsetY ?? anim.fx?.offsetY ?? 0) : (anim?.fx?.offsetY ?? 0),
+    vfxLoopMode: loopModeFromLegacy(getVfxDefinition(anim?.vfxId)?.loop, anim?.vfxLoopMode),
+    vfxLoopStartFrame: anim?.vfxLoopStartFrame ?? 1,
+    vfxLoopEndFrame: anim?.vfxLoopEndFrame ?? Math.max(1, getVfxDefinition(anim?.vfxId)?.frameCount ?? 1),
+    vfxLoopDurationMs: anim?.vfxLoopDurationMs ?? 3000,
+    vfxLoopUntilSkillEnd: Boolean(anim?.vfxLoopUntilSkillEnd),
+    vfxFlipX: Boolean(anim?.vfxFlipX),
+    vfxFlipY: Boolean(anim?.vfxFlipY),
     spawnOffsetX: targeting?.spawnOffsetX ?? 0,
     spawnOffsetY: targeting?.spawnOffsetY ?? 0,
     targetOffsetX: targeting?.targetOffsetX ?? 0,
@@ -392,6 +415,13 @@ export function skillVisualDirty(
     test.vfxScale !== original.vfxScale ||
     test.vfxOffsetX !== original.vfxOffsetX ||
     test.vfxOffsetY !== original.vfxOffsetY ||
+    test.vfxLoopMode !== original.vfxLoopMode ||
+    test.vfxLoopStartFrame !== original.vfxLoopStartFrame ||
+    test.vfxLoopEndFrame !== original.vfxLoopEndFrame ||
+    test.vfxLoopDurationMs !== original.vfxLoopDurationMs ||
+    Boolean(test.vfxLoopUntilSkillEnd) !== Boolean(original.vfxLoopUntilSkillEnd) ||
+    test.vfxFlipX !== original.vfxFlipX ||
+    test.vfxFlipY !== original.vfxFlipY ||
     test.spawnOffsetX !== original.spawnOffsetX ||
     test.spawnOffsetY !== original.spawnOffsetY ||
     test.targetOffsetX !== original.targetOffsetX ||
@@ -447,6 +477,13 @@ export function applyLabChangesToSkillAnim(
   if (changes.vfxScale != null) next.fxScale = changes.vfxScale;
   if (changes.vfxOffsetX != null) next.vfxOffsetX = changes.vfxOffsetX;
   if (changes.vfxOffsetY != null) next.vfxOffsetY = changes.vfxOffsetY;
+  if (changes.vfxLoopMode) next.vfxLoopMode = canonicalizeLoopMode(changes.vfxLoopMode) ?? changes.vfxLoopMode;
+  if (changes.vfxLoopStartFrame != null) next.vfxLoopStartFrame = changes.vfxLoopStartFrame;
+  if (changes.vfxLoopEndFrame != null) next.vfxLoopEndFrame = changes.vfxLoopEndFrame;
+  if (changes.vfxLoopDurationMs != null) next.vfxLoopDurationMs = changes.vfxLoopDurationMs;
+  if (changes.vfxLoopUntilSkillEnd != null) next.vfxLoopUntilSkillEnd = changes.vfxLoopUntilSkillEnd;
+  if (changes.vfxFlipX != null) next.vfxFlipX = changes.vfxFlipX;
+  if (changes.vfxFlipY != null) next.vfxFlipY = changes.vfxFlipY;
   if (changes.hitDelayMs != null) next.hitDelayMs = changes.hitDelayMs;
   if (changes.fxReleaseMs != null) next.fxReleaseMs = changes.fxReleaseMs;
   if (changes.castDelayMs != null) next.castDelayMs = changes.castDelayMs;

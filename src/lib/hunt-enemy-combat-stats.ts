@@ -1,20 +1,12 @@
-import { huntEnemyStatsForLevel } from '@/constants/combat';
 import { getEnemyHpMultiplier } from '@/config/devConfig';
+import { Decimal, d, type Decimal as DecimalType } from '@/lib/decimal';
+import { huntEnemyAtkForLevel, huntEnemyHpForLevel } from '@/lib/hunt-enemy-xp';
 import type { HuntDefinition, HuntTarget } from '@/types/hunt';
 
-/**
- * Stats de combate do inimigo de Hunt — sem quality.
- * HP = curva oficial da caça (nível do alvo) × overlay DEV de HP, se houver.
- * ATK = fórmula de nível do golpe (sem multiplier de quality).
- * DEF = a Hunt não define DEF no inimigo (mitigação só no jogador).
- */
-export function huntEnemyAtkForLevel(level: number): number {
-  const safe = Math.max(1, Math.floor(level));
-  return Math.max(2, Math.floor(5 + safe * 1.65));
-}
+export { huntEnemyAtkForLevel };
 
-export function huntEnemyHpForCatalogLevel(level: number): number {
-  return huntEnemyStatsForLevel(level).hp;
+export function huntEnemyHpForCatalogLevel(level: number): Decimal {
+  return huntEnemyHpForLevel(level);
 }
 
 export interface HuntEnemyCombatSnapshot {
@@ -22,9 +14,9 @@ export interface HuntEnemyCombatSnapshot {
   huntId: string;
   huntName: string;
   enemyLevel: number;
-  catalogHp: number;
-  maxHp: number;
-  atk: number;
+  catalogHp: DecimalType;
+  maxHp: DecimalType;
+  atk: DecimalType;
   def: number;
   quality: null;
   qualityStatMultiplier: null;
@@ -36,12 +28,13 @@ export function snapshotHuntEnemyCombat(
   target: Pick<HuntTarget, 'sourceId' | 'level' | 'hp'>,
 ): HuntEnemyCombatSnapshot {
   const enemyLevel = Math.max(1, Math.floor(target.level));
-  const catalogHp = Math.max(1, Math.floor(target.hp || huntEnemyHpForCatalogLevel(enemyLevel)));
+  const curveHp = huntEnemyHpForLevel(enemyLevel);
+  const jsonHp = target.hp ? d(target.hp).floor() : d(0);
   const hpMul = getEnemyHpMultiplier();
   const modifiers = ['hunt-level-hp-curve', 'hunt-level-atk-curve'];
-  let maxHp = catalogHp;
+  let maxHp = curveHp;
   if (hpMul !== 1) {
-    maxHp = Math.max(1, Math.round(catalogHp * hpMul));
+    maxHp = Decimal.max(d(1), curveHp.mul(hpMul));
     modifiers.push(`dev-enemyHpMultiplier:${hpMul}`);
   }
   return {
@@ -49,7 +42,7 @@ export function snapshotHuntEnemyCombat(
     huntId: hunt.id,
     huntName: hunt.name,
     enemyLevel,
-    catalogHp,
+    catalogHp: jsonHp.gt(0) ? jsonHp : curveHp,
     maxHp,
     atk: huntEnemyAtkForLevel(enemyLevel),
     def: 0,
@@ -64,9 +57,9 @@ export function describeHuntEnemyCombatSnapshot(row: HuntEnemyCombatSnapshot): s
     `character=${row.characterId}`,
     `hunt=${row.huntId}`,
     `level=${row.enemyLevel}`,
-    `catalogHp=${row.catalogHp}`,
-    `maxHp=${row.maxHp}`,
-    `atk=${row.atk}`,
+    `catalogHp=${row.catalogHp.toString()}`,
+    `maxHp=${row.maxHp.toString()}`,
+    `atk=${row.atk.toString()}`,
     `def=${row.def}`,
     `quality=none`,
     `modifiers=${row.modifiers.join(',')}`,

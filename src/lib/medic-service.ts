@@ -4,6 +4,7 @@
  */
 
 import { MEDIC_CONFIG } from '@/constants/medic';
+import { Decimal, d, decimalToUnsafeNumber, floorNonNeg } from '@/lib/decimal';
 import { economyService } from '@/lib/economy-service';
 import { vitalsStore } from '@/stores/vitals-store';
 import { medicStore } from '@/stores/medic-store';
@@ -37,10 +38,14 @@ let busy = false;
 
 export function getMedicHpSnapshot(): MedicHpSnapshot {
   const { hp, hpMax } = vitalsStore.getSnapshot();
-  const maxHp = Math.max(1, Math.floor(hpMax));
-  const currentHp = Math.max(0, Math.floor(hp));
-  const missingHp = Math.max(0, maxHp - currentHp);
-  return { currentHp, maxHp, missingHp };
+  const maxHp = Decimal.max(d(1), floorNonNeg(hpMax));
+  const currentHp = Decimal.max(d(0), floorNonNeg(hp));
+  const missingHp = Decimal.max(d(0), maxHp.sub(currentHp));
+  return {
+    currentHp: decimalToUnsafeNumber(currentHp),
+    maxHp: decimalToUnsafeNumber(maxHp),
+    missingHp: decimalToUnsafeNumber(missingHp),
+  };
 }
 
 /**

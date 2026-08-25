@@ -1,16 +1,20 @@
 /**
  * Tier de força Naruto (interno — não expor na UI).
  *
- * Por kill:
- * 1) Cobre/Ryo 100% (fora daqui — `copperRewardForKill`)
- * 2) Rolagem de raridade de material (1 resultado: nada ou raridade)
- * 3) Escolha do item: 70% assinatura / 30% resto do tier (+ fallbacks)
+ * Por kill (rolls independentes):
+ * 1) Cobre direto 100% (fora daqui — `copperRewardForKill`)
+ * 2) Secondary roll
+ * 3) Signature roll
  * 4) Fragmento do personagem (chance baixa — ~625 kills T1 / ~5k T5)
+ *
+ * A raridade do item NÃO escolhe o drop. VIP só rerolla kill sem material.
  */
 
 import type { ItemRarity } from '@/types/loot';
 
-export type NarutoLootTier = 1 | 2 | 3 | 4 | 5;
+import { LOOT_TIER_ROLL_CHANCES, type NarutoLootTier } from '@/constants/loot-economy';
+
+export type { NarutoLootTier };
 
 export type NarutoMaterialRarity =
   | 'common'
@@ -86,8 +90,21 @@ export const NARUTO_RARITY_WEIGHTS: Record<NarutoLootTier, NarutoRarityWeights> 
 
 /** Item assinado + secundário do personagem. */
 export interface NarutoCharacterLootProfile {
+  signatureItemId: string;
+  secondaryItemId: string;
+  /** @deprecated use signatureItemId */
   signature: string;
+  /** @deprecated use secondaryItemId */
   secondary: string;
+}
+
+function profile(signatureItemId: string, secondaryItemId: string): NarutoCharacterLootProfile {
+  return {
+    signatureItemId,
+    secondaryItemId,
+    signature: signatureItemId,
+    secondary: secondaryItemId,
+  };
 }
 
 /**
@@ -95,143 +112,51 @@ export interface NarutoCharacterLootProfile {
  * Ids = catálogo `anime-items`.
  */
 export const NARUTO_CHARACTER_LOOT: Record<string, NarutoCharacterLootProfile> = {
-  // —— Tier 1 ——
-  'naruto-classic': {
-    signature: 'item-anime-naruto-kunai-gasta',
-    secondary: 'item-anime-naruto-racao-militar',
-  },
-  'sasuke-classic': {
-    signature: 'item-anime-naruto-shuriken',
-    secondary: 'item-anime-naruto-bolsa-shuriken',
-  },
-  sakura: {
-    signature: 'item-anime-naruto-bandagem',
-    secondary: 'item-anime-naruto-pilula-soldado',
-  },
-  ino: {
-    signature: 'item-anime-naruto-pilula-soldado',
-    secondary: 'item-anime-naruto-papel-chakra',
-  },
-  chouji: {
-    signature: 'item-anime-naruto-racao-militar',
-    secondary: 'item-anime-naruto-pilula-soldado',
-  },
-  kiba: {
-    signature: 'item-anime-naruto-fio-aco',
-    secondary: 'item-anime-naruto-presa-ninken',
-  },
+  // —— Tier 1 (tabela oficial de 30) ——
+  'naruto-classic': profile('item-anime-naruto-kunai-gasta', 'item-anime-naruto-racao-militar'),
+  'sasuke-classic': profile('item-anime-naruto-shuriken', 'item-anime-naruto-bolsa-shuriken'),
+  sakura: profile('item-anime-naruto-bandagem', 'item-anime-naruto-pilula-soldado'),
+  ino: profile('item-anime-naruto-pilula-soldado', 'item-anime-naruto-papel-chakra'),
+  chouji: profile('item-anime-naruto-racao-militar', 'item-anime-naruto-pilula-soldado'),
+  kiba: profile('item-anime-naruto-presa-ninken', 'item-anime-naruto-fio-aco'),
 
   // —— Tier 2 ——
-  shikamaru: {
-    signature: 'item-anime-naruto-fio-aco',
-    secondary: 'item-anime-naruto-pergaminho-basico',
-  },
-  hinata: {
-    signature: 'item-anime-naruto-bandagem',
-    secondary: 'item-anime-naruto-lente-ocular',
-  },
-  shino: {
-    signature: 'item-anime-naruto-casulo-insetos',
-    secondary: 'item-anime-naruto-pergaminho-basico',
-  },
-  tenten: {
-    signature: 'item-anime-naruto-bolsa-shuriken',
-    secondary: 'item-anime-naruto-fuma-shuriken',
-  },
-  'rock-lee': {
-    signature: 'item-anime-naruto-bandagem',
-    secondary: 'item-anime-naruto-colete-tatico',
-  },
-  neji: {
-    signature: 'item-anime-naruto-papel-chakra',
-    secondary: 'item-anime-naruto-lente-ocular',
-  },
+  shikamaru: profile('item-anime-naruto-fio-aco', 'item-anime-naruto-pergaminho-basico'),
+  hinata: profile('item-anime-naruto-lente-ocular', 'item-anime-naruto-bandagem'),
+  shino: profile('item-anime-naruto-casulo-insetos', 'item-anime-naruto-pergaminho-basico'),
+  tenten: profile('item-anime-naruto-bolsa-shuriken', 'item-anime-naruto-fuma-shuriken'),
+  'rock-lee': profile('item-anime-naruto-bandagem', 'item-anime-naruto-colete-tatico'),
+  neji: profile('item-anime-naruto-lente-ocular', 'item-anime-naruto-papel-chakra'),
 
   // —— Tier 3 ——
-  temari: {
-    signature: 'item-anime-naruto-papel-chakra',
-    secondary: 'item-anime-naruto-selo-elemental',
-  },
-  gaara: {
-    signature: 'item-anime-naruto-cabaca-areia',
-    secondary: 'item-anime-naruto-bandana-riscada',
-  },
-  'sakura-shippuden': {
-    signature: 'item-anime-naruto-pergaminho-selamento',
-    secondary: 'item-anime-naruto-pilula-soldado',
-  },
-  tayuya: {
-    signature: 'item-anime-naruto-papel-bomba',
-    secondary: 'item-anime-naruto-contrato-invocacao',
-  },
-  jirobo: {
-    signature: 'item-anime-naruto-racao-militar',
-    secondary: 'item-anime-naruto-colete-tatico',
-  },
-  kabuto: {
-    signature: 'item-anime-naruto-frasco-veneno',
-    secondary: 'item-anime-naruto-bandagem',
-  },
-  kimimaro: {
-    signature: 'item-anime-naruto-tanto',
-    secondary: 'item-anime-naruto-selo-elemental',
-  },
+  temari: profile('item-anime-naruto-papel-chakra', 'item-anime-naruto-selo-elemental'),
+  gaara: profile('item-anime-naruto-cabaca-areia', 'item-anime-naruto-bandana-riscada'),
+  'sakura-shippuden': profile('item-anime-naruto-pergaminho-selamento', 'item-anime-naruto-pilula-soldado'),
+  tayuya: profile('item-anime-naruto-papel-bomba', 'item-anime-naruto-contrato-invocacao'),
+  jirobo: profile('item-anime-naruto-racao-militar', 'item-anime-naruto-colete-tatico'),
+  kabuto: profile('item-anime-naruto-frasco-veneno', 'item-anime-naruto-bandagem'),
+  kimimaro: profile('item-anime-naruto-tanto', 'item-anime-naruto-selo-elemental'),
 
   // —— Tier 4 ——
-  kakashi: {
-    signature: 'item-anime-naruto-mascara-anbu',
-    secondary: 'item-anime-naruto-livro-bingo',
-  },
-  guy: {
-    signature: 'item-anime-naruto-colete-tatico',
-    secondary: 'item-anime-naruto-bandagem',
-  },
-  jiraiya: {
-    signature: 'item-anime-naruto-contrato-invocacao',
-    secondary: 'item-anime-naruto-pergaminho-selamento',
-  },
-  tsunade: {
-    signature: 'item-anime-naruto-pergaminho-selamento',
-    secondary: 'item-anime-naruto-pilula-soldado',
-  },
-  kisame: {
-    signature: 'item-anime-naruto-tanto',
-    secondary: 'item-anime-naruto-bandana-riscada',
-  },
-  deidara: {
-    signature: 'item-anime-naruto-papel-bomba',
-    secondary: 'item-anime-naruto-frasco-veneno',
-  },
-  'sasuke-cursed': {
-    signature: 'item-anime-naruto-selo-elemental',
-    secondary: 'item-anime-naruto-bandana-riscada',
-  },
-  'naruto-shippuden': {
-    signature: 'item-anime-naruto-nucleo-chakra',
-    secondary: 'item-anime-naruto-bandana-riscada',
-  },
+  kakashi: profile('item-anime-naruto-mascara-anbu', 'item-anime-naruto-livro-bingo'),
+  guy: profile('item-anime-naruto-colete-tatico', 'item-anime-naruto-bandagem'),
+  jiraiya: profile('item-anime-naruto-contrato-invocacao', 'item-anime-naruto-pergaminho-selamento'),
+  tsunade: profile('item-anime-naruto-pergaminho-selamento', 'item-anime-naruto-pilula-soldado'),
+  kisame: profile('item-anime-naruto-tanto', 'item-anime-naruto-bandana-riscada'),
+  deidara: profile('item-anime-naruto-papel-bomba', 'item-anime-naruto-frasco-veneno'),
+  'sasuke-cursed': profile('item-anime-naruto-selo-elemental', 'item-anime-naruto-bandana-riscada'),
+
+  // Extra de pack (fora da tabela de 30) — Hunt continua a dropar.
+  'naruto-shippuden': profile('item-anime-naruto-nucleo-chakra', 'item-anime-naruto-bandana-riscada'),
 
   // —— Tier 5 ——
-  'uchiha-itachi': {
-    signature: 'item-anime-naruto-lente-ocular',
-    secondary: 'item-anime-naruto-mascara-anbu',
-  },
-  shisui: {
-    signature: 'item-anime-naruto-lente-ocular',
-    secondary: 'item-anime-naruto-bandana-riscada',
-  },
-  orochimaru: {
-    signature: 'item-anime-naruto-pergaminho-proibido',
-    secondary: 'item-anime-naruto-frasco-veneno',
-  },
-  'naruto-sennin': {
-    signature: 'item-anime-naruto-nucleo-chakra',
-    secondary: 'item-anime-naruto-contrato-invocacao',
-  },
-  'naruto-kyubi': {
-    signature: 'item-anime-naruto-fragmento-bestial',
-    secondary: 'item-anime-naruto-nucleo-chakra',
-  },
+  'uchiha-itachi': profile('item-anime-naruto-lente-ocular', 'item-anime-naruto-mascara-anbu'),
+  orochimaru: profile('item-anime-naruto-pergaminho-proibido', 'item-anime-naruto-frasco-veneno'),
+  'naruto-sennin': profile('item-anime-naruto-nucleo-chakra', 'item-anime-naruto-contrato-invocacao'),
+  'naruto-kyubi': profile('item-anime-naruto-fragmento-bestial', 'item-anime-naruto-nucleo-chakra'),
+
+  // Extra de pack (fora da tabela de 30).
+  shisui: profile('item-anime-naruto-lente-ocular', 'item-anime-naruto-bandana-riscada'),
 };
 
 export const NARUTO_CHARACTER_TIER: Record<string, NarutoLootTier> = {
@@ -313,6 +238,10 @@ export function getNarutoCharacterTier(characterId: string | null | undefined): 
   return NARUTO_CHARACTER_TIER[characterId] ?? null;
 }
 
+export function hasNarutoLootProfile(characterId: string | null | undefined): boolean {
+  return Boolean(characterId && NARUTO_CHARACTER_LOOT[characterId]);
+}
+
 export function listNarutoTierCharacterIds(): string[] {
   return Object.keys(NARUTO_CHARACTER_TIER);
 }
@@ -324,8 +253,8 @@ export function listNarutoTierItemPool(tier: NarutoLootTier): string[] {
     if (t !== tier) continue;
     const profile = NARUTO_CHARACTER_LOOT[id];
     if (!profile) continue;
-    set.add(profile.signature);
-    set.add(profile.secondary);
+    set.add(profile.signatureItemId);
+    set.add(profile.secondaryItemId);
   }
   return Array.from(set);
 }
@@ -358,8 +287,8 @@ export function rollNarutoMaterialRarity(
 }
 
 /**
- * 70% assinatura (se for da raridade); senão secundário se bater;
- * 30% resto do tier da raridade; se vazio → sorteio livre no tier.
+ * @deprecated O kill Naruto já não usa raridade para escolher item.
+ * Mantido para referência do modelo antigo.
  */
 export function pickNarutoMaterialItem(
   characterId: string | null,
@@ -397,4 +326,104 @@ export function pickNarutoMaterialItem(
   }
 
   return freePick();
+}
+
+/** Os 30 personagens da tabela oficial (extras de pack ficam de fora). */
+export const NARUTO_CORE_THIRTY_IDS: readonly string[] = [
+  'naruto-classic',
+  'sasuke-classic',
+  'sakura',
+  'ino',
+  'chouji',
+  'kiba',
+  'shikamaru',
+  'hinata',
+  'shino',
+  'tenten',
+  'rock-lee',
+  'neji',
+  'temari',
+  'gaara',
+  'sakura-shippuden',
+  'tayuya',
+  'jirobo',
+  'kabuto',
+  'kimimaro',
+  'kakashi',
+  'guy',
+  'jiraiya',
+  'tsunade',
+  'kisame',
+  'deidara',
+  'sasuke-cursed',
+  'uchiha-itachi',
+  'orochimaru',
+  'naruto-sennin',
+  'naruto-kyubi',
+];
+
+export function getNarutoLootRollChances(tier: NarutoLootTier): {
+  secondary: number;
+  signature: number;
+} {
+  return LOOT_TIER_ROLL_CHANCES[tier];
+}
+
+export function listSignatureCharacterIdsForItem(itemId: string): string[] {
+  return Object.entries(NARUTO_CHARACTER_LOOT)
+    .filter(([, profile]) => profile.signatureItemId === itemId)
+    .map(([id]) => id);
+}
+
+export function listSecondaryCharacterIdsForItem(itemId: string): string[] {
+  return Object.entries(NARUTO_CHARACTER_LOOT)
+    .filter(([, profile]) => profile.secondaryItemId === itemId)
+    .map(([id]) => id);
+}
+
+/**
+ * Progressão por assinatura — NÃO implementada.
+ * Só o contrato de lookup para o futuro.
+ */
+export function requiresSignatureItem(_characterId: string): boolean {
+  return false;
+}
+
+export interface NarutoIndependentMaterialRoll {
+  secondaryItemId: string | null;
+  signatureItemId: string | null;
+}
+
+/**
+ * Secondary e Signature são rolls independentes (qty 1).
+ * VIP: se os dois falharem, uma chance de reroll dos dois.
+ */
+export function rollNarutoIndependentMaterials(
+  characterId: string | null,
+  tier: NarutoLootTier,
+  rng: () => number,
+  opts: { guildLootMult?: number; vipEmptyReroll?: number } = {},
+): NarutoIndependentMaterialRoll {
+  const profile = characterId ? NARUTO_CHARACTER_LOOT[characterId] : null;
+  const chances = LOOT_TIER_ROLL_CHANCES[tier];
+  const guild = opts.guildLootMult ?? 1;
+  const secondaryP = Math.min(1, Math.max(0, chances.secondary * guild));
+  const signatureP = Math.min(1, Math.max(0, chances.signature * guild));
+
+  const rollOnce = (): NarutoIndependentMaterialRoll => {
+    if (!profile) {
+      return { secondaryItemId: null, signatureItemId: null };
+    }
+    return {
+      secondaryItemId: rng() < secondaryP ? profile.secondaryItemId : null,
+      signatureItemId: rng() < signatureP ? profile.signatureItemId : null,
+    };
+  };
+
+  let result = rollOnce();
+  const vip = opts.vipEmptyReroll ?? 0;
+  if (vip > 0 && !result.secondaryItemId && !result.signatureItemId && rng() < vip) {
+    result = rollOnce();
+  }
+  return result;
 }

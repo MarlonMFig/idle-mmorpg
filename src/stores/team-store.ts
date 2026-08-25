@@ -6,6 +6,7 @@ import { getCharacterPack, NARUTO_CLASSIC_LOOK_TYPE, ROCK_LEE_LOOK_TYPE, SASUKE_
 import { narutoFragmentItemId } from '@/data/naruto-loot-tiers';
 import { inventoryStore } from '@/stores/inventory-store';
 import { addExperience } from '@/lib/player-progression';
+import { d, parseDecimal, type Decimal } from '@/lib/decimal';
 import { clampMasteryLevel, clampMasteryXp } from '@/constants/character-mastery';
 import { clampAwakeningLevel } from '@/constants/character-awakening';
 import { isMaxMastery } from '@/lib/character-mastery';
@@ -169,15 +170,15 @@ export const teamStore = {
   },
 
   /** Grava nível/XP do personagem (selamento, XP de caça, troca de ativo). */
-  setCharacterProgress(instanceId: string, progress: { level: number; xp: number }): boolean {
+  setCharacterProgress(instanceId: string, progress: { level: number; xp: number | Decimal }): boolean {
     const state = store.getSnapshot();
     const level = Math.max(1, Math.floor(progress.level));
-    const xp = Math.max(0, Math.floor(progress.xp));
+    const xp = parseDecimal(progress.xp);
     let found = false;
     const collection = state.collection.map((entry) => {
       if (entry.id !== instanceId) return entry;
       found = true;
-      if (entry.level === level && entry.xp === xp) return entry;
+      if (entry.level === level && entry.xp.eq(xp)) return entry;
       return { ...entry, level, xp };
     });
     if (!found) return false;
@@ -223,10 +224,10 @@ export const teamStore = {
    * Starter recupera o progresso da conta (era o único nível).
    * Cópias seladas entram no Nv.1 — não herdam caça nem conta.
    */
-  migrateMissingLevels(accountLevel: number, accountXp: number): void {
+  migrateMissingLevels(accountLevel: number, accountXp: number | Decimal): void {
     const state = store.getSnapshot();
     const accountLv = Math.max(1, Math.floor(accountLevel));
-    const accountXpClamped = Math.max(0, Math.floor(accountXp));
+    const accountXpClamped = parseDecimal(accountXp);
     let changed = false;
     const collection = state.collection.map((entry) => {
       if (entry.level >= 1) return entry;
@@ -234,20 +235,21 @@ export const teamStore = {
       if (entry.starterId) {
         return { ...entry, level: accountLv, xp: accountXpClamped };
       }
-      return { ...entry, level: 1, xp: 0 };
+      return { ...entry, level: 1, xp: d(0) };
     });
     if (!changed) return;
     commit({ ...state, collection });
   },
 
   /** XP próprio do personagem (independente da conta). @returns se subiu de nível. */
-  addCharacterXp(instanceId: string, amount: number): boolean {
-    if (amount <= 0) return false;
+  addCharacterXp(instanceId: string, amount: number | Decimal): boolean {
+    const gain = parseDecimal(amount);
+    if (gain.lte(0)) return false;
     const state = store.getSnapshot();
     let leveled = false;
     const collection = state.collection.map((entry) => {
       if (entry.id !== instanceId) return entry;
-      const next = addExperience(Math.max(1, entry.level), Math.max(0, entry.xp), amount);
+      const next = addExperience(Math.max(1, entry.level), entry.xp, gain);
       if (next.leveled) leveled = true;
       return { ...entry, level: next.level, xp: next.xp };
     });
@@ -291,6 +293,9 @@ export const teamStore = {
       characterId: member.characterId,
       obtainedAt: member.obtainedAt,
       quality: member.quality,
+      potential: member.potential,
+      potentialTotal: member.potentialTotal,
+      grade: member.grade,
       qualityStatMultiplier: member.qualityStatMultiplier,
       stars: member.stars,
       lineageId: member.lineageId,

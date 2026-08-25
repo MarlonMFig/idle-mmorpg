@@ -55,8 +55,8 @@ for (const fakeMul of [0.3, 0.6, 0.9, 1.3, 1.8, 2.5]) {
 }
 
 const rows = Array.from({ length: 100 }, () => snapshotHuntEnemyCombat(hunt, target));
-const hpSet = new Set(rows.map((row) => row.maxHp));
-const atkSet = new Set(rows.map((row) => row.atk));
+const hpSet = new Set(rows.map((row) => row.maxHp.toString()));
+const atkSet = new Set(rows.map((row) => row.atk.toString()));
 const defSet = new Set(rows.map((row) => row.def));
 
 assert('100 spawns same hunt/target', rows.length === 100);
@@ -64,7 +64,7 @@ assert('single maxHp', hpSet.size === 1);
 assert('single atk', atkSet.size === 1);
 assert('single def', defSet.size === 1);
 assert('no quality on snapshot', rows.every((row) => row.quality === null));
-assert('hp matches catalog curve', rows[0]!.maxHp === huntEnemyStatsForLevel(target.level).hp || rows[0]!.maxHp === target.hp);
+assert('hp matches level curve', rows[0]!.maxHp.eq(huntEnemyStatsForLevel(target.level).hp));
 assert(
   'quality would have varied HP before',
   beforeHp.size > 1,
@@ -96,13 +96,13 @@ const enemy: EnemyDefinition = {
 assert('enemy hp ignores leftover quality field', enemyMaxHpForDefinition({
   ...enemy,
   sealable: { ...enemy.sealable!, quality: 'SSS', qualityStatMultiplier: 2.8 },
-}) === enemyMaxHpForDefinition(enemy));
+}).eq(enemyMaxHpForDefinition(enemy)));
 assert(
   'enemy atk ignores leftover quality field',
   scaleEnemyLevelDamage(70, {
     ...enemy,
     sealable: { ...enemy.sealable!, quality: 'SSS', qualityStatMultiplier: 2.8 },
-  }) === scaleEnemyLevelDamage(70, enemy),
+  }).eq(scaleEnemyLevelDamage(70, enemy)),
 );
 
 const scroll = SEALING_SCROLL_TIERS[0]!;
@@ -173,14 +173,11 @@ const mythic = attemptCapture({
   rng: () => 0.7166667,
 });
 assert('force SS on captured instance', mythic.capturedCharacter?.quality === 'SS');
-assert(
-  'multiplier near 1.93',
-  Math.abs((mythic.capturedCharacter?.qualityStatMultiplier ?? 0) - 1.93) < 0.02,
-);
+assert('force SS has potential', Boolean(mythic.capturedCharacter?.potential));
 assert(
   'enemy combat hp unchanged by that multiplier',
-  enemyMaxHpForDefinition(enemy) === target.hp ||
-    enemyMaxHpForDefinition(enemy) === Math.floor(target.hp),
+  enemyMaxHpForDefinition(enemy).eq(target.hp) ||
+    enemyMaxHpForDefinition(enemy).eq(Math.floor(target.hp)),
 );
 
 const a = rollCaptureQualityBundle(mulberry32(3));

@@ -55,6 +55,7 @@ import {
 } from '@/stores/character-lab-store';
 import type { CharacterAnimSlot } from '@/types/character-definition';
 import { CharacterLabLootInspector } from '@/ui/dev/character-lab-loot-inspector';
+import { CharacterLabLootEconomyAnalyzer } from '@/ui/dev/character-lab-loot-economy';
 import { CharacterLabCaptureInspector } from '@/ui/dev/character-lab-capture-inspector';
 import { CharacterLabQualityTester } from '@/ui/dev/character-lab-quality-tester';
 import { CharacterLabXpAnalyzer } from '@/ui/dev/character-lab-xp-analyzer';
@@ -557,6 +558,13 @@ function CharacterTestLabBody() {
           vfxScale: visual.vfxScale,
           vfxOffsetX: visual.vfxOffsetX,
           vfxOffsetY: visual.vfxOffsetY,
+          vfxLoopMode: visual.vfxLoopMode,
+          vfxLoopStartFrame: visual.vfxLoopStartFrame,
+          vfxLoopEndFrame: visual.vfxLoopEndFrame,
+          vfxLoopDurationMs: visual.vfxLoopDurationMs,
+          vfxLoopUntilSkillEnd: visual.vfxLoopUntilSkillEnd,
+          vfxFlipX: visual.vfxFlipX,
+          vfxFlipY: visual.vfxFlipY,
           spawnOffsetX: visual.spawnOffsetX,
           spawnOffsetY: visual.spawnOffsetY,
           targetOffsetX: visual.targetOffsetX,
@@ -1622,7 +1630,8 @@ function CharacterTestLabBody() {
               <CharacterLabEconomyDebug />
               <CharacterLabAwakeningDebug />
               <CharacterLabAiDebug />
-              <CharacterLabLootInspector />
+              <CharacterLabLootEconomyAnalyzer />
+              <CharacterLabLootEconomyAnalyzer />
               <CharacterLabCaptureInspector />
               <ForceTargetDebug />
               <label className="character-lab__toggle">

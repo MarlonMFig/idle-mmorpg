@@ -32,6 +32,8 @@ export interface SealingScrollTier {
    * Hoje = successChance; não rebalancear.
    */
   captureModifier: number;
+  /** Multiplicador da chance base da quality (spec de captura). */
+  multiplier: number;
   label: string;
   iconSrc: string;
 }
@@ -45,7 +47,8 @@ export const SEALING_SCROLL_TIERS: readonly SealingScrollTier[] = [
     itemId: 'item-sealing-scroll',
     rank: 1,
     successChance: SEAL_SUCCESS_CHANCE,
-    captureModifier: SEAL_SUCCESS_CHANCE,
+    captureModifier: 1,
+    multiplier: 1,
     label: 'Comum',
     iconSrc: '/ui/items/sealing-scrolls/common.png',
   },
@@ -53,7 +56,8 @@ export const SEALING_SCROLL_TIERS: readonly SealingScrollTier[] = [
     itemId: 'item-sealing-scroll-rare',
     rank: 2,
     successChance: 0.94,
-    captureModifier: 0.94,
+    captureModifier: 1.7,
+    multiplier: 1.7,
     label: 'Raro',
     iconSrc: '/ui/items/sealing-scrolls/rare.png',
   },
@@ -61,7 +65,8 @@ export const SEALING_SCROLL_TIERS: readonly SealingScrollTier[] = [
     itemId: 'item-sealing-scroll-epic',
     rank: 3,
     successChance: 0.97,
-    captureModifier: 0.97,
+    captureModifier: 2.6,
+    multiplier: 2.6,
     label: 'Épico',
     iconSrc: '/ui/items/sealing-scrolls/epic.png',
   },
@@ -69,7 +74,8 @@ export const SEALING_SCROLL_TIERS: readonly SealingScrollTier[] = [
     itemId: 'item-sealing-scroll-legendary',
     rank: 4,
     successChance: 0.99,
-    captureModifier: 0.99,
+    captureModifier: 4.2,
+    multiplier: 4.2,
     label: 'Lendário',
     iconSrc: '/ui/items/sealing-scrolls/legendary.png',
   },

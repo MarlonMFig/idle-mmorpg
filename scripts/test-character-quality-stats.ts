@@ -2,7 +2,7 @@
  * Quality stat ranges + persistent multiplier. Run:
  * npx --yes tsx scripts/test-character-quality-stats.ts
  */
-import { BASE_ATTRIBUTES } from '../src/constants/attributes';
+import { BASE_ATTRIBUTES, LEVEL_ATTRIBUTE_GROWTH } from '../src/constants/attributes';
 import { COMBAT_ENERGY } from '../src/constants/combat-energy';
 import {
   QUALITY_STAT_RANGES,
@@ -10,14 +10,14 @@ import {
   formatQualityStatMultiplier,
   isQualityStatMultiplierInRange,
   qualityStatMidpoint,
-  rollQualityStatMultiplier,
+  resolveQualityStatMultiplier,
   scaleQualityPrimaryStat,
-  simulateQualityStatRolls,
 } from '../src/constants/character-quality-stats';
 import { estimateInstanceCombatPower } from '../src/lib/character-instance-stats';
 import { enemyMaxHpForDefinition, scaleEnemyLevelDamage } from '../src/lib/enemy-quality-stats';
 import { MAP_KEYS } from '../src/maps/map-registry';
 import { CHARACTER_QUALITIES, type CharacterQuality } from '../src/types/character-meta';
+import type { CharacterPotential } from '../src/types/character-meta';
 import type { EnemyDefinition } from '../src/types/enemy';
 import { computePlayerAttributes } from '../src/utils/attributes';
 import { normalizeSealedCharacter } from '../src/utils/character-identity';
@@ -29,6 +29,7 @@ import { SEALING_SCROLL_ITEM_ID } from '../src/constants/sealing';
 import { attemptCapture, clearCaptureResolved } from '../src/systems/capture-engine';
 import { setCaptureForceMode, setForceSpawnQuality } from '../src/lib/capture-dev';
 import { starAttributeMultiplier } from '../src/config/gameConfig';
+import { backfillPotential, qualityStatMultiplierFromPotential, rollCaptureBundle } from '../src/lib/raridade-potencial.js';
 
 const ITACHI = 'uchiha-itachi';
 
@@ -89,27 +90,48 @@ function huntEnemy(quality: CharacterQuality, multiplier: number, hp = 500): Ene
 assert('7 ranges', Object.keys(QUALITY_STAT_RANGES).length === 7);
 
 for (const quality of CHARACTER_QUALITIES) {
-  const rng = mulberry32(quality.charCodeAt(0) * 99991);
-  let out = 0;
-  for (let i = 0; i < 10_000; i += 1) {
-    const rolled = rollQualityStatMultiplier(quality, rng);
-    if (!isQualityStatMultiplierInRange(quality, rolled)) out += 1;
-  }
-  assert(`10k ${quality} in range`, out === 0);
-  const sim = simulateQualityStatRolls(quality, 10_000, mulberry32(quality.charCodeAt(0) * 17));
-  const expected = (QUALITY_STAT_RANGES[quality].min + QUALITY_STAT_RANGES[quality].max) / 2;
-  assert(`10k ${quality} avg near math mid`, Math.abs(sim.average - expected) < 0.03);
-  console.log(
-    `  ${quality} min=${sim.min.toFixed(4)} max=${sim.max.toFixed(4)} avg=${sim.average.toFixed(4)} mathMid=${expected.toFixed(4)} visualMid=${QUALITY_STAT_RANGES[quality].midpoint}`,
-  );
+  const bundle = rollCaptureBundle({ rng: mulberry32(quality.charCodeAt(0) * 99991) });
+  const forced = { ...bundle, quality };
+  const m = qualityStatMultiplierFromPotential(quality, forced.potential);
+  assert(`${quality} derived in range`, isQualityStatMultiplierInRange(quality, m));
 }
 
-const mythicRolls = new Set<number>();
-const mythicRng = mulberry32(20260823);
-for (let i = 0; i < 100; i += 1) {
-  mythicRolls.add(rollQualityStatMultiplier('SS', mythicRng));
+const samples: Record<CharacterQuality, CharacterPotential> = Object.fromEntries(
+  CHARACTER_QUALITIES.map((quality) => [quality, { hp: 10, forca: 10, defesa: 10 }]),
+) as Record<CharacterQuality, CharacterPotential>;
+for (const quality of CHARACTER_QUALITIES) {
+  const seed = samples[quality];
+  const stored = qualityStatMultiplierFromPotential(quality, seed);
+  const potential = backfillPotential(quality, stored, () => 0.5);
+  const next = qualityStatMultiplierFromPotential(quality, potential);
+  const err = Math.abs(next - stored) / stored;
+  assert(`backfill ${quality} within 1%`, err <= 0.01);
+  const migrated = normalizeSealedCharacter({
+    id: `legacy-${quality}`,
+    name: 'Itachi',
+    lookType: 9002,
+    sourceId: ITACHI,
+    starterId: null,
+    quality,
+    qualityStatMultiplier: stored,
+    stars: 0,
+    level: 1,
+    xp: 0,
+    masteryLevel: 0,
+    masteryXp: 0,
+    awakeningLevel: 0,
+    isFavorite: false,
+    isLocked: false,
+    characterId: ITACHI,
+    characterKey: 'look:9002',
+    previewUrl: '',
+  });
+  assert(`migrate ${quality} has potential`, Boolean(migrated?.potential));
+  assert(
+    `migrate ${quality} multiplier in range`,
+    isQualityStatMultiplierInRange(quality, migrated?.qualityStatMultiplier ?? 0),
+  );
 }
-assert('100 mythic rolls vary', mythicRolls.size > 10);
 
 const lv = 100;
 const midRows = CHARACTER_QUALITIES.map((quality) => {
@@ -228,7 +250,10 @@ assert('stars still apply', star1 > star0);
 assert(
   'stars then quality floor',
   star1 ===
-    scaleQualityPrimaryStat(BASE_ATTRIBUTES.hp * starAttributeMultiplier(2) + 10 * 49, 0.3),
+    scaleQualityPrimaryStat(
+      BASE_ATTRIBUTES.hp * starAttributeMultiplier(2) + LEVEL_ATTRIBUTE_GROWTH.hp * 49,
+      0.3,
+    ),
 );
 
 const aw0 = stats({
@@ -249,12 +274,13 @@ assert('awakening still applies', aw1 > aw0);
 
 assert(
   'enemy HP ignores quality on hunt foe',
-  enemyMaxHpForDefinition(huntEnemy('SS', 1.93, 500)) === 500,
+  enemyMaxHpForDefinition(huntEnemy('SS', 1.93, 500)).eq(500),
 );
 assert(
   'enemy dmg ignores quality on hunt foe',
-  scaleEnemyLevelDamage(70, huntEnemy('SS', 2.05)) ===
+  scaleEnemyLevelDamage(70, huntEnemy('SS', 2.05)).eq(
     scaleEnemyLevelDamage(70, huntEnemy('SS', 1.55)),
+  ),
 );
 
 assert('energy untouched', COMBAT_ENERGY.maxEnergy === 100 && COMBAT_ENERGY.energyGainPerBasicHit === 10);
@@ -278,17 +304,45 @@ const legacy = normalizeSealedCharacter({
   characterKey: 'look:9002',
   previewUrl: '',
 });
-assert('legacy legendary midpoint 1.30', legacy?.qualityStatMultiplier === 1.3);
+assert('legacy legendary has potential', Boolean(legacy?.potential));
+assert(
+  'legacy legendary multiplier in S range',
+  isQualityStatMultiplierInRange('S', legacy?.qualityStatMultiplier ?? 0),
+);
 const legacyReload = normalizeSealedCharacter(legacy);
-assert('legacy reload stays 1.30', legacyReload?.qualityStatMultiplier === 1.3);
+assert('legacy reload keeps potential', Boolean(legacyReload?.potential));
+assert(
+  'legacy reload multiplier stable',
+  legacyReload?.qualityStatMultiplier ===
+    resolveQualityStatMultiplier(legacyReload?.quality, legacyReload?.qualityStatMultiplier, legacyReload?.potential),
+);
 
 const preserved = normalizeSealedCharacter({
-  ...legacy,
+  id: 'ss-saved',
+  name: 'Itachi',
+  lookType: 9002,
+  sourceId: ITACHI,
+  starterId: null,
   quality: 'SS',
   qualityStatMultiplier: 1.93,
+  stars: 0,
+  level: 1,
+  xp: 0,
+  masteryLevel: 0,
+  masteryXp: 0,
+  awakeningLevel: 0,
+  isFavorite: false,
+  isLocked: false,
+  characterId: ITACHI,
+  characterKey: 'look:9002',
+  previewUrl: '',
 });
-assert('saved 1.93 survives normalize', preserved?.qualityStatMultiplier === 1.93);
 assert('quality remains mythic', preserved?.quality === 'SS');
+assert('saved SS has potential', Boolean(preserved?.potential));
+assert(
+  'saved 1.93 backfill in SS range',
+  isQualityStatMultiplierInRange('SS', preserved?.qualityStatMultiplier ?? 0),
+);
 
 const overlap = clampQualityStatMultiplier('A', 1.08);
 assert('epic 1.08 stays epic range', overlap === 1.08);
@@ -309,9 +363,13 @@ const captured = attemptCapture({
 });
 assert('capture success', captured.success === true && captured.capturedCharacter != null);
 assert('capture quality rolled as forced SS', captured.capturedCharacter?.quality === 'SS');
+assert('capture has potential', Boolean(captured.capturedCharacter?.potential));
 assert(
-  'capture multiplier near 1.93',
-  Math.abs((captured.capturedCharacter?.qualityStatMultiplier ?? 0) - 1.93) < 0.02,
+  'capture multiplier derived from potential',
+  Math.abs(
+    (captured.capturedCharacter?.qualityStatMultiplier ?? 0) -
+      qualityStatMultiplierFromPotential('SS', captured.capturedCharacter!.potential),
+  ) < 1e-5,
 );
 const reloaded = normalizeSealedCharacter(captured.capturedCharacter);
 assert('reload keeps mythic', reloaded?.quality === 'SS');

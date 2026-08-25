@@ -7,10 +7,10 @@ import {
   CHARACTER_QUALITY_LABELS,
   FORGE_MATERIAL_COST_BY_QUALITY,
 } from '@/constants/character-progression';
-import { formatQualityStatMultiplier } from '@/constants/character-quality-stats';
+import { formatQualityStatMultiplier, formatCharacterGrade } from '@/constants/character-quality-stats';
 import { formatMaxStarsReachedMessage, getMaxStarsForRarity } from '@/config/gameConfig';
 import { ATTRIBUTE_LABELS, ATTRIBUTE_ORDER } from '@/constants/attributes';
-import { INVENTORY_COLUMNS, INVENTORY_SLOT_COUNT } from '@/constants/inventory';
+import { INVENTORY_COLUMNS, inventoryDisplaySlotCount } from '@/constants/inventory';
 import { getItem, RARITY_CSS } from '@/data/items';
 import { useStore } from '@/hooks/use-store';
 import { planForgeStar } from '@/systems/forge';
@@ -79,7 +79,7 @@ function Portrait({
           unoptimized
         />
         <span className="char-portrait__rank" style={{ background: qualityColor }}>
-          {member.quality}
+          {member.quality} {formatCharacterGrade(member.grade)}
         </span>
         {member.isFavorite ? (
           <span className="char-portrait__flag char-portrait__flag--fav" title="Favorito">
@@ -234,7 +234,7 @@ export function ForgeTab() {
                     <span className="char-forge__roster-copy">
                       <strong>{entry.name}</strong>
                       <small>
-                        {CHARACTER_QUALITY_LABELS[entry.quality]}{' '}
+                        {CHARACTER_QUALITY_LABELS[entry.quality]} · {formatCharacterGrade(entry.grade)}{' '}
                         {formatQualityStatMultiplier(entry.qualityStatMultiplier)}
                       </small>
                     </span>
@@ -264,7 +264,10 @@ export function ForgeTab() {
                   <span>{target.quality}</span>
                 </div>
                 <div className="char-forge__hero-copy">
-                  <p>{CHARACTER_QUALITY_LABELS[target.quality]} · Nível {target.level}</p>
+                  <p>
+                    {CHARACTER_QUALITY_LABELS[target.quality]} · {formatCharacterGrade(target.grade)} · Nível{' '}
+                    {target.level}
+                  </p>
                   <h3>{target.name}</h3>
                   {atStarCap ? (
                     <div className="char-forge__star-upgrade">
@@ -411,7 +414,7 @@ export function InventoryPanel() {
   const selected = selectedIndex != null ? slots[selectedIndex] : null;
   const selectedDef = selected ? getItem(selected.itemId) : undefined;
   const occupied = slots.reduce((total, slot) => total + (slot ? 1 : 0), 0);
-  const freeSlots = slots.length - occupied;
+  const displayCount = inventoryDisplaySlotCount(slots.length);
 
   const panel = (
     <div
@@ -430,7 +433,7 @@ export function InventoryPanel() {
             <div className="inv-mgr__brand-row">
               <h2 className="inv-mgr__brand-title">Inventário</h2>
               <span className="inv-mgr__pill">
-                {occupied}/{slots.length} ocupados
+                {occupied} itens
               </span>
             </div>
             <p className="inv-mgr__brand-lede">
@@ -458,11 +461,11 @@ export function InventoryPanel() {
             <div className="inv-mgr__pane-copy">
               <h3 className="inv-mgr__pane-title">Bolsa de Itens</h3>
               <p className="inv-mgr__pane-lede">
-                {freeSlots} livres · clique em dois slots para mover ou empilhar
+                Sem limite de slots · clique em dois espaços para mover ou empilhar
               </p>
             </div>
-            <span className="inv-mgr__count" aria-label={`${occupied} de ${slots.length} slots`}>
-              {occupied}/{slots.length}
+            <span className="inv-mgr__count" aria-label={`${occupied} itens na bolsa`}>
+              {occupied}
             </span>
           </header>
         </section>
@@ -555,7 +558,8 @@ export function InventoryPanel() {
               style={{ gridTemplateColumns: `repeat(${INVENTORY_COLUMNS}, minmax(0, 1fr))` }}
               role="list"
             >
-              {slots.map((slot, index) => {
+              {Array.from({ length: displayCount }, (_, index) => {
+                const slot = slots[index] ?? null;
                 const def = slot ? getItem(slot.itemId) : undefined;
                 const selectedClass = selectedIndex === index ? ' is-selected' : '';
                 const monogram = slot ? itemMonogram(slot.itemId, def?.name ?? slot.itemId) : '';
@@ -608,7 +612,7 @@ export function InventoryPanel() {
 
       <footer className="inv-mgr__foot inv-mgr__foot--slim">
         <p className="inv-mgr__hint">
-          Clique em dois slots para mover ou empilhar · {INVENTORY_SLOT_COUNT} espaços
+          Clique em dois slots para mover ou empilhar · bolsa sem limite
         </p>
       </footer>
     </div>

@@ -1,0 +1,54 @@
+{
+  "tom_monetizacao": "f2p_friendly",
+  "moeda_premium": "gemas",
+  "fontes_gratuitas_gema": {
+    "login_diario_fixo": 5,
+    "login_diario_exclusivo_vip": false,
+    "missao_diaria": { "quantidade": "3-4 por dia", "valor_cada": "3-5" },
+    "missao_semanal": { "quantidade": "3-4 por semana", "valor_cada": "15-25" }
+  },
+  "conquistas": [
+    { "categoria": "primeiro_personagem_por_tier", "gemas_cada": 15, "repeticoes": 5 },
+    { "categoria": "primeiro_personagem_por_universo", "gemas_cada": 30, "repeticoes": "1 por anime" },
+    { "categoria": "nivel_de_conta", "marcos": [10, 25, 50, 100], "gemas": [20, 40, 80, 150] },
+    { "categoria": "estrela_maxima_primeira_vez", "gemas": 50 },
+    { "categoria": "primeira_nota_potencial", "marcos": ["S", "SS", "SSS"], "gemas": [15, 30, 60] },
+    { "categoria": "kills_acumulados", "marcos": [100, 1000, 10000, 100000], "gemas": [10, 25, 60, 120] },
+    { "categoria": "colecao_por_raridade_item", "marcos": ["comum","incomum","raro","epico","lendario","mitico"], "gemas": [20, 40, 80, 150, 300, 500] },
+    { "categoria": "primeiro_refinamento", "gemas": 20 }
+  ],
+  "regra_conquistas": "somente gemas e cosméticos, nunca fragmento/cristal/moeda local relevante",
+  "pacotes_de_gemas": [
+    { "nome": "Pequeno", "gemas": 60, "bonus_percentual": 0 },
+    { "nome": "Médio", "gemas": 330, "bonus_percentual": 10 },
+    { "nome": "Grande", "gemas": 1080, "bonus_percentual": 20 },
+    { "nome": "Mega", "gemas": 2400, "bonus_percentual": 33 },
+    { "nome": "Baú do Colecionador", "gemas": 6500, "bonus_percentual": 50 }
+  ],
+  "loja_semanal_rotativa": {
+    "cristal_de_refinamento": {
+      "limite_f2p_semanal": 2,
+      "limite_extra_vip_semanal": 1,
+      "limite_total_vip_semanal": 3
+    },
+    "pocao_de_aceleracao": {
+      "efeito": "2x velocidade de caça",
+      "duracoes_disponiveis": ["1h", "24h"]
+    },
+    "obs_fragmento_avulso": "movido para Loja de Guild (03-guild/config-guild.json), não duplicar aqui"
+  },
+  "passe_multiverso": {
+    "duracao_dias": 30,
+    "trilhas": ["gratis", "premium"],
+    "recompensas": "alternam entre universos ativos do jogo"
+  },
+  "ofertas_tempo_limitado": {
+    "pacote_primeira_compra": "1x por conta, preço baixo, valor alto",
+    "ofertas_fim_de_evento": "janela mínima recomendada: 24h (evitar timers agressivos de 1h)"
+  },
+  "guardrails": {
+    "venda_direta_lendario_mitico": false,
+    "compra_garante_resultado_de_sorte": false,
+    "observacao_legal": "Alguns mercados exigem divulgação de taxas de drop em compras com aleatoriedade (ex: Bélgica, Holanda) — validar com jurídico antes do lançamento."
+  }
+}

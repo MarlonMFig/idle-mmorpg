@@ -1,5 +1,6 @@
 import { getEnemyHpMultiplier, getForceHuntLevel } from '@/config/devConfig';
-import { huntEnemyXpForLevel } from '@/lib/hunt-enemy-xp';
+import { huntEnemyHpForLevel, huntEnemyXpForLevel } from '@/lib/hunt-enemy-xp';
+import type { Decimal } from '@/lib/decimal';
 import type { HuntCatalog } from '@/types/hunt';
 
 /** Combate idle — alcance de busca, ataque básico e respawn. */
@@ -48,12 +49,12 @@ export const NAMEPLATE_BAR_GAP_PX = 4;
 /** HP espelha o gerador WONSR. XP vem de `huntEnemyXpForLevel`. */
 export function huntEnemyStatsForLevel(level: number): {
   level: number;
-  hp: number;
+  hp: Decimal;
   xp: number;
 } {
   return {
     level,
-    hp: Math.round(45 + level * 16 + Math.pow(level, 1.18) * 2),
+    hp: huntEnemyHpForLevel(level),
     xp: huntEnemyXpForLevel(level),
   };
 }

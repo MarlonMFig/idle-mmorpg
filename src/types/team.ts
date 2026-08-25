@@ -1,4 +1,11 @@
-import type { LineageId, CharacterQuality, CharacterStars } from '@/types/character-meta';
+import type { Decimal } from '@/lib/decimal';
+import type {
+  CharacterGrade,
+  CharacterPotential,
+  CharacterQuality,
+  CharacterStars,
+  LineageId,
+} from '@/types/character-meta';
 import type { StarterCharacterId } from '@/types/player-creation';
 
 /** Personagem na coleção (starter ou selado). Instância única do jogador. */
@@ -24,9 +31,15 @@ export interface SealedCharacter {
   previewUrl: string;
   /** Qualidade natural imutável. */
   quality: CharacterQuality;
+  /** Componentes 1–20 por atributo primário. Fonte do multiplier. */
+  potential: CharacterPotential;
+  /** Soma dos componentes. Cache derivado. */
+  potentialTotal: number;
+  /** Grau derivado do potencial. */
+  grade: CharacterGrade;
   /**
-   * Multiplicador de stats primários rolado uma vez na faixa da quality.
-   * Persistido. Não inferir quality a partir deste número.
+   * Multiplicador de stats primários derivado do potencial (cache).
+   * Se houver potential, recalcular — este valor não é fonte da verdade.
    */
   qualityStatMultiplier: number;
   /** Estrelas; teto por raridade (getMaxStarsForRarity). */
@@ -41,7 +54,7 @@ export interface SealedCharacter {
   /** Nível da instância (captura = Nv.1). */
   level: number;
   /** XP atual rumo ao próximo nível. */
-  xp: number;
+  xp: Decimal;
   /** Maestria desta cópia (0–100). Independente de Level/Stars. */
   masteryLevel: number;
   /** XP de Maestria rumo ao próximo nível. 0 no máximo. */

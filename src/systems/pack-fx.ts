@@ -1,11 +1,19 @@
 import * as Phaser from 'phaser';
 import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
 import { RENDER_LAYER, vfxDepthForLayer } from '@/constants/render-layers';
+import { PACK_FX_MID_BODY_FACTOR, packFxDisplayScale, packFxFitScale } from '@/lib/pack-fx-scale';
 import type { CharacterSkillAnimDef } from '@/data/character-packs';
 import { getVfxDefinition } from '@/data/vfx/registry';
 import type { VfxRenderLayer } from '@/data/vfx/types';
 import type { Player } from '@/entities/player';
 import { DEFAULT_TRAVEL_SPEED_PX } from '@/lib/dev/lab-save-fields';
+import { officialSkillDurationMs } from '@/data/skill-execution-def';
+import {
+  canonicalizeLoopMode,
+  clampLoopRange,
+  loopModeFromLegacy,
+  resolvePersistentLoopDuration,
+} from '@/lib/frame-loop';
 import { logVfxLifecycle } from '@/lib/vfx-lifecycle-log';
 import { characterLabStore, isCharacterLabSession } from '@/stores/character-lab-store';
 
@@ -22,6 +30,14 @@ export interface PackFxOptions {
   frameRate?: number;
   frameCount?: number;
   loop?: boolean;
+  loopMode?: 'none' | 'full' | 'range' | 'persistent-range';
+  loopStartFrame?: number;
+  loopEndFrame?: number;
+  loopDurationMs?: number;
+  loopUntilSkillEnd?: boolean;
+  skillDurationMs?: number;
+  flipX?: boolean;
+  flipY?: boolean;
   vfxId?: string | null;
   renderLayer?: VfxRenderLayer;
   onEffectStart?: () => void;
@@ -187,6 +203,7 @@ export function playPackFx(
   y: number,
   opts?: PackFxOptions,
 ): void {
+  if (!scene.sys?.isActive() || !caster.sprite) return;
   const animKey = `fx-${textureKey}`;
   if (!scene.textures.exists(textureKey)) {
     logVfxLifecycle('spawn failed', {
@@ -205,14 +222,19 @@ export function playPackFx(
   const tex = scene.textures.get(textureKey);
   const frame = tex.get(0);
   const fxW = frame && typeof frame.width === 'number' ? frame.width : 0;
-  const fitH = bodyH > 0 && fxH > bodyH * 1.35 ? Math.min(1, (bodyH * 1.85) / fxH) : 1;
-  // Jato de fogo / beam: largo por natureza, mas não pode varrer a tela.
-  const fitW = bodyH > 0 && fxW > bodyH * 2.8 ? Math.min(1, (bodyH * 3.2) / fxW) : 1;
-  const fit = Math.min(fitH, fitW);
   const scaleMult = opts?.scaleMult && opts.scaleMult > 0 ? opts.scaleMult : 1;
   // Ground kick dust / rock slam sits at feet (origin bottom); flash is mid-body.
   const bodyLift = bodyLiftOf(caster);
-  const fx = trackLabSprite(scene.add.sprite(x, ground ? y : y - bodyLift * 0.5, textureKey, 0));
+  const spawned = scene.add.sprite(x, ground ? y : y - bodyLift * PACK_FX_MID_BODY_FACTOR, textureKey, 0);
+  if (!spawned) {
+    logVfxLifecycle('spawn failed', {
+      reason: 'sprite factory',
+      key: textureKey,
+      vfxId: opts?.vfxId ?? null,
+    });
+    return;
+  }
+  const fx = trackLabSprite(spawned);
   // O eixo MUGEN marca de onde o efeito sai (boca, mão). Espelha junto com o
   // caster, senão o jato nasce nas costas quando ele olha para a esquerda.
   const facingLeft = caster.sprite.flipX;
@@ -222,7 +244,8 @@ export function playPackFx(
   fx.x += offsetX;
   fx.y += offsetY;
   fx.setOrigin(facingLeft ? 1 - originX : originX, ground ? 1 : 0.5);
-  fx.setFlipX(facingLeft);
+  fx.setFlipX(Boolean(facingLeft) !== Boolean(opts?.flipX));
+  fx.setFlipY(Boolean(opts?.flipY));
   applyFxDepth(fx, fx.y, opts?.vfxId, opts?.renderLayer);
   noteLabVfx(textureKey, fx);
   opts?.onSpawn?.(fx);
@@ -233,12 +256,18 @@ export function playPackFx(
     const mark = scene.add.circle(fx.x, fx.y, 4, 0x66d4ff, 0.95).setDepth(RENDER_LAYER.ui + 1);
     scene.time.delayedCall(700, () => mark.destroy());
   }
-  const independent = opts?.independentScale === true;
-  if (independent) {
-    fx.setScale(caster.worldScale * scaleMult);
-  } else {
-    fx.setScale(caster.sprite.scaleX * (ground ? 1.05 : 1.15) * fit * scaleMult);
-  }
+  fx.setScale(
+    packFxDisplayScale({
+      bodyH: bodyH,
+      fxW: fxW,
+      fxH: fxH,
+      casterSpriteScaleX: caster.sprite.scaleX,
+      scaleMult: scaleMult,
+      ground,
+      independentScale: opts?.independentScale === true,
+      worldScale: caster.worldScale,
+    }),
+  );
   if (!ground) clampAboveFloor(fx, y, bodyLift);
   if (opts?.blend === 'add') {
     fx.setBlendMode(Phaser.BlendModes.ADD);
@@ -249,7 +278,54 @@ export function playPackFx(
     opts?.frameCount && opts.frameCount > 0 ? Math.min(opts.frameCount, sheetFrames) : sheetFrames;
   const fps = opts?.frameRate && opts.frameRate > 0 ? opts.frameRate : 12;
   const persist = opts?.persist === true;
-  const repeat = persist || opts?.loop ? -1 : 0;
+  const loopMode = canonicalizeLoopMode(opts?.loopMode) ?? loopModeFromLegacy(opts?.loop);
+  const range = clampLoopRange(playFrames, opts?.loopStartFrame ?? 1, opts?.loopEndFrame ?? playFrames);
+  const start0 = range.startFrame - 1;
+  const end0 = range.endFrame - 1;
+
+  const playOnceThenDestroy = () => {
+    fx.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+      logVfxLifecycle('animation finished', { key: textureKey });
+      logVfxLifecycle('cleanup', { key: textureKey });
+      fx.destroy();
+    });
+  };
+
+  if (playFrames > 1 && loopMode === 'persistent-range') {
+    const firstKey = `fx-${textureKey}-first-${playFrames}`;
+    const loopKey = `fx-${textureKey}-ploop-${start0}-${end0}`;
+    if (scene.anims.exists(firstKey)) scene.anims.remove(firstKey);
+    ensureSpriteAnim(scene, firstKey, textureKey, 0, playFrames - 1, fps, 0);
+    if (scene.anims.exists(loopKey)) scene.anims.remove(loopKey);
+    ensureSpriteAnim(scene, loopKey, textureKey, start0, end0, fps, -1);
+    const startPersistentLoop = () => {
+      if (!fx.active) return;
+      if (!safePlay(scene, fx, loopKey)) {
+        if (!persist) fx.destroy();
+        return;
+      }
+      const resolved = resolvePersistentLoopDuration({
+        durationMs: opts?.loopDurationMs,
+        untilSkillEnd: Boolean(opts?.loopUntilSkillEnd) || persist,
+        skillDurationMs: opts?.skillDurationMs,
+      });
+      if (persist) return;
+      if (resolved.untilSkillEnd && resolved.durationMs <= 0) return;
+      if (resolved.durationMs > 0) {
+        scene.time.delayedCall(resolved.durationMs, () => {
+          if (fx.active) fx.destroy();
+        });
+      }
+    };
+    if (!safePlay(scene, fx, firstKey)) {
+      startPersistentLoop();
+    } else {
+      fx.once(Phaser.Animations.Events.ANIMATION_COMPLETE, startPersistentLoop);
+    }
+    return;
+  }
+
+  const repeat = persist || loopMode === 'full' ? -1 : 0;
   if (playFrames > 1) {
     const existing = scene.anims.exists(animKey) ? scene.anims.get(animKey) : null;
     const needsRebuild =
@@ -264,9 +340,11 @@ export function playPackFx(
   }
 
   if (scene.anims.exists(animKey)) {
-    fx.play(animKey);
+    if (!safePlay(scene, fx, animKey)) {
+      if (!persist) fx.destroy();
+      return;
+    }
     if (persist) return;
-    // Single-frame hold/fade; multi-frame plays through then destroys.
     if (sheetFrames <= 1 || playFrames <= 1) {
       trackLabTween(
         scene.tweens.add({
@@ -279,17 +357,10 @@ export function playPackFx(
           onComplete: () => fx.destroy(),
         }),
       );
-    } else if (opts?.loop) {
-      const holdMs = Math.max(600, Math.round((playFrames / fps) * 1000));
-      trackLabTimer(scene.time.delayedCall(holdMs, () => {
-        if (fx.active) fx.destroy();
-      }));
+    } else if (loopMode === 'full') {
+      return;
     } else {
-      fx.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
-        logVfxLifecycle('animation finished', { key: textureKey });
-        logVfxLifecycle('cleanup', { key: textureKey });
-        fx.destroy();
-      });
+      playOnceThenDestroy();
     }
   } else if (persist) {
     return;
@@ -350,7 +421,7 @@ export function playPackThrowFx(
 
   const bodyH = opts?.bodyH ?? 0;
   const fxH = opts?.fxH ?? 0;
-  const fit = bodyH > 0 && fxH > bodyH * 1.35 ? Math.min(1, (bodyH * 1.85) / fxH) : 1;
+  const fit = packFxFitScale(bodyH, 0, fxH);
 
   const rock = trackLabSprite(scene.add.sprite(startX, startY, textureKey, 0));
   rock.setOrigin(0.5, 0.5);
@@ -399,7 +470,16 @@ export function playPackThrowFx(
 }
 
 function labDelay(scene: Phaser.Scene, delay: number, fn: () => void): void {
-  trackLabTimer(scene.time.delayedCall(delay, fn));
+  trackLabTimer(
+    scene.time.delayedCall(delay, () => {
+      if (!scene.sys?.isActive()) return;
+      try {
+        fn();
+      } catch (error) {
+        console.warn('[PackFx] falha no VFX agendado', error);
+      }
+    }),
+  );
 }
 
 function labTravelMs(distance: number, speedPx: number): number {
@@ -464,9 +544,6 @@ function playTravelFx(
   const tex = scene.textures.get(textureKey);
   const frame = tex.get(0);
   const fxW = frame && typeof frame.width === 'number' ? frame.width : 0;
-  const fitH = bodyH > 0 && fxH > bodyH * 1.35 ? Math.min(1, (bodyH * 1.85) / fxH) : 1;
-  const fitW = bodyH > 0 && fxW > bodyH * 2.8 ? Math.min(1, (bodyH * 3.2) / fxW) : 1;
-  const fit = Math.min(fitH, fitW);
   const scaleMult = anim.fxScale && anim.fxScale > 0 ? anim.fxScale : 1;
 
   const fx = trackLabSprite(scene.add.sprite(startX, startY, textureKey, 0));
@@ -476,11 +553,17 @@ function playTravelFx(
   noteLabVfx(textureKey, fx);
   hooks?.onSpawn?.(fx);
   hooks?.onEffectStart?.();
-  if (anim.fxIndependentScale) {
-    fx.setScale(caster.worldScale * scaleMult);
-  } else {
-    fx.setScale(caster.sprite.scaleX * 1.15 * fit * scaleMult);
-  }
+  fx.setScale(
+    packFxDisplayScale({
+      bodyH: bodyH,
+      fxW: fxW,
+      fxH: fxH,
+      casterSpriteScaleX: caster.sprite.scaleX,
+      scaleMult: scaleMult,
+      independentScale: Boolean(anim.fxIndependentScale),
+      worldScale: caster.worldScale,
+    }),
+  );
   if (anim.fxBlend === 'add') fx.setBlendMode(Phaser.BlendModes.ADD);
 
   const travelKey = `fx-${textureKey}-lab-travel`;
@@ -697,13 +780,36 @@ function scheduleLegacyPrimary(
   });
 }
 
-function catalogFxOpts(anim: CharacterSkillAnimDef): Pick<PackFxOptions, 'frameRate' | 'frameCount' | 'loop' | 'vfxId'> {
+function catalogFxOpts(anim: CharacterSkillAnimDef): Pick<
+  PackFxOptions,
+  | 'frameRate'
+  | 'frameCount'
+  | 'loop'
+  | 'loopMode'
+  | 'loopStartFrame'
+  | 'loopEndFrame'
+  | 'loopDurationMs'
+  | 'loopUntilSkillEnd'
+  | 'skillDurationMs'
+  | 'flipX'
+  | 'flipY'
+  | 'vfxId'
+> {
   if (!anim.vfxId || !anim.fx) return { vfxId: anim.vfxId };
   const catalog = getVfxDefinition(anim.vfxId);
+  const mode = loopModeFromLegacy(catalog?.loop, anim.vfxLoopMode);
   return {
     frameRate: anim.fx.frameRate ?? catalog?.frameRate,
     frameCount: anim.fx.frameCount ?? catalog?.frameCount,
-    loop: catalog?.loop,
+    loop: mode !== 'none',
+    loopMode: mode,
+    loopStartFrame: anim.vfxLoopStartFrame,
+    loopEndFrame: anim.vfxLoopEndFrame,
+    loopDurationMs: anim.vfxLoopDurationMs,
+    loopUntilSkillEnd: anim.vfxLoopUntilSkillEnd,
+    skillDurationMs: officialSkillDurationMs(anim.execution) ?? undefined,
+    flipX: Boolean(anim.vfxFlipX),
+    flipY: Boolean(anim.vfxFlipY),
     vfxId: anim.vfxId,
   };
 }

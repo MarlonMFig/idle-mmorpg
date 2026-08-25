@@ -269,5 +269,17 @@
       "scaleMethod": "lanczos3-body-match",
       "standingBodyH": 110
     }
+  },
+  "kakashi-pose-geral": {
+    "image": "/sprites/player/kakashi/pose-geral.png",
+    "frameWidth": 146,
+    "frameHeight": 190,
+    "frameCount": 7,
+    "contentHeight": 186,
+    "scale": 1,
+    "frameRate": 12,
+    "durationMs": 583,
+    "source": "assets/naruto-source/nu/kakashi/pose-geral/frame_001..007.png",
+    "note": "POSE GERAL.zip — alpha pack, HQ match idle, feet lock"
   }
 }

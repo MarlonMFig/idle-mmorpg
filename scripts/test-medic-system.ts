@@ -66,7 +66,7 @@ function main(): void {
   clearEconomyLedger();
   let result = recoverTeamAtMedic();
   assert('partial heal ok', result.ok === true);
-  assert('partial hp full', vitalsStore.getSnapshot().hp === 100);
+  assert('partial hp full', vitalsStore.getSnapshot().hp.eq(100));
   assert('partial cost charged', !result.ok || result.cost > 0);
 
   // —— Teste 3: full HP ——
@@ -86,7 +86,7 @@ function main(): void {
   clearEconomyLedger();
   result = recoverTeamAtMedic();
   assert('ko heal ok', result.ok === true);
-  assert('ko hp full', vitalsStore.getSnapshot().hp === 100);
+  assert('ko hp full', vitalsStore.getSnapshot().hp.eq(100));
   assert('revive untouched', inventoryStore.countItem(REVIVE_ITEM_ID) === reviveBefore);
 
   // —— Teste 4: sem copper ——
@@ -95,7 +95,7 @@ function main(): void {
   const hpBefore = vitalsStore.getSnapshot().hp;
   result = recoverTeamAtMedic();
   assert('no copper fail', result.ok === false && result.reason === 'insufficient-copper');
-  assert('hp unchanged', vitalsStore.getSnapshot().hp === hpBefore);
+  assert('hp unchanged', vitalsStore.getSnapshot().hp.eq(hpBefore));
   assert('copper still 0', economyService.getBalance('copper') === 0);
 
   // —— Teste 5: cobrança + ledger ——

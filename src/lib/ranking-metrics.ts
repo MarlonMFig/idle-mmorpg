@@ -1,6 +1,7 @@
 import { CHARACTER_QUALITIES, type CharacterQuality } from '@/types/character-meta';
 import type { SealedCharacter } from '@/types/team';
 import type { RankingMetricId, RankingPlayerProfile } from '@/types/ranking';
+import { d } from '@/lib/decimal';
 import { getTotalXpToReachLevel } from '@/lib/player-progression';
 
 const QUALITY_SCORE: Record<CharacterQuality, number> = {
@@ -62,8 +63,11 @@ export function computeCollectionRarityScore(collection: readonly SealedCharacte
   return score;
 }
 
-export function computeTotalXp(playerLevel: number, levelXp: number): number {
-  return getTotalXpToReachLevel(Math.max(1, playerLevel)) + Math.max(0, levelXp);
+export function computeTotalXp(playerLevel: number, levelXp: number | import('@/lib/decimal').Decimal): number {
+  // LOSSY: ranking ainda é number. Fatia de persist/ranking não converteu Decimal.
+  return getTotalXpToReachLevel(Math.max(1, playerLevel))
+    .plus(d(levelXp).max(0))
+    .toNumber();
 }
 
 /**

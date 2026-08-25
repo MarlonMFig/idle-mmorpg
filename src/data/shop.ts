@@ -11,6 +11,13 @@ import {
   REVIVE_ITEM_ID,
 } from '@/data/helper-items';
 import { getItem } from '@/data/items';
+import {
+  getNarutoCharacterTier,
+} from '@/data/naruto-loot-tiers';
+import {
+  NARUTO_FRAGMENT_SELL_BY_TIER,
+  NARUTO_GENERIC_FRAGMENT_SELL,
+} from '@/constants/loot-economy';
 import type { ItemRarity } from '@/types/loot';
 import type { ShopCategoryId, ShopOffer } from '@/types/shop';
 
@@ -113,8 +120,8 @@ export const SHOP_OFFERS: readonly ShopOffer[] = [
     currency: 'copper',
     price: SEALING_SCROLL_PRICE * 20,
     quantityPerPurchase: 1,
-    purchaseLimit: 3,
-    resetType: 'daily',
+    purchaseLimit: null,
+    resetType: 'none',
     stock: null,
     provisionalPrice: true,
   },
@@ -157,38 +164,38 @@ export function offerCurrencyItemId(offer: ShopOffer): string {
 export const SHOP_BUYBACK_RATIO = 0.4;
 
 /**
- * Preços de venda NPC — materiais Naruto (cobre unitário).
- * Não rebalanceados neste item.
+ * Preços de venda NPC — materiais Naruto (cobre unitário, globais).
+ * Rebalance 2026-08: rolls independentes; itens partilhados = um preço.
  */
 export const NARUTO_NPC_SELL_PRICES: Readonly<Record<string, number>> = {
-  'item-anime-naruto-bandagem': 5,
-  'item-anime-naruto-shuriken': 6,
-  'item-anime-naruto-kunai-gasta': 8,
-  'item-anime-naruto-fio-aco': 10,
-  'item-anime-naruto-papel-bomba': 15,
-  'item-anime-naruto-pilula-soldado': 18,
-  'item-anime-naruto-bandana-riscada': 22,
-  'item-anime-naruto-racao-militar': 40,
-  'item-anime-naruto-pergaminho-basico': 45,
-  'item-anime-naruto-bolsa-shuriken': 55,
+  'item-anime-naruto-bandagem': 35,
+  'item-anime-naruto-shuriken': 40,
+  'item-anime-naruto-kunai-gasta': 45,
+  'item-anime-naruto-fio-aco': 40,
+  'item-anime-naruto-papel-bomba': 80,
+  'item-anime-naruto-pilula-soldado': 40,
+  'item-anime-naruto-bandana-riscada': 55,
+  'item-anime-naruto-racao-militar': 45,
+  'item-anime-naruto-pergaminho-basico': 50,
+  'item-anime-naruto-bolsa-shuriken': 50,
   'item-anime-naruto-papel-chakra': 70,
-  'item-anime-naruto-colete-tatico': 220,
-  'item-anime-naruto-tanto': 260,
-  'item-anime-naruto-pergaminho-selamento': 300,
-  'item-anime-naruto-mascara-anbu': 320,
-  'item-anime-naruto-livro-bingo': 380,
-  'item-anime-naruto-fuma-shuriken': 400,
-  'item-anime-naruto-frasco-veneno': 950,
-  'item-anime-naruto-casulo-insetos': 1_000,
-  'item-anime-naruto-peca-marionete': 1_100,
-  'item-anime-naruto-cabaca-areia': 1_400,
-  'item-anime-naruto-selo-elemental': 1_600,
-  'item-anime-naruto-lente-ocular': 1_800,
-  'item-anime-naruto-presa-ninken': 5_000,
-  'item-anime-naruto-fragmento-bestial': 7_500,
-  'item-anime-naruto-contrato-invocacao': 8_000,
-  'item-anime-naruto-nucleo-chakra': 9_000,
-  'item-anime-naruto-pergaminho-proibido': 40_000,
+  'item-anime-naruto-presa-ninken': 100,
+  'item-anime-naruto-fuma-shuriken': 180,
+  'item-anime-naruto-colete-tatico': 180,
+  'item-anime-naruto-casulo-insetos': 200,
+  'item-anime-naruto-pergaminho-selamento': 400,
+  'item-anime-naruto-tanto': 400,
+  'item-anime-naruto-mascara-anbu': 1_400,
+  'item-anime-naruto-livro-bingo': 1_800,
+  'item-anime-naruto-frasco-veneno': 700,
+  'item-anime-naruto-peca-marionete': 400,
+  'item-anime-naruto-cabaca-areia': 700,
+  'item-anime-naruto-selo-elemental': 650,
+  'item-anime-naruto-lente-ocular': 400,
+  'item-anime-naruto-contrato-invocacao': 1_100,
+  'item-anime-naruto-nucleo-chakra': 8_000,
+  'item-anime-naruto-fragmento-bestial': 10_000,
+  'item-anime-naruto-pergaminho-proibido': 10_000,
 };
 
 const SELL_PRICE_BY_RARITY: Record<ItemRarity, number> = {
@@ -234,6 +241,15 @@ export function getItemSellValue(itemId: string): number {
 
   const defined = def?.sellValue;
   if (defined != null) return Math.max(0, Math.floor(defined));
+
+  if (itemId === 'item-anime-naruto-fragmento-personagem') {
+    return NARUTO_GENERIC_FRAGMENT_SELL;
+  }
+  if (itemId.startsWith('item-anime-naruto-frag-')) {
+    const characterId = itemId.slice('item-anime-naruto-frag-'.length);
+    const tier = getNarutoCharacterTier(characterId) ?? 1;
+    return NARUTO_FRAGMENT_SELL_BY_TIER[tier];
+  }
 
   const tablePrice = NARUTO_NPC_SELL_PRICES[itemId];
   if (tablePrice != null) return tablePrice;

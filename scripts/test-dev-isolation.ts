@@ -125,7 +125,7 @@ function main(): void {
       assert('forced hunt level applied in lab', forced.hunts[0]!.targets[0]!.level === 1);
       assert(
         'forced hp uses multiplier',
-        forced.hunts[0]!.targets[0]!.hp === Math.round(stats.hp * 2),
+        forced.hunts[0]!.targets[0]!.hp === Math.round(Number(stats.hp) * 2),
       );
 
       setDevLabSessionActive(false);

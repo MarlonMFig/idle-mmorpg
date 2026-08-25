@@ -11,7 +11,7 @@ import { teamStore } from '../src/stores/team-store';
 import { inventoryStore } from '../src/stores/inventory-store';
 import { FRAGMENTS_PER_STAR } from '../src/constants/aiw-quality';
 import { narutoFragmentItemId } from '../src/data/naruto-loot-tiers';
-import { normalizeSealedCharacter } from '../src/utils/character-identity';
+import { buildSealedCharacter } from '../src/utils/character-identity';
 import type { SealedCharacter } from '../src/types/team';
 
 function assert(name: string, cond: boolean): void {
@@ -33,24 +33,27 @@ function unit(
   partial: Pick<SealedCharacter, 'id' | 'quality' | 'stars'> & Partial<SealedCharacter>,
 ): SealedCharacter {
   return {
-    id: partial.id,
-    characterId: partial.characterId ?? 'itachi',
-    characterKey: partial.characterKey ?? 'look:90',
-    name: partial.name ?? 'Itachi',
-    lookType: partial.lookType ?? 90,
-    sourceId: partial.sourceId ?? 'itachi',
-    starterId: partial.starterId ?? null,
+    ...buildSealedCharacter({
+      id: partial.id,
+      name: partial.name ?? 'Itachi',
+      lookType: partial.lookType ?? 90,
+      sourceId: partial.sourceId ?? 'itachi',
+      starterId: partial.starterId ?? null,
+      characterId: partial.characterId ?? 'itachi',
+      characterKey: partial.characterKey ?? 'look:90',
+      quality: partial.quality,
+      stars: partial.stars,
+      lineageId: partial.clanId ?? 'ninja',
+      level: partial.level ?? 1,
+      xp: partial.xp ?? 0,
+      masteryLevel: partial.masteryLevel ?? 0,
+      masteryXp: partial.masteryXp ?? 0,
+      awakeningLevel: partial.awakeningLevel ?? 0,
+      isFavorite: partial.isFavorite ?? false,
+      isLocked: partial.isLocked ?? false,
+      previewUrl: partial.previewUrl ?? '',
+    }),
     previewUrl: partial.previewUrl ?? '',
-    quality: partial.quality,
-    stars: partial.stars,
-    clanId: partial.clanId ?? 'ninja',
-    level: partial.level ?? 1,
-    xp: partial.xp ?? 0,
-    masteryLevel: partial.masteryLevel ?? 0,
-    masteryXp: partial.masteryXp ?? 0,
-    awakeningLevel: partial.awakeningLevel ?? 0,
-    isFavorite: partial.isFavorite ?? false,
-    isLocked: partial.isLocked ?? false,
   };
 }
 

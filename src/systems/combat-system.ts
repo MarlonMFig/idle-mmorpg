@@ -23,6 +23,7 @@ import { skillsStore } from '@/stores/skills-store';
 import { locationStore } from '@/stores/location-store';
 import { combatEnergyStore } from '@/stores/combat-energy-store';
 import { vitalsStore } from '@/stores/vitals-store';
+import { Decimal, d, hpRatio, type Decimal as DecimalValue } from '@/lib/decimal';
 import { bossStore } from '@/stores/boss-store';
 import { createBossAiState, decideBossAction } from '@/lib/boss-ai';
 import { getSkill } from '@/data/skills';
@@ -137,9 +138,9 @@ export class CombatSystem {
       this.lastJutsuAt = this.scene.time.now;
       this.cast(skill, this.player.x, this.player.y, () => {
         const current = vitalsStore.getSnapshot();
-        const amount = Math.max(1, Math.floor(current.hpMax * (skill.healPercent ?? 0)));
+        const amount = Decimal.max(d(1), current.hpMax.mul(skill.healPercent ?? 0).floor());
         const healed = vitalsStore.heal(amount);
-        if (healed > 0) this.vfx.healNumber(this.player.x, this.player.y, healed);
+        if (healed.gt(0)) this.vfx.healNumber(this.player.x, this.player.y, healed);
         characterLabStore.pushEvent('heal applied');
         characterLabStore.setHitDebug({
           configuredMs: configured,
@@ -192,7 +193,7 @@ export class CombatSystem {
       characterLabStore.pushEvent('hit applied');
       if (!target?.isAlive) return;
       const damage = scaleOutgoingDamage(
-        8 + Math.floor(getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).attack * 0.85),
+        d(8).add(getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).attack.mul(0.85).floor()),
       );
       if (this.hitEnemy(target, damage, PLAYER_STATUS_UNIT_ID)) {
         combatEnergyStore.gainFromBasicHit(1);
@@ -293,9 +294,8 @@ export class CombatSystem {
       stunned: false,
       actionBlocked: false,
       skillGapBlocked: !isSkillCooldownIgnored() && time - this.lastJutsuAt < jutsuGap,
-      selfHpRatio: vitals.hpMax > 0 ? vitals.hp / vitals.hpMax : 1,
-      targetHpRatio:
-        nearest && nearest.stats.hpMax > 0 ? nearest.stats.hp / nearest.stats.hpMax : null,
+      selfHpRatio: hpRatio(vitals.hp, vitals.hpMax) || (vitals.hpMax.lte(0) ? 1 : 0),
+      targetHpRatio: nearest ? hpRatio(nearest.stats.hp, nearest.stats.hpMax) : null,
       energy: combatEnergyStore.getDecisionEnergy(),
       isSkillReady: (skillId) => skillsStore.isReady(skillId),
       getCooldownRemainingMs: (skillId) => skillsStore.getCooldownRemainingMs(skillId),
@@ -370,13 +370,14 @@ export class CombatSystem {
     });
   }
 
-  private applyEnemyHit(rawDamage: number): void {
-    if (rawDamage <= 0 || this.player.isDead()) return;
+  private applyEnemyHit(rawDamage: number | DecimalValue): void {
+    const raw = d(rawDamage);
+    if (raw.lte(0) || this.player.isDead()) return;
     const hpBefore = vitalsStore.getSnapshot().hp;
     applyDirectDamage({
       runtime: this.statuses,
       targetId: PLAYER_STATUS_UNIT_ID,
-      rawAmount: rawDamage,
+      rawAmount: raw,
       sourceId: 'enemy',
       enemy: null,
       element: BASIC_ATTACK_ELEMENT,
@@ -393,7 +394,7 @@ export class CombatSystem {
       }
       return;
     }
-    if (vitalsStore.getSnapshot().hp >= hpBefore) return;
+    if (vitalsStore.getSnapshot().hp.gte(hpBefore)) return;
 
     this.player.playHurt();
     if (!this.player.isCastingSkill()) {
@@ -476,7 +477,7 @@ export class CombatSystem {
       const dropY = target.sprite.y;
       this.vfx.playComboHit(dropX, dropY, this.player.sprite.scaleX * 0.95);
       const damage = scaleOutgoingDamage(
-        8 + Math.floor(getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).attack * 0.85),
+        d(8).add(getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).attack.mul(0.85).floor()),
       );
       // Item 41: Energia só no hit confirmado de Basic Attack (applyDirectDamage true).
       if (this.hitEnemy(target, damage, PLAYER_STATUS_UNIT_ID)) {
@@ -505,9 +506,9 @@ export class CombatSystem {
       this.lastJutsuAt = time;
       this.cast(skill, this.player.x, this.player.y, () => {
         const current = vitalsStore.getSnapshot();
-        const amount = Math.max(1, Math.floor(current.hpMax * (skill.healPercent ?? 0)));
+        const amount = Decimal.max(d(1), current.hpMax.mul(skill.healPercent ?? 0).floor());
         const healed = vitalsStore.heal(amount);
-        if (healed > 0) this.vfx.healNumber(this.player.x, this.player.y, healed);
+        if (healed.gt(0)) this.vfx.healNumber(this.player.x, this.player.y, healed);
       }, null);
       return true;
     }
@@ -620,19 +621,19 @@ export class CombatSystem {
   ): void {
     if (impact.multiplier <= 0) return;
     let damage = scaleOutgoingDamage(
-      Math.max(
-        0,
-        Math.floor(
-          (skill.damage + Math.floor(getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).attack * 0.35)) *
-            impact.multiplier,
-        ),
+      Decimal.max(
+        d(0),
+        d(skill.damage)
+          .add(getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).attack.mul(0.35).floor())
+          .mul(impact.multiplier)
+          .floor(),
       ),
     );
     const active = teamStore.getActive();
     if (active && active.stars >= 3 && STAR_3_SPECIAL_DAMAGE_BONUS != null) {
-      damage = Math.floor(damage * (1 + STAR_3_SPECIAL_DAMAGE_BONUS));
+      damage = damage.mul(1 + STAR_3_SPECIAL_DAMAGE_BONUS).floor();
     }
-    if (damage <= 0) return;
+    if (damage.lte(0)) return;
 
     const radius = impact.kind === 'area' ? (impact.radius ?? skill.areaRadius) : skill.areaRadius;
     const origin = target?.isAlive ? target : null;
@@ -656,7 +657,7 @@ export class CombatSystem {
 
   private hitEnemy(
     enemy: Enemy,
-    damage: number,
+    damage: number | DecimalValue,
     sourceId: string,
     element: DamageElement = BASIC_ATTACK_ELEMENT,
   ): boolean {
@@ -815,10 +816,10 @@ export class CombatSystem {
       skillIds: skills,
       stunned: false,
       skillGapMs: 700,
-      selfHpRatio: bossEnemy.stats.hpMax > 0 ? bossEnemy.stats.hp / bossEnemy.stats.hpMax : 1,
+      selfHpRatio: hpRatio(bossEnemy.stats.hp, bossEnemy.stats.hpMax) || (bossEnemy.stats.hpMax.lte(0) ? 1 : 0),
       targetHpRatio: (() => {
         const v = vitalsStore.getSnapshot();
-        return v.hpMax > 0 ? v.hp / v.hpMax : 1;
+        return hpRatio(v.hp, v.hpMax) || (v.hpMax.lte(0) ? 1 : 0);
       })(),
     });
     if (decision.action.kind === 'wait') return;
@@ -826,19 +827,19 @@ export class CombatSystem {
     if (decision.action.kind === 'basic-attack') {
       bossStore.noteSkill(null);
       const dmg = bossEnemy.triggerBasicAttack(time);
-      if (dmg != null) this.applyEnemyHit(Math.floor(dmg * bossStore.currentDamageMul()));
+      if (dmg != null) this.applyEnemyHit(dmg.mul(bossStore.currentDamageMul()).floor());
       return;
     }
     const skill = getSkill(decision.action.skillId);
     bossStore.noteSkill(decision.action.skillId);
     if (!skill) return;
-    const damage = Math.max(1, Math.floor((skill.damage ?? 8) * bossStore.currentDamageMul()));
+    const damage = Decimal.max(d(1), d((skill.damage ?? 8) * bossStore.currentDamageMul()).floor());
     this.applyEnemyHit(damage);
   }
 
   private onKill(enemy: Enemy, dropX: number, dropY: number): void {
     if (this.isBossFight()) {
-      bossStore.syncFromEnemy(0, enemy.stats.hpMax);
+      bossStore.syncFromEnemy(d(0), enemy.stats.hpMax);
       bossStore.finishVictory({ officialReward: true });
       this.executions.cancelAll();
       this.enemyManager.setHuntPaused(true);

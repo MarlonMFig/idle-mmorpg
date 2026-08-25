@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useEffect, useMemo, type RefObject } from 'react';
 import { CHARACTER_QUALITY_COLORS } from '@/constants/character-progression';
+import { formatCharacterGrade } from '@/constants/character-quality-stats';
 import { TEAM_SLOT_COUNT } from '@/constants/sealing';
 import { useDraggablePanel } from '@/hooks/use-draggable-panel';
 import { useStore } from '@/hooks/use-store';
@@ -17,22 +18,9 @@ import { combatEnergyStore } from '@/stores/combat-energy-store';
 import { combatStatusHudStore } from '@/stores/combat-status-hud-store';
 import type { CombatStatusHudIcon } from '@/stores/combat-status-hud-store';
 import type { SealedCharacter } from '@/types/team';
+import { formatStat } from '@/lib/format-stat';
+import { Decimal, d, hpRatio } from '@/lib/decimal';
 import { computeInstanceTotals } from '@/lib/character-instance-stats';
-
-function formatCompact(value: number): string {
-  const n = Math.max(0, value);
-  if (n >= 1_000_000) {
-    const v = n / 1_000_000;
-    const text = v >= 10 ? v.toFixed(1) : v.toFixed(2);
-    return `${text.replace(/\.0+$/, '').replace(/(\.\d)0$/, '$1')}M`;
-  }
-  if (n >= 1_000) {
-    const v = n / 1_000;
-    const text = v >= 100 ? String(Math.round(v)) : v >= 10 ? v.toFixed(1) : v.toFixed(2);
-    return `${text.replace(/\.0+$/, '')}K`;
-  }
-  return String(Math.round(n));
-}
 
 function estimateHpMax(member: SealedCharacter, level: number): number {
   return Math.max(
@@ -58,8 +46,8 @@ function ActiveTeamRow({
   member: SealedCharacter;
   isActive: boolean;
   level: number;
-  hp: number;
-  hpMax: number;
+  hp: number | import('@/lib/decimal').Decimal;
+  hpMax: number | import('@/lib/decimal').Decimal;
   energy: number | null;
   energyMax: number | null;
   expPct: number;
@@ -67,8 +55,8 @@ function ActiveTeamRow({
   statusIcons: CombatStatusHudIcon[];
 }) {
   const qualityColor = CHARACTER_QUALITY_COLORS[member.quality];
-  const hpSafe = Math.max(1, hpMax);
-  const hpPct = Math.max(0, Math.min(100, (hp / hpSafe) * 100));
+  const hpSafe = Decimal.max(d(1), d(hpMax));
+  const hpPct = hpRatio(hp, hpSafe) * 100;
   const expSafe = Math.max(0, Math.min(100, expPct));
   const energySafeMax = Math.max(1, energyMax ?? 1);
   const energyPct =
@@ -95,7 +83,7 @@ function ActiveTeamRow({
           unoptimized
         />
         <span className="active-team__rank" style={{ background: qualityColor }}>
-          {member.quality}
+          {member.quality} {formatCharacterGrade(member.grade)}
         </span>
       </div>
 
@@ -103,7 +91,7 @@ function ActiveTeamRow({
         <div className="active-team__title-row">
           <span className="active-team__name">
             <span className="active-team__name-quality" style={{ color: qualityColor }}>
-              [{member.quality}]
+              [{member.quality} · {formatCharacterGrade(member.grade)}]
             </span>{' '}
             {member.name}
           </span>
@@ -115,14 +103,14 @@ function ActiveTeamRow({
         <div className="active-team__bar active-team__bar--hp">
           <span className="active-team__bar-fill" style={{ width: `${hpPct}%` }} />
           <span className="active-team__bar-label">
-            {formatCompact(hp)}/{formatCompact(hpMax)}
+            {formatStat(hp)}/{formatStat(hpMax)}
           </span>
         </div>
         {energyPct != null && energy != null && energyMax != null ? (
           <div className="active-team__bar active-team__bar--energy" title="ENERGIA">
             <span className="active-team__bar-fill" style={{ width: `${energyPct}%` }} />
             <span className="active-team__bar-label">
-              ENERGIA {formatCompact(Math.floor(energy))}/{formatCompact(Math.floor(energyMax))}
+              ENERGIA {formatStat(Math.floor(energy))}/{formatStat(Math.floor(energyMax))}
             </span>
           </div>
         ) : null}
@@ -281,8 +269,8 @@ export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
           const memberLevel = Math.max(1, member.level || 1);
           const atMaxLevel = isMaxLevel(memberLevel);
           const hpMax = isActive
-            ? Math.max(1, vitals.hpMax)
-            : estimateHpMax(member, memberLevel);
+            ? Decimal.max(d(1), vitals.hpMax)
+            : d(estimateHpMax(member, memberLevel));
           const hp = isActive ? vitals.hp : hpMax;
           const expPct = getXpBarPercent(member.xp, memberLevel);
 

@@ -3,6 +3,7 @@ import type { CharacterQuality } from '@/types/character-meta';
 import type { WonsrDirection, WonsrSpriteFit } from '@/data/wonsr-sprites';
 import type { MapKey } from '@/maps/map-registry';
 import type { LootDropEntry } from '@/types/loot';
+import type { Decimal } from '@/lib/decimal';
 
 export interface EnemySpawn {
   x: number;
@@ -80,6 +81,11 @@ export interface EnemyDefinition {
   mapKey: MapKey;
   /** Presente quando o alvo da caça pode ser selado. */
   sealable?: EnemySealableIdentity;
+  /**
+   * Hunt: HP vem de `63 * 1.09^(nível-1)`, não do JSON.
+   * Boss / dummy / mapa solto: usa `hp` explícito.
+   */
+  combatHpFromLevel?: boolean;
   /** Sem auto-respawn (duelo sequencial). */
   noRespawn?: boolean;
   /** Override do ENEMY_RESPAWN_MS (ex.: mapa de teste farm). */
@@ -111,8 +117,8 @@ export interface EnemySkill {
 }
 
 export interface EnemyRuntimeStats {
-  hp: number;
-  hpMax: number;
+  hp: Decimal;
+  hpMax: Decimal;
   level: number;
   xp: number;
 }

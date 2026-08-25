@@ -1,15 +1,15 @@
 /**
  * Serialização / validação do inventário para session-v1 (Item 31).
  * Copper permanece como item `item-copper-coin` nos slots — sem store paralelo.
+ * Bolsa sem teto de slots: o save guarda todos os stacks.
  */
 
-import { INVENTORY_SLOT_COUNT } from '@/constants/inventory';
 import { getItem, getItemStackLimit } from '@/data/items';
 import { isDevMode } from '@/config/devConfig';
 import type { InventoryItemStack, InventorySlot } from '@/types/inventory';
 
 export interface PersistedInventory {
-  /** Slots na ordem do inventário (null = vazio). Comprimento normalizado no load. */
+  /** Slots na ordem do inventário (null = vazio). Comprimento = o que estiver na bolsa. */
   slots: Array<{ itemId: string; quantity: number } | null>;
 }
 
@@ -64,7 +64,6 @@ export function parsePersistedInventory(raw: unknown): PersistedInventory | null
     return null;
   }
   const data = raw as Record<string, unknown>;
-  // Item 36: Equipment removido — descarta blob legado sem converter.
   if ('equipment' in data) {
     warnDev('inventory.equipment legado descartado (sistema Equipment removido)');
   }
@@ -75,21 +74,17 @@ export function parsePersistedInventory(raw: unknown): PersistedInventory | null
   }
 
   const slots: Array<{ itemId: string; quantity: number } | null> = [];
-  for (let i = 0; i < INVENTORY_SLOT_COUNT; i += 1) {
-    const sanitized = sanitizeInventorySlot(slotsRaw[i]);
+  for (const entry of slotsRaw) {
+    const sanitized = sanitizeInventorySlot(entry);
     slots.push(sanitized ? { itemId: sanitized.itemId, quantity: sanitized.quantity } : null);
   }
-  // Entradas extras além do slot count são descartadas (não cabem).
-  if (slotsRaw.length > INVENTORY_SLOT_COUNT) {
-    warnDev(`slots extras no save (${slotsRaw.length}) truncados para ${INVENTORY_SLOT_COUNT}`);
-  }
+  while (slots.length > 0 && slots[slots.length - 1] == null) slots.pop();
   return { slots };
 }
 
 export function snapshotInventorySlots(slots: readonly InventorySlot[]): PersistedInventory {
   const out: Array<{ itemId: string; quantity: number } | null> = [];
-  for (let i = 0; i < INVENTORY_SLOT_COUNT; i += 1) {
-    const slot = slots[i] ?? null;
+  for (const slot of slots) {
     if (!slot) {
       out.push(null);
       continue;
@@ -101,16 +96,14 @@ export function snapshotInventorySlots(slots: readonly InventorySlot[]): Persist
     }
     out.push({ itemId: slot.itemId, quantity });
   }
+  while (out.length > 0 && out[out.length - 1] == null) out.pop();
   return { slots: out };
 }
 
 export function slotsFromPersisted(persisted: PersistedInventory): InventorySlot[] {
-  const slots: InventorySlot[] = Array.from({ length: INVENTORY_SLOT_COUNT }, () => null);
-  for (let i = 0; i < INVENTORY_SLOT_COUNT; i += 1) {
-    const row = persisted.slots[i];
-    if (!row) continue;
+  return persisted.slots.map((row) => {
+    if (!row) return null;
     const stack: InventoryItemStack = { itemId: row.itemId, quantity: row.quantity };
-    slots[i] = sanitizeInventorySlot(stack);
-  }
-  return slots;
+    return sanitizeInventorySlot(stack);
+  });
 }

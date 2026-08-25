@@ -45,7 +45,7 @@ export const MAP_KEYS = {
   wonsrFarmAnbu: 'wonsrFarmAnbu',
   academy: 'academy',
   wonsrKonoha: 'wonsrKonoha',
-  /** Top-down 3840×2160 — aba WONSR (zip 8 mapas Naruto). */
+  /** Top-down 3840×2160 — mapas WONSR legado + aba NARUTO TOP DOWN (arenas amplas). */
   huntWonsrFlorestaDaMorte: 'huntWonsrFlorestaDaMorte',
   huntWonsrCampoTreinamento: 'huntWonsrCampoTreinamento',
   huntWonsrCavernaAkatsuki: 'huntWonsrCavernaAkatsuki',
@@ -56,6 +56,14 @@ export const MAP_KEYS = {
   huntWonsrValeDasEstatuas: 'huntWonsrValeDasEstatuas',
   huntWonsrClareiraEquipe7: 'huntWonsrClareiraEquipe7',
   huntWonsrLaboratorioOrochimaru: 'huntWonsrLaboratorioOrochimaru',
+  huntTdValeDoFim: 'huntTdValeDoFim',
+  huntTdArenaExameChunin: 'huntTdArenaExameChunin',
+  huntTdPonteDasOndas: 'huntTdPonteDasOndas',
+  huntTdClareiraEquipe7: 'huntTdClareiraEquipe7',
+  huntTdCavernaAkatsuki: 'huntTdCavernaAkatsuki',
+  huntTdCrateraKonoha: 'huntTdCrateraKonoha',
+  huntTdLaboratorioOrochimaru: 'huntTdLaboratorioOrochimaru',
+  huntTdArenaVilaAreia: 'huntTdArenaVilaAreia',
 } as const;
 
 export type MapKey = (typeof MAP_KEYS)[keyof typeof MAP_KEYS];
@@ -106,4 +114,12 @@ export const MAP_FILES: Record<MapKey, string> = {
   huntWonsrValeDasEstatuas: '/maps/wonsr-vale-das-estatuas.tmx?v=col16',
   huntWonsrClareiraEquipe7: '/maps/wonsr-clareira-equipe-7.tmx?v=col16',
   huntWonsrLaboratorioOrochimaru: '/maps/wonsr-laboratorio-orochimaru.tmx?v=col16',
+  huntTdValeDoFim: '/maps/hunt-td-vale-do-fim.tmx?v=td1',
+  huntTdArenaExameChunin: '/maps/hunt-td-arena-exame-chunin.tmx?v=td1',
+  huntTdPonteDasOndas: '/maps/hunt-td-ponte-das-ondas.tmx?v=td1',
+  huntTdClareiraEquipe7: '/maps/hunt-td-clareira-equipe-7.tmx?v=td1',
+  huntTdCavernaAkatsuki: '/maps/hunt-td-caverna-akatsuki.tmx?v=td1',
+  huntTdCrateraKonoha: '/maps/hunt-td-cratera-konoha.tmx?v=td1',
+  huntTdLaboratorioOrochimaru: '/maps/hunt-td-laboratorio-orochimaru.tmx?v=td1',
+  huntTdArenaVilaAreia: '/maps/hunt-td-arena-vila-areia.tmx?v=td1',
 };

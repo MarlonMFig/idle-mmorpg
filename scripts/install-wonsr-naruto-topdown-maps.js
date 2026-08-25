@@ -66,6 +66,51 @@ const MAPS = [
   },
 ];
 
+const AMPLAS_MAPS = [
+  {
+    file: '01_Vale_do_Fim_3840x2160.png',
+    slug: 'hunt-td-vale-do-fim',
+    mapKey: 'huntTdValeDoFim',
+  },
+  {
+    file: '02_Arena_Exame_Chunin_3840x2160.png',
+    slug: 'hunt-td-arena-exame-chunin',
+    mapKey: 'huntTdArenaExameChunin',
+  },
+  {
+    file: '03_Ponte_das_Ondas_3840x2160.png',
+    slug: 'hunt-td-ponte-das-ondas',
+    mapKey: 'huntTdPonteDasOndas',
+  },
+  {
+    file: '04_Clareira_Equipe_7_3840x2160.png',
+    slug: 'hunt-td-clareira-equipe-7',
+    mapKey: 'huntTdClareiraEquipe7',
+  },
+  {
+    file: '05_Caverna_Ritual_Akatsuki_3840x2160.png',
+    slug: 'hunt-td-caverna-akatsuki',
+    mapKey: 'huntTdCavernaAkatsuki',
+    walkMode: 'open',
+  },
+  {
+    file: '06_Cratera_Konoha_3840x2160.png',
+    slug: 'hunt-td-cratera-konoha',
+    mapKey: 'huntTdCrateraKonoha',
+  },
+  {
+    file: '07_Laboratorio_Orochimaru_3840x2160.png',
+    slug: 'hunt-td-laboratorio-orochimaru',
+    mapKey: 'huntTdLaboratorioOrochimaru',
+    walkMode: 'open',
+  },
+  {
+    file: '08_Arena_Vila_da_Areia_3840x2160.png',
+    slug: 'hunt-td-arena-vila-areia',
+    mapKey: 'huntTdArenaVilaAreia',
+  },
+];
+
 const EXTRA_MAPS = [
   {
     file: '04_Clareira_Equipe_7_3840x2160_upscaled.png',
@@ -407,13 +452,14 @@ async function installOne(srcDir, spec) {
 
 async function main() {
   const extraOnly = process.argv.includes('--extra-only');
+  const amplas = process.argv.includes('--amplas');
   const positional = process.argv.slice(2).filter((arg) => !arg.startsWith('--'));
   const srcDir = extraOnly
     ? path.resolve(positional[0] || path.join(ROOT, '.tmp-wonsr-2mapas'))
     : positional[0]
       ? path.resolve(positional[0])
       : DEFAULT_SRC_DIR;
-  const list = extraOnly ? EXTRA_MAPS : MAPS;
+  const list = extraOnly ? EXTRA_MAPS : amplas ? AMPLAS_MAPS : MAPS;
   fs.mkdirSync(MAPS_DIR, { recursive: true });
   fs.mkdirSync(path.join(ROOT, '.tmp'), { recursive: true });
   const results = [];
@@ -423,7 +469,11 @@ async function main() {
   const outJson = path.join(
     ROOT,
     '.tmp',
-    extraOnly ? 'wonsr-extra-3840-spawns.json' : 'wonsr-naruto-topdown-spawns.json',
+    extraOnly
+      ? 'wonsr-extra-3840-spawns.json'
+      : amplas
+        ? 'naruto-td-amplas-spawns.json'
+        : 'wonsr-naruto-topdown-spawns.json',
   );
   fs.writeFileSync(outJson, `${JSON.stringify(results, null, 2)}\n`);
   console.log(`spawns → ${outJson}`);

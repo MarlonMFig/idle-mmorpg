@@ -28,6 +28,7 @@ import {
   type DamageElement,
   type ElementResistanceMap,
 } from '@/data/damage-elements';
+import { Decimal, d, floorNonNeg, type Decimal as DecimalValue } from '@/lib/decimal';
 
 export const MIN_ELEMENT_RESISTANCE = -1;
 export const MAX_ELEMENT_RESISTANCE = 0.9;
@@ -35,13 +36,13 @@ export const MAX_ELEMENT_RESISTANCE = 0.9;
 export type ElementFloaterTag = 'RESIST' | 'WEAK' | 'IMMUNE';
 
 export interface ElementalApplyResult {
-  rawDamage: number;
+  rawDamage: DecimalValue;
   element: DamageElement;
   skipped: boolean;
   immune: boolean;
   resistance: number;
-  afterResistance: number;
-  finalDamage: number;
+  afterResistance: DecimalValue;
+  finalDamage: DecimalValue;
   tag: ElementFloaterTag | null;
 }
 
@@ -73,25 +74,25 @@ export function validateAffinity(profile: CombatAffinityFields): string[] {
 }
 
 export function applyElementalResistance(
-  rawDamage: number,
+  rawDamage: number | DecimalValue,
   element: DamageElement,
   target: CombatAffinityFields,
   resistanceBonus = 0,
 ): ElementalApplyResult {
-  const raw = Number.isFinite(rawDamage) ? rawDamage : 0;
+  const raw = floorNonNeg(rawDamage);
   const base: ElementalApplyResult = {
     rawDamage: raw,
     element,
     skipped: false,
     immune: false,
     resistance: 0,
-    afterResistance: Math.max(0, Math.floor(raw)),
-    finalDamage: Math.max(0, Math.floor(raw)),
+    afterResistance: raw,
+    finalDamage: raw,
     tag: null,
   };
 
-  if (raw <= 0) {
-    return { ...base, afterResistance: 0, finalDamage: 0 };
+  if (raw.lte(0)) {
+    return { ...base, afterResistance: d(0), finalDamage: d(0) };
   }
 
   if (element === DEFAULT_SKILL_ELEMENT) {
@@ -102,15 +103,15 @@ export function applyElementalResistance(
     return {
       ...base,
       immune: true,
-      afterResistance: 0,
-      finalDamage: 0,
+      afterResistance: d(0),
+      finalDamage: d(0),
       tag: 'IMMUNE',
     };
   }
 
   const stored = (target.resistances as ElementResistanceMap | undefined)?.[element] ?? 0;
   const resistance = clampElementResistance(stored + resistanceBonus);
-  const after = Math.max(0, Math.floor(raw * (1 - resistance)));
+  const after = Decimal.max(d(0), raw.mul(1 - resistance).floor());
   let tag: ElementFloaterTag | null = null;
   if (resistance > 0.0001) tag = 'RESIST';
   else if (resistance < -0.0001) tag = 'WEAK';

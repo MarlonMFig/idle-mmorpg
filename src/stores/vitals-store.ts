@@ -1,4 +1,5 @@
 import { DEFAULT_VITALS } from '@/constants/hud';
+import { Decimal, d, floorNonNeg, parseDecimal, type Decimal as DecimalValue } from '@/lib/decimal';
 import { addExperience, getXpRequiredForLevel } from '@/lib/player-progression';
 import { isPlayerInvincible } from '@/config/devConfig';
 import { characterLabStore, isCharacterLabSession } from '@/stores/character-lab-store';
@@ -21,18 +22,28 @@ export const vitalsStore = {
     return store.getSnapshot().level;
   },
 
-  reset(initial: VitalsState = DEFAULT_VITALS): void {
+  reset(initial: {
+    hp: number | DecimalValue;
+    hpMax: number | DecimalValue;
+    xp: number | DecimalValue;
+    xpMax: number | DecimalValue;
+    level: number;
+  } = DEFAULT_VITALS): void {
     const level = initial.level || 1;
     store.setState({
-      ...initial,
+      hp: parseDecimal(initial.hp),
+      hpMax: Decimal.max(d(1), parseDecimal(initial.hpMax)),
+      xp: parseDecimal(initial.xp),
       xpMax: getXpRequiredForLevel(level),
+      level,
     });
   },
 
-  applyAttributeCaps(hpMax: number, fullHeal = false): void {
+  applyAttributeCaps(hpMax: number | DecimalValue, fullHeal = false): void {
+    const cap = Decimal.max(d(1), floorNonNeg(hpMax));
     const state = store.getSnapshot();
-    const hp = fullHeal ? hpMax : Math.min(state.hp, hpMax);
-    store.setState({ ...state, hp, hpMax });
+    const hp = fullHeal ? cap : Decimal.min(state.hp, cap);
+    store.setState({ ...state, hp, hpMax: cap });
   },
 
   healFull(): void {
@@ -41,13 +52,14 @@ export const vitalsStore = {
   },
 
   /** Cura HP (clamp em hpMax). Retorna o valor efetivamente curado. */
-  heal(amount: number): number {
-    if (amount <= 0) return 0;
+  heal(amount: number | DecimalValue): DecimalValue {
+    const gain = floorNonNeg(amount);
+    if (gain.lte(0)) return d(0);
     const state = store.getSnapshot();
-    if (state.hp <= 0 || state.hp >= state.hpMax) return 0;
-    const next = Math.min(state.hpMax, state.hp + Math.floor(amount));
-    const healed = next - state.hp;
-    if (healed <= 0) return 0;
+    if (state.hp.lte(0) || state.hp.gte(state.hpMax)) return d(0);
+    const next = Decimal.min(state.hpMax, state.hp.add(gain));
+    const healed = next.sub(state.hp);
+    if (healed.lte(0)) return d(0);
     store.setState({ ...state, hp: next });
     return healed;
   },
@@ -56,49 +68,51 @@ export const vitalsStore = {
    * Aplica dano ao HP. Defesa reduz o golpe (mínimo 1).
    * Retorna o dano efetivo e se o jogador morreu.
    */
-  applyDamage(rawAmount: number, defense = 0): { damage: number; died: boolean } {
+  applyDamage(rawAmount: number | DecimalValue, defense: number | DecimalValue = 0): { damage: DecimalValue; died: boolean } {
     if (
       isPlayerInvincible() ||
       (isCharacterLabSession() && characterLabStore.getSnapshot().playerInvincible)
     ) {
-      return { damage: 0, died: false };
+      return { damage: d(0), died: false };
     }
-    if (rawAmount <= 0) return { damage: 0, died: false };
+    const raw = d(rawAmount);
+    if (raw.lte(0)) return { damage: d(0), died: false };
     const state = store.getSnapshot();
-    if (state.hp <= 0) return { damage: 0, died: true };
+    if (state.hp.lte(0)) return { damage: d(0), died: true };
 
-    const mitigated = Math.max(1, Math.floor(rawAmount - defense * 0.35));
-    const hp = Math.max(0, state.hp - mitigated);
+    const mitigated = Decimal.max(d(1), raw.sub(d(defense).mul(0.35)).floor());
+    const hp = Decimal.max(d(0), state.hp.sub(mitigated));
     store.setState({ ...state, hp });
-    return { damage: mitigated, died: hp <= 0 };
+    return { damage: mitigated, died: hp.lte(0) };
   },
 
   /** HP já mitigado (defesa + elemento). Não reaplica defesa. 0 permanece 0. */
-  applyHpLoss(amount: number): { damage: number; died: boolean } {
+  applyHpLoss(amount: number | DecimalValue): { damage: DecimalValue; died: boolean } {
     if (
       isPlayerInvincible() ||
       (isCharacterLabSession() && characterLabStore.getSnapshot().playerInvincible)
     ) {
-      return { damage: 0, died: false };
+      return { damage: d(0), died: false };
     }
-    if (amount <= 0) return { damage: 0, died: false };
+    const loss = floorNonNeg(amount);
+    if (loss.lte(0)) return { damage: d(0), died: false };
     const state = store.getSnapshot();
-    if (state.hp <= 0) return { damage: 0, died: true };
-    const loss = Math.max(0, Math.floor(amount));
-    const hp = Math.max(0, state.hp - loss);
+    if (state.hp.lte(0)) return { damage: d(0), died: true };
+    const hp = Decimal.max(d(0), state.hp.sub(loss));
     store.setState({ ...state, hp });
-    return { damage: loss, died: hp <= 0 };
+    return { damage: loss, died: hp.lte(0) };
   },
 
   isDead(): boolean {
-    return store.getSnapshot().hp <= 0;
+    return store.getSnapshot().hp.lte(0);
   },
 
-  addXp(amount: number): boolean {
-    if (amount <= 0) return false;
+  addXp(amount: number | DecimalValue): boolean {
+    const gain = parseDecimal(amount);
+    if (gain.lte(0)) return false;
 
     const state = store.getSnapshot();
-    const next = addExperience(state.level, state.xp, amount);
+    const next = addExperience(state.level, state.xp, gain);
     store.setState({
       hp: state.hp,
       hpMax: state.hpMax,

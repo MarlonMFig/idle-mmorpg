@@ -36,7 +36,7 @@ export interface HuntTarget {
   }>;
 }
 
-export type HuntSelectorTab = 'naruto' | 'wonsr' | 'bosses';
+export type HuntSelectorTab = 'naruto' | 'naruto-topdown' | 'bosses' | 'wonsr';
 
 export interface HuntDefinition {
   id: string;

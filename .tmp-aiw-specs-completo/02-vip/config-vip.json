@@ -1,0 +1,30 @@
+{
+  "modelo": "assinatura_mensal",
+  "nivel_permanente_por_gasto": false,
+  "gemas_diarias_incluidas": false,
+  "observacao_gemas": "Gemas diárias são sistema geral de login, disponível para F2P e assinante igualmente. Não é benefício exclusivo VIP.",
+  "beneficios": {
+    "bonus_exp_percentual": 20,
+    "bonus_loot": {
+      "percentual": 15,
+      "alcance": "TBD",
+      "opcoes": [
+        "somente_chance_de_nao_dropar_nada (recomendado)",
+        "todas_as_raridades_incluindo_lendario_mitico"
+      ]
+    },
+    "compra_automatica_pocao": true,
+    "cristal_refinamento_extra_semanal": 1,
+    "cristal_refinamento_total_semanal_assinante": 3,
+    "cristal_refinamento_total_semanal_f2p": 2,
+    "teto_ganho_offline_ampliado": true,
+    "criacao_de_guild": "exclusivo_assinante",
+    "entrada_em_guild": "disponivel_para_todos",
+    "cosmetico_exclusivo": true
+  },
+  "guardrails": {
+    "venda_direta_personagem_fragmento_lendario_mitico": false,
+    "beneficios_pagos_garantem_resultado": false,
+    "regra_de_teste": "Se algo só é alcançável pagando (mesmo que tecnicamente possível de graça mas absurdamente lento), quebra o tom F2P-friendly."
+  }
+}

@@ -12,8 +12,10 @@ import { isDevMode } from '@/config/devConfig';
 import {
   copperRewardForKill,
   isNarutoLootTarget,
+  resolveNarutoLootCharacterId,
   rollNarutoCharacterLoot,
 } from '@/data/anime-loot';
+import { hasNarutoLootProfile } from '@/data/naruto-loot-tiers';
 import { getItem, getItemDefinition } from '@/data/items';
 import { lootRandom } from '@/lib/loot-rng';
 import { guildCopperBonusMultiplier, guildLootBonusMultiplier, vipEmptyLootRerollChance } from '@/lib/progression-bonuses';
@@ -150,10 +152,11 @@ export function resolveLoot(input: LootResolveInput): RewardResult {
   const naruto = input.naruto;
   const useNaruto = Boolean(
     naruto &&
-      isNarutoLootTarget({
-        lookType: naruto.lookType,
-        sourceId: naruto.characterId,
-      }),
+      (hasNarutoLootProfile(resolveNarutoLootCharacterId(naruto)) ||
+        isNarutoLootTarget({
+          lookType: naruto.lookType,
+          sourceId: naruto.characterId,
+        })),
   );
 
   const items = useNaruto

@@ -2,6 +2,7 @@ import type { ItemCategory, ItemDefinition, ItemRarity } from '@/types/loot';
 import { isItemRarity } from '@/types/loot';
 import { ANIME_LOOT_ITEMS } from '@/data/anime-items';
 import { HELPER_ITEM_DEFS } from '@/data/helper-items';
+import { NARUTO_CHARACTER_LOOT } from '@/data/naruto-loot-tiers';
 
 /**
  * Catálogo de itens (Item 36 — sem Equipment).
@@ -68,29 +69,37 @@ export const ITEMS: Record<string, ItemDefinition> = {
     id: 'item-sealing-scroll',
     name: 'Pergaminho de Selamento',
     rarity: 'common',
-    stackMax: 999,
+    stackMax: 999999,
     iconSrc: '/ui/items/sealing-scrolls/common.png',
+    sellable: false,
+    sellValue: 0,
   },
   'item-sealing-scroll-rare': {
     id: 'item-sealing-scroll-rare',
     name: 'Pergaminho de Selamento (Raro)',
     rarity: 'rare',
-    stackMax: 999,
+    stackMax: 999999,
     iconSrc: '/ui/items/sealing-scrolls/rare.png',
+    sellable: false,
+    sellValue: 0,
   },
   'item-sealing-scroll-epic': {
     id: 'item-sealing-scroll-epic',
     name: 'Pergaminho de Selamento (Épico)',
     rarity: 'epic',
-    stackMax: 999,
+    stackMax: 999999,
     iconSrc: '/ui/items/sealing-scrolls/epic.png',
+    sellable: false,
+    sellValue: 0,
   },
   'item-sealing-scroll-legendary': {
     id: 'item-sealing-scroll-legendary',
     name: 'Pergaminho de Selamento (Lendário)',
     rarity: 'legendary',
-    stackMax: 999,
+    stackMax: 999999,
     iconSrc: '/ui/items/sealing-scrolls/legendary.png',
+    sellable: false,
+    sellValue: 0,
   },
   ...HELPER_ITEM_DEFS,
   ...ANIME_LOOT_ITEMS,
@@ -159,6 +168,27 @@ export function inferItemCategory(item: ItemDefinition): ItemCategory {
   if (item.id.includes('quest')) return 'quest';
   return 'material';
 }
+
+function attachNarutoSignatureMetadata(): void {
+  const byItem = new Map<string, string[]>();
+  for (const [characterId, profile] of Object.entries(NARUTO_CHARACTER_LOOT)) {
+    const list = byItem.get(profile.signatureItemId) ?? [];
+    list.push(characterId);
+    byItem.set(profile.signatureItemId, list);
+  }
+  for (const [itemId, characterIds] of byItem) {
+    const item = ITEMS[itemId];
+    if (!item) continue;
+    ITEMS[itemId] = {
+      ...item,
+      signatureItem: true,
+      lootRole: 'signature',
+      associatedCharacterIds: characterIds,
+    };
+  }
+}
+
+attachNarutoSignatureMetadata();
 
 export function validateItemRegistry(): string[] {
   const warnings: string[] = [];

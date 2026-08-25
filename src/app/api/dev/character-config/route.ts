@@ -10,6 +10,7 @@ import {
 } from '@/lib/dev/patch-character-source';
 import type { LabSaveChanges } from '@/lib/dev/lab-save-fields';
 import { alignmentsEqual, normalizeSpriteAlignment } from '@/lib/sprite-alignment';
+import { upsertDevSpriteAlignment } from '@/lib/dev/dev-runtime-registry';
 
 function deny() {
   return NextResponse.json({ success: false, error: 'forbidden' }, { status: 403 });
@@ -73,6 +74,7 @@ export async function POST(request: Request) {
       }
     }
 
+    if (confirmedAlignment) upsertDevSpriteAlignment(characterId, confirmedAlignment);
     writeDevSourceAfterResponse(result.absPath, result.source);
 
     saveLog('response sent', 'character-config');

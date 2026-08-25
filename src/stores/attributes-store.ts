@@ -23,7 +23,7 @@ function activeQuality(): CharacterQuality {
 
 function activeQualityStatMultiplier(): number {
   const active = teamStore.getActive();
-  return resolveQualityStatMultiplier(active?.quality, active?.qualityStatMultiplier);
+  return resolveQualityStatMultiplier(active?.quality, active?.qualityStatMultiplier, active?.potential);
 }
 
 function activeCharacterLevel(): number {

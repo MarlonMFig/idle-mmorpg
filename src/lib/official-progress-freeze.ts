@@ -3,6 +3,7 @@
  * Não importa character-lab-store (evita ciclo).
  */
 import { shouldFreezeOfficialProgress } from '@/config/devConfig';
+import { cloneDecimal, type Decimal } from '@/lib/decimal';
 import { addExperience } from '@/lib/player-progression';
 import { accountStore } from '@/stores/account-store';
 import { achievementsStore } from '@/stores/achievements-store';
@@ -23,7 +24,7 @@ import { clonePersistedTeamPresets } from '@/lib/team-preset';
 
 interface FreezeVitals {
   level: number;
-  xp: number;
+  xp: Decimal;
 }
 
 interface FreezeGems {
@@ -65,13 +66,10 @@ let frozenAchievements: FreezeAchievements | null = null;
 function snapshotTeam(): FreezeTeam {
   const state = teamStore.getSnapshot();
   return {
-    collection: state.collection.map((entry) => {
-      const { potential: _legacyPotential, ...rest } = entry as typeof entry & {
-        potential?: unknown;
-      };
-      void _legacyPotential;
-      return { ...rest };
-    }),
+    collection: state.collection.map((entry) => ({
+      ...entry,
+      xp: cloneDecimal(entry.xp),
+    })),
     teamIds: [...state.teamIds],
     activeId: state.activeId,
   };
@@ -98,7 +96,7 @@ export function getFrozenOfficialInventory(): PersistedInventory | null {
 export function getFrozenOfficialTeam(): FreezeTeam | null {
   return frozenTeam
     ? {
-        collection: frozenTeam.collection.map((c) => ({ ...c })),
+        collection: frozenTeam.collection.map((c) => ({ ...c, xp: cloneDecimal(c.xp) })),
         teamIds: [...frozenTeam.teamIds],
         activeId: frozenTeam.activeId,
       }
@@ -161,7 +159,7 @@ export function applyHuntCaptureToOfficialFreeze(
 export function beginOfficialProgressFreeze(): void {
   if (frozenVitals && frozenGems) return;
   const { level, xp } = vitalsStore.getSnapshot();
-  frozenVitals = { level, xp };
+  frozenVitals = { level, xp: cloneDecimal(xp) };
   const g = gemStore.getSnapshot();
   frozenGems = {
     balance: g.balance,
@@ -204,7 +202,7 @@ export function restoreOfficialProgressFromFreeze(): void {
     return;
   }
   const { level, xp } = frozenVitals;
-  const progressed = addExperience(Math.max(1, level), Math.max(0, xp), 0);
+  const progressed = addExperience(Math.max(1, level), xp, 0);
   const vitals = vitalsStore.getSnapshot();
   vitalsStore.reset({
     level: progressed.level,

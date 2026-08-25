@@ -1,6 +1,16 @@
 /** Qualidade de instância / spawn (D–SSS). Não é identidade do CharacterDefinition. */
 export type CharacterQuality = 'D' | 'C' | 'B' | 'A' | 'S' | 'SS' | 'SSS';
 
+/** Componentes de potencial (ids do módulo de raridade). */
+export type CharacterPotential = {
+  hp: number;
+  forca: number;
+  defesa: number;
+};
+
+/** Grau derivado do potencial — nunca sorteado. */
+export type CharacterGrade = 'bruto' | 'lapidado' | 'fino' | 'excelente' | 'perfeito';
+
 /** Linhagem / afinidade de universo do personagem. */
 export type LineageId =
   | 'ninja'

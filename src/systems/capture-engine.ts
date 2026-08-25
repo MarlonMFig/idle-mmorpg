@@ -4,6 +4,7 @@
  * Quality RNG só após sucesso.
  */
 
+import { sealChance } from '@/anime-idle/formulas';
 import { applyHuntCaptureToOfficialFreeze } from '@/lib/official-progress-freeze';
 import {
   CAPTURE_INITIAL_LEVEL,
@@ -11,13 +12,18 @@ import {
   CAPTURE_INITIAL_XP,
   clampCaptureChance,
 } from '@/constants/capture';
-import { rollCaptureQualityBundle } from '@/lib/hunt-spawn';
+import { rollCaptureQualityBundle, resolveAppearanceQuality } from '@/lib/hunt-spawn';
 import type { CharacterQuality } from '@/types/character-meta';
 import {
   SEALING_SCROLL_TIERS,
   type SealingScrollTier,
   type SealingScrollTierId,
 } from '@/constants/sealing';
+import {
+  computeCaptureChance,
+  scrollCaptureMultiplier,
+  captureBaseChance,
+} from '@/constants/capture-system';
 import { getItem } from '@/data/items';
 import { resolveCharacterLineageId } from '@/data/character-lineages';
 import { getCaptureForceMode } from '@/lib/capture-dev';
@@ -27,6 +33,7 @@ import { helperStore } from '@/stores/helper-store';
 import { huntAnalyzerStore } from '@/stores/hunt-analyzer-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { teamStore } from '@/stores/team-store';
+import { vitalsStore } from '@/stores/vitals-store';
 import { consumeItem } from '@/systems/reward-application';
 import type { EnemyDefinition } from '@/types/enemy';
 import type { SealedCharacter } from '@/types/team';
@@ -52,6 +59,7 @@ export interface CaptureResult {
   reason:
     | 'success'
     | 'failed'
+    | 'fled'
     | 'not-sealable'
     | 'no-scroll'
     | 'disabled'
@@ -64,6 +72,10 @@ export interface CaptureResult {
   capturedCharacter: SealedCharacter | null;
   chance: CaptureChanceBreakdown;
   name: string;
+  fled?: boolean;
+  attemptsUsed?: number;
+  attemptsMax?: number;
+  consolationFragments?: number;
 }
 
 export type SealRng = () => number;
@@ -94,25 +106,27 @@ export function getScrollCaptureModifier(scroll: SealingScrollTier): number {
 }
 
 /**
- * Chance = poder do pergaminho.
- * Quality do inimigo não existe na Hunt; o modificador de raridade não entra na tentativa.
- * (A tabela CAPTURE_QUALITY_MODIFIERS permanece intacta e não é usada aqui.)
+ * Chance = base da quality da aparição × multiplicador do pergaminho, teto 90%.
  */
 export function getCaptureChance(
   target: EnemyDefinition | null,
   scroll: SealingScrollTier | null,
 ): CaptureChanceBreakdown {
   if (!scroll || !getItem(scroll.itemId)) return { ...ZERO_CHANCE };
-  const scrollModifier = getScrollCaptureModifier(scroll);
-  const finalChance = clampCaptureChance(scrollModifier);
-  void target;
+  const quality = resolveAppearanceQuality(target);
+  const scrollModifier = scrollCaptureMultiplier(scroll.itemId);
+  const baseChance = captureBaseChance(quality);
+  const playerLevel = vitalsStore.getLevel();
+  const enemyLevel = target?.level ?? playerLevel;
+  const sealMod = sealChance(enemyLevel - playerLevel);
+  const finalChance = clampCaptureChance(computeCaptureChance(quality, scroll.itemId) * sealMod);
   return {
-    baseChance: scrollModifier,
+    baseChance,
     scrollModifier,
     rarityModifier: 1,
-    otherModifiers: 0,
+    otherModifiers: sealMod,
     finalChance,
-    quality: 'D',
+    quality,
   };
 }
 
@@ -142,8 +156,11 @@ export function isCaptureResolved(key: string): boolean {
 }
 
 export function clearCaptureResolved(key?: string): void {
-  if (key) resolvedKeys.delete(key);
-  else resolvedKeys.clear();
+  if (key) {
+    resolvedKeys.delete(key);
+  } else {
+    resolvedKeys.clear();
+  }
 }
 
 function skipped(
@@ -231,9 +248,7 @@ export function attemptCapture(input: AttemptCaptureInput): CaptureResult {
 
   inFlight = true;
   try {
-    markCaptureResolved(attemptKey);
     if (!consumeItem(scroll.itemId, 1)) {
-      resolvedKeys.delete(attemptKey);
       return skipped('no-scroll', { name, scrollId: scroll.itemId, chance });
     }
 
@@ -242,7 +257,8 @@ export function attemptCapture(input: AttemptCaptureInput): CaptureResult {
       force === 'success' ? true : force === 'failure' ? false : rng() < chance.finalChance;
 
     if (!hit) {
-      emitSystemMessage(`Selamento falhou: ${name} escapou (${scroll.label}).`);
+      markCaptureResolved(attemptKey);
+      emitSystemMessage(`Selamento falhou: ${name} resistiu (${scroll.label}).`);
       const failed: CaptureResult = {
         success: false,
         reason: 'failed',
@@ -251,12 +267,17 @@ export function attemptCapture(input: AttemptCaptureInput): CaptureResult {
         capturedCharacter: null,
         chance,
         name,
+        fled: true,
+        attemptsUsed: 1,
+        attemptsMax: 1,
+        consolationFragments: 0,
       };
       recordAttempt(failed);
       return failed;
     }
 
-    const rolled = rollCaptureQualityBundle(rng);
+    markCaptureResolved(attemptKey);
+    const rolled = rollCaptureQualityBundle(rng, definition);
     const instance = buildSealedCharacter({
       id: createCharacterInstanceId(),
       name: seal.name,
@@ -271,6 +292,9 @@ export function attemptCapture(input: AttemptCaptureInput): CaptureResult {
         characterId: seal.characterId,
       }),
       quality: rolled.quality,
+      potential: rolled.potential,
+      potentialTotal: rolled.potentialTotal,
+      grade: rolled.grade,
       qualityStatMultiplier: rolled.qualityStatMultiplier,
       stars: CAPTURE_INITIAL_STARS,
       lineageId: resolveCharacterLineageId({ lookType: seal.lookType }),
@@ -298,7 +322,7 @@ export function attemptCapture(input: AttemptCaptureInput): CaptureResult {
     }
 
     emitSystemMessage(
-      `SELAMENTO CONCLUÍDO — ${seal.name} · Raridade: ${stored.quality} · Adicionado à coleção (Nv.${CAPTURE_INITIAL_LEVEL}).`,
+      `SELAMENTO CONCLUÍDO — ${seal.name} · Raridade: ${stored.quality} · ${stored.grade} · Adicionado à coleção (Nv.${CAPTURE_INITIAL_LEVEL}).`,
     );
     applyHuntCaptureToOfficialFreeze(stored, scroll.itemId);
     emitCharacterCaptured({

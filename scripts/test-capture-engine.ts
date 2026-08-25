@@ -115,8 +115,8 @@ withOfficialProgress(() => {
     attemptKey: 'k-fail',
     rng: () => 0,
   });
-  assert('mesmo cadáver já resolvido', retry.reason === 'already-resolved' && !retry.scrollConsumed);
-  assert('não consome de novo', inventoryStore.countItem(SEALING_SCROLL_ITEM_ID) === 7);
+  assert('segunda tentativa no mesmo cadáver', retry.success && retry.scrollConsumed);
+  assert('sucesso na 2ª tenta', inventoryStore.countItem(SEALING_SCROLL_ITEM_ID) === 6);
 
   let events = 0;
   const off = onCharacterCaptured(() => {

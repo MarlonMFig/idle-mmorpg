@@ -73,6 +73,15 @@ export function resolveExecutionType(def: SkillExecutionDef | undefined): SkillE
   return def?.type ?? 'single-hit';
 }
 
+/** Duração oficial da Skill (persistent / beam). Visual loop reutiliza isto quando existir. */
+export function officialSkillDurationMs(def: SkillExecutionDef | undefined): number | null {
+  const type = resolveExecutionType(def);
+  if (type === 'persistent' && def?.duration && def.duration > 0) return def.duration;
+  if (type === 'beam' && def?.beamDuration && def.beamDuration > 0) return def.beamDuration;
+  if (def?.duration && def.duration > 0) return def.duration;
+  return null;
+}
+
 export function cloneExecutionDef(def: SkillExecutionDef | undefined): SkillExecutionDef {
   return {
     type: def?.type ?? 'single-hit',

@@ -81,42 +81,36 @@ function main(): void {
     inventoryStore.countItem(HP_POTION_ITEM_ID) === mid + 2,
   );
 
-  // 81 stack / inventory room
+  // 81 bolsa ilimitada: stack cheio abre stack novo
   inventoryStore.reset();
   wipeWallet();
   shopStore.reset();
   clearEconomyLedger();
   economyService.grantCurrency('copper', 10_000, 'dev');
   const stackMax = getItem(HP_POTION_ITEM_ID)!.stackMax;
-  inventoryStore.addItem(HP_POTION_ITEM_ID, stackMax - 2, 'dev');
-  // Ocupa slots vazios para o MAX considerar só o espaço do stack atual.
-  inventoryStore.addItem('item-anime-naruto-bandagem', 40 * 99, 'dev');
-  const maxPacks = shopStore.maxAffordablePacks('offer-hp-potion');
-  assert('max packs respects stack room', maxPacks === 2);
-  assert('buy max ok', shopStore.buy('offer-hp-potion', maxPacks));
-  assert('stack full → max 0', shopStore.maxAffordablePacks('offer-hp-potion') === 0);
-  const copperBeforeBlocked = economyService.getBalance('copper');
-  assert('over-capacity buy blocked', !shopStore.buy('offer-hp-potion', 1));
-  assert('no copper lost on block', economyService.getBalance('copper') === copperBeforeBlocked);
+  inventoryStore.addItem(HP_POTION_ITEM_ID, stackMax, 'dev');
+  assert('max packs not blocked by full stack', shopStore.maxAffordablePacks('offer-hp-potion') > 0);
+  assert('buy extra stack ok', shopStore.buy('offer-hp-potion', 1));
+  assert('potions beyond one stack', inventoryStore.countItem(HP_POTION_ITEM_ID) === stackMax + 1);
 
-  // 82 daily limit
+  // 82 daily limit (pacote especial — pergaminhos não têm teto diário)
   resetEconomy();
-  economyService.grantCurrency('copper', 50_000, 'dev');
-  const dailyId = 'offer-sealing-scroll-legendary';
+  economyService.grantCurrency('animeCoins', 50, 'dev');
+  const dailyId = 'offer-special-potion-pack';
   const dailyOffer = getShopOffer(dailyId)!;
-  assert('daily limit 3', dailyOffer.purchaseLimit === 3 && dailyOffer.resetType === 'daily');
-  assert('buy 3 packs', shopStore.buy(dailyId, 3));
-  assert('4th blocked', !shopStore.buy(dailyId, 1));
+  assert('daily limit 1', dailyOffer.purchaseLimit === 1 && dailyOffer.resetType === 'daily');
+  assert('buy 1 pack', shopStore.buy(dailyId, 1));
+  assert('2nd blocked', !shopStore.buy(dailyId, 1));
   assert('remaining 0', shopStore.getRemainingLimit(dailyId) === 0);
 
   // 90 daily reset via same cycle service
   const dayA = getDailyCycleId();
   shopStore.hydrate({
     purchases: {
-      [dailyId]: { bought: 3, resetCycleId: '1999-01-01' },
+      [dailyId]: { bought: 1, resetCycleId: '1999-01-01' },
     },
   });
-  assert('stale daily cycle resets remaining', shopStore.getRemainingLimit(dailyId) === 3);
+  assert('stale daily cycle resets remaining', shopStore.getRemainingLimit(dailyId) === 1);
   assert('current daily cycle id stable', getDailyCycleId() === dayA);
 
   // 91 weekly reset same principle
@@ -156,6 +150,22 @@ function main(): void {
   assert('sell max 4', shopStore.sell('item-anime-naruto-bandagem', 4));
   assert('sold out', inventoryStore.countItem('item-anime-naruto-bandagem') === 0);
   assert('copper after max', economyService.getBalance('copper') === copperBeforeSell + unit * 5);
+
+  // sell all
+  resetEconomy();
+  inventoryStore.addItem('item-anime-naruto-bandagem', 3, 'dev');
+  inventoryStore.addItem('item-anime-naruto-shuriken', 2, 'dev');
+  const unitBandagem = getItemSellValue('item-anime-naruto-bandagem');
+  const unitShuriken = getItemSellValue('item-anime-naruto-shuriken');
+  const copperBeforeAll = economyService.getBalance('copper');
+  assert('sell all', shopStore.sellAll());
+  assert('sell all emptied bandagem', inventoryStore.countItem('item-anime-naruto-bandagem') === 0);
+  assert('sell all emptied shuriken', inventoryStore.countItem('item-anime-naruto-shuriken') === 0);
+  assert(
+    'sell all copper',
+    economyService.getBalance('copper') === copperBeforeAll + unitBandagem * 3 + unitShuriken * 2,
+  );
+  assert('sell all empty blocked', !shopStore.sellAll());
 
   // 86 not sellable
   assert('copper not sellable', !isItemSellable(SHOP_CURRENCY_ITEM_ID));

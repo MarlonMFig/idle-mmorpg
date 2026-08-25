@@ -5,6 +5,8 @@ import {
 } from '@/config/devConfig';
 import { STARTERS } from '@/data/starters';
 import { addExperience } from '@/lib/player-progression';
+import { decimalToSave, decimalFromSave } from '@/lib/decimal-persist';
+import { d } from '@/lib/decimal';
 import { MAP_KEYS, type MapKey } from '@/maps/map-registry';
 import { accountStore } from '@/stores/account-store';
 import { achievementsStore } from '@/stores/achievements-store';
@@ -99,11 +101,11 @@ export function wipeAllLocalPlayerAccounts(): void {
 }
 
 /**
- * Schema atual (v12: Team presets — Item 43).
- * v11: Achievements unificados. v10: Equipment removido. v9: Daily Login. v8: rewardTransactions. v7: inventory.
+ * Schema atual (v13: XP Decimal em string).
+ * v12: Team presets — Item 43. v11: Achievements unificados.
  */
-const SESSION_VERSION = 12 as const;
-const LEGACY_SESSION_VERSIONS = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+const SESSION_VERSION = 13 as const;
+const LEGACY_SESSION_VERSIONS = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
 const SAVE_DEBOUNCE_MS = 250;
 
 const STARTER_IDS = new Set<string>(STARTERS.map((entry) => entry.id));
@@ -123,7 +125,8 @@ export interface PersistedTeam {
 
 export interface PersistedVitals {
   level: number;
-  xp: number;
+  /** Decimal serializado (`"1e20"`). Number só em save legado. */
+  xp: string;
 }
 
 export interface PersistedAccount {
@@ -308,10 +311,7 @@ export function parsePersistedSession(raw: unknown): PersistedSession | null {
     typeof vitalsRaw?.level === 'number' && Number.isFinite(vitalsRaw.level)
       ? Math.max(1, Math.floor(vitalsRaw.level))
       : 1;
-  const xp =
-    typeof vitalsRaw?.xp === 'number' && Number.isFinite(vitalsRaw.xp)
-      ? Math.max(0, Math.floor(vitalsRaw.xp))
-      : 0;
+  const xp = decimalToSave(decimalFromSave(vitalsRaw?.xp));
 
   const accountRaw = data.account as Record<string, unknown> | undefined;
   const migratedId = migrateLegacyPlayerLineageId(accountRaw);
@@ -500,13 +500,10 @@ export function clearPersistedSession(): void {
 function snapshotTeam(): PersistedTeam {
   const state = teamStore.getSnapshot();
   return {
-    collection: state.collection.map((entry) => {
-      const { potential: _legacyPotential, ...rest } = entry as typeof entry & {
-        potential?: unknown;
-      };
-      void _legacyPotential;
-      return { ...rest };
-    }),
+    collection: state.collection.map((entry) => ({
+      ...entry,
+      xp: decimalToSave(entry.xp),
+    })) as unknown as PersistedTeam['collection'],
     teamIds: [...state.teamIds],
     activeId: state.activeId,
   };
@@ -515,10 +512,10 @@ function snapshotTeam(): PersistedTeam {
 function snapshotVitals(): PersistedVitals {
   const frozen = getFrozenOfficialVitals();
   if (isIsolatingOfficial() && frozen) {
-    return { ...frozen };
+    return { level: frozen.level, xp: decimalToSave(frozen.xp) };
   }
   const { level, xp } = vitalsStore.getSnapshot();
-  return { level, xp };
+  return { level, xp: decimalToSave(xp) };
 }
 
 function snapshotLocation(): PersistedLocation {
@@ -682,7 +679,7 @@ export function savePersistedSession(): void {
       team: snapshotTeam(),
       vitals: (() => {
         const { level, xp } = vitalsStore.getSnapshot();
-        return { level, xp };
+        return { level, xp: decimalToSave(xp) };
       })(),
       account: { lineageProgress: accountStore.getLineageProgress() },
       guild: snapshotGuild(),
@@ -812,14 +809,15 @@ export function applyPersistedSession(session: PersistedSession): PlayerCreation
   }
 
   const { level, xp } = session.vitals;
-  teamStore.migrateMissingLevels(level, xp);
-  const progressed = addExperience(Math.max(1, level), Math.max(0, xp), 0);
+  const xpDec = decimalFromSave(xp);
+  teamStore.migrateMissingLevels(level, xpDec);
+  const progressed = addExperience(Math.max(1, level), xpDec, 0);
   vitalsStore.reset({
     level: progressed.level,
     xp: progressed.xp,
     xpMax: progressed.xpMax,
-    hp: 100,
-    hpMax: 100,
+    hp: d(100),
+    hpMax: d(100),
   });
 
   // Item 31: hidratar inventário salvo; saves antigos sem inventory → starter (reset).

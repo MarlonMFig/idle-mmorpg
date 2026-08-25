@@ -89,11 +89,12 @@ function normalizedStats(level, source) {
  * Sem vocations/monstros brutos do WONSR.
  */
 function isActiveCharacterLookType(lookType) {
-  // Rotação atual: Naruto + Dragon Ball + Ichigo (Bleach, lookType 9073).
+  // Rotação atual: Naruto + Dragon Ball + Ichigo (Bleach, lookType 9073)
+  // + Pain / Choji JF / Haku JF / Danzo (9087–9090).
   return (
     lookType <= 9027 ||
     (lookType >= 9030 && lookType <= 9036) ||
-    (lookType >= 9073 && lookType <= 9086)
+    (lookType >= 9073 && lookType <= 9090)
   );
 }
 
@@ -604,6 +605,10 @@ function buildBaseCharacters() {
     'Toji Fushiguro',
     'Kenshin Himura',
     'Ichigo Kurosaki',
+    'Pain (Deva)',
+    'Akimichi Choji (Jump Force)',
+    'Haku (Jump Force)',
+    'Danzo Shimura',
   ];
   const order = new Map(preferredFirst.map((name, index) => [name, index]));
   return buildCuratedExtraCharacters().sort((a, b) => {
@@ -688,7 +693,7 @@ function pickHuntMapKey(index, targets) {
   if (/sasuke|itachi|obito|uchiha|shisui/.test(id)) return 'huntDistritoUchiha';
   if (/madara|hashirama|vale/.test(id)) return 'huntValeDoFim';
   if (/naruto/.test(id)) return 'huntValeDoFim';
-  if (/neji|rock.?lee|guy|chouji|\bino\b|shikamaru|tenten|exame|chunin|chunnin/.test(id)) {
+  if (/neji|rock.?lee|guy|chouji|choji|\bino\b|shikamaru|tenten|exame|chunin|chunnin/.test(id)) {
     return 'huntArenaExameChunin';
   }
   if (/sakura|hinata|kakashi|iruka|treino|konohamaru|tsunade/.test(id)) {

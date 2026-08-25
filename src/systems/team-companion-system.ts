@@ -10,6 +10,7 @@ import { SKILL_DEFAULT_RANGE } from '@/constants/skill';
 import { BASIC_ATTACK_ELEMENT, resolveSkillElement, type DamageElement } from '@/data/damage-elements';
 import { resolveAwakeningRuntime } from '@/lib/awakening-runtime';
 import { resolveEffectiveSkill } from '@/lib/resolve-effective-skill';
+import { Decimal, d, hpRatio } from '@/lib/decimal';
 import type { Enemy } from '@/entities/enemy';
 import type { Player } from '@/entities/player';
 import { handleEnemyKill } from '@/systems/combat-rewards';
@@ -250,7 +251,7 @@ export class TeamCompanionSystem {
       actionBlocked: false,
       skillGapBlocked: !isSkillCooldownIgnored() && time - (this.lastJutsuAt.get(companion.id) ?? -Infinity) < jutsuGap,
       selfHpRatio: 1,
-      targetHpRatio: focus.stats.hpMax > 0 ? focus.stats.hp / focus.stats.hpMax : null,
+      targetHpRatio: hpRatio(focus.stats.hp, focus.stats.hpMax),
       energy: energy.current,
       isSkillReady: (skillId) =>
         isSkillCooldownIgnored() || time >= (this.skillReadyAt.get(`${companion.id}:${skillId}`) ?? 0),
@@ -438,13 +439,13 @@ export class TeamCompanionSystem {
     const anim = companion.player.getSkillAnim(skill.id);
 
     const damage = scaleOutgoingDamage(
-      Math.max(
-        1,
-        Math.floor(
-          (skill.damage + getEffectiveCombatStats(unitId).attack * 0.35) *
-            COMPANION_DAMAGE_FACTOR *
-            impact.multiplier,
-        ),
+      Decimal.max(
+        d(1),
+        d(skill.damage)
+          .add(getEffectiveCombatStats(unitId).attack.mul(0.35))
+          .mul(COMPANION_DAMAGE_FACTOR)
+          .mul(impact.multiplier)
+          .floor(),
       ),
     );
 
@@ -483,7 +484,7 @@ export class TeamCompanionSystem {
     });
   }
 
-  private damageEnemy(enemy: Enemy, damage: number, sourceId: string, element?: DamageElement): boolean {
+  private damageEnemy(enemy: Enemy, damage: number | import('@/lib/decimal').Decimal, sourceId: string, element?: DamageElement): boolean {
     const enemyManager = this.options.enemyManager;
     const lootManager = this.options.lootManager;
     if (!enemyManager || !lootManager) return false;
@@ -530,7 +531,7 @@ export class TeamCompanionSystem {
     this.scene.time.delayedCall(hitDelay, () => {
       if (!target.isAlive) return;
       const damage = scaleOutgoingDamage(
-        5 + Math.floor(getEffectiveCombatStats(unitId).attack * COMPANION_DAMAGE_FACTOR),
+        d(5).add(getEffectiveCombatStats(unitId).attack.mul(COMPANION_DAMAGE_FACTOR).floor()),
       );
       if (this.damageEnemy(target, damage, unitId)) {
         this.energyFor(companion.id).gainFromBasicHit(1);

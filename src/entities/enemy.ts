@@ -27,6 +27,9 @@ import type { WonsrDirection } from '@/data/wonsr-sprites';
 import type { EnemyDefinition, EnemyRuntimeStats, EnemySkill } from '@/types/enemy';
 import { playWonsrEnemySkillFx } from '@/systems/wonsr-enemy-fx';
 import { enemyMaxHpForDefinition, scaleEnemyLevelDamage } from '@/lib/enemy-quality-stats';
+import { huntEnemyAtkForLevel } from '@/lib/hunt-enemy-xp';
+import { Decimal, d, floorNonNeg, hpRatio, type Decimal as DecimalValue } from '@/lib/decimal';
+import { formatStat } from '@/lib/format-stat';
 
 /** Cor da vida: verde → âmbar → carmim conforme a vida cai. */
 function enemyHpFillColor(ratio: number): number {
@@ -94,7 +97,7 @@ export class Enemy {
   /** Índice do próximo hit da cadeia de combos. */
   private comboStep = 0;
   /** Golpe agendado no meio da animação de combo. */
-  private pendingHit: { damage: number; at: number; range: number } | null = null;
+  private pendingHit: { damage: DecimalValue; at: number; range: number } | null = null;
   private lastPlayerPos: { x: number; y: number } | null = null;
   /** Cap de floaters — Boss com HP alto não acumula milhares de textos. */
   private readonly damageFloaters: Phaser.GameObjects.Text[] = [];
@@ -204,7 +207,7 @@ export class Enemy {
     return this.definition.name;
   }
 
-  get hp(): number {
+  get hp(): DecimalValue {
     return this.stats.hp;
   }
 
@@ -237,24 +240,25 @@ export class Enemy {
   }
 
   /** Aplica dano. Retorna true se o golpe matou o monstro. */
-  takeDamage(amount: number, floater?: { tag?: 'RESIST' | 'WEAK' | 'IMMUNE' }): boolean {
+  takeDamage(amount: number | DecimalValue, floater?: { tag?: 'RESIST' | 'WEAK' | 'IMMUNE' }): boolean {
     if (!this.alive) return false;
     if (floater?.tag === 'IMMUNE') {
-      this.showDamage(0, 'IMMUNE');
+      this.showDamage(d(0), 'IMMUNE');
       return false;
     }
-    if (amount <= 0) return false;
+    const loss = d(amount);
+    if (loss.lte(0)) return false;
     if (isLabEnemyInvincible()) {
-      this.showDamage(amount, floater?.tag);
+      this.showDamage(loss, floater?.tag);
       this.playHurtReaction();
       return false;
     }
 
-    this.stats.hp = Math.max(0, this.stats.hp - amount);
+    this.stats.hp = Decimal.max(d(0), this.stats.hp.sub(loss));
     this.refreshHpBar({ pulse: true });
-    this.showDamage(amount, floater?.tag);
+    this.showDamage(loss, floater?.tag);
 
-    if (this.stats.hp <= 0) {
+    if (this.stats.hp.lte(0)) {
       this.die();
       return true;
     }
@@ -264,7 +268,7 @@ export class Enemy {
   }
 
   /** Boss AI / testes: dispara o golpe básico existente. */
-  triggerBasicAttack(time: number): number | null {
+  triggerBasicAttack(time: number): DecimalValue | null {
     if (!this.alive) return null;
     if (time - this.lastAttackAt < scaledAttackCooldown(ENEMY_ATTACK_COOLDOWN_MS, this.id)) {
       return null;
@@ -275,17 +279,18 @@ export class Enemy {
   }
 
   /** DEV: força HP sem loot. */
-  setHp(hp: number): void {
-    this.stats.hp = Math.max(0, Math.min(this.stats.hpMax, Math.floor(hp)));
+  setHp(hp: number | DecimalValue): void {
+    this.stats.hp = Decimal.max(d(0), Decimal.min(this.stats.hpMax, floorNonNeg(hp)));
     this.refreshHpBar();
-    if (this.stats.hp <= 0 && this.alive) this.die();
+    if (this.stats.hp.lte(0) && this.alive) this.die();
   }
 
-  heal(amount: number): number {
-    if (!this.alive || amount <= 0) return 0;
-    const next = Math.min(this.stats.hpMax, this.stats.hp + Math.floor(amount));
-    const healed = next - this.stats.hp;
-    if (healed <= 0) return 0;
+  heal(amount: number | DecimalValue): DecimalValue {
+    const gain = floorNonNeg(amount);
+    if (!this.alive || gain.lte(0)) return d(0);
+    const next = Decimal.min(this.stats.hpMax, this.stats.hp.add(gain));
+    const healed = next.sub(this.stats.hp);
+    if (healed.lte(0)) return d(0);
     this.stats.hp = next;
     this.refreshHpBar();
     return healed;
@@ -302,7 +307,7 @@ export class Enemy {
   }
 
   /** Atualiza IA / barra / respawn. Com posição do jogador: persegue e ataca. */
-  update(time: number, playerX?: number, playerY?: number): number | null {
+  update(time: number, playerX?: number, playerY?: number): DecimalValue | null {
     if (!this.alive) {
       if (time >= this.respawnAt) {
         this.respawn();
@@ -314,7 +319,7 @@ export class Enemy {
       this.lastPlayerPos = { x: playerX, y: playerY };
     }
 
-    let hitDamage: number | null = null;
+    let hitDamage: DecimalValue | null = null;
     if (this.pendingHit && time >= this.pendingHit.at) {
       const pending = this.pendingHit;
       this.pendingHit = null;
@@ -346,7 +351,7 @@ export class Enemy {
    * Persegue o jogador dentro de `chaseRadius`; golpeia em `ENEMY_ATTACK_RANGE`.
    * @returns dano bruto imediato (sem sheet de combo), ou null se o hit é adiado.
    */
-  private updateCombatAi(time: number, playerX: number, playerY: number): number | null {
+  private updateCombatAi(time: number, playerX: number, playerY: number): DecimalValue | null {
     if (time < this.reactingUntil) {
       this.sprite.setVelocity(0, 0);
       return null;
@@ -410,7 +415,7 @@ export class Enemy {
    * Toca combo/ataque se existir; agenda o hit no meio da animação.
    * Sem sheet: dano imediato (fallback atlas), ou habilidade WONSR com VFX.
    */
-  private beginAttack(time: number, dist = 0): number | null {
+  private beginAttack(time: number, dist = 0): DecimalValue | null {
     if (this.definition.skills?.length) {
       const skill = this.pickSkill(dist, time);
       if (!skill) {
@@ -454,7 +459,7 @@ export class Enemy {
     return null;
   }
 
-  private beginSkillAttack(time: number, skill: EnemySkill): number | null {
+  private beginSkillAttack(time: number, skill: EnemySkill): DecimalValue | null {
     const cooldown = Phaser.Math.Clamp(skill.intervalMs || ENEMY_ATTACK_COOLDOWN_MS, 700, 4200);
     this.skillReadyAt.set(skill.name, time + cooldown);
     this.comboStep += 1;
@@ -505,20 +510,20 @@ export class Enemy {
     return pool[this.comboStep % pool.length] ?? null;
   }
 
-  private skillDamage(skill: EnemySkill): number {
+  private skillDamage(skill: EnemySkill): DecimalValue {
     const level = Math.max(1, this.stats.level);
     const avg = (Math.abs(skill.min) + Math.abs(skill.max)) / 2;
     const namedBonus = skill.name.toLowerCase() === 'melee' ? 0 : 4;
     return scaleEnemyLevelDamage(
-      5 + level * 1.65 + Math.min(16, avg / 500) + namedBonus,
+      huntEnemyAtkForLevel(level).add(Math.min(16, avg / 500) + namedBonus),
       this.definition,
     );
   }
 
   /** Dano bruto antes da defesa do jogador. */
-  private attackDamage(): number {
+  private attackDamage(): DecimalValue {
     const level = Math.max(1, this.stats.level);
-    return scaleEnemyLevelDamage(5 + level * 1.65, this.definition);
+    return huntEnemyAtkForLevel(level);
   }
 
   /** Toca o próximo hit da cadeia de combo. @returns false se não há sheet. */
@@ -811,7 +816,7 @@ export class Enemy {
   }
 
   private refreshHpBar(opts?: { pulse?: boolean }): void {
-    const ratio = this.stats.hpMax > 0 ? this.stats.hp / this.stats.hpMax : 0;
+    const ratio = hpRatio(this.stats.hp, this.stats.hpMax);
     const width = Math.max(0, ENEMY_HP_BAR_WIDTH * this.layoutScale * ratio);
     const color = enemyHpFillColor(ratio);
 
@@ -885,8 +890,8 @@ export class Enemy {
     });
   }
 
-  private showDamage(amount: number, tag?: 'RESIST' | 'WEAK' | 'IMMUNE'): void {
-    const label = tag === 'IMMUNE' ? 'IMMUNE' : `-${Math.round(amount)}${tag ? ` ${tag}` : ''}`;
+  private showDamage(amount: number | DecimalValue, tag?: 'RESIST' | 'WEAK' | 'IMMUNE'): void {
+    const label = tag === 'IMMUNE' ? 'IMMUNE' : `-${formatStat(amount)}${tag ? ` ${tag}` : ''}`;
     const color = tag === 'IMMUNE' ? '#9bd0f5' : tag === 'WEAK' ? '#ffb347' : tag === 'RESIST' ? '#8ecae6' : '#ffffff';
     while (this.damageFloaters.length >= 10) {
       const oldest = this.damageFloaters.shift();

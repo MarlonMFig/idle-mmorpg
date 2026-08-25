@@ -10,6 +10,7 @@ import { getCombatAffinity } from '@/systems/combat-affinity';
 import { validateAffinity } from '@/systems/elemental-resistance';
 import { characterLabStore, LAB_DUMMY_ID } from '@/stores/character-lab-store';
 import { useStore } from '@/hooks/use-store';
+import { formatStat } from '@/lib/format-stat';
 
 const PRESETS: Array<{ label: string; value: number | 'immune' }> = [
   { label: '0%', value: 0 },
@@ -115,10 +116,10 @@ export function CharacterLabDamageDebug() {
     <section className="character-lab__section">
       <h4>DAMAGE</h4>
       <p>
-        Raw Damage: {debug.rawOutgoing}
+        Raw Damage: {formatStat(debug.rawOutgoing)}
       </p>
-      <p>After Shield: {debug.afterShield}</p>
-      <p>After Defense: {debug.afterDefense}</p>
+      <p>After Shield: {formatStat(debug.afterShield)}</p>
+      <p>After Defense: {formatStat(debug.afterDefense)}</p>
       <p>Element: {DAMAGE_ELEMENT_LABELS[debug.element]}</p>
       {debug.immune ? (
         <p>Target: {DAMAGE_ELEMENT_LABELS[debug.element]} Immune</p>
@@ -130,8 +131,8 @@ export function CharacterLabDamageDebug() {
           {Math.round(debug.resistance * 100)}%
         </p>
       )}
-      <p>After Resistance: {debug.afterResistance}</p>
-      <p>Final Damage: {debug.finalDamage}</p>
+      <p>After Resistance: {formatStat(debug.afterResistance)}</p>
+      <p>Final Damage: {formatStat(debug.finalDamage)}</p>
       {debug.tag ? (
         <p>
           <strong>{debug.tag}</strong>

@@ -1,4 +1,3 @@
-import { INVENTORY_SLOT_COUNT } from '@/constants/inventory';
 import { getItem } from '@/data/items';
 import { STARTER_INVENTORY_LOADOUT } from '@/data/starter-loadout';
 import { emitItemConsumed, emitItemGained, type ItemGainSource } from '@/lib/item-events';
@@ -13,11 +12,15 @@ import { createStore } from '@/stores/create-store';
 import type { InventoryItemStack, InventorySlot, InventoryState } from '@/types/inventory';
 
 function emptySlots(): InventorySlot[] {
-  return Array.from({ length: INVENTORY_SLOT_COUNT }, () => null);
+  return [];
 }
 
 function cloneSlots(slots: InventorySlot[]): InventorySlot[] {
   return slots.map((slot) => (slot ? { ...slot } : null));
+}
+
+function ensureLength(slots: InventorySlot[], length: number): void {
+  while (slots.length < length) slots.push(null);
 }
 
 /** Tenta inserir stack; retorna restante ou null se coube tudo. */
@@ -44,7 +47,23 @@ function insertStack(slots: InventorySlot[], stack: InventoryItemStack): Invento
     remaining -= add;
   }
 
-  return remaining > 0 ? { itemId: stack.itemId, quantity: remaining } : null;
+  while (remaining > 0) {
+    const add = Math.min(def.stackMax, remaining);
+    slots.push({ itemId: stack.itemId, quantity: add });
+    remaining -= add;
+  }
+
+  return null;
+}
+
+/** Junta stacks do mesmo item (libera slots fragmentados). */
+function repackSlots(slots: InventorySlot[]): InventorySlot[] {
+  const next = emptySlots();
+  for (const slot of slots) {
+    if (!slot) continue;
+    insertStack(next, { itemId: slot.itemId, quantity: slot.quantity });
+  }
+  return next;
 }
 
 const store = createStore<InventoryState>({
@@ -66,12 +85,10 @@ export const inventoryStore = {
   getSnapshot: store.getSnapshot,
 
   reset(): void {
-    const slots = emptySlots();
-    let index = 0;
+    const slots: InventorySlot[] = [];
     for (const entry of STARTER_INVENTORY_LOADOUT) {
-      if (!getItem(entry.itemId) || index >= INVENTORY_SLOT_COUNT) continue;
-      slots[index] = { itemId: entry.itemId, quantity: entry.quantity };
-      index += 1;
+      if (!getItem(entry.itemId)) continue;
+      insertStack(slots, { itemId: entry.itemId, quantity: entry.quantity });
     }
 
     store.setState({
@@ -109,6 +126,22 @@ export const inventoryStore = {
     return parsePersistedInventory(raw);
   },
 
+  previewRepack(): InventorySlot[] {
+    return repackSlots(store.getSnapshot().slots);
+  },
+
+  /** Junta stacks iguais e preenche slots vazios no começo. */
+  repack(): void {
+    const state = store.getSnapshot();
+    const slots = repackSlots(state.slots);
+    commit({
+      ...state,
+      slots,
+      selectedIndex:
+        state.selectedIndex != null && !slots[state.selectedIndex] ? null : state.selectedIndex,
+    });
+  },
+
   toggleOpen(): void {
     const state = store.getSnapshot();
     commit({ ...state, isOpen: !state.isOpen, selectedIndex: null });
@@ -120,8 +153,15 @@ export const inventoryStore = {
   },
 
   selectSlot(index: number | null): void {
-    if (index != null && (index < 0 || index >= INVENTORY_SLOT_COUNT)) return;
-    commit({ ...store.getSnapshot(), selectedIndex: index });
+    if (index != null && index < 0) return;
+    const state = store.getSnapshot();
+    if (index != null && index >= state.slots.length) {
+      const slots = cloneSlots(state.slots);
+      ensureLength(slots, index + 1);
+      commit({ ...state, slots, selectedIndex: index });
+      return;
+    }
+    commit({ ...state, selectedIndex: index });
   },
 
   addItem(itemId: string, quantity: number, source: ItemGainSource = 'unknown'): number {
@@ -142,17 +182,11 @@ export const inventoryStore = {
 
   moveSlot(fromIndex: number, toIndex: number): boolean {
     if (fromIndex === toIndex) return false;
-    if (
-      fromIndex < 0 ||
-      toIndex < 0 ||
-      fromIndex >= INVENTORY_SLOT_COUNT ||
-      toIndex >= INVENTORY_SLOT_COUNT
-    ) {
-      return false;
-    }
+    if (fromIndex < 0 || toIndex < 0) return false;
 
     const state = store.getSnapshot();
     const slots = cloneSlots(state.slots);
+    ensureLength(slots, Math.max(fromIndex, toIndex) + 1);
     const from = slots[fromIndex];
     const to = slots[toIndex];
     if (!from) return false;
@@ -212,14 +246,7 @@ export const inventoryStore = {
   },
 
   canFit(items: readonly { itemId: string; quantity: number }[]): boolean {
-    const slots = cloneSlots(store.getSnapshot().slots);
-    for (const row of items) {
-      if (row.quantity <= 0) continue;
-      if (!getItem(row.itemId)) return false;
-      const leftover = insertStack(slots, { itemId: row.itemId, quantity: row.quantity });
-      if (leftover) return false;
-    }
-    return true;
+    return items.every((row) => row.quantity <= 0 || Boolean(getItem(row.itemId)));
   },
 
   removeItem(itemId: string, quantity: number): boolean {
@@ -267,18 +294,8 @@ export const inventoryStore = {
     const totalCost = price * quantity;
     if (this.countItem(currencyItemId) < totalCost) return 'no-funds';
 
-    const state = store.getSnapshot();
-    const trialSlots = cloneSlots(state.slots);
-    const leftover = insertStack(trialSlots, { itemId, quantity });
-    if (leftover) return 'no-space';
-
     if (!this.removeItem(currencyItemId, totalCost)) return 'no-funds';
-    const remaining = this.addItem(itemId, quantity);
-    if (remaining > 0) {
-      this.addItem(currencyItemId, totalCost);
-      this.removeItem(itemId, quantity - remaining);
-      return 'no-space';
-    }
+    this.addItem(itemId, quantity);
     return 'ok';
   },
 

@@ -33,6 +33,7 @@ import type {
   BossProgressState,
 } from '@/types/boss';
 import { DEFAULT_BOSS_PROGRESS } from '@/types/boss';
+import { d, decimalToUnsafeNumber, type Decimal } from '@/lib/decimal';
 
 interface BossStoreState extends BossProgressState {
   isOpen: boolean;
@@ -203,7 +204,7 @@ export const bossStore = {
       victory: reason === 'boss-defeated' || reason === 'shared-defeated',
       damageDealt: runtime.damageTaken,
       durationMs,
-      playerHpRemaining: vitalsStore.getSnapshot().hp,
+      playerHpRemaining: decimalToUnsafeNumber(vitalsStore.getSnapshot().hp),
       defeatReason:
         reason === 'boss-defeated' || reason === 'shared-defeated'
           ? undefined
@@ -264,7 +265,7 @@ export const bossStore = {
       victory: reason === 'boss-defeated' || reason === 'shared-defeated',
       damageDealt: runtime.damageTaken,
       durationMs,
-      playerHpRemaining: vitalsStore.getSnapshot().hp,
+      playerHpRemaining: decimalToUnsafeNumber(vitalsStore.getSnapshot().hp),
       defeatReason:
         reason === 'boss-defeated' || reason === 'shared-defeated'
           ? undefined
@@ -380,20 +381,22 @@ export const bossStore = {
     return { ok: true, instanceId };
   },
 
-  syncFromEnemy(hp: number, hpMax: number): void {
+  syncFromEnemy(hp: number | Decimal, hpMax: number | Decimal): void {
     const state = store.getSnapshot();
     const runtime = state.runtime;
     if (!runtime || runtime.status !== 'fighting') return;
     const def = getBossDefinition(runtime.bossId);
     if (!def) return;
-    const damageTaken = Math.max(runtime.damageTaken, runtime.hpMax - Math.max(0, hp));
+    const hpN = decimalToUnsafeNumber(d(hp));
+    const hpMaxN = decimalToUnsafeNumber(d(hpMax));
+    const damageTaken = Math.max(runtime.damageTaken, runtime.hpMax - Math.max(0, hpN));
     const phase = resolveBossPhase(clampHpRatio(hp, hpMax), def.phases);
     store.setState({
       ...state,
       runtime: {
         ...runtime,
-        currentHp: Math.max(0, hp),
-        hpMax,
+        currentHp: Math.max(0, hpN),
+        hpMax: hpMaxN,
         damageTaken,
         phaseId: phase?.id ?? runtime.phaseId,
       },
@@ -463,7 +466,7 @@ export const bossStore = {
       victory: true,
       damageDealt: runtime.damageTaken,
       durationMs,
-      playerHpRemaining: vitalsStore.getSnapshot().hp,
+      playerHpRemaining: decimalToUnsafeNumber(vitalsStore.getSnapshot().hp),
       firstClear: !alreadyCleared,
     };
     const rewards = [...def.rewards, ...(result.firstClear && def.firstClearReward ? def.firstClearReward : [])];
@@ -531,7 +534,7 @@ export const bossStore = {
       victory: false,
       damageDealt: runtime.damageTaken,
       durationMs,
-      playerHpRemaining: vitalsStore.getSnapshot().hp,
+      playerHpRemaining: decimalToUnsafeNumber(vitalsStore.getSnapshot().hp),
       defeatReason: reason,
       firstClear: false,
     };

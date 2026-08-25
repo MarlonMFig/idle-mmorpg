@@ -15,7 +15,7 @@ import type {
 } from '@/types/hunt';
 import { getCuratedPortraitUrl } from '@/data/curated-map-sprites';
 
-const HUNTS_URL = '/data/wonsr/hunts.json?v=wonsr-10maps';
+const HUNTS_URL = '/data/wonsr/hunts.json?v=naruto-td1';
 const ATLAS_URL = '/sprites/wonsr-hunts/characters.json';
 const ATLAS_IMAGE_URL = '/sprites/wonsr-hunts/characters.png';
 
@@ -81,7 +81,7 @@ export function HuntSelector() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [onlyUnlocked, setOnlyUnlocked] = useState(false);
-  const [tab, setTab] = useState<HuntSelectorTab>('wonsr');
+  const [tab, setTab] = useState<HuntSelectorTab>('naruto');
 
   useEffect(() => {
     let cancelled = false;
@@ -155,7 +155,11 @@ export function HuntSelector() {
           <div>
             <p className="hunt-selector__eyebrow">Mapa-múndi</p>
             <h2>
-              {tab === 'wonsr' ? 'WONSR' : tab === 'bosses' ? 'Bosses' : 'Mapa Naruto World'}
+              {tab === 'naruto-topdown'
+                ? 'NARUTO TOP DOWN'
+                : tab === 'bosses'
+                  ? 'Bosses'
+                  : 'Mapa Naruto World'}
             </h2>
             <p>
               Seu nível: <strong>{level}</strong> · {unlockedCount}/{huntsOnTab.length || '—'} mapas
@@ -183,11 +187,11 @@ export function HuntSelector() {
           <button
             type="button"
             role="tab"
-            aria-selected={tab === 'wonsr'}
-            className={`hunt-selector__tab${tab === 'wonsr' ? ' hunt-selector__tab--active' : ''}`}
-            onClick={() => setTab('wonsr')}
+            aria-selected={tab === 'naruto-topdown'}
+            className={`hunt-selector__tab${tab === 'naruto-topdown' ? ' hunt-selector__tab--active' : ''}`}
+            onClick={() => setTab('naruto-topdown')}
           >
-            WONSR
+            NARUTO TOP DOWN
           </button>
           <button
             type="button"

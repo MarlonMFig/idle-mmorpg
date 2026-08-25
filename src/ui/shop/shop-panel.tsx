@@ -66,10 +66,20 @@ export function ShopPanel() {
     return shopStore.listSellable();
   }, [invTick]);
 
+  const sellAllTotal = useMemo(
+    () => sellable.reduce((sum, entry) => sum + entry.unitPrice * entry.quantity, 0),
+    [sellable],
+  );
+  const sellAllQty = useMemo(
+    () => sellable.reduce((sum, entry) => sum + entry.quantity, 0),
+    [sellable],
+  );
+
   const offers = useMemo(() => {
     void purchases;
+    void invTick;
     return shopStore.listOffersCurrentCategory();
-  }, [category, purchases]);
+  }, [category, purchases, invTick]);
 
   if (!isOpen) return null;
 
@@ -142,6 +152,40 @@ export function ShopPanel() {
           </div>
         </div>
 
+        {tab === 'sell' && sellable.length > 0 ? (
+          <div className="market-win__sell-all">
+            <p className="market-win__sell-all-meta">
+              Tudo: {sellAllQty} itens · {formatCopper(sellAllTotal)} Cu
+            </p>
+            <button
+              type="button"
+              className="market-win__btn market-win__btn--sell"
+              onClick={() => {
+                const rare = sellable.some((entry) => {
+                  const def = getItem(entry.itemId);
+                  return (
+                    def?.rarity === 'epic' ||
+                    def?.rarity === 'legendary' ||
+                    def?.rarity === 'mythic'
+                  );
+                });
+                if (
+                  !window.confirm(
+                    rare
+                      ? `Vender todos os ${sellAllQty} itens vendáveis por ${formatCopper(sellAllTotal)} Cu? Inclui itens raros.`
+                      : `Vender todos os ${sellAllQty} itens vendáveis por ${formatCopper(sellAllTotal)} Cu?`,
+                  )
+                ) {
+                  return;
+                }
+                shopStore.sellAll();
+              }}
+            >
+              Vender todos
+            </button>
+          </div>
+        ) : null}
+
         <div className="market-win__list-wrap">
           {tab === 'buy' ? (
             <ul className="market-win__list">
@@ -213,9 +257,10 @@ export function ShopPanel() {
                         <button
                           type="button"
                           className="market-win__btn"
-                          disabled={!canAfford || (rem != null && rem <= 0) || maxPacks <= 0}
+                          disabled={!canAfford || (rem != null && rem <= 0)}
+                          title={!canAfford ? 'Saldo insuficiente' : undefined}
                           onClick={() => {
-                            const packs = Math.min(quantity, maxPacks);
+                            const packs = Math.min(quantity, Math.max(1, maxPacks));
                             if (offer.requireConfirm || offer.currency === 'animeCoins') {
                               if (
                                 !window.confirm(

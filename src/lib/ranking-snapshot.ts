@@ -10,6 +10,7 @@ import { vitalsStore } from '@/stores/vitals-store';
 import { getActiveLineageProgress } from '@/lib/lineage-progress';
 import { resolveSocialProviderMode } from '@/config/social-backend';
 import { loadGuestAuth } from '@/lib/guest-auth';
+import { decimalToUnsafeNumber } from '@/lib/decimal';
 import {
   computeCollectionRarityScore,
   computeProvisionalAccountPower,
@@ -73,7 +74,7 @@ export function buildMyRankingProfile(nicknameFallback = 'Jogador'): RankingPlay
     playerId,
     nickname,
     playerLevel: vitals.level,
-    levelXp: vitals.xp,
+    levelXp: decimalToUnsafeNumber(vitals.xp),
     totalXp: computeTotalXp(vitals.level, vitals.xp),
     accountPower,
     accountPowerProvisional: true,

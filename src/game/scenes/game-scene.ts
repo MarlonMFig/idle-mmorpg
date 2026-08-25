@@ -17,7 +17,7 @@ import { resolveCharacterPack } from '@/data/resolve-character-pack';
 import { Player } from '@/entities';
 import { getPlayerSession } from '@/game/registry';
 import { getSpawnCharacterPack } from '@/lib/active-character';
-import { isLabBlockingHuntGameplay } from '@/stores/character-lab-store';
+import { isCharacterLabSession, isLabBlockingHuntGameplay } from '@/stores/character-lab-store';
 import { emitChatMessage, emitSystemMessage } from '@/lib/system-log';
 import type { HuntCatalog } from '@/types/hunt';
 import type { SealedCharacter } from '@/types/team';
@@ -867,8 +867,8 @@ export class GameScene extends Phaser.Scene {
     // Sob WASD o líder não persegue ninguém: solta a reserva para os aliados
     // não desviarem de um alvo que ele deixou para trás.
     if (manualMove) this.targetClaims?.release(LEADER_CLAIM_ID);
-    else if (!isLabBlockingHuntGameplay()) this.idleAi?.update();
-    if (!isLabBlockingHuntGameplay()) this.teamCompanions?.update(time);
+    else if (!isCharacterLabSession() && !isLabBlockingHuntGameplay()) this.idleAi?.update();
+    if (!isCharacterLabSession() && !isLabBlockingHuntGameplay()) this.teamCompanions?.update(time);
     this.hubBirds?.update(time, this.game.loop.delta);
     this.characterLab?.update(time);
     this.mapViewportLab?.update();

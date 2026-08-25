@@ -2,7 +2,7 @@ import { GAME_LIMITS, getMaxStarsForRarity } from '@/config/gameConfig';
 import {
   CHARACTER_QUALITY_RANK_LABELS,
 } from '@/constants/character-progression';
-import { formatQualityStatMultiplier } from '@/constants/character-quality-stats';
+import { formatQualityStatMultiplier, formatCharacterGrade } from '@/constants/character-quality-stats';
 import { LINEAGE_LABELS } from '@/constants/lineage';
 import { getInstanceLineageId } from '@/lib/lineage-compatibility';
 import type { SealedCharacter } from '@/types/team';
@@ -21,5 +21,5 @@ export function formatStars(stars: number, maxStars?: number): string {
 
 export function characterMetaLine(member: SealedCharacter, liveLevel?: number): string {
   const level = displayLevelForCharacter(liveLevel ?? member.level);
-  return `Nv.${level} · ${CHARACTER_QUALITY_RANK_LABELS[member.quality]} · ${formatQualityStatMultiplier(member.qualityStatMultiplier)} · ${formatStars(member.stars, getMaxStarsForRarity(member.quality))} · Linhagem: ${LINEAGE_LABELS[getInstanceLineageId(member)]}`;
+  return `Nv.${level} · ${CHARACTER_QUALITY_RANK_LABELS[member.quality]} · ${formatCharacterGrade(member.grade)} · ${formatQualityStatMultiplier(member.qualityStatMultiplier)} · ${formatStars(member.stars, getMaxStarsForRarity(member.quality))} · Linhagem: ${LINEAGE_LABELS[getInstanceLineageId(member)]}`;
 }

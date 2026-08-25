@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@theme {
+  --font-cinzel: 'Cinzel', serif;
+  --font-rajdhani: 'Rajdhani', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+
+  --color-gold-50: #fffbeb;
+  --color-gold-100: #fef3c7;
+  --color-gold-200: #fde68a;
+  --color-gold-300: #fcd34d;
+  --color-gold-400: #fbbf24;
+  --color-gold-500: #f59e0b;
+  --color-gold-600: #d97706;
+  --color-gold-700: #b45309;
+  --color-gold-800: #92400e;
+  --color-gold-900: #78350f;
+}
+
+@layer utilities {
+  .font-cinzel {
+    font-family: var(--font-cinzel);
+  }
+  .font-rajdhani {
+    font-family: var(--font-rajdhani);
+  }
+  .font-sans {
+    font-family: var(--font-sans);
+  }
+
+  /* Shimmer animations */
+  @keyframes shine {
+    0% {
+      transform: translateX(-100%) rotate(25deg);
+    }
+    100% {
+      transform: translateX(200%) rotate(25deg);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shine 2.8s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% {
+      opacity: 0.35;
+      transform: scale(0.98);
+    }
+    50% {
+      opacity: 0.85;
+      transform: scale(1.02);
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulseGlow 3s infinite ease-in-out;
+  }
+
+  @keyframes floatSlow {
+    0%, 100% {
+      transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-6px) rotate(1deg);
+    }
+  }
+
+  .animate-float {
+    animation: floatSlow 4s infinite ease-in-out;
+  }
+
+  @keyframes raysRotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-rays {
+    animation: raysRotate 20s linear infinite;
+  }
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f1117;
+}
+::-webkit-scrollbar-thumb {
+  background: #272a38;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #d97706;
+}

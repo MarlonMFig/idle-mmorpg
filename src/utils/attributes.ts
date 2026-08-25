@@ -1,3 +1,4 @@
+import { combatGrowth } from '@/anime-idle/formulas';
 import {
   ATTRIBUTE_ORDER,
   ATTRIBUTE_SHORT_LABELS,
@@ -55,11 +56,16 @@ export function sumModifiers(...layers: AttributeModifiers[]): AttributeModifier
   return result;
 }
 
-export function levelModifiersFor(level: number): AttributeModifiers {
+export function levelModifiersFor(level: number, starredBase: AttributeValues): AttributeModifiers {
   if (level <= 1) return {};
-  const steps = level - 1;
+  const steps = Math.max(0, level - 1);
   const result: AttributeModifiers = {};
   for (const id of ATTRIBUTE_ORDER) {
+    if (id === 'strength') {
+      const grown = starredBase[id] * combatGrowth(level).toNumber() - starredBase[id];
+      if (grown !== 0) result[id] = grown;
+      continue;
+    }
     const growth = LEVEL_ATTRIBUTE_GROWTH[id] * steps;
     if (growth !== 0) result[id] = growth;
   }
@@ -89,7 +95,7 @@ export function computePlayerAttributes(input: {
 }): PlayerAttributes {
   const stars = input.stars ?? 0;
   const base = applyStarBonusToBase(cloneValues(BASE_ATTRIBUTES), stars);
-  const level = levelModifiersFor(input.level);
+  const level = levelModifiersFor(input.level, base);
   const buffList = input.buffs ?? [];
   const buffs = sumBuffModifiers(buffList, input.now);
 

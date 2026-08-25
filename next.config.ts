@@ -1,16 +1,5 @@
 import type { NextConfig } from 'next';
 
-/** Arquivos que o Lab grava. Não podem disparar HMR no meio do POST. */
-const LAB_WRITE_IGNORE = [
-  '**/node_modules/**',
-  '**/.git/**',
-  '**/.next/**',
-  '**/src/data/vfx/catalog.ts',
-  '**/src/data/lab-visual-skills.ts',
-  '**/src/data/**/*packs*.ts',
-  '**/public/vfx/**',
-];
-
 const nextConfig: NextConfig = {
   webpack: (config, { dev }) => {
     config.resolve.alias = {
@@ -22,10 +11,12 @@ const nextConfig: NextConfig = {
       path: false,
       crypto: false,
     };
+    // Não ignorar src/data/*packs.ts: o Lab grava esses ficheiros e o F5
+    // precisa de recompilar o bundle a partir do disco. O write é adiado
+    // para depois do JSON 200 (processo Node separado) para o POST não morrer.
     if (dev) {
       config.watchOptions = {
         ...config.watchOptions,
-        ignored: LAB_WRITE_IGNORE,
         aggregateTimeout: 600,
       };
     }

@@ -241,7 +241,7 @@ export function HelperPanel() {
                     role="option"
                     aria-selected={selected}
                     className={`helper__chip${selected ? ' is-selected' : ''}`}
-                    title={`${tier.label} (~${Math.round(tier.successChance * 100)}%)`}
+                    title={`${tier.label} (×${tier.multiplier})`}
                     onClick={() =>
                       helperStore.setScrollItemId(tier.itemId as SealingScrollTierId)
                     }

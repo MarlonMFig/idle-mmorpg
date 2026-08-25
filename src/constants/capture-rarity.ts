@@ -1,27 +1,22 @@
 import type { CharacterQuality } from '@/types/character-meta';
 import { CHARACTER_QUALITIES } from '@/types/character-meta';
 import { clampCaptureChance } from '@/constants/capture';
+import {
+  APPEARANCE_WEIGHTS,
+  computeCaptureChance,
+  appearancePercents,
+} from '@/constants/capture-system';
 
 /**
- * Peso relativo da qualidade obtida NA CAPTURA (eixo ENCONTRAR / roll pós-sucesso).
- * Não é rolado no spawn da Hunt.
+ * Peso relativo da qualidade na aparição (roll exclusivo normalizado).
  */
-export const RARITY_SPAWN_WEIGHTS: Record<CharacterQuality, number> = {
-  D: 40,
-  C: 24,
-  B: 16,
-  A: 10,
-  S: 6,
-  SS: 3,
-  SSS: 1,
-};
+export const RARITY_SPAWN_WEIGHTS: Record<CharacterQuality, number> = { ...APPEARANCE_WEIGHTS };
 
-/** Alias oficial — mesma tabela. */
 export const QUALITY_SPAWN_WEIGHTS = RARITY_SPAWN_WEIGHTS;
 
 /**
- * Multiplicador de selamento por qualidade do spawn (eixo SELAR).
- * final = clamp(scrollChance × modifier)
+ * @deprecated A captura usa base da quality × multiplicador do pergaminho.
+ * Mantido só para telas que ainda leem o modificador antigo.
  */
 export const CAPTURE_RARITY_MODIFIERS: Record<CharacterQuality, number> = {
   D: 1,
@@ -33,7 +28,6 @@ export const CAPTURE_RARITY_MODIFIERS: Record<CharacterQuality, number> = {
   SSS: 0.05,
 };
 
-/** Alias oficial — mesma tabela. */
 export const CAPTURE_QUALITY_MODIFIERS = CAPTURE_RARITY_MODIFIERS;
 
 export function captureModifierForQuality(quality: CharacterQuality): number {
@@ -48,22 +42,12 @@ export function spawnQualityTotalWeight(): number {
   return CHARACTER_QUALITIES.reduce((sum, quality) => sum + spawnWeightForQuality(quality), 0);
 }
 
-/** Percentual esperado de cada qualidade (soma 100). */
 export function spawnQualityPercents(): Record<CharacterQuality, number> {
-  const total = spawnQualityTotalWeight();
-  return Object.fromEntries(
-    CHARACTER_QUALITIES.map((quality) => [
-      quality,
-      total > 0 ? (100 * spawnWeightForQuality(quality)) / total : 0,
-    ]),
-  ) as Record<CharacterQuality, number>;
+  return appearancePercents();
 }
 
-export function computeCaptureFinalChance(
-  scrollChance: number,
-  quality: CharacterQuality,
-): number {
-  return clampCaptureChance(scrollChance * captureModifierForQuality(quality));
+export function computeCaptureFinalChance(_scrollChance: number, quality: CharacterQuality): number {
+  return computeCaptureChance(quality, 'item-sealing-scroll');
 }
 
 export const CAPTURE_QUALITY_ORDER: readonly CharacterQuality[] = CHARACTER_QUALITIES;

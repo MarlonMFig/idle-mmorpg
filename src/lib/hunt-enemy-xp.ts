@@ -1,6 +1,8 @@
+import { BALANCE, XP_PER_HP } from '@/anime-idle/balance';
+import { combatGrowth } from '@/anime-idle/formulas';
 import { qualityStatMidpoint } from '@/constants/character-quality-stats';
 import { BASE_ATTRIBUTES, LEVEL_ATTRIBUTE_GROWTH } from '@/constants/attributes';
-import { getXpRequiredForLevel } from '@/lib/player-progression';
+import { Decimal, d } from '@/lib/decimal';
 
 /** Espelha `PLAYER_ATTACK_COOLDOWN_MS` / `LATERAL_SIDE_ENEMY_RESPAWN_MS` (evita ciclo combat ↔ XP). */
 const BASIC_ATTACK_MS = 380;
@@ -32,21 +34,35 @@ export function legacyHuntEnemyXp(level: number): number {
   return Math.round(LEGACY_HUNT_ENEMY_XP_BASE + safe * LEGACY_HUNT_ENEMY_XP_LINEAR);
 }
 
-/** HP oficial do inimigo de caça (espelha `huntEnemyStatsForLevel`). */
-export function huntEnemyHpForLevel(level: number): number {
-  const safe = Math.max(1, Math.floor(level));
-  return Math.round(45 + safe * 16 + Math.pow(safe, 1.18) * 2);
+/** HP oficial do inimigo de caça: HP_BASE * HP_GROWTH^(n-1). */
+export function huntEnemyHpForLevel(level: number): Decimal {
+  const n = Math.max(1, Math.floor(level));
+  return d(BALANCE.HP_BASE).mul(Decimal.pow(BALANCE.HP_GROWTH, n - 1));
+}
+
+/**
+ * ATK do inimigo acompanha o HP linear do jogador (não o DPS 1.09^n).
+ * Assim a ficha fica em centenas/milhares e os hits-para-morrer ~ HP_BASE/ATK_BASE.
+ */
+export function huntEnemyAtkForLevel(level: number): Decimal {
+  const n = Math.max(1, Math.floor(level));
+  const playerHp = BASE_ATTRIBUTES.hp + LEVEL_ATTRIBUTE_GROWTH.hp * (n - 1);
+  return Decimal.max(
+    d(2),
+    d(BALANCE.ENEMY_ATK_BASE).mul(playerHp).div(BASE_ATTRIBUTES.hp),
+  );
 }
 
 /**
  * Kills/min determinístico: starter Common (D, midpoint), sem skills.
  * cycle = max(TTK básico, intervalo mínimo de spawn lateral).
  */
-export function estimateHuntKillsPerMinute(playerLevel: number, enemyHp: number): number {
+export function estimateHuntKillsPerMinute(playerLevel: number, enemyHp: number | Decimal): number {
   const level = Math.max(1, Math.floor(playerLevel));
-  const baseAtk = BASE_ATTRIBUTES.strength + LEVEL_ATTRIBUTE_GROWTH.strength * Math.max(0, level - 1);
-  const atk = Math.max(1, Math.floor(baseAtk * qualityStatMidpoint('D')));
-  const hits = Math.max(1, Math.ceil(Math.max(1, enemyHp) / atk));
+  const hp = Decimal.max(d(1), d(enemyHp));
+  const baseAtk = d(BASE_ATTRIBUTES.strength).mul(combatGrowth(level));
+  const atk = Decimal.max(d(1), baseAtk.mul(qualityStatMidpoint('D')).floor());
+  const hits = Math.max(1, Math.ceil(hp.div(atk).toNumber()));
   const ttkMs = hits * BASIC_ATTACK_MS;
   const cycleMs = Math.max(ttkMs, MIN_SPAWN_CYCLE_MS);
   return 60_000 / cycleMs;
@@ -66,22 +82,10 @@ export function estimatedMinutesForLevel(level: number): number {
 }
 
 /**
- * XP base por kill (antes de level-gap, VIP e stage).
- * 1–49: calibração para a curva de tempo.
- * 50+: continua a reta legado a partir do valor de Lv49 (sem cliff / sem meta 50+).
+ * XP de catálogo em Δ = 0 (hp × XP_POR_HP).
+ * O kill real aplica dificuldade(Δ) em `computeHuntKillXp`.
  */
 export function huntEnemyXpForLevel(level: number): number {
-  const safe = Math.max(1, Math.floor(level));
-  if (safe >= 50) {
-    const at49 = huntEnemyXpForLevel(49);
-    return Math.max(
-      1,
-      Math.round((at49 * legacyHuntEnemyXp(safe)) / legacyHuntEnemyXp(49)),
-    );
-  }
-  const kpm = estimateHuntKillsPerMinute(safe, huntEnemyHpForLevel(safe));
-  const minutes = estimatedMinutesForLevel(safe);
-  const need = getXpRequiredForLevel(safe);
-  const raw = need / (minutes * Math.max(0.25, kpm) * HUNT_ENEMY_XP_TIME_SCALE);
-  return Math.max(1, Math.round(raw));
+  const hp = huntEnemyHpForLevel(level);
+  return Math.max(1, Math.round(hp.mul(XP_PER_HP).toNumber()));
 }

@@ -1,50 +1,58 @@
-import { huntEnemyXpForLevel } from '@/lib/hunt-enemy-xp';
-import { applyStageXpGain } from '@/lib/player-progression';
-import { xpLevelGapMultiplier } from '@/lib/xp-level-gap';
+import { difficultyMultiplier, xpPerEnemy } from '@/anime-idle/formulas';
+import { Decimal, d } from '@/lib/decimal';
+import { huntEnemyHpForLevel } from '@/lib/hunt-enemy-xp';
 
-/** Arredondamento único do XP de combate (igual a `applyStageXpGain`). */
-export function roundFinalXp(amount: number): number {
-  if (amount <= 0) return 0;
-  return Math.max(1, Math.round(amount));
+/** Arredondamento único do XP de combate. */
+export function roundFinalXp(amount: Decimal | number): Decimal {
+  const n = d(amount);
+  if (n.lte(0)) return d(0);
+  return Decimal.max(d(1), n.round());
 }
 
 export interface HuntKillXpBreakdown {
   enemyLevel: number;
   playerLevel: number;
-  baseXp: number;
+  enemyHp: Decimal;
+  /** Δ = nível do inimigo − nível do personagem. */
+  delta: number;
+  baseXp: Decimal;
   levelGap: number;
   levelGapMultiplier: number;
-  afterGap: number;
+  afterGap: Decimal;
   xpMultiplier: number;
   expBoostMultiplier: number;
-  finalXp: number;
+  finalXp: Decimal;
 }
 
 /**
- * Pipeline oficial de caça:
- * BASE ENEMY XP → LEVEL GAP → XP boosts (DEV/VIP) → stage rate → FINAL
+ * XP de kill: hp × XP_POR_HP × dificuldade(Δ). Sem faixas WONSR.
+ * VIP/DEV entram depois, como multiplicadores externos.
+ * HP do inimigo em Decimal (catálogo ainda pode ser number).
  */
 export function computeHuntKillXp(input: {
   playerLevel: number;
   enemyLevel: number;
-  baseEnemyXp?: number;
+    enemyHp?: number | Decimal;
   xpMultiplier?: number;
   expBoostMultiplier?: number;
 }): HuntKillXpBreakdown {
   const playerLevel = Math.max(1, Math.floor(input.playerLevel));
   const enemyLevel = Math.max(1, Math.floor(input.enemyLevel));
-  const baseXp = input.baseEnemyXp ?? huntEnemyXpForLevel(enemyLevel);
-  const levelGap = playerLevel - enemyLevel;
-  const levelGapMultiplier = xpLevelGapMultiplier(playerLevel, enemyLevel);
-  const afterGap = baseXp * levelGapMultiplier;
+  const enemyHp = Decimal.max(d(1), d(input.enemyHp ?? huntEnemyHpForLevel(enemyLevel)));
+  const delta = enemyLevel - playerLevel;
+  const levelGapMultiplier = difficultyMultiplier(delta);
+  const afterGap = xpPerEnemy(d(enemyHp), delta);
+  const baseXp = xpPerEnemy(d(enemyHp), 0);
   const xpMultiplier = input.xpMultiplier ?? 1;
   const expBoostMultiplier = input.expBoostMultiplier ?? 1;
-  const finalXp = applyStageXpGain(afterGap * xpMultiplier * expBoostMultiplier, playerLevel);
+  const finalXp = roundFinalXp(afterGap.mul(xpMultiplier).mul(expBoostMultiplier));
   return {
     enemyLevel,
     playerLevel,
+    enemyHp,
+    delta,
     baseXp,
-    levelGap,
+    levelGap: playerLevel - enemyLevel,
     levelGapMultiplier,
     afterGap,
     xpMultiplier,

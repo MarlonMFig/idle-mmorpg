@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  formatSequenceDimensionError,
   getVfxDefinition,
   isSequenceVfx,
   isVfxId,
@@ -162,14 +161,11 @@ function revokeItems(items: SequenceItem[]): void {
   }
 }
 
-function sequenceMismatch(items: SequenceItem[]): string | null {
-  if (items.length < 2) return null;
-  const expected = items[0];
-  const bad = items.findIndex(
-    (item, index) => index > 0 && (item.width !== expected.width || item.height !== expected.height),
+function sequenceMixedSizes(items: SequenceItem[]): boolean {
+  if (items.length < 2) return false;
+  return items.some(
+    (item, index) => index > 0 && (item.width !== items[0].width || item.height !== items[0].height),
   );
-  if (bad < 0) return null;
-  return formatSequenceDimensionError(bad, expected, items[bad]);
 }
 
 export function VfxEditorModal({
@@ -261,7 +257,7 @@ export function VfxEditorModal({
     return suggestHorizontalFrameCount(image.width, image.height, form.frameWidth, form.frameHeight);
   }, [image, form.frameWidth, form.frameHeight, isSequence]);
 
-  const dimWarning = useMemo(() => sequenceMismatch(sequence), [sequence]);
+  const mixedSizes = useMemo(() => sequenceMixedSizes(sequence), [sequence]);
 
   const duration = form.frameRate > 0 ? form.frameCount / form.frameRate : 0;
   const dirty = vfxEditorSnapshot(form, sequence) !== baselineRef.current;
@@ -437,10 +433,6 @@ export function VfxEditorModal({
       if (isSequence) {
         if (sequence.length < 1) {
           setError('Importe pelo menos um frame da sequência.');
-          return;
-        }
-        if (dimWarning) {
-          setError(dimWarning);
           return;
         }
         const originalFrames = source?.frames ?? [];
@@ -879,7 +871,11 @@ export function VfxEditorModal({
             : ' Sheet horizontal (esquerda→direita). Imagem única = Frame Count 1.'}
         </p>
 
-        {dimWarning ? <p className="character-lab__hint is-error">{dimWarning}</p> : null}
+        {mixedSizes ? (
+          <p className="character-lab__hint">
+            Frames com tamanhos diferentes: no save eles vão para um canvas comum (centro).
+          </p>
+        ) : null}
         {error ? <p className="character-lab__hint is-error">{error}</p> : null}
 
         {createdPrompt ? (
@@ -937,7 +933,7 @@ export function VfxEditorModal({
           <button
             type="button"
             className="character-lab__save-btn"
-            disabled={isSavingVfx || Boolean(dimWarning)}
+            disabled={isSavingVfx}
             onClick={() => void save()}
           >
             {isSavingVfx

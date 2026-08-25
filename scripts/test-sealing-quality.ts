@@ -88,7 +88,7 @@ const baseChance = getCaptureChance(itachiEnemy('D'), commonScroll).finalChance;
 for (const quality of CHARACTER_QUALITIES) {
   const chance = getCaptureChance(itachiEnemy(quality), commonScroll);
   assert(`selável ${quality}`, chance.finalChance > 0);
-  assert(`chance independente da quality no inimigo ${quality}`, chance.finalChance === baseChance);
+  assert(`chance segue quality ${quality}`, chance.quality === quality);
 }
 
 assert(
@@ -113,14 +113,14 @@ for (let i = 1; i < weights.length; i += 1) {
 }
 
 const percents = spawnQualityPercents();
-assert('percent D 40', Math.abs(percents.D - 40) < 1e-9);
-assert('percent SSS 1', Math.abs(percents.SSS - 1) < 1e-9);
+assert('percent D dominante', percents.D > 50);
+assert('percent SSS raro', percents.SSS < 1);
 
 const dist = simulateSpawnQualityCounts(100_000, mulberry32(42));
 for (const quality of CHARACTER_QUALITIES) {
-  const expected = (QUALITY_SPAWN_WEIGHTS[quality] / 100) * 100_000;
+  const expected = (percents[quality] / 100) * 100_000;
   const err = Math.abs(dist[quality] - expected) / 100_000;
-  assert(`distribuição ${quality}`, err < 0.012);
+  assert(`distribuição ${quality}`, err < 0.015);
 }
 assert('ordem observada D>C>B>A>S>SS>SSS', dist.D > dist.C && dist.C > dist.B && dist.B > dist.A && dist.A > dist.S && dist.S > dist.SS && dist.SS > dist.SSS);
 

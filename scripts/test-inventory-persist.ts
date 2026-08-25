@@ -157,9 +157,15 @@ function main(): void {
   inventoryStore.hydrate(blob);
   assert('hydrate idempotent copper', economyService.getBalance('copper') === copperOnce);
 
-  // —— slotsFromPersisted length ——
-  const rebuilt = slotsFromPersisted(blob);
-  assert('40 slots', rebuilt.length === 40);
+  // —— slotsFromPersisted keeps extras (bolsa sem teto) ——
+  inventoryStore.addItem('item-anime-naruto-bandagem', 1, 'dev');
+  const blobGrow = inventoryStore.getPersistedInventory();
+  const rebuilt = slotsFromPersisted(blobGrow);
+  assert('persisted slots kept', rebuilt.length === blobGrow.slots.length);
+  inventoryStore.reset();
+  inventoryStore.addItem('item-anime-naruto-bandagem', 50 * 99, 'dev');
+  const many = inventoryStore.getPersistedInventory();
+  assert('more than 40 stacks persist', slotsFromPersisted(many).length > 40);
 
   // Anime Coins remain in gemStore (not inventory)
   gemStore.hydrate({ balance: 12 });

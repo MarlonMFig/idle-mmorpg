@@ -9,6 +9,7 @@ import {
   simulateExactMinutes,
   simulateXpProgression,
 } from '@/lib/xp-progression-sim';
+import { formatStat } from '@/lib/format-stat';
 import { getXpRequiredForLevel } from '@/lib/player-progression';
 import type { HuntCatalog, HuntDefinition } from '@/types/hunt';
 
@@ -115,10 +116,11 @@ export function CharacterLabXpAnalyzer() {
       </label>
       {analyzer && kill ? (
         <p className="character-lab__hint">
-          Enemy Lv {kill.enemyLevel} · gap {kill.levelGap} · base {kill.baseXp} · gap×
-          {kill.levelGapMultiplier.toFixed(2)} · final/kill {kill.finalXp} · kills/min{' '}
+          Enemy Lv {kill.enemyLevel} · gap {kill.levelGap} · base {formatStat(kill.baseXp)} · gap×
+          {kill.levelGapMultiplier.toFixed(2)} · final/kill {formatStat(kill.finalXp)} · kills/min{' '}
           {analyzer.killsPerMin.toFixed(2)} · XP/min {analyzer.xpPerMin.toFixed(0)} · to next{' '}
-          {getXpRequiredForLevel(playerLevel)} · ETA {fmtMin(getXpRequiredForLevel(playerLevel) / analyzer.xpPerMin)}
+          {formatStat(getXpRequiredForLevel(playerLevel))} · ETA{' '}
+          {fmtMin(getXpRequiredForLevel(playerLevel).toNumber() / analyzer.xpPerMin)}
         </p>
       ) : null}
       <h4>COMPARADOR / RECOMENDADA</h4>
@@ -178,7 +180,7 @@ export function CharacterLabXpAnalyzer() {
       </p>
       {sim ? (
         <p className="character-lab__hint">
-          {sim.startLevel}→{sim.targetLevel} · {fmtMin(sim.estimatedMinutes)} · XP {sim.totalXpRequired} ·
+          {sim.startLevel}→{sim.targetLevel} · {fmtMin(sim.estimatedMinutes)} · XP {formatStat(sim.totalXpRequired)} ·
           média {sim.averageXpPerMin.toFixed(0)}/min · kills ~{Math.round(sim.estimatedKills)}
           {sim.stuckOnFirstHuntMinutes != null
             ? ` · parado no 1º mapa ${fmtMin(sim.stuckOnFirstHuntMinutes)}`

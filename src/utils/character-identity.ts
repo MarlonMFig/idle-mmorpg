@@ -1,9 +1,9 @@
 import { DEFAULT_OBTAIN_QUALITY } from '@/constants/character-progression';
 import {
-  clampQualityStatMultiplier,
-  resolveQualityStatMultiplier,
-  rollQualityStatMultiplier,
+  derivePotentialFields,
+  isCharacterPotential,
 } from '@/constants/character-quality-stats';
+import { backfillPotential, rollPotential } from '@/lib/raridade-potencial.js';
 import {
   clampMasteryLevel,
   clampMasteryXp,
@@ -13,9 +13,16 @@ import { defaultMasteryProgress, isMaxMastery } from '@/lib/character-mastery';
 import { getMaxStarsForRarity, getStartingStarsForRarity, MAX_PLAYER_LEVEL } from '@/config/gameConfig';
 import { resolveCharacterLineageId } from '@/data/character-lineages';
 import { getCharacterLineageId } from '@/lib/lineage-compatibility';
-import type { LineageId, CharacterQuality, CharacterStars } from '@/types/character-meta';
+import type {
+  CharacterGrade,
+  CharacterPotential,
+  CharacterQuality,
+  CharacterStars,
+  LineageId,
+} from '@/types/character-meta';
 import { LINEAGE_IDS, CHARACTER_QUALITIES } from '@/types/character-meta';
 import type { StarterCharacterId } from '@/types/player-creation';
+import { parseDecimal, type Decimal } from '@/lib/decimal';
 import type { SealedCharacter } from '@/types/team';
 
 const QUALITY_SET = new Set<string>(CHARACTER_QUALITIES);
@@ -71,9 +78,8 @@ export function clampCharacterLevel(value: unknown, fallback = 1): number {
   return Math.max(0, Math.min(MAX_PLAYER_LEVEL, Math.floor(value)));
 }
 
-export function clampCharacterXp(value: unknown): number {
-  if (typeof value !== 'number' || !Number.isFinite(value)) return 0;
-  return Math.max(0, Math.floor(value));
+export function clampCharacterXp(value: unknown): Decimal {
+  return parseDecimal(value);
 }
 
 export function buildSealedCharacter(input: {
@@ -84,12 +90,15 @@ export function buildSealedCharacter(input: {
   starterId: StarterCharacterId | null;
   previewUrl?: string;
   quality?: CharacterQuality;
+  potential?: CharacterPotential;
+  potentialTotal?: number;
+  grade?: CharacterGrade;
   qualityStatMultiplier?: number;
   stars?: CharacterStars;
   clanId?: LineageId;
   lineageId?: LineageId;
   level?: number;
-  xp?: number;
+  xp?: number | Decimal;
   masteryLevel?: number;
   masteryXp?: number;
   awakeningLevel?: number;
@@ -101,6 +110,12 @@ export function buildSealedCharacter(input: {
 }): Omit<SealedCharacter, 'previewUrl'> & { previewUrl?: string } {
   const lookType = input.lookType;
   const quality = input.quality ?? DEFAULT_OBTAIN_QUALITY;
+  const potential = isCharacterPotential(input.potential)
+    ? input.potential
+    : typeof input.qualityStatMultiplier === 'number' && Number.isFinite(input.qualityStatMultiplier)
+      ? backfillPotential(quality, input.qualityStatMultiplier)
+      : rollPotential();
+  const derived = derivePotentialFields(quality, potential);
   const characterId = resolveCharacterDefinitionId({
     characterId: input.characterId,
     sourceId: input.sourceId,
@@ -122,10 +137,10 @@ export function buildSealedCharacter(input: {
     starterId: input.starterId,
     previewUrl: input.previewUrl,
     quality,
-    qualityStatMultiplier:
-      input.qualityStatMultiplier != null
-        ? clampQualityStatMultiplier(quality, input.qualityStatMultiplier)
-        : rollQualityStatMultiplier(quality),
+    potential: derived.potential,
+    potentialTotal: derived.potentialTotal,
+    grade: derived.grade,
+    qualityStatMultiplier: derived.qualityStatMultiplier,
     stars: clampCharacterStars(
       input.stars ?? getStartingStarsForRarity(quality),
       quality,
@@ -193,10 +208,11 @@ export function normalizeSealedCharacter(raw: unknown): SealedCharacter | null {
       lookType: entry.lookType,
     }),
     quality: isCharacterQuality(entry.quality) ? entry.quality : DEFAULT_OBTAIN_QUALITY,
-    qualityStatMultiplier: resolveQualityStatMultiplier(
-      isCharacterQuality(entry.quality) ? entry.quality : DEFAULT_OBTAIN_QUALITY,
-      entry.qualityStatMultiplier,
-    ),
+    potential: isCharacterPotential(entry.potential) ? entry.potential : undefined,
+    qualityStatMultiplier:
+      typeof entry.qualityStatMultiplier === 'number' && Number.isFinite(entry.qualityStatMultiplier)
+        ? entry.qualityStatMultiplier
+        : undefined,
     stars: clampCharacterStars(
       entry.stars,
       isCharacterQuality(entry.quality) ? entry.quality : DEFAULT_OBTAIN_QUALITY,

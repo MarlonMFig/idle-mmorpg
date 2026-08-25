@@ -5,6 +5,7 @@ import { tryVipRestockPotion } from '@/lib/vip-bonuses';
 import { helperStore } from '@/stores/helper-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { vitalsStore } from '@/stores/vitals-store';
+import { Decimal, d, hpRatio } from '@/lib/decimal';
 
 const POTION_COOLDOWN_MS = 800;
 
@@ -28,10 +29,10 @@ export const autoHelperSystem = {
     if (vitalsStore.isDead()) return;
 
     const { hp, hpMax } = vitalsStore.getSnapshot();
-    if (hpMax <= 0 || hp <= 0) return;
-    if (hp >= hpMax) return;
+    if (hpMax.lte(0) || hp.lte(0)) return;
+    if (hp.gte(hpMax)) return;
 
-    const pct = (hp / hpMax) * 100;
+    const pct = hpRatio(hp, hpMax) * 100;
     if (pct > settings.hpThresholdPct) return;
     if (nowMs - lastPotionAt < POTION_COOLDOWN_MS) return;
 
@@ -43,7 +44,7 @@ export const autoHelperSystem = {
 
     lastPotionAt = nowMs;
     const healPercent = consumable.healPercent ?? getPotionHealPercent(potionId) ?? 0.35;
-    const amount = Math.max(1, Math.floor(hpMax * healPercent));
+    const amount = Decimal.max(d(1), hpMax.mul(healPercent).floor());
     vitalsStore.heal(amount);
   },
 

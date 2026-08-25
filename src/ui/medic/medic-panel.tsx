@@ -10,6 +10,8 @@ import { medicStore } from '@/stores/medic-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { teamStore } from '@/stores/team-store';
 import { vitalsStore } from '@/stores/vitals-store';
+import { formatStat } from '@/lib/format-stat';
+import { Decimal, d, hpRatio } from '@/lib/decimal';
 import { MgrWindow } from '@/ui/mgr';
 
 export const MEDIC_ICON_SRC = '/ui/hub-menu/medico.png?v=color';
@@ -57,10 +59,7 @@ export function MedicPanel() {
 
   if (!isOpen) return null;
 
-  const hpPct = Math.max(
-    0,
-    Math.min(100, Math.round((vitals.hp / Math.max(1, vitals.hpMax)) * 100)),
-  );
+  const hpPct = Math.round(hpRatio(vitals.hp, Decimal.max(d(1), vitals.hpMax)) * 100);
   const needsCare = quote.needsRecovery;
   const disabled = pending || !needsCare || !quote.canAfford || members.length === 0;
 
@@ -133,7 +132,9 @@ export function MedicPanel() {
             members.map((member) => {
               const isActive = member.id === activeId;
               const memberHpPct = isActive ? hpPct : 100;
-              const memberHpLabel = isActive ? `${vitals.hp}/${vitals.hpMax} HP` : `HP (reserva)`;
+              const memberHpLabel = isActive
+                ? `${formatStat(vitals.hp)}/${formatStat(vitals.hpMax)} HP`
+                : `HP (reserva)`;
               return (
                 <li key={member.id} className="hud-medic__status-item">
                   <span

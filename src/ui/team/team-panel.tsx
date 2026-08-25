@@ -6,7 +6,7 @@ import {
   CHARACTER_QUALITY_COLORS,
   CHARACTER_QUALITY_LABELS,
 } from '@/constants/character-progression';
-import { formatQualityStatMultiplier } from '@/constants/character-quality-stats';
+import { formatQualityStatMultiplier, formatCharacterGrade } from '@/constants/character-quality-stats';
 import { FRAGMENTS_PER_STAR } from '@/constants/aiw-quality';
 import { getMaxStarsForRarity } from '@/config/gameConfig';
 import { TEAM_SLOT_COUNT, SHOP_CURRENCY_ITEM_ID } from '@/constants/sealing';
@@ -22,6 +22,8 @@ import type { CharacterQuality } from '@/types/character-meta';
 import { CHARACTER_QUALITIES } from '@/types/character-meta';
 import type { SealedCharacter } from '@/types/team';
 import { computeInstanceTotals, estimateInstanceCombatPower } from '@/lib/character-instance-stats';
+import { formatStat } from '@/lib/format-stat';
+import { Decimal, d, hpRatio } from '@/lib/decimal';
 import {
   formatMasteryLevel,
   getMasteryXpRequired,
@@ -306,14 +308,14 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
   const selectedTotals = selected ? memberAttrs(selected, selectedLevel) : null;
   const selectedHpMax = selected
     ? selected.id === activeId
-      ? Math.max(1, vitals.hpMax)
-      : Math.max(1, Math.round(selectedTotals?.hp ?? 1))
-    : 1;
+      ? Decimal.max(d(1), vitals.hpMax)
+      : d(Math.max(1, Math.round(selectedTotals?.hp ?? 1)))
+    : d(1);
   const selectedHp = selected
     ? selected.id === activeId
       ? vitals.hp
       : selectedHpMax
-    : 0;
+    : d(0);
   const selectedAtk = Math.round(selectedTotals?.strength ?? 0);
   const selectedDef = Math.round(selectedTotals?.defense ?? 0);
   const selectedCrit = Math.round(selectedTotals?.critical ?? 0);
@@ -483,7 +485,8 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
                   <div className="team-mgr__slot-card-top">
                     <div className="team-mgr__slot-tags">
                       <span className="team-mgr__quality" style={{ ['--q' as string]: qColor }}>
-                        {CHARACTER_QUALITY_LABELS[member.quality]} {formatQualityStatMultiplier(member.qualityStatMultiplier)}
+                        {CHARACTER_QUALITY_LABELS[member.quality]} · {formatCharacterGrade(member.grade)}{' '}
+                        {formatQualityStatMultiplier(member.qualityStatMultiplier)}
                       </span>
                       {isActive ? (
                         <span className="team-mgr__leader-tag">♛ Líder</span>
@@ -612,7 +615,7 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
                             ['--q' as string]: CHARACTER_QUALITY_COLORS[selected.quality],
                           }}
                         >
-                          {CHARACTER_QUALITY_LABELS[selected.quality]}
+                          {CHARACTER_QUALITY_LABELS[selected.quality]} · {formatCharacterGrade(selected.grade)}
                         </span>
                       </p>
                       <h3 className="team-mgr__inspector-name">{selected.name}</h3>
@@ -688,14 +691,14 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
                       <div className="team-mgr__meter-row">
                         <span>Pontos de vida (HP)</span>
                         <strong>
-                          {formatInt(selectedHp)} / {formatInt(selectedHpMax)}
+                          {formatStat(selectedHp)} / {formatStat(selectedHpMax)}
                         </strong>
                       </div>
                       <div className="team-mgr__meter-track">
                         <span
                           className="team-mgr__meter-fill is-hp"
                           style={{
-                            width: `${Math.min(100, (selectedHp / Math.max(1, selectedHpMax)) * 100)}%`,
+                            width: `${Math.min(100, hpRatio(selectedHp, selectedHpMax) * 100)}%`,
                           }}
                         />
                       </div>
@@ -965,7 +968,7 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
                         {inTeam ? <span className="team-mgr__box-dot" aria-hidden /> : null}
                         <div className="team-mgr__box-card-top">
                           <span className="team-mgr__quality" style={{ ['--q' as string]: qColor }}>
-                            {CHARACTER_QUALITY_LABELS[member.quality]} {formatQualityStatMultiplier(member.qualityStatMultiplier)}
+                            {CHARACTER_QUALITY_LABELS[member.quality]} · {formatCharacterGrade(member.grade)} {formatQualityStatMultiplier(member.qualityStatMultiplier)}
                           </span>
                           {inTeam ? (
                             <span className="team-mgr__mini-badge">

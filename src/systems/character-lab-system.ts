@@ -9,6 +9,7 @@ import { applySharedVfxToAnim } from '@/data/vfx/apply-skill-vfx';
 import { Player } from '@/entities/player';
 import { DEFAULT_TRAVEL_SPEED_PX } from '@/lib/dev/lab-save-fields';
 import { labPoseHasContent, poseSheetToSpriteDef } from '@/lib/dev/lab-pose-sheet';
+import { getWonsrRenderedMap } from '@/data/wonsr-rendered-maps';
 import type { MapKey } from '@/maps/map-registry';
 import {
   characterLabStore,
@@ -133,6 +134,7 @@ export class CharacterLabSystem {
     }
 
     void this.syncDummy();
+    this.holdHuntStation();
     this.placeDummy();
 
     const command = characterLabStore.consumeCommand();
@@ -197,6 +199,20 @@ export class CharacterLabSystem {
 
   private dummy() {
     return this.enemyManager.get(LAB_DUMMY_ID) ?? null;
+  }
+
+  /** Na caçada o idle AI vai para o canto; o lab testa no spawn central. */
+  private holdHuntStation(): void {
+    const rendered = getWonsrRenderedMap(this.mapKey);
+    if (!rendered) return;
+    this.player.sprite.setVelocity(0, 0);
+    if (this.player.isBusy() || this.player.isDead()) return;
+    const x = rendered.spawn.x;
+    const y = rendered.lateralFloorY ?? rendered.spawn.y;
+    if (Math.abs(this.player.x - x) > 4 || Math.abs(this.player.y - y) > 4) {
+      this.player.sprite.setPosition(x, y);
+      this.player.stop();
+    }
   }
 
   private castSkill(skillId: string): void {

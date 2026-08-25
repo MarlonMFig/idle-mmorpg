@@ -1,0 +1,59 @@
+{
+  "tiers": [
+    { "id": 1, "nome": "Tier 1", "criterio": "Personagem introdutório / suporte inicial" },
+    { "id": 2, "nome": "Tier 2", "criterio": "Membro competente do grupo principal" },
+    { "id": 3, "nome": "Tier 3", "criterio": "Especialista / vilão de arco médio" },
+    { "id": 4, "nome": "Tier 4", "criterio": "Braço direito do vilão principal / mestre" },
+    { "id": 5, "nome": "Tier 5", "criterio": "Antagonista final / personagem quebrado" }
+  ],
+  "qualidades": [
+    {
+      "id": "comum",
+      "nome": "Comum",
+      "cor": "#9aa3ad",
+      "estrelas_ao_desbloquear": 1,
+      "teto_evolucao": 3
+    },
+    {
+      "id": "incomum",
+      "nome": "Incomum",
+      "cor": "#5fb85f",
+      "estrelas_ao_desbloquear": 1,
+      "teto_evolucao": 4
+    },
+    {
+      "id": "raro",
+      "nome": "Raro",
+      "cor": "#4a90d9",
+      "estrelas_ao_desbloquear": 2,
+      "teto_evolucao": 5
+    },
+    {
+      "id": "epico",
+      "nome": "Épico",
+      "cor": "#a86ede",
+      "estrelas_ao_desbloquear": 2,
+      "teto_evolucao": 6
+    },
+    {
+      "id": "lendario",
+      "nome": "Lendário",
+      "cor": "#f0932b",
+      "estrelas_ao_desbloquear": 3,
+      "teto_evolucao": 7
+    },
+    {
+      "id": "mitico",
+      "nome": "Mítico",
+      "cor": "#e34a4a",
+      "estrelas_ao_desbloquear": 3,
+      "teto_evolucao": 8
+    }
+  ],
+  "evolucao": {
+    "fragmentos_duplicados_por_estrela": 10,
+    "bonus_por_estrela_percentual": 8,
+    "comportamento_acima_do_teto": "TBD - teto_duro ou teto_soft_diminishing_returns"
+  },
+  "formula_poder_final": "base * (1 + estrelas * 0.08) * (1 + bonus_potencial_total)"
+}

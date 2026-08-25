@@ -25,6 +25,7 @@ import {
   upsertSkillAnimSource,
 } from '@/lib/dev/patch-character-source';
 import { insertLabVisualSkill, patchLabVisualSkillElement } from '@/lib/dev/patch-lab-visual-skills';
+import { upsertDevHotbar, upsertDevSkillAnim, upsertDevSkillDef } from '@/lib/dev/dev-runtime-registry';
 
 function deny() {
   return NextResponse.json({ success: false, ok: false, error: 'forbidden' }, { status: 403 });
@@ -124,12 +125,13 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: false, ok: false, error: 'slot inválido' }, { status: 400 });
       }
       const skill = buildVisualSkillDefinition(String(body.id ?? ''), String(body.name ?? ''));
-      const catalog = insertLabVisualSkill(skill);
+      const catalog = insertLabVisualSkill(skill, { persist: false });
       const stub = fallbackSkillAnimStub();
       const animFile = insertSkillAnimStub(characterId, skill.id, stub, { persist: false });
       const next = slotsFromBody ?? padOfficialHotbar([null, null, null, null]);
       next[slot - 1] = skill.id;
       const hotbar = patchCharacterHotbar(characterId, next, { source: animFile.source, persist: false });
+      writeDevSourceAfterResponse(catalog.absPath, catalog.source);
       writeDevSourceAfterResponse(hotbar.absPath, hotbar.source);
       saveLog('response sent', 'create');
       return NextResponse.json({
@@ -163,6 +165,13 @@ export async function POST(request: Request) {
         vfxScale: asNum(body.vfxScale, 1),
         vfxOffsetX: asNum(body.vfxOffsetX, 0),
         vfxOffsetY: asNum(body.vfxOffsetY, 0),
+        ...(typeof body.vfxLoopMode === 'string' ? { vfxLoopMode: body.vfxLoopMode } : {}),
+        ...(body.vfxLoopStartFrame != null ? { vfxLoopStartFrame: asNum(body.vfxLoopStartFrame, 1) } : {}),
+        ...(body.vfxLoopEndFrame != null ? { vfxLoopEndFrame: asNum(body.vfxLoopEndFrame, 1) } : {}),
+        ...(body.vfxLoopDurationMs != null ? { vfxLoopDurationMs: asNum(body.vfxLoopDurationMs, 3000) } : {}),
+        ...(body.vfxLoopUntilSkillEnd != null ? { vfxLoopUntilSkillEnd: Boolean(body.vfxLoopUntilSkillEnd) } : {}),
+        ...(body.vfxFlipX != null ? { vfxFlipX: Boolean(body.vfxFlipX) } : {}),
+        ...(body.vfxFlipY != null ? { vfxFlipY: Boolean(body.vfxFlipY) } : {}),
         spawnOffsetX: asNum(body.spawnOffsetX, 0),
         spawnOffsetY: asNum(body.spawnOffsetY, 0),
         targetOffsetX: asNum(body.targetOffsetX, 0),
@@ -191,13 +200,17 @@ export async function POST(request: Request) {
       if (!existingId) {
         skill = buildVisualSkillDefinition(String(body.id ?? ''), String(body.name ?? ''));
         skillId = skill.id;
-        catalogFile = insertLabVisualSkill(skill).relativePath;
+        const catalog = insertLabVisualSkill(skill, { persist: false });
+        catalogFile = catalog.relativePath;
+        writeDevSourceAfterResponse(catalog.absPath, catalog.source);
       }
 
       if (changes.element && skill) {
         skill = { ...skill, element: changes.element };
         if (skill.developmentStatus === 'visual-test') {
-          catalogFile = patchLabVisualSkillElement(skill.id, changes.element).relativePath;
+          const catalog = patchLabVisualSkillElement(skill.id, changes.element, { persist: false });
+          catalogFile = catalog.relativePath;
+          writeDevSourceAfterResponse(catalog.absPath, catalog.source);
         }
       }
 
@@ -243,6 +256,13 @@ export async function POST(request: Request) {
               frameCount: pose.frames?.length || pose.frameCount || existingAnim.frameCount,
               frameRate: pose.frameRate,
               loop: pose.loop,
+              loopMode: pose.loopMode,
+              loopStartFrame: pose.loopStartFrame,
+              loopEndFrame: pose.loopEndFrame,
+              loopDurationMs: pose.loopDurationMs,
+              loopUntilSkillEnd: pose.loopUntilSkillEnd,
+              flipX: pose.flipX,
+              flipY: pose.flipY,
               offsetX: pose.offsetX,
               offsetY: pose.offsetY,
               durationMs: poseDurationMs(pose),
@@ -270,6 +290,9 @@ export async function POST(request: Request) {
       next[slot - 1] = skillId;
       const hotbar = patchCharacterHotbar(characterId, next, { source, persist: false });
       clock.mark('transform');
+      upsertDevHotbar(characterId, next);
+      upsertDevSkillAnim(characterId, skillId, skillAnim);
+      if (skill) upsertDevSkillDef(skill);
       writeDevSourceAfterResponse(hotbar.absPath, hotbar.source);
       clock.mark('write');
       const elapsed = clock.done();

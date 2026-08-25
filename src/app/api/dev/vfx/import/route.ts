@@ -2,7 +2,8 @@ import { promises as fsp } from 'node:fs';
 import fs from 'node:fs';
 import path from 'node:path';
 import { NextResponse } from 'next/server';
-import { isVfxId, isVfxUniverse, formatSequenceDimensionError } from '@/data/vfx/types';
+import { isVfxId, isVfxUniverse } from '@/data/vfx/types';
+import { padImagesToCommonCanvas } from '@/lib/dev/pad-sequence-frames';
 import { isDevWriteAllowed } from '@/lib/dev/dev-write-guard';
 import {
   destAssetAbs,
@@ -104,24 +105,26 @@ async function importSequence(form: FormData, files: File[]) {
     if (!(size.width > 0) || !(size.height > 0)) {
       throw new Error(`Frame ${i + 1}: imagem inválida`);
     }
-    if (i > 0 && (size.width !== buffers[0].size.width || size.height !== buffers[0].size.height)) {
-      throw new Error(formatSequenceDimensionError(i, buffers[0].size, size));
-    }
     buffers.push({ buffer, ext, size });
   }
+
+  const padded = await padImagesToCommonCanvas(
+    buffers.map((entry) => entry.buffer),
+    'center',
+  );
 
   const dir = destSequenceDir(universe, vfxId);
   fs.mkdirSync(dir, { recursive: true });
   wipeSequenceImageFiles(dir);
 
   const urls: string[] = [];
-  for (let i = 0; i < buffers.length; i += 1) {
-    const dest = path.join(dir, sequenceFrameFileName(i, buffers[i].ext));
-    await fsp.writeFile(dest, buffers[i].buffer);
+  for (let i = 0; i < padded.buffers.length; i += 1) {
+    const dest = path.join(dir, sequenceFrameFileName(i, '.png'));
+    await fsp.writeFile(dest, padded.buffers[i]);
     urls.push(toPublicVfxUrl(dest));
   }
 
-  const { width, height } = buffers[0].size;
+  const { width, height } = padded;
   return NextResponse.json({
     ok: true,
     sourceType: 'sequence',

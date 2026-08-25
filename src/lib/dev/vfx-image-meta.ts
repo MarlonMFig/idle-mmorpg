@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { formatSequenceDimensionError, suggestHorizontalFrameCount } from '@/data/vfx/types';
+import { suggestHorizontalFrameCount } from '@/data/vfx/types';
 import { resolvePublicVfxUrl } from '@/lib/dev/vfx-paths';
 
 export interface VfxImageMeta {
@@ -39,12 +39,10 @@ export async function readSequenceMetas(urls: readonly string[]): Promise<{
 }> {
   if (urls.length < 1) throw new Error('Sequência sem frames');
   const frames: VfxImageMeta[] = [];
-  for (let i = 0; i < urls.length; i += 1) {
-    const meta = await readVfxImageMeta(urls[i]);
-    if (i > 0 && (meta.width !== frames[0].width || meta.height !== frames[0].height)) {
-      throw new Error(formatSequenceDimensionError(i, frames[0], meta));
-    }
-    frames.push(meta);
+  for (const url of urls) {
+    frames.push(await readVfxImageMeta(url));
   }
-  return { width: frames[0].width, height: frames[0].height, frames };
+  const width = Math.max(...frames.map((frame) => frame.width));
+  const height = Math.max(...frames.map((frame) => frame.height));
+  return { width, height, frames };
 }

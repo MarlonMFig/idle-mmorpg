@@ -61,6 +61,13 @@ export interface SpriteSheetDef {
   frames?: readonly string[];
   /** Se a animação da folha faz loop. Default false nas skills. */
   loop?: boolean;
+  loopMode?: 'none' | 'full' | 'range' | 'persistent-range';
+  loopStartFrame?: number;
+  loopEndFrame?: number;
+  loopDurationMs?: number;
+  loopUntilSkillEnd?: boolean;
+  flipX?: boolean;
+  flipY?: boolean;
   /** FX opcional do golpe (slash / spark no caster). */
   fx?: SpriteSheetDef;
   /** Âncora do FX. Default `'caster'`. */
@@ -142,6 +149,14 @@ export interface CharacterSkillAnimDef extends SpriteSheetDef {
   /** Offset visual desta skill sobre o VFX de catálogo. Ignorado sem `vfxId`. */
   vfxOffsetX?: number;
   vfxOffsetY?: number;
+  vfxLoopMode?: 'none' | 'full' | 'range' | 'persistent-range';
+  vfxLoopStartFrame?: number;
+  vfxLoopEndFrame?: number;
+  vfxLoopDurationMs?: number;
+  vfxLoopUntilSkillEnd?: boolean;
+  /** Espelho visual do VFX. Não usa scale negativo. */
+  vfxFlipX?: boolean;
+  vfxFlipY?: boolean;
   /**
    * Pose / cast: animação do personagem e/ou VFX de preparação.
    * Nenhum dos dois é obrigatório.
@@ -190,6 +205,15 @@ export interface SkillCastVisual {
   offsetX?: number;
   offsetY?: number;
   loop?: boolean;
+  /** Ausente = `loop ? 'full' : 'none'`. */
+  loopMode?: 'none' | 'full' | 'range' | 'persistent-range';
+  /** 1-based inclusive. Persistent loop após first pass. */
+  loopStartFrame?: number;
+  loopEndFrame?: number;
+  loopDurationMs?: number;
+  loopUntilSkillEnd?: boolean;
+  flipX?: boolean;
+  flipY?: boolean;
 }
 
 export { SKILL_VFX_TARGET_MODES };
@@ -1411,6 +1435,7 @@ const INO_PACK: CharacterPack = {
  * npm run kakashi:combo  — assets/naruto-source/nu/kakashi/combo/frame_*.png (alpha-only, 5+4+4, lanczos3 body-match→48)
  * npm run kakashi:damage — assets/naruto-source/nu/kakashi/damage/frame_*.png (2 hurt + 3 death)
  * npm run kakashi:jutsu  — assets/naruto-source/nu/kakashi/jutsu/frame_*.png (body-lock pack)
+ * npm run kakashi:pose-geral — assets/naruto-source/nu/kakashi/pose-geral/frame_*.png
  * lookType 9008 é identidade client-only.
  */
 export const KAKASHI_CURATED_LOOK_TYPE = 9008;
@@ -1506,6 +1531,119 @@ const KAKASHI_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     // Peak VFX discharge (frame 18 / 26) — combat dash lands near peak.
     hitDelayMs: 1417,
   },
+  'kakashi-pose-geral': {
+    key: 'kakashi-pose-geral',
+    url: '/sprites/player/kakashi/pose-geral.png',
+    frameWidth: 146,
+    frameHeight: 190,
+    frameCount: 7,
+    contentHeight: 160,
+    frameRate: 12,
+    durationMs: 583,
+    hitDelayMs: 280,
+    offsetX: 0,
+    offsetY: 0,
+    loopMode: 'none',
+    loopUntilSkillEnd: false,
+    flipX: false,
+    flipY: false,
+    cast: {
+      scaleX: 1,
+      scaleY: 1,
+      scale: 1,
+      offsetX: 0,
+      offsetY: 0,
+      loopMode: 'none',
+      loopUntilSkillEnd: false,
+      flipX: false,
+      flipY: false,
+    },
+    fxScale: 5,
+    castDelayMs: 0,
+    vfxLoopMode: 'none',
+    vfxLoopStartFrame: 1,
+    vfxLoopEndFrame: 1,
+    vfxLoopDurationMs: 3000,
+    vfxLoopUntilSkillEnd: false,
+    vfxFlipX: false,
+    vfxFlipY: false,
+    vfxId: 'dragon-water',
+    targeting: {
+      mode: 'instant-target',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
+    },
+    element: 'neutral',
+        ai: {
+      autoUse: true,
+      priority: 2,
+      energyCost: 40,
+    },
+    vfxOffsetX: 0,
+    vfxOffsetY: 0,
+        execution: {
+      type: 'persistent',
+      duration: 1300,
+      tickInterval: 1000,
+      persistentAnchor: 'target',
+    },
+  },
+  'kakashi-dragon-water-rage': {
+    key: 'kakashi-pose-geral',
+    url: '/sprites/player/kakashi/pose-geral.png',
+    frameWidth: 146,
+    frameHeight: 190,
+    frameCount: 7,
+    frameRate: 12,
+    offsetX: 0,
+    offsetY: 0,
+    durationMs: 583,
+    hitDelayMs: 280,
+    vfxId: 'dragon-water-rage',
+    fxScale: 2.55,
+    vfxOffsetX: 0,
+    vfxOffsetY: 0,
+    vfxLoopMode: 'none',
+    vfxLoopStartFrame: 1,
+    vfxLoopEndFrame: 1,
+    vfxLoopDurationMs: 3000,
+    loopMode: 'none',
+    castDelayMs: 0,
+    targeting: {
+      mode: 'travel-to-target',
+      travelSpeed: 1000,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
+    },
+    cast: {
+      scaleX: 1,
+      scaleY: 1,
+      scale: 1,
+      offsetX: 0,
+      offsetY: 0,
+      loopMode: 'none',
+      loopUntilSkillEnd: false,
+      flipX: false,
+      flipY: false,
+    },
+    loopUntilSkillEnd: false,
+    flipX: false,
+    flipY: false,
+    vfxLoopUntilSkillEnd: false,
+    vfxFlipX: false,
+    vfxFlipY: false,
+    element: 'neutral',
+        ai: {
+      autoUse: true,
+      priority: 3,
+      energyCost: 40,
+    },
+  },
 };
 
 const KAKASHI_PACK: CharacterPack = {
@@ -1517,7 +1655,12 @@ const KAKASHI_PACK: CharacterPack = {
   hurt: KAKASHI_HURT,
   death: KAKASHI_DEATH,
   skillAnims: KAKASHI_JUTSU_ANIMS,
-  hotbarSkillIds: ['skill-raikiri'],
+  hotbarSkillIds: [
+    'skill-raikiri',
+    'kakashi-dragon-water-rage',
+    'kakashi-pose-geral',
+    null,
+  ],
 };
 
 /**
@@ -4371,6 +4514,7 @@ const SHINO_PACK: CharacterPack = {
     null,
     null,
   ],
+  displayScale: 1.615,
 };
 
 /** Momo Hinamori — lookType 9028. */
@@ -5321,15 +5465,16 @@ export function createSpriteSheetAnimation(
   scene: Phaser.Scene,
   sheet: SpriteSheetDef,
   animKey: string,
+  options?: { start?: number; end?: number; repeat?: number },
 ): boolean {
+  const last = Math.max(0, (sheet.frames?.length || sheet.frameCount) - 1);
+  const start = Math.min(last, Math.max(0, options?.start ?? 0));
+  const end = Math.min(last, Math.max(start, options?.end ?? last));
   const sequence = sheet.frames && sheet.frames.length > 0;
   const frames = sequence
-    ? sheet.frames!.map((_, index) => ({ key: sequenceFrameKey(sheet.key, index) }))
+    ? sheet.frames!.slice(start, end + 1).map((_, index) => ({ key: sequenceFrameKey(sheet.key, start + index) }))
     : scene.textures.exists(sheet.key)
-      ? scene.anims.generateFrameNumbers(sheet.key, {
-          start: 0,
-          end: Math.max(0, sheet.frameCount - 1),
-        })
+      ? scene.anims.generateFrameNumbers(sheet.key, { start, end })
       : null;
   if (!frames || frames.length === 0) return false;
   if (sequence && frames.some((frame) => !frame.key || !scene.textures.exists(frame.key))) return false;
@@ -5338,7 +5483,7 @@ export function createSpriteSheetAnimation(
     key: animKey,
     frames,
     frameRate: sheet.frameRate ?? 12,
-    repeat: sheet.loop ? -1 : 0,
+    repeat: options?.repeat ?? (sheet.loop ? -1 : 0),
   });
   return true;
 }

@@ -304,4 +304,16 @@ export const LAB_VISUAL_SKILLS: SkillDefinition[] = [
       trackTarget: false,
     },
   },
+  {
+    id: 'kakashi-pose-geral',
+    name: 'Pose geral',
+    element: 'neutral',
+    cooldownMs: 1000,
+    damage: 0,
+    icon: '/sprites/skills/neutral.svg',
+    animation: { kind: 'character', durationMs: 583, scale: 1 },
+    range: 80,
+    description: 'Pose geral de jutsu do Kakashi (DEV Lab).',
+    developmentStatus: 'visual-test',
+  },
 ];

@@ -24,17 +24,19 @@ import {
   type WonsrSpriteIndex,
 } from '@/data/wonsr-sprites';
 import { Enemy } from '@/entities/enemy';
+import { type Decimal as DecimalValue } from '@/lib/decimal';
 import { LAB_DUMMY_ID } from '@/stores/character-lab-store';
 import { type MapKey } from '@/maps/map-registry';
 import type { EnemyDefinition, EnemySkill, EnemyWalkAnimation } from '@/types/enemy';
 import type { HuntCatalog, HuntTargetAttack } from '@/types/hunt';
 import { pickHuntTargetIndex } from '@/lib/hunt-spawn';
+import { rollSpawnQualityFromWeights } from '@/lib/hunt-spawn';
 import { isHuntCatalogSealable } from '@/lib/resolve-character-quality';
 
 const WONSR_SPRITE_INDEX_KEY = 'wonsr-sprite-index';
 
 const WONSR_HUNTS_KEY = 'wonsr-hunts';
-const WONSR_HUNTS_URL = '/data/wonsr/hunts.json?v=wonsr-10maps';
+const WONSR_HUNTS_URL = '/data/wonsr/hunts.json?v=naruto-td1';
 const WONSR_HUNT_ATLAS_KEY = 'wonsr-hunt-characters';
 const WONSR_HUNT_ATLAS_IMAGE = '/sprites/wonsr-hunts/characters.png';
 const WONSR_HUNT_ATLAS_JSON = '/sprites/wonsr-hunts/characters.json';
@@ -149,8 +151,8 @@ export class EnemyManager {
     };
   }
 
-  update(time: number, playerX?: number, playerY?: number): number[] {
-    const hits: number[] = [];
+  update(time: number, playerX?: number, playerY?: number): DecimalValue[] {
+    const hits: DecimalValue[] = [];
     for (const enemy of this.enemies.values()) {
       if (this.huntPaused && enemy.id !== LAB_DUMMY_ID) continue;
       const damage = enemy.update(
@@ -158,7 +160,7 @@ export class EnemyManager {
         this.huntPaused ? undefined : playerX,
         this.huntPaused ? undefined : playerY,
       );
-      if (damage != null && damage > 0) hits.push(damage);
+      if (damage != null && damage.gt(0)) hits.push(damage);
     }
     return hits;
   }
@@ -450,6 +452,7 @@ export class EnemyManager {
       hp: stats.hp,
       level: stats.level,
       xp: stats.xp,
+      combatHpFromLevel: true,
       loot: buildAnimeHuntLoot(animeId, stats.level, {
         lookType: target.lookType,
       }),
@@ -470,6 +473,7 @@ export class EnemyManager {
             name: target.name,
             lookType: target.lookType,
             level: rawHunt?.targets[targetIndex]?.level ?? target.level,
+            quality: rollSpawnQualityFromWeights(),
           }
         : undefined,
       skills: this.mapHuntAttacks(target.attacks),

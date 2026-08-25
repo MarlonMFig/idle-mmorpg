@@ -5,6 +5,7 @@ import { applyForcedHuntLevels, huntEnemyStatsForLevel } from '@/constants/comba
 import { useStore } from '@/hooks/use-store';
 import { locationStore } from '@/stores/location-store';
 import type { HuntCatalog, HuntDefinition, PhaserAtlasData } from '@/types/hunt';
+import { formatStat } from '@/lib/format-stat';
 import { getCuratedPortraitUrl } from '@/data/curated-map-sprites';
 
 const HUNTS_URL = '/data/wonsr/hunts.json?v=wonsr-10maps';
@@ -42,7 +43,7 @@ export function HuntStatusPanel() {
 
   const displayStats = {
     level: target.level,
-    hp: target.hp,
+    hp: huntEnemyStatsForLevel(target.level).hp,
     xp: huntEnemyStatsForLevel(target.level).xp,
   };
 
@@ -90,11 +91,11 @@ export function HuntStatusPanel() {
       <dl>
         <div>
           <dt>HP</dt>
-          <dd>{displayStats.hp.toLocaleString('pt-BR')}</dd>
+          <dd>{formatStat(displayStats.hp)}</dd>
         </div>
         <div>
           <dt>XP</dt>
-          <dd>{displayStats.xp.toLocaleString('pt-BR')}</dd>
+          <dd>{formatStat(displayStats.xp)}</dd>
         </div>
         <div>
           <dt>Respawn</dt>

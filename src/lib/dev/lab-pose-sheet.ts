@@ -1,5 +1,10 @@
 import type { CharacterPack, CharacterSkillAnimDef, SpriteSheetDef } from '@/data/character-packs';
 import { getSkill } from '@/data/skills';
+import {
+  legacyLoopFromMode,
+  loopModeFromLegacy,
+  type FrameLoopMode,
+} from '@/lib/frame-loop';
 
 export interface LabPoseSheet {
   key: string;
@@ -10,6 +15,15 @@ export interface LabPoseSheet {
   frameCount: number;
   frameRate: number;
   loop: boolean;
+  /** Ausente = derivado de `loop` (false→none, true→full). */
+  loopMode?: FrameLoopMode;
+  /** 1-based inclusive. Só usado em `range`. */
+  loopStartFrame?: number;
+  loopEndFrame?: number;
+  loopDurationMs?: number;
+  loopUntilSkillEnd?: boolean;
+  flipX?: boolean;
+  flipY?: boolean;
   scaleX: number;
   scaleY: number;
   offsetX: number;
@@ -46,6 +60,13 @@ export function poseSheetsEqual(a: LabPoseSheet | null, b: LabPoseSheet | null):
     a.frameCount === b.frameCount &&
     a.frameRate === b.frameRate &&
     a.loop === b.loop &&
+    loopModeFromLegacy(a.loop, a.loopMode) === loopModeFromLegacy(b.loop, b.loopMode) &&
+    (a.loopStartFrame ?? 1) === (b.loopStartFrame ?? 1) &&
+    (a.loopEndFrame ?? a.frameCount) === (b.loopEndFrame ?? b.frameCount) &&
+    (a.loopDurationMs ?? 0) === (b.loopDurationMs ?? 0) &&
+    Boolean(a.loopUntilSkillEnd) === Boolean(b.loopUntilSkillEnd) &&
+    Boolean(a.flipX) === Boolean(b.flipX) &&
+    Boolean(a.flipY) === Boolean(b.flipY) &&
     a.scaleX === b.scaleX &&
     a.scaleY === b.scaleY &&
     a.offsetX === b.offsetX &&
@@ -72,7 +93,14 @@ export function poseSheetFromAnim(anim: CharacterSkillAnimDef | SpriteSheetDef |
     frameHeight: anim.frameHeight,
     frameCount: anim.frames?.length || anim.frameCount,
     frameRate: anim.frameRate ?? 12,
-    loop: anim.loop ?? false,
+    loop: anim.loop ?? skill.cast?.loop ?? false,
+    loopMode: loopModeFromLegacy(anim.loop ?? skill.cast?.loop, skill.cast?.loopMode ?? anim.loopMode),
+    loopStartFrame: skill.cast?.loopStartFrame ?? anim.loopStartFrame,
+    loopEndFrame: skill.cast?.loopEndFrame ?? anim.loopEndFrame,
+    loopDurationMs: skill.cast?.loopDurationMs ?? anim.loopDurationMs,
+    loopUntilSkillEnd: Boolean(skill.cast?.loopUntilSkillEnd ?? anim.loopUntilSkillEnd),
+    flipX: Boolean(skill.cast?.flipX ?? anim.flipX),
+    flipY: Boolean(skill.cast?.flipY ?? anim.flipY),
     scaleX: skill.cast?.scaleX ?? skill.cast?.scale ?? 1,
     scaleY: skill.cast?.scaleY ?? skill.cast?.scale ?? 1,
     offsetX: anim.offsetX ?? skill.cast?.offsetX ?? 0,
@@ -143,6 +171,11 @@ export function applyPoseSheetToAnim(
     frameCount: pose.frames?.length || pose.frameCount || base.frameCount,
     frameRate: pose.frameRate,
     loop: pose.loop,
+    loopMode: pose.loopMode,
+    loopStartFrame: pose.loopStartFrame,
+    loopEndFrame: pose.loopEndFrame,
+    loopDurationMs: pose.loopDurationMs,
+    loopUntilSkillEnd: pose.loopUntilSkillEnd,
     offsetX: pose.offsetX,
     offsetY: pose.offsetY,
     durationMs,
@@ -155,6 +188,13 @@ export function applyPoseSheetToAnim(
       offsetX: pose.offsetX,
       offsetY: pose.offsetY,
       loop: pose.loop,
+      loopMode: pose.loopMode,
+      loopStartFrame: pose.loopStartFrame,
+      loopEndFrame: pose.loopEndFrame,
+      loopDurationMs: pose.loopDurationMs,
+      loopUntilSkillEnd: pose.loopUntilSkillEnd,
+      flipX: pose.flipX,
+      flipY: pose.flipY,
     },
   };
   if (pose.frames?.length) next.frames = [...pose.frames];
@@ -172,6 +212,13 @@ export function poseSheetToSpriteDef(pose: LabPoseSheet): SpriteSheetDef {
     frameCount: pose.frames?.length || Math.max(1, pose.frameCount),
     frameRate: pose.frameRate,
     loop: pose.loop,
+    loopMode: pose.loopMode,
+    loopStartFrame: pose.loopStartFrame,
+    loopEndFrame: pose.loopEndFrame,
+    loopDurationMs: pose.loopDurationMs,
+    loopUntilSkillEnd: pose.loopUntilSkillEnd,
+    flipX: pose.flipX,
+    flipY: pose.flipY,
     offsetX: pose.offsetX,
     offsetY: pose.offsetY,
   };
@@ -196,6 +243,21 @@ export function parseLabPoseSheet(raw: unknown): LabPoseSheet | null {
     frameCount: Math.max(1, Number(value.frameCount) || frames?.length || 1),
     frameRate: Math.max(1, Number(value.frameRate) || 12),
     loop: Boolean(value.loop),
+    loopMode: loopModeFromLegacy(
+      Boolean(value.loop),
+      value.loopMode === 'none' ||
+        value.loopMode === 'full' ||
+        value.loopMode === 'range' ||
+        value.loopMode === 'persistent-range'
+        ? value.loopMode
+        : undefined,
+    ),
+    loopStartFrame: Number.isFinite(Number(value.loopStartFrame)) ? Number(value.loopStartFrame) : undefined,
+    loopEndFrame: Number.isFinite(Number(value.loopEndFrame)) ? Number(value.loopEndFrame) : undefined,
+    loopDurationMs: Number.isFinite(Number(value.loopDurationMs)) ? Number(value.loopDurationMs) : undefined,
+    loopUntilSkillEnd: Boolean(value.loopUntilSkillEnd),
+    flipX: Boolean(value.flipX),
+    flipY: Boolean(value.flipY),
     scaleX: Number.isFinite(Number(value.scaleX)) ? Number(value.scaleX) : 1,
     scaleY: Number.isFinite(Number(value.scaleY)) ? Number(value.scaleY) : 1,
     offsetX: Number.isFinite(Number(value.offsetX)) ? Number(value.offsetX) : 0,

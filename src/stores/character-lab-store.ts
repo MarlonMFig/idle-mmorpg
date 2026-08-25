@@ -64,15 +64,15 @@ export interface LabEnemyAffinityOverride {
 }
 
 export interface LabDamageDebug {
-  rawOutgoing: number;
-  afterShield: number;
-  afterDefense: number;
+  rawOutgoing: import('@/lib/decimal').Decimal;
+  afterShield: import('@/lib/decimal').Decimal;
+  afterDefense: import('@/lib/decimal').Decimal;
   element: DamageElement;
   resistance: number;
   immune: boolean;
   skipped: boolean;
-  afterResistance: number;
-  finalDamage: number;
+  afterResistance: import('@/lib/decimal').Decimal;
+  finalDamage: import('@/lib/decimal').Decimal;
   tag: ElementFloaterTag | null;
   targetId: string;
 }
@@ -161,6 +161,13 @@ export interface CharacterLabState {
   vfxScale: number;
   vfxOffsetX: number;
   vfxOffsetY: number;
+  vfxLoopMode: import('@/lib/frame-loop').FrameLoopMode;
+  vfxLoopStartFrame: number;
+  vfxLoopEndFrame: number;
+  vfxLoopDurationMs: number;
+  vfxLoopUntilSkillEnd: boolean;
+  vfxFlipX: boolean;
+  vfxFlipY: boolean;
   animationSpeed: number;
   gameSpeed: number;
   showFrameDebug: boolean;
@@ -247,6 +254,13 @@ const DEFAULT_VFX = {
   vfxScale: 1,
   vfxOffsetX: 0,
   vfxOffsetY: 0,
+  vfxLoopMode: 'none' as const,
+  vfxLoopStartFrame: 1,
+  vfxLoopEndFrame: 1,
+  vfxLoopDurationMs: 3000,
+  vfxLoopUntilSkillEnd: false,
+  vfxFlipX: false,
+  vfxFlipY: false,
 } as const;
 
 const DEFAULT_VISUALS = {
@@ -263,6 +277,13 @@ const DEFAULT_SKILL_ORIGINALS: LabSkillOriginals = {
   vfxScale: 1,
   vfxOffsetX: 0,
   vfxOffsetY: 0,
+  vfxLoopMode: 'none',
+  vfxLoopStartFrame: 1,
+  vfxLoopEndFrame: 1,
+  vfxLoopDurationMs: 3000,
+  vfxLoopUntilSkillEnd: false,
+  vfxFlipX: false,
+  vfxFlipY: false,
   spawnOffsetX: 0,
   spawnOffsetY: 0,
   targetOffsetX: 0,
@@ -539,6 +560,13 @@ function skillFieldsFrom(originals: LabSkillOriginals) {
     vfxScale: originals.vfxScale,
     vfxOffsetX: originals.vfxOffsetX,
     vfxOffsetY: originals.vfxOffsetY,
+    vfxLoopMode: originals.vfxLoopMode,
+    vfxLoopStartFrame: originals.vfxLoopStartFrame,
+    vfxLoopEndFrame: originals.vfxLoopEndFrame,
+    vfxLoopDurationMs: originals.vfxLoopDurationMs ?? 3000,
+    vfxLoopUntilSkillEnd: Boolean(originals.vfxLoopUntilSkillEnd),
+    vfxFlipX: originals.vfxFlipX ?? false,
+    vfxFlipY: originals.vfxFlipY ?? false,
     spawnOffsetX: originals.spawnOffsetX,
     spawnOffsetY: originals.spawnOffsetY,
     targetOffsetX: originals.targetOffsetX,
@@ -567,6 +595,13 @@ function cloneSkillOriginals(originals: LabSkillOriginals): LabSkillOriginals {
     vfxScale: originals.vfxScale,
     vfxOffsetX: originals.vfxOffsetX,
     vfxOffsetY: originals.vfxOffsetY,
+    vfxLoopMode: originals.vfxLoopMode,
+    vfxLoopStartFrame: originals.vfxLoopStartFrame,
+    vfxLoopEndFrame: originals.vfxLoopEndFrame,
+    vfxLoopDurationMs: originals.vfxLoopDurationMs ?? 3000,
+    vfxLoopUntilSkillEnd: Boolean(originals.vfxLoopUntilSkillEnd),
+    vfxFlipX: originals.vfxFlipX ?? false,
+    vfxFlipY: originals.vfxFlipY ?? false,
     spawnOffsetX: originals.spawnOffsetX,
     spawnOffsetY: originals.spawnOffsetY,
     targetOffsetX: originals.targetOffsetX,
@@ -986,6 +1021,13 @@ export const characterLabStore = {
         vfxScale: state.vfxScale,
         vfxOffsetX: state.vfxOffsetX,
         vfxOffsetY: state.vfxOffsetY,
+        vfxLoopMode: state.vfxLoopMode,
+        vfxLoopStartFrame: state.vfxLoopStartFrame,
+        vfxLoopEndFrame: state.vfxLoopEndFrame,
+        vfxLoopDurationMs: state.vfxLoopDurationMs,
+        vfxLoopUntilSkillEnd: state.vfxLoopUntilSkillEnd,
+        vfxFlipX: state.vfxFlipX,
+        vfxFlipY: state.vfxFlipY,
         spawnOffsetX: state.spawnOffsetX,
         spawnOffsetY: state.spawnOffsetY,
         targetOffsetX: state.targetOffsetX,
@@ -1271,6 +1313,13 @@ export const characterLabStore = {
       vfxScale: scope === 'logic' ? prev.vfxScale : state.vfxScale,
       vfxOffsetX: scope === 'logic' ? prev.vfxOffsetX : state.vfxOffsetX,
       vfxOffsetY: scope === 'logic' ? prev.vfxOffsetY : state.vfxOffsetY,
+      vfxLoopMode: scope === 'logic' ? prev.vfxLoopMode : state.vfxLoopMode,
+      vfxLoopStartFrame: scope === 'logic' ? prev.vfxLoopStartFrame : state.vfxLoopStartFrame,
+      vfxLoopEndFrame: scope === 'logic' ? prev.vfxLoopEndFrame : state.vfxLoopEndFrame,
+      vfxLoopDurationMs: scope === 'logic' ? prev.vfxLoopDurationMs : state.vfxLoopDurationMs,
+      vfxLoopUntilSkillEnd: scope === 'logic' ? prev.vfxLoopUntilSkillEnd : state.vfxLoopUntilSkillEnd,
+      vfxFlipX: scope === 'logic' ? prev.vfxFlipX : state.vfxFlipX,
+      vfxFlipY: scope === 'logic' ? prev.vfxFlipY : state.vfxFlipY,
       spawnOffsetX: scope === 'logic' ? prev.spawnOffsetX : state.spawnOffsetX,
       spawnOffsetY: scope === 'logic' ? prev.spawnOffsetY : state.spawnOffsetY,
       targetOffsetX: scope === 'logic' ? prev.targetOffsetX : state.targetOffsetX,

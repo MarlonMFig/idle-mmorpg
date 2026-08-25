@@ -104,17 +104,32 @@ function artArena(mapKey: MapKey, slug: string): WonsrRenderedMap {
   };
 }
 
+const NARUTO_TD_ENEMY_COUNT = 9;
+
 const WONSR_NARUTO_TOPDOWN = {
   layoutScale: 3.1,
   cameraFollow: true,
   cameraFit: 'contain' as const,
   cameraZoom: 0.55,
   teamParty: true,
-  enemiesPerSpawn: 2,
+  enemiesPerSpawn: 1,
   enemyRespawnMs: 3500,
-  moveSpeedMult: 2.2,
+  moveSpeedMult: 1,
   enemySpeedMult: 1.6,
 } as const;
+
+function pickEvenSpawns(
+  spawns: readonly { x: number; y: number }[],
+  count: number,
+): { x: number; y: number }[] {
+  if (spawns.length <= count) return spawns.map((p) => ({ ...p }));
+  const picked: { x: number; y: number }[] = [];
+  for (let i = 0; i < count; i += 1) {
+    const idx = Math.round((i * (spawns.length - 1)) / (count - 1));
+    picked.push({ ...spawns[idx] });
+  }
+  return picked;
+}
 
 function narutoTopdownHunt(
   mapKey: MapKey,
@@ -125,11 +140,11 @@ function narutoTopdownHunt(
   return {
     mapKey,
     imageKey: slug,
-    imageUrl: `/maps/${slug}.png?v=naruto-3840b`,
+    imageUrl: `/maps/${slug}.png?v=naruto-td1`,
     width: 3840,
     height: 2160,
     spawn,
-    enemySpawns,
+    enemySpawns: pickEvenSpawns(enemySpawns, NARUTO_TD_ENEMY_COUNT),
     ...WONSR_NARUTO_TOPDOWN,
   };
 }
@@ -744,6 +759,191 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
     ],
   ),
 
+  [MAP_KEYS.huntTdValeDoFim]: narutoTopdownHunt(
+    MAP_KEYS.huntTdValeDoFim,
+    'hunt-td-vale-do-fim',
+    { x: 1912, y: 1080 },
+    [
+      { x: 2408, y: 664 },
+      { x: 1096, y: 712 },
+      { x: 1800, y: 744 },
+      { x: 1384, y: 760 },
+      { x: 2152, y: 808 },
+      { x: 2488, y: 936 },
+      { x: 1560, y: 1016 },
+      { x: 2264, y: 1144 },
+      { x: 1672, y: 1352 },
+      { x: 1368, y: 1368 },
+      { x: 2440, y: 1400 },
+      { x: 2024, y: 1416 },
+      { x: 1112, y: 1512 },
+      { x: 2680, y: 1560 },
+      { x: 1896, y: 1704 },
+      { x: 1720, y: 1928 },
+    ],
+  ),
+  [MAP_KEYS.huntTdArenaExameChunin]: narutoTopdownHunt(
+    MAP_KEYS.huntTdArenaExameChunin,
+    'hunt-td-arena-exame-chunin',
+    { x: 1912, y: 1080 },
+    [
+      { x: 1928, y: 456 },
+      { x: 1128, y: 616 },
+      { x: 1800, y: 744 },
+      { x: 1384, y: 760 },
+      { x: 2456, y: 792 },
+      { x: 2152, y: 808 },
+      { x: 1560, y: 1016 },
+      { x: 2264, y: 1144 },
+      { x: 1672, y: 1352 },
+      { x: 1368, y: 1368 },
+      { x: 2440, y: 1400 },
+      { x: 2024, y: 1416 },
+      { x: 1112, y: 1512 },
+      { x: 2680, y: 1560 },
+      { x: 1896, y: 1704 },
+      { x: 1720, y: 1928 },
+    ],
+  ),
+  [MAP_KEYS.huntTdPonteDasOndas]: narutoTopdownHunt(
+    MAP_KEYS.huntTdPonteDasOndas,
+    'hunt-td-ponte-das-ondas',
+    { x: 1912, y: 1080 },
+    [
+      { x: 1064, y: 696 },
+      { x: 1800, y: 744 },
+      { x: 1368, y: 760 },
+      { x: 2152, y: 824 },
+      { x: 2488, y: 840 },
+      { x: 1928, y: 1000 },
+      { x: 1560, y: 1016 },
+      { x: 2264, y: 1144 },
+      { x: 1672, y: 1352 },
+      { x: 1368, y: 1368 },
+      { x: 2440, y: 1400 },
+      { x: 2024, y: 1416 },
+      { x: 1112, y: 1512 },
+      { x: 2680, y: 1560 },
+      { x: 1896, y: 1704 },
+      { x: 1720, y: 1928 },
+    ],
+  ),
+  [MAP_KEYS.huntTdClareiraEquipe7]: narutoTopdownHunt(
+    MAP_KEYS.huntTdClareiraEquipe7,
+    'hunt-td-clareira-equipe-7',
+    { x: 1912, y: 1080 },
+    [
+      { x: 1928, y: 456 },
+      { x: 1144, y: 600 },
+      { x: 1800, y: 744 },
+      { x: 1384, y: 760 },
+      { x: 2456, y: 792 },
+      { x: 2152, y: 808 },
+      { x: 1560, y: 1016 },
+      { x: 2264, y: 1144 },
+      { x: 1672, y: 1352 },
+      { x: 1368, y: 1368 },
+      { x: 2440, y: 1400 },
+      { x: 2024, y: 1416 },
+      { x: 1112, y: 1512 },
+      { x: 2680, y: 1560 },
+      { x: 1896, y: 1704 },
+      { x: 1720, y: 1928 },
+    ],
+  ),
+  [MAP_KEYS.huntTdCavernaAkatsuki]: narutoTopdownHunt(
+    MAP_KEYS.huntTdCavernaAkatsuki,
+    'hunt-td-caverna-akatsuki',
+    { x: 1912, y: 1080 },
+    [
+      { x: 1928, y: 456 },
+      { x: 1144, y: 600 },
+      { x: 1800, y: 744 },
+      { x: 1384, y: 760 },
+      { x: 2456, y: 792 },
+      { x: 2152, y: 808 },
+      { x: 1560, y: 1016 },
+      { x: 2264, y: 1144 },
+      { x: 1672, y: 1352 },
+      { x: 1368, y: 1368 },
+      { x: 2440, y: 1400 },
+      { x: 2024, y: 1416 },
+      { x: 1112, y: 1512 },
+      { x: 2680, y: 1560 },
+      { x: 1896, y: 1704 },
+      { x: 1720, y: 1928 },
+    ],
+  ),
+  [MAP_KEYS.huntTdCrateraKonoha]: narutoTopdownHunt(
+    MAP_KEYS.huntTdCrateraKonoha,
+    'hunt-td-cratera-konoha',
+    { x: 1912, y: 1080 },
+    [
+      { x: 1928, y: 472 },
+      { x: 1144, y: 600 },
+      { x: 1800, y: 744 },
+      { x: 1384, y: 760 },
+      { x: 2456, y: 792 },
+      { x: 2152, y: 808 },
+      { x: 1560, y: 1016 },
+      { x: 2264, y: 1144 },
+      { x: 1672, y: 1352 },
+      { x: 1368, y: 1368 },
+      { x: 2440, y: 1400 },
+      { x: 2024, y: 1416 },
+      { x: 1112, y: 1512 },
+      { x: 2680, y: 1560 },
+      { x: 1896, y: 1704 },
+      { x: 1720, y: 1928 },
+    ],
+  ),
+  [MAP_KEYS.huntTdLaboratorioOrochimaru]: narutoTopdownHunt(
+    MAP_KEYS.huntTdLaboratorioOrochimaru,
+    'hunt-td-laboratorio-orochimaru',
+    { x: 1912, y: 1080 },
+    [
+      { x: 1928, y: 456 },
+      { x: 1144, y: 600 },
+      { x: 1800, y: 744 },
+      { x: 1384, y: 760 },
+      { x: 2456, y: 792 },
+      { x: 2152, y: 808 },
+      { x: 1560, y: 1016 },
+      { x: 2264, y: 1144 },
+      { x: 1672, y: 1352 },
+      { x: 1368, y: 1368 },
+      { x: 2440, y: 1400 },
+      { x: 2024, y: 1416 },
+      { x: 1112, y: 1512 },
+      { x: 2680, y: 1560 },
+      { x: 1896, y: 1704 },
+      { x: 1720, y: 1928 },
+    ],
+  ),
+  [MAP_KEYS.huntTdArenaVilaAreia]: narutoTopdownHunt(
+    MAP_KEYS.huntTdArenaVilaAreia,
+    'hunt-td-arena-vila-areia',
+    { x: 1912, y: 1080 },
+    [
+      { x: 1928, y: 456 },
+      { x: 1144, y: 600 },
+      { x: 1800, y: 744 },
+      { x: 1384, y: 760 },
+      { x: 2456, y: 792 },
+      { x: 2152, y: 808 },
+      { x: 1560, y: 1016 },
+      { x: 2264, y: 1144 },
+      { x: 1672, y: 1352 },
+      { x: 1368, y: 1368 },
+      { x: 2440, y: 1400 },
+      { x: 2024, y: 1416 },
+      { x: 1112, y: 1512 },
+      { x: 2680, y: 1560 },
+      { x: 1896, y: 1704 },
+      { x: 1720, y: 1928 },
+    ],
+  ),
+
   // Floresta upscale 5016² (crop 5008² p/ tile 16). Colisão/spawns via
   // scripts/install-teste-clareira-map.js. Top-down explorável com follow.
   // Zoom 1 no PNG 5k “microscopiza” a grama e deixa sprites ~62px como formigas;
@@ -779,7 +979,7 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
     teamParty: true,
     enemiesPerSpawn: 2,
     enemyRespawnMs: 3500,
-    moveSpeedMult: 2.2,
+    moveSpeedMult: 1,
     enemySpeedMult: 1.6,
   },
   [MAP_KEYS.huntTesteDemon]: {
@@ -813,7 +1013,7 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
     teamParty: true,
     enemiesPerSpawn: 2,
     enemyRespawnMs: 3500,
-    moveSpeedMult: 2.2,
+    moveSpeedMult: 1,
     enemySpeedMult: 1.6,
   },
   [MAP_KEYS.huntTesteWonsrMonsters]: {
@@ -847,7 +1047,7 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
     teamParty: true,
     enemiesPerSpawn: 2,
     enemyRespawnMs: 3500,
-    moveSpeedMult: 2.2,
+    moveSpeedMult: 1,
     enemySpeedMult: 1.6,
   },
 };

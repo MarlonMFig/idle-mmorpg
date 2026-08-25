@@ -1,0 +1,48 @@
+{
+  "moeda": "Selo de Aliança",
+  "criacao_exclusiva_vip": true,
+  "entrada_livre_para_todos": true,
+  "fontes_de_selo": [
+    "doacao_de_moeda_local",
+    "fracao_automatica_por_kill_dos_membros",
+    "missoes_de_guild_diarias_e_semanais"
+  ],
+  "progressao": {
+    "exp_de_guild": "soma automática de kills, missões e doação dos membros",
+    "nivel_teto": null,
+    "ponto_lider_por_nivel": 1
+  },
+  "arvore_de_passivas": [
+    { "ramo": "prosperidade", "efeito": "+1% moeda local por rank, para todos os membros", "ranks_max": 5 },
+    { "ramo": "instinto", "efeito": "+1% taxa de loot por rank, para todos os membros", "ranks_max": 5 },
+    { "ramo": "disciplina", "efeito": "+1% EXP por rank, para todos os membros", "ranks_max": 5 },
+    { "ramo": "tesouraria", "efeito": "-X% custo de item na loja de guild por rank", "ranks_max": 5 },
+    { "ramo": "vinculo", "efeito": "+1 slot de membro por rank", "ranks_max": 3 }
+  ],
+  "reset_pontos_lider": "TBD - não confirmado. Sugestão: reset pago em Gemas, sem reset gratuito ilimitado.",
+  "teto_combinado_recomendado": {
+    "descricao": "Somar bônus de guild (Instinto/Disciplina) com VIP (+15% loot / +20% EXP) pode gerar número alto em guilds avançadas.",
+    "sugestao_teto_percentual": 40,
+    "aplica_a": ["exp", "loot"],
+    "status": "recomendação, não fechado"
+  },
+  "loja_guild": {
+    "consumiveis": [
+      { "item": "Poção de EXP Temporária", "duracao_max_horas": 2 },
+      { "item": "Poção de Loot Temporária", "duracao_max_horas": null }
+    ],
+    "fragmento_rotativo": {
+      "rotacao": "1 personagem novo por dia, sorteado entre todo o roster",
+      "limite_compra_diario_por_jogador": 2,
+      "preco_por_tier_em_selo": {
+        "1": 30,
+        "2": 60,
+        "3": 150,
+        "4": 400,
+        "5": 1000
+      },
+      "fonte_adicional": "drop raríssimo do mesmo personagem via caça normal"
+    }
+  },
+  "fragmentos_para_desbloqueio": 100
+}

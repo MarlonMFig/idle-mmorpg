@@ -1,0 +1,25 @@
+# Texto no Git em LF (evita o aviso LF→CRLF no Windows).
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.bmp binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary
+*.mp3 binary
+*.mp4 binary
+*.wav binary
+*.ogg binary
+*.webm binary
+*.zip binary
+*.rar binary
+*.7z binary
+*.pdf binary
+*.psd binary

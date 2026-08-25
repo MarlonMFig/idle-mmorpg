@@ -1,0 +1,56 @@
+{
+  "project": "Anime Idle World",
+  "asset_type": "menu-icons",
+  "icon_size": "256x256",
+  "format": "PNG RGBA",
+  "icons": [
+    {
+      "name": "Equipe",
+      "file": "equipe.png"
+    },
+    {
+      "name": "Inventário",
+      "file": "inventario.png"
+    },
+    {
+      "name": "Médico",
+      "file": "medico.png"
+    },
+    {
+      "name": "VIP",
+      "file": "vip.png"
+    },
+    {
+      "name": "Anime Coins (AC)",
+      "file": "anime-coins-ac.png"
+    },
+    {
+      "name": "Linhagem",
+      "file": "linhagem.png"
+    },
+    {
+      "name": "Guild",
+      "file": "guild.png"
+    },
+    {
+      "name": "Conquistas",
+      "file": "conquistas.png"
+    },
+    {
+      "name": "Missões",
+      "file": "missoes.png"
+    },
+    {
+      "name": "Login Diário",
+      "file": "login-diario.png"
+    },
+    {
+      "name": "Bosses",
+      "file": "bosses.png"
+    },
+    {
+      "name": "Ranking",
+      "file": "ranking.png"
+    }
+  ]
+}

@@ -1,5 +1,4 @@
 import { addItemsToInventory } from '@/systems/reward-application';
-import { huntAnalyzerStore } from '@/stores/hunt-analyzer-store';
 import { missionsStore } from '@/stores/missions-store';
 import { SHOP_CURRENCY_ITEM_ID } from '@/constants/sealing';
 import type { LootManager } from '@/systems/loot-manager';
@@ -22,7 +21,6 @@ export class LootPickupSystem {
 
       const gained = before - leftoverQty;
       if (gained > 0) {
-        huntAnalyzerStore.recordLootItems(drop.data.itemId, gained);
         if (drop.data.itemId !== SHOP_CURRENCY_ITEM_ID) {
           missionsStore.applyGameplayEvent(
             { kind: 'combatDrop', amount: gained, itemId: drop.data.itemId },

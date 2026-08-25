@@ -1,42 +1,44 @@
+import { resolveQualityStatMultiplier } from '@/constants/character-quality-stats';
 import type { CharacterQuality } from '@/types/character-meta';
 import type { SealedCharacter } from '@/types/team';
 import { computePlayerAttributes } from '@/utils/attributes';
 import { roundAttributeForDisplay } from '@/utils/star-bonus';
 import type { AttributeValues, PlayerAttributes } from '@/types/attributes';
 
+type InstanceStatSource = Pick<
+  SealedCharacter,
+  'level' | 'stars' | 'quality' | 'qualityStatMultiplier' | 'characterId' | 'awakeningLevel'
+> &
+  Partial<Pick<SealedCharacter, 'potential'>>;
+
 /** Resolver oficial de CharacterInstance → atributos (mesma pipeline do combate). */
 export function computeInstanceAttributes(
-  instance: Pick<
-    SealedCharacter,
-    'level' | 'stars' | 'quality' | 'qualityStatMultiplier' | 'characterId' | 'awakeningLevel'
-  >,
+  instance: InstanceStatSource,
   levelOverride?: number,
 ): PlayerAttributes {
   return computePlayerAttributes({
     level: Math.max(1, levelOverride ?? instance.level ?? 1),
     stars: instance.stars,
     quality: instance.quality,
-    qualityStatMultiplier: instance.qualityStatMultiplier,
+    qualityStatMultiplier: resolveQualityStatMultiplier(
+      instance.quality,
+      instance.qualityStatMultiplier,
+      instance.potential,
+    ),
     characterId: instance.characterId,
     awakeningLevel: instance.awakeningLevel,
   });
 }
 
 export function computeInstanceTotals(
-  instance: Pick<
-    SealedCharacter,
-    'level' | 'stars' | 'quality' | 'qualityStatMultiplier' | 'characterId' | 'awakeningLevel'
-  >,
+  instance: InstanceStatSource,
   levelOverride?: number,
 ): AttributeValues {
   return computeInstanceAttributes(instance, levelOverride).totals;
 }
 
 export function estimateInstanceCombatPower(
-  instance: Pick<
-    SealedCharacter,
-    'level' | 'stars' | 'quality' | 'qualityStatMultiplier' | 'characterId' | 'awakeningLevel'
-  >,
+  instance: InstanceStatSource,
   levelOverride?: number,
 ): number {
   const level = Math.max(1, levelOverride ?? instance.level ?? 1);

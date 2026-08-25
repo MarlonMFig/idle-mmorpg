@@ -42,7 +42,7 @@ function CaptureRow({
       <div className="captura__meta">
         <strong className="captura__name">{offer.name}</strong>
         <span className="captura__level">
-          Caça Nv.{Math.max(1, offer.level || offer.definition.level)} · entra Nv.1
+          {offer.quality} · Caça Nv.{Math.max(1, offer.level || offer.definition.level)} · entra Nv.1
         </span>
       </div>
       <button
@@ -130,7 +130,7 @@ export function CapturaPanel() {
               role="option"
               aria-selected={selected}
               className={`captura__scroll${selected ? ' is-selected' : ''}`}
-              title={`${tier.label} (~${Math.round(tier.successChance * 100)}%)`}
+              title={`${tier.label} (×${tier.multiplier})`}
               onClick={() => helperStore.setScrollItemId(tier.itemId as SealingScrollTierId)}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -1,3 +1,4 @@
+import { decimalToUnsafeNumber } from '@/lib/decimal';
 import {
   getTotalXpToReachLevel,
   getXpRemainingToLevel,
@@ -29,8 +30,8 @@ export function inspectAccumulatedXp(
 ): AccumulatedXpRow[] {
   return levels.map((level) => ({
     level,
-    xpToNext: getXpRequiredForLevel(level),
-    xpAccumulated: getTotalXpToReachLevel(level),
+    xpToNext: decimalToUnsafeNumber(getXpRequiredForLevel(level)),
+    xpAccumulated: decimalToUnsafeNumber(getTotalXpToReachLevel(level)),
   }));
 }
 
@@ -69,7 +70,7 @@ export function estimateTimeToLevel(
   if (xpPerHour <= 0) {
     return { hours: Number.POSITIVE_INFINITY, days: Number.POSITIVE_INFINITY, label: '—' };
   }
-  const remaining = getXpRemainingToLevel(currentLevel, currentXp, targetLevel);
+  const remaining = decimalToUnsafeNumber(getXpRemainingToLevel(currentLevel, currentXp, targetLevel));
   if (!Number.isFinite(remaining)) {
     return { hours: Number.POSITIVE_INFINITY, days: Number.POSITIVE_INFINITY, label: 'impossível' };
   }

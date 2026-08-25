@@ -25,6 +25,7 @@ import {
   type LabSaveableNumberField,
   isSkillVfxTargetMode,
 } from '@/lib/dev/lab-save-fields';
+import { canonicalizeLoopMode, isFrameLoopMode, legacyLoopFromMode, type FrameLoopMode, type FrameLoopModeInput } from '@/lib/frame-loop';
 import {
   normalizeSpriteAlignment,
   type SpriteAlignmentConfig,
@@ -369,6 +370,13 @@ function upsertCast(
     offsetX: number;
     offsetY: number;
     loop: boolean;
+    loopMode?: FrameLoopMode;
+    loopStartFrame?: number;
+    loopEndFrame?: number;
+    loopDurationMs?: number;
+    loopUntilSkillEnd?: boolean;
+    flipX?: boolean;
+    flipY?: boolean;
   }>,
 ): string {
   const indent = skillKeyIndent(skillBlock);
@@ -402,6 +410,13 @@ function upsertCast(
       if (fields.loop) next = setBooleanProp(next, 'loop', true);
       else next = removeProp(next, 'loop');
     }
+    if (fields.loopMode) next = setStringProp(next, 'loopMode', canonicalizeLoopMode(fields.loopMode) ?? fields.loopMode);
+    if (fields.loopStartFrame != null) next = setNumericProp(next, 'loopStartFrame', fields.loopStartFrame);
+    if (fields.loopEndFrame != null) next = setNumericProp(next, 'loopEndFrame', fields.loopEndFrame);
+    if (fields.loopDurationMs != null) next = setNumericProp(next, 'loopDurationMs', fields.loopDurationMs);
+    if (fields.loopUntilSkillEnd != null) next = setBooleanProp(next, 'loopUntilSkillEnd', fields.loopUntilSkillEnd);
+    if (fields.flipX != null) next = setBooleanProp(next, 'flipX', fields.flipX);
+    if (fields.flipY != null) next = setBooleanProp(next, 'flipY', fields.flipY);
     return next;
   };
 
@@ -423,6 +438,19 @@ function upsertCast(
   if (fields.offsetX != null) lines.push(`${innerIndent}offsetX: ${formatNum(fields.offsetX)},`);
   if (fields.offsetY != null) lines.push(`${innerIndent}offsetY: ${formatNum(fields.offsetY)},`);
   if (fields.loop) lines.push(`${innerIndent}loop: true,`);
+  if (fields.loopMode) lines.push(`${innerIndent}loopMode: '${fields.loopMode}',`);
+  if (fields.loopStartFrame != null) {
+    lines.push(`${innerIndent}loopStartFrame: ${Math.round(fields.loopStartFrame)},`);
+  }
+  if (fields.loopEndFrame != null) {
+    lines.push(`${innerIndent}loopEndFrame: ${Math.round(fields.loopEndFrame)},`);
+  }
+  if (fields.loopDurationMs != null) {
+    lines.push(`${innerIndent}loopDurationMs: ${Math.round(fields.loopDurationMs)},`);
+  }
+  if (fields.loopUntilSkillEnd) lines.push(`${innerIndent}loopUntilSkillEnd: true,`);
+  if (fields.flipX) lines.push(`${innerIndent}flipX: true,`);
+  if (fields.flipY) lines.push(`${innerIndent}flipY: true,`);
   if (lines.length === 1) return skillBlock;
   lines.push(`${indent}},`);
   return insertBeforeLastBrace(skillBlock, lines.join('\n'));
@@ -585,6 +613,18 @@ function formatSkillAnimLiteral(
     fxScale?: number;
     vfxOffsetX?: number;
     vfxOffsetY?: number;
+    vfxLoopMode?: FrameLoopModeInput;
+    vfxLoopStartFrame?: number;
+    vfxLoopEndFrame?: number;
+    vfxLoopDurationMs?: number;
+    vfxLoopUntilSkillEnd?: boolean;
+    vfxFlipX?: boolean;
+    vfxFlipY?: boolean;
+    loopMode?: FrameLoopModeInput;
+    loopStartFrame?: number;
+    loopEndFrame?: number;
+    loopDurationMs?: number;
+    loopUntilSkillEnd?: boolean;
     castDelayMs?: number;
     targeting?: {
       mode?: string;
@@ -638,6 +678,24 @@ function formatSkillAnimLiteral(
   if (anim.fxScale != null) lines.push(`${inner}fxScale: ${formatNum(anim.fxScale)},`);
   if (anim.vfxOffsetX != null) lines.push(`${inner}vfxOffsetX: ${formatNum(anim.vfxOffsetX)},`);
   if (anim.vfxOffsetY != null) lines.push(`${inner}vfxOffsetY: ${formatNum(anim.vfxOffsetY)},`);
+  if (anim.vfxLoopMode) {
+    const mode = canonicalizeLoopMode(anim.vfxLoopMode) ?? anim.vfxLoopMode;
+    lines.push(`${inner}vfxLoopMode: '${mode}',`);
+  }
+  if (anim.vfxLoopStartFrame != null) lines.push(`${inner}vfxLoopStartFrame: ${Math.round(anim.vfxLoopStartFrame)},`);
+  if (anim.vfxLoopEndFrame != null) lines.push(`${inner}vfxLoopEndFrame: ${Math.round(anim.vfxLoopEndFrame)},`);
+  if (anim.vfxLoopDurationMs != null) lines.push(`${inner}vfxLoopDurationMs: ${Math.round(anim.vfxLoopDurationMs)},`);
+  if (anim.vfxLoopUntilSkillEnd) lines.push(`${inner}vfxLoopUntilSkillEnd: true,`);
+  if (anim.vfxFlipX) lines.push(`${inner}vfxFlipX: true,`);
+  if (anim.vfxFlipY) lines.push(`${inner}vfxFlipY: true,`);
+  if (anim.loopMode) {
+    const mode = canonicalizeLoopMode(anim.loopMode) ?? anim.loopMode;
+    lines.push(`${inner}loopMode: '${mode}',`);
+  }
+  if (anim.loopStartFrame != null) lines.push(`${inner}loopStartFrame: ${Math.round(anim.loopStartFrame)},`);
+  if (anim.loopEndFrame != null) lines.push(`${inner}loopEndFrame: ${Math.round(anim.loopEndFrame)},`);
+  if (anim.loopDurationMs != null) lines.push(`${inner}loopDurationMs: ${Math.round(anim.loopDurationMs)},`);
+  if (anim.loopUntilSkillEnd) lines.push(`${inner}loopUntilSkillEnd: true,`);
   if (anim.castDelayMs != null) lines.push(`${inner}castDelayMs: ${Math.round(anim.castDelayMs)},`);
   if (anim.targeting?.mode) {
     lines.push(`${inner}targeting: {`);
@@ -732,6 +790,13 @@ export function patchSkillPoseSheet(
     frameCount: number;
     frameRate: number;
     loop: boolean;
+    loopMode?: FrameLoopMode;
+    loopStartFrame?: number;
+    loopEndFrame?: number;
+    loopDurationMs?: number;
+    loopUntilSkillEnd?: boolean;
+    flipX?: boolean;
+    flipY?: boolean;
     offsetX: number;
     offsetY: number;
     durationMs: number;
@@ -759,15 +824,30 @@ export function patchSkillPoseSheet(
   skillBlock = setNumericProp(skillBlock, 'offsetY', pose.offsetY);
   skillBlock = setNumericProp(skillBlock, 'durationMs', pose.durationMs);
   skillBlock = upsertStringArrayProp(skillBlock, 'frames', pose.frames ?? null);
-  if (pose.loop) skillBlock = setBooleanProp(skillBlock, 'loop', true);
+  const poseMode = canonicalizeLoopMode(pose.loopMode) ?? (pose.loop ? 'full' : 'none');
+  if (legacyLoopFromMode(poseMode)) skillBlock = setBooleanProp(skillBlock, 'loop', true);
   else skillBlock = removeProp(skillBlock, 'loop');
+  skillBlock = setStringProp(skillBlock, 'loopMode', poseMode);
+  if (pose.loopStartFrame != null) skillBlock = setNumericProp(skillBlock, 'loopStartFrame', pose.loopStartFrame);
+  if (pose.loopEndFrame != null) skillBlock = setNumericProp(skillBlock, 'loopEndFrame', pose.loopEndFrame);
+  if (pose.loopDurationMs != null) skillBlock = setNumericProp(skillBlock, 'loopDurationMs', pose.loopDurationMs);
+  if (pose.loopUntilSkillEnd != null) skillBlock = setBooleanProp(skillBlock, 'loopUntilSkillEnd', pose.loopUntilSkillEnd);
+  if (pose.flipX != null) skillBlock = setBooleanProp(skillBlock, 'flipX', pose.flipX);
+  if (pose.flipY != null) skillBlock = setBooleanProp(skillBlock, 'flipY', pose.flipY);
   skillBlock = upsertCast(skillBlock, {
     scaleX: pose.scaleX,
     scaleY: pose.scaleY,
     scale: pose.scaleY,
     offsetX: pose.offsetX,
     offsetY: pose.offsetY,
-    loop: pose.loop,
+    loop: legacyLoopFromMode(poseMode),
+    loopMode: poseMode,
+    loopStartFrame: pose.loopStartFrame,
+    loopEndFrame: pose.loopEndFrame,
+    loopDurationMs: pose.loopDurationMs,
+    loopUntilSkillEnd: pose.loopUntilSkillEnd,
+    flipX: pose.flipX,
+    flipY: pose.flipY,
   });
   source = patchRange(source, existing.start, existing.end, skillBlock);
   persistSource(hit.absPath, source, options?.persist);
@@ -850,6 +930,21 @@ function sanitizeChanges(raw: Record<string, unknown>): LabSaveChanges {
         throw new Error(`castAnimationId inválido: ${String(value)}`);
       }
       out.castAnimationId = value;
+      continue;
+    }
+    if (key === 'vfxLoopMode') {
+      if (!isFrameLoopMode(value)) throw new Error(`vfxLoopMode inválido: ${String(value)}`);
+      out.vfxLoopMode = canonicalizeLoopMode(value) ?? 'none';
+      continue;
+    }
+    if (key === 'vfxFlipX' || key === 'vfxFlipY' || key === 'vfxLoopUntilSkillEnd') {
+      out[key] = Boolean(value);
+      continue;
+    }
+    if (key === 'vfxLoopStartFrame' || key === 'vfxLoopEndFrame' || key === 'vfxLoopDurationMs') {
+      const n = Number(value);
+      if (!Number.isFinite(n)) throw new Error(`${key} inválido`);
+      out[key] = Math.round(n);
       continue;
     }
     if (key === 'execution') {
@@ -1041,7 +1136,14 @@ export function patchCharacterSource(input: LabSourcePatch, options?: LabPatchOp
     changes.castAnimationId !== undefined ||
     changes.castDelayMs != null ||
     changes.execution != null ||
-    changes.statusEffects != null;
+    changes.statusEffects != null ||
+    changes.vfxLoopMode != null ||
+    changes.vfxLoopStartFrame != null ||
+    changes.vfxLoopEndFrame != null ||
+    changes.vfxLoopDurationMs != null ||
+    changes.vfxLoopUntilSkillEnd != null ||
+    changes.vfxFlipX != null ||
+    changes.vfxFlipY != null;
 
   if (wantsSkill) {
     if (!skillId) throw new Error('Selecione uma skill para salvar VFX/targeting.');
@@ -1065,6 +1167,36 @@ export function patchCharacterSource(input: LabSourcePatch, options?: LabPatchOp
     if (changes.castDelayMs != null) {
       skillBlock = setNumericProp(skillBlock, 'castDelayMs', Math.max(0, Math.round(changes.castDelayMs)));
       applied.castDelayMs = Math.max(0, Math.round(changes.castDelayMs));
+    }
+
+    if (changes.vfxLoopMode) {
+      const mode = canonicalizeLoopMode(changes.vfxLoopMode) ?? changes.vfxLoopMode;
+      skillBlock = setStringProp(skillBlock, 'vfxLoopMode', mode);
+      applied.vfxLoopMode = mode;
+    }
+    if (changes.vfxLoopStartFrame != null) {
+      skillBlock = setNumericProp(skillBlock, 'vfxLoopStartFrame', changes.vfxLoopStartFrame);
+      applied.vfxLoopStartFrame = changes.vfxLoopStartFrame;
+    }
+    if (changes.vfxLoopEndFrame != null) {
+      skillBlock = setNumericProp(skillBlock, 'vfxLoopEndFrame', changes.vfxLoopEndFrame);
+      applied.vfxLoopEndFrame = changes.vfxLoopEndFrame;
+    }
+    if (changes.vfxLoopDurationMs != null) {
+      skillBlock = setNumericProp(skillBlock, 'vfxLoopDurationMs', changes.vfxLoopDurationMs);
+      applied.vfxLoopDurationMs = changes.vfxLoopDurationMs;
+    }
+    if (changes.vfxLoopUntilSkillEnd != null) {
+      skillBlock = setBooleanProp(skillBlock, 'vfxLoopUntilSkillEnd', changes.vfxLoopUntilSkillEnd);
+      applied.vfxLoopUntilSkillEnd = changes.vfxLoopUntilSkillEnd ? 'true' : 'false';
+    }
+    if (changes.vfxFlipX != null) {
+      skillBlock = setBooleanProp(skillBlock, 'vfxFlipX', changes.vfxFlipX);
+      applied.vfxFlipX = changes.vfxFlipX ? 'true' : 'false';
+    }
+    if (changes.vfxFlipY != null) {
+      skillBlock = setBooleanProp(skillBlock, 'vfxFlipY', changes.vfxFlipY);
+      applied.vfxFlipY = changes.vfxFlipY ? 'true' : 'false';
     }
 
     if (changes.vfxId !== undefined) {

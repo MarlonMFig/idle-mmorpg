@@ -1,6 +1,12 @@
 import type { AttributeId, AttributeValues } from '@/types/attributes';
-import type { CharacterQuality } from '@/types/character-meta';
+import type { CharacterGrade, CharacterPotential, CharacterQuality } from '@/types/character-meta';
 import { CHARACTER_QUALITIES } from '@/types/character-meta';
+import {
+  CONFIG,
+  gradeFromPotential,
+  potentialTotal,
+  qualityStatMultiplierFromPotential,
+} from '@/lib/raridade-potencial.js';
 
 export type QualityStatRng = () => number;
 
@@ -11,19 +17,27 @@ export interface QualityStatRange {
   midpoint: number;
 }
 
-/**
- * Faixas oficiais de qualityStatMultiplier (IDs D–SSS).
- * Sobreposição entre ranks é intencional.
- */
+function rangeFromConfig(quality: CharacterQuality): QualityStatRange {
+  const row = CONFIG.qualidades.find((entry) => entry.id === quality);
+  const min = row?.min ?? 1;
+  const max = row?.max ?? 1;
+  return { min, max, midpoint: (min + max) / 2 };
+}
+
+/** Faixas oficiais de qualityStatMultiplier — vindas de CONFIG.qualidades. */
 export const QUALITY_STAT_RANGES: Record<CharacterQuality, QualityStatRange> = {
-  D: { min: 0.2, max: 0.4, midpoint: 0.3 },
-  C: { min: 0.3, max: 0.55, midpoint: 0.43 },
-  B: { min: 0.45, max: 0.75, midpoint: 0.6 },
-  A: { min: 0.7, max: 1.1, midpoint: 0.9 },
-  S: { min: 1.05, max: 1.55, midpoint: 1.3 },
-  SS: { min: 1.5, max: 2.1, midpoint: 1.8 },
-  SSS: { min: 2.1, max: 2.8, midpoint: 2.5 },
+  D: rangeFromConfig('D'),
+  C: rangeFromConfig('C'),
+  B: rangeFromConfig('B'),
+  A: rangeFromConfig('A'),
+  S: rangeFromConfig('S'),
+  SS: rangeFromConfig('SS'),
+  SSS: rangeFromConfig('SSS'),
 };
+
+export const CHARACTER_GRADE_LABELS: Record<CharacterGrade, string> = Object.fromEntries(
+  CONFIG.graus.map((grade) => [grade.id, grade.rotulo]),
+) as Record<CharacterGrade, string>;
 
 /** HP / ATK (strength) / DEF. */
 export const QUALITY_PRIMARY_STAT_IDS = ['hp', 'strength', 'defense'] as const satisfies readonly AttributeId[];
@@ -62,33 +76,56 @@ export function clampQualityStatMultiplier(
   return quantizeQualityStatMultiplier(Math.min(range.max, Math.max(range.min, value)));
 }
 
+export function isCharacterPotential(value: unknown): value is CharacterPotential {
+  if (!value || typeof value !== 'object') return false;
+  const entry = value as Record<string, unknown>;
+  return CONFIG.atributos.every((key) => typeof entry[key] === 'number' && Number.isFinite(entry[key]));
+}
+
+export function isCharacterGrade(value: unknown): value is CharacterGrade {
+  return typeof value === 'string' && CONFIG.graus.some((grade) => grade.id === value);
+}
+
 /**
- * Legacy / omitido: midpoint determinístico.
- * Valor presente: clampa na faixa da quality armazenada (quality é autoridade).
+ * Se houver potential, SEMPRE recalcula. O valor gravado é cache.
  */
 export function resolveQualityStatMultiplier(
   quality: CharacterQuality | null | undefined,
   stored: unknown,
+  potential?: CharacterPotential | null,
 ): number {
-  if (typeof stored === 'number' && Number.isFinite(stored)) {
-    return clampQualityStatMultiplier(quality, stored);
+  const q = quality && CHARACTER_QUALITIES.includes(quality) ? quality : 'D';
+  if (isCharacterPotential(potential)) {
+    return quantizeQualityStatMultiplier(qualityStatMultiplierFromPotential(q, potential));
   }
-  return qualityStatMidpoint(quality);
+  if (typeof stored === 'number' && Number.isFinite(stored)) {
+    return clampQualityStatMultiplier(q, stored);
+  }
+  return qualityStatMidpoint(q);
 }
 
-/** Inclusive min..max. RNG injetável (`SpawnRng`). */
-export function rollQualityStatMultiplier(
+export function derivePotentialFields(
   quality: CharacterQuality,
-  rng: QualityStatRng = Math.random,
-): number {
-  const range = qualityStatRange(quality);
-  const raw = rng();
-  const t = !Number.isFinite(raw) ? 0 : raw <= 0 ? 0 : raw >= 1 ? 1 : raw;
-  return quantizeQualityStatMultiplier(range.min + t * (range.max - range.min));
+  potential: CharacterPotential,
+): { potential: CharacterPotential; potentialTotal: number; grade: CharacterGrade; qualityStatMultiplier: number } {
+  const total = potentialTotal(potential);
+  return {
+    potential,
+    potentialTotal: total,
+    grade: gradeFromPotential(total),
+    qualityStatMultiplier: quantizeQualityStatMultiplier(
+      qualityStatMultiplierFromPotential(quality, potential),
+    ),
+  };
 }
 
 export function formatQualityStatMultiplier(value: number): string {
   return `${(Number.isFinite(value) ? value : 0).toFixed(2)}x`;
+}
+
+export function formatCharacterGrade(grade: CharacterGrade | null | undefined): string {
+  if (!grade || !isCharacterGrade(grade)) return CHARACTER_GRADE_LABELS.bruto;
+  return CHARACTER_GRADE_LABELS[grade];
 }
 
 export function scaleQualityPrimaryStat(base: number, multiplier: number): number {
@@ -105,27 +142,4 @@ export function applyQualityToPrimaryBase(
     next[id] = scaleQualityPrimaryStat(base[id], multiplier);
   }
   return next;
-}
-
-export function simulateQualityStatRolls(
-  quality: CharacterQuality,
-  n: number,
-  rng: QualityStatRng,
-): { min: number; max: number; average: number; expectedMidpoint: number } {
-  let min = Number.POSITIVE_INFINITY;
-  let max = Number.NEGATIVE_INFINITY;
-  let sum = 0;
-  for (let i = 0; i < n; i += 1) {
-    const rolled = rollQualityStatMultiplier(quality, rng);
-    if (rolled < min) min = rolled;
-    if (rolled > max) max = rolled;
-    sum += rolled;
-  }
-  const range = qualityStatRange(quality);
-  return {
-    min: min === Number.POSITIVE_INFINITY ? range.min : min,
-    max: max === Number.NEGATIVE_INFINITY ? range.max : max,
-    average: n > 0 ? sum / n : range.midpoint,
-    expectedMidpoint: (range.min + range.max) / 2,
-  };
 }

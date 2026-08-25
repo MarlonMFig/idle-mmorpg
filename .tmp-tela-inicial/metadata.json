@@ -1,0 +1,7 @@
+{
+  "name": "Ninja Idle RPG",
+  "description": "Tela inicial refinada para seleção de shinobi com transições suaves e design impecável.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
