@@ -173,7 +173,7 @@ export function HuntAnalyzerPanel() {
           tone="seal"
           icon="🌀"
           value={formatCopper(sealed)}
-          label={`Selados (${captureAttempts} tent.)`}
+          label={`Recrutados (${captureAttempts} tent.)`}
         />
         <StatCard
           tone="loot"
@@ -187,7 +187,7 @@ export function HuntAnalyzerPanel() {
           icon="📜"
           value={supplyCopper > 0 ? `−$${formatCopper(supplyCopper)}` : '$0'}
           valueClass={supplyCopper > 0 ? 'is-neg' : undefined}
-          label={`Supply (${scrollsUsed} pergaminhos)`}
+          label={`Supply (${scrollsUsed} cartões)`}
         />
       </div>
 
@@ -317,13 +317,13 @@ export function HuntAnalyzerPanel() {
         className="hunt-analyzer__log-btn"
         onClick={() => setShowLog((v) => !v)}
       >
-        {showLog ? 'Ocultar log de selamentos' : 'Ver log de selamentos'}
+        {showLog ? 'Ocultar log de recrutamentos' : 'Ver log de recrutamentos'}
       </button>
 
       {showLog ? (
         <div className="hunt-analyzer__log" role="log">
           {sealLogs.length === 0 ? (
-            <p className="hunt-analyzer__empty">Nenhum selamento nesta sessão.</p>
+            <p className="hunt-analyzer__empty">Nenhum recrutamento nesta sessão.</p>
           ) : (
             <ul>
               {[...sealLogs].reverse().map((line, index) => (
@@ -343,7 +343,7 @@ export function HuntAnalyzerPanel() {
 
       <p className="hunt-analyzer__footer">
         Loot em Cobre NPC: cobre dropped + venda dos materiais. Saldo = Loot − custo de
-        pergaminhos. Zera ao trocar de caça.
+        cartões. Zera ao trocar de caça.
       </p>
     </div>
   );

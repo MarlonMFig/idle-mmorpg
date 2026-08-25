@@ -46,8 +46,6 @@ export const SCROLL_CRAFT_PER_STEP = spec.scrollCraft.perStep;
 export const SCROLL_CAPTURE_MULTIPLIER: Record<SealingScrollTierId, number> = {
   'item-sealing-scroll': spec.scrollMultiplier['item-sealing-scroll'],
   'item-sealing-scroll-rare': spec.scrollMultiplier['item-sealing-scroll-rare'],
-  'item-sealing-scroll-epic': spec.scrollMultiplier['item-sealing-scroll-epic'],
-  'item-sealing-scroll-legendary': spec.scrollMultiplier['item-sealing-scroll-legendary'],
 };
 
 export function appearanceWeight(quality: CharacterQuality): number {

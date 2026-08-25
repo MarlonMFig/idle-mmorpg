@@ -1,14 +1,14 @@
 /** Moeda usada pela loja. */
 export const SHOP_CURRENCY_ITEM_ID = 'item-copper-coin';
 
-/** Pergaminho comum (id legada / oferta base da loja). */
+/** Cartão comum (id legado item-sealing-scroll — não alterar). */
 export const SEALING_SCROLL_ITEM_ID = 'item-sealing-scroll';
 
-/** Preço inicial do Pergaminho de Selamento Comum. */
+/** Preço inicial do Cartão de Recrutamento comum. */
 export const SEALING_SCROLL_PRICE = 25;
 
 /**
- * Chance de sucesso do pergaminho comum (0–1).
+ * Chance de sucesso do cartão comum (0–1).
  * Outros ranks usam SEALING_SCROLL_TIERS.
  */
 export const SEAL_SUCCESS_CHANCE = 0.9;
@@ -16,11 +16,7 @@ export const SEAL_SUCCESS_CHANCE = 0.9;
 /** Tamanho máximo da equipe ativa. */
 export const TEAM_SLOT_COUNT = 3;
 
-export type SealingScrollTierId =
-  | 'item-sealing-scroll'
-  | 'item-sealing-scroll-rare'
-  | 'item-sealing-scroll-epic'
-  | 'item-sealing-scroll-legendary';
+export type SealingScrollTierId = 'item-sealing-scroll' | 'item-sealing-scroll-rare';
 
 export interface SealingScrollTier {
   itemId: SealingScrollTierId;
@@ -28,7 +24,7 @@ export interface SealingScrollTier {
   rank: number;
   successChance: number;
   /**
-   * Alias estável da chance do pergaminho (0–1).
+   * Alias estável da chance do cartão (0–1).
    * Hoje = successChance; não rebalancear.
    */
   captureModifier: number;
@@ -39,7 +35,7 @@ export interface SealingScrollTier {
 }
 
 /**
- * Tiers de pergaminho de selamento (Comum → Lendário).
+ * Tiers de Cartão de Recrutamento (Comum → Lendário).
  * Consumo: prioriza o de tier mais alto que o jogador tiver.
  */
 export const SEALING_SCROLL_TIERS: readonly SealingScrollTier[] = [
@@ -50,7 +46,7 @@ export const SEALING_SCROLL_TIERS: readonly SealingScrollTier[] = [
     captureModifier: 1,
     multiplier: 1,
     label: 'Comum',
-    iconSrc: '/ui/items/sealing-scrolls/common.png',
+    iconSrc: '/ui/items/recruitment-cards/common.png',
   },
   {
     itemId: 'item-sealing-scroll-rare',
@@ -59,25 +55,7 @@ export const SEALING_SCROLL_TIERS: readonly SealingScrollTier[] = [
     captureModifier: 1.7,
     multiplier: 1.7,
     label: 'Raro',
-    iconSrc: '/ui/items/sealing-scrolls/rare.png',
-  },
-  {
-    itemId: 'item-sealing-scroll-epic',
-    rank: 3,
-    successChance: 0.97,
-    captureModifier: 2.6,
-    multiplier: 2.6,
-    label: 'Épico',
-    iconSrc: '/ui/items/sealing-scrolls/epic.png',
-  },
-  {
-    itemId: 'item-sealing-scroll-legendary',
-    rank: 4,
-    successChance: 0.99,
-    captureModifier: 4.2,
-    multiplier: 4.2,
-    label: 'Lendário',
-    iconSrc: '/ui/items/sealing-scrolls/legendary.png',
+    iconSrc: '/ui/items/recruitment-cards/rare.png',
   },
 ] as const;
 

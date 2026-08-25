@@ -130,7 +130,7 @@ export const ANIME_LOOT_ITEMS: Record<string, ItemDefinition> = {
   ),
   'item-anime-naruto-pergaminho-selamento': animeItem(
     'item-anime-naruto-pergaminho-selamento',
-    'Pergaminho de Selamento',
+    'Cartão de Recrutamento (loot)',
     'rare',
     'pergaminho_selamento.png',
   ),

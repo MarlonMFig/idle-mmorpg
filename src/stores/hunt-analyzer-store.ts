@@ -44,8 +44,6 @@ const MAX_SEAL_LOGS = 48;
 const SCROLL_COST: Record<string, number> = {
   'item-sealing-scroll': SEALING_SCROLL_PRICE,
   'item-sealing-scroll-rare': SEALING_SCROLL_PRICE * 3,
-  'item-sealing-scroll-epic': SEALING_SCROLL_PRICE * 8,
-  'item-sealing-scroll-legendary': SEALING_SCROLL_PRICE * 20,
 };
 
 const emptySession = (): Omit<HuntAnalyzerState, 'isOpen'> => ({

@@ -5,7 +5,7 @@
  * - Poção HP: 40 Copper (cura parcial in-hunt)
  * - Poção concentrada / ultra: 120 / 300
  * - Revive in-hunt: 350
- * - Scroll selamento: 25
+ * - Cartão de Recrutamento: 25
  * - Loot de Hunt: dezenas de Copper por kill
  *
  * Meta: full heal no Hub mais barato que spam de poções + Revive,
@@ -15,7 +15,7 @@
 export const MEDIC_CONFIG = {
   /**
    * Custo mínimo quando há HP faltante (> 0).
-   * ~1 scroll / pouco abaixo de 1 poção básica.
+   * ~1 cartão / pouco abaixo de 1 poção básica.
    */
   minimumCost: 25,
   /** Parcela fixa somada ao custo por HP. */

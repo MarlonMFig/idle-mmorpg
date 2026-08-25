@@ -27,7 +27,7 @@ function formatQty(n: number): string {
 }
 
 /**
- * Auto-Helper — Auto Cura, Auto Selamento, Auto Revive.
+ * Auto-Helper — Auto Cura, Auto Recrutamento, Auto Revive.
  * Arrastável pelo cabeçalho; preferências em localStorage.
  */
 export function HelperPanel() {
@@ -221,16 +221,16 @@ export function HelperPanel() {
               📜
             </span>
             <span className="helper__row-text">
-              <strong>Auto Selamento</strong>
+              <strong>Auto Recrutamento</strong>
               <span className="helper__sub">
-                {autoSeal ? 'ao derrotar inimigo' : 'janela SELAMENTO na caça'}
+                {autoSeal ? 'ao derrotar inimigo' : 'janela RECRUTAMENTO na caça'}
               </span>
             </span>
           </label>
 
           <div className="helper__controls">
-            <span className="helper__field-label">Pergaminho:</span>
-            <div className="helper__chips" role="listbox" aria-label="Pergaminho">
+            <span className="helper__field-label">Cartão:</span>
+            <div className="helper__chips" role="listbox" aria-label="Cartão de Recrutamento">
               {SEALING_SCROLL_TIERS.map((tier) => {
                 const qty = inventoryStore.countItem(tier.itemId);
                 const selected = scrollItemId === tier.itemId;

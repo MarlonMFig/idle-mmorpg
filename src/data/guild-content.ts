@@ -81,10 +81,10 @@ export const GUILD_SKILL_DEFS: readonly GuildSkillDef[] = [
   },
   {
     id: 'sk-seal',
-    name: 'Mestre dos Selamentos',
-    description: 'Melhora a chance de selamento (preparado).',
+    name: 'Mestre do Recrutamento',
+    description: 'Melhora a chance de recrutamento (preparado).',
     icon: '✨',
-    effectText: '+0.5% selamento por nível',
+    effectText: '+0.5% recrutamento por nível',
     maxLevel: 5,
     baseFunds: 6_000,
     baseCoins: 60,
@@ -94,11 +94,11 @@ export const GUILD_SKILL_DEFS: readonly GuildSkillDef[] = [
 export const GUILD_SHOP_DEFS: readonly GuildShopDef[] = [
   {
     id: 'sh-scroll',
-    name: 'Pergaminho de Selamento',
-    description: 'Recebe cobre equivalente ao valor de reposição do pergaminho.',
+    name: 'Cartão de Recrutamento',
+    description: 'Recebe cobre equivalente ao valor de reposição do cartão.',
     icon: '📜',
     priceCoins: 80,
-    category: 'Selamento',
+    category: 'Recrutamento',
     maxStock: 8,
     reqGuildLevel: 1,
     copperReward: 25,

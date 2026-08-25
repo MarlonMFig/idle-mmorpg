@@ -258,7 +258,7 @@ export function attemptCapture(input: AttemptCaptureInput): CaptureResult {
 
     if (!hit) {
       markCaptureResolved(attemptKey);
-      emitSystemMessage(`Selamento falhou: ${name} resistiu (${scroll.label}).`);
+      emitSystemMessage(`Recrutamento falhou: ${name} resistiu (${scroll.label}).`);
       const failed: CaptureResult = {
         success: false,
         reason: 'failed',
@@ -309,7 +309,7 @@ export function attemptCapture(input: AttemptCaptureInput): CaptureResult {
     if (!added || !stored) {
       inventoryStore.addItem(scroll.itemId, 1);
       resolvedKeys.delete(attemptKey);
-      emitSystemMessage('Selamento falhou: não foi possível adicionar à coleção.');
+      emitSystemMessage('Recrutamento falhou: não foi possível adicionar à coleção.');
       return {
         success: false,
         reason: 'collection-rejected',
@@ -322,7 +322,7 @@ export function attemptCapture(input: AttemptCaptureInput): CaptureResult {
     }
 
     emitSystemMessage(
-      `SELAMENTO CONCLUÍDO — ${seal.name} · Raridade: ${stored.quality} · ${stored.grade} · Adicionado à coleção (Nv.${CAPTURE_INITIAL_LEVEL}).`,
+      `RECRUTAMENTO CONCLUÍDO — ${seal.name} · Raridade: ${stored.quality} · ${stored.grade} · Adicionado à coleção (Nv.${CAPTURE_INITIAL_LEVEL}).`,
     );
     applyHuntCaptureToOfficialFreeze(stored, scroll.itemId);
     emitCharacterCaptured({

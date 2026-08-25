@@ -142,7 +142,7 @@ const WANTED: Array<{ label: string; id: string }> = [
   { label: 'Selo Elemental', id: 'item-anime-naruto-selo-elemental' },
   { label: 'Cabaça de Areia', id: 'item-anime-naruto-cabaca-areia' },
   { label: 'Bandana Riscada', id: 'item-anime-naruto-bandana-riscada' },
-  { label: 'Pergaminho de Selamento', id: 'item-anime-naruto-pergaminho-selamento' },
+  { label: 'Cartão de Recrutamento (loot Naruto)', id: 'item-anime-naruto-pergaminho-selamento' },
   { label: 'Papel Bomba', id: 'item-anime-naruto-papel-bomba' },
   { label: 'Contrato de Invocação', id: 'item-anime-naruto-contrato-invocacao' },
   { label: 'Frasco de Veneno', id: 'item-anime-naruto-frasco-veneno' },

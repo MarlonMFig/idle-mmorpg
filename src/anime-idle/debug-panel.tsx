@@ -99,7 +99,7 @@ export function AnimeIdleDebugPanel() {
 
       <p>
         Zona {zone.name} · inimigo {zone.enemyName} HP {fmt(zone.enemyHp)} · Δ slot0 {delta} · ttk {fmt(ttk)}s ·{' '}
-        {kpm.toFixed(2)} kills/min · selamento {(sealChance(delta) * 100).toFixed(2)}%
+        {kpm.toFixed(2)} kills/min · recrutamento {(sealChance(delta) * 100).toFixed(2)}%
       </p>
       <p>
         Fragmentos resgatados: {state.fragments} · possíveis: {claimable + state.fragments} · na UI: {claimable} ·

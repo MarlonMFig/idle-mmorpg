@@ -51,14 +51,14 @@ function CaptureRow({
         disabled={!canThrow}
         onClick={() => onThrow(offer.id)}
       >
-        Lançar
+        Recrutar
       </button>
     </li>
   );
 }
 
 /**
- * Selamento manual — visível na caça quando Auto Selamento está desligado.
+ * Recrutamento manual — visível na caça quando Auto Recrutamento está desligado.
  */
 export function CapturaPanel() {
   const mode = useStore(locationStore, (s) => s.mode);
@@ -110,16 +110,16 @@ export function CapturaPanel() {
       className={`captura${isDragging ? ' is-dragging' : ''}`}
       style={style}
       role="dialog"
-      aria-label="Selamento"
+      aria-label="Recrutamento"
     >
       <header className="captura__head captura__head--drag" {...handleProps}>
-        <h2 className="captura__title">Selamento</h2>
+        <h2 className="captura__title">Recrutamento</h2>
         <span className="captura__badge">
           {offers.length} no chão
         </span>
       </header>
 
-      <div className="captura__scrolls" role="listbox" aria-label="Pergaminho">
+      <div className="captura__scrolls" role="listbox" aria-label="Cartão de Recrutamento">
         {SEALING_SCROLL_TIERS.map((tier) => {
           const qty = inventoryStore.countItem(tier.itemId);
           const selected = scrollItemId === tier.itemId;

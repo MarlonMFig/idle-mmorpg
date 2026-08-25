@@ -70,7 +70,7 @@ const HUB_SEEDS: readonly HubNpcSeed[] = [
     x: 1350,
     y: 1080,
     dialogue: [
-      'Olá shinobi. Compro e vendo itens — pergaminhos de selamento e o que sobrar da caça.',
+      'Olá shinobi. Compro e vendo itens — cartões de recrutamento e o que sobrar da caça.',
       'Aperte P ou fale comigo na praça quando precisar de cobre ou material.',
     ],
   },

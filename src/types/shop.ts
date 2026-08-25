@@ -38,7 +38,7 @@ export interface ShopOffer {
 
 export const SHOP_CATEGORY_LABEL: Record<ShopCategoryId, string> = {
   consumables: 'Consumíveis',
-  scrolls: 'Pergaminhos',
+  scrolls: 'Recrutamento',
   materials: 'Materiais',
   specials: 'Especiais',
 };

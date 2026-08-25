@@ -102,7 +102,7 @@ export function CharacterLabCaptureInspector() {
       <h4>CAPTURE QUALITY TESTER</h4>
       <p className="character-lab__hint">
         Quality aparece no encontro (pesos do spec). A captura usa base da quality ×
-        multiplicador do pergaminho, teto 90%. Force quality aplica na aparição.
+        multiplicador do cartão, teto 90%. Force quality aplica na aparição.
       </p>
       <label>
         Character
@@ -133,7 +133,7 @@ export function CharacterLabCaptureInspector() {
         {getForceSpawnQuality() ?? 'off'}
       </p>
       <label>
-        Scroll
+        Scroll / cartão
         <select
           value={scrollId}
           onChange={(event) => setScrollId(event.target.value as SealingScrollTierId)}

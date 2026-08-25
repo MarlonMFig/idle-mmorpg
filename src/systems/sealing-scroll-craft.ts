@@ -9,8 +9,6 @@ import { emitSystemMessage } from '@/lib/system-log';
 
 const LADDER: Array<{ from: SealingScrollTierId; to: SealingScrollTierId }> = [
   { from: 'item-sealing-scroll', to: 'item-sealing-scroll-rare' },
-  { from: 'item-sealing-scroll-rare', to: 'item-sealing-scroll-epic' },
-  { from: 'item-sealing-scroll-epic', to: 'item-sealing-scroll-legendary' },
 ];
 
 export function sealingScrollCraftTarget(fromId: string): SealingScrollTierId | null {

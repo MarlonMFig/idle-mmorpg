@@ -32,7 +32,7 @@ function nextId(): string {
 }
 
 /**
- * Alvos derrotados aguardando selamento manual (Auto Selamento desligado).
+ * Alvos derrotados aguardando recrutamento manual (Auto Recrutamento desligado).
  */
 export const captureStore = {
   subscribe: store.subscribe,

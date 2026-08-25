@@ -34,8 +34,8 @@ export const DAILY_MISSION_POOL: readonly MissionDefinition[] = [
   {
     id: 'daily-capture-1',
     type: 'daily',
-    name: 'Primeiro Selamento do Dia',
-    description: 'Capture 1 personagem.',
+    name: 'Primeiro Recrutamento do Dia',
+    description: 'Recrute 1 personagem.',
     tag: 'capture',
     variantGroup: 'capture',
     condition: { type: 'charactersCaptured', value: 1 },
@@ -47,7 +47,7 @@ export const DAILY_MISSION_POOL: readonly MissionDefinition[] = [
     id: 'daily-capture-3',
     type: 'daily',
     name: 'Caçador de Recrutas',
-    description: 'Capture 3 personagens.',
+    description: 'Recrute 3 personagens.',
     tag: 'capture',
     variantGroup: 'capture',
     condition: { type: 'charactersCaptured', value: 3 },
@@ -176,7 +176,7 @@ export const WEEKLY_MISSION_POOL: readonly MissionDefinition[] = [
     id: 'weekly-capture-10',
     type: 'weekly',
     name: 'Recrutamento Semanal',
-    description: 'Capture 10 personagens.',
+    description: 'Recrute 10 personagens.',
     tag: 'capture',
     variantGroup: 'capture',
     condition: { type: 'charactersCaptured', value: 10 },
@@ -295,7 +295,7 @@ function journey(
  */
 export const JOURNEY_MISSIONS: readonly MissionDefinition[] = [
   journey('journey-player-level-5', 'Primeiros Passos', 'Alcance o nível de conta 5.', { type: 'playerLevel', value: 5 }, 'journey-capture-1', 80),
-  journey('journey-capture-1', 'Novo Companheiro', 'Capture seu primeiro personagem (além do inicial).', { type: 'uniqueCharacters', value: 2 }, 'journey-unique-3', 100),
+  journey('journey-capture-1', 'Novo Companheiro', 'Recrute seu primeiro personagem (além do inicial).', { type: 'uniqueCharacters', value: 2 }, 'journey-unique-3', 100),
   journey('journey-unique-3', 'Formando a Equipe', 'Possua 3 personagens diferentes.', { type: 'uniqueCharacters', value: 3 }, 'journey-player-level-10', 120),
   journey('journey-player-level-10', 'Nível 10', 'Alcance o nível de conta 10.', { type: 'playerLevel', value: 10 }, 'journey-stars-1', 140),
   journey('journey-stars-1', 'Primeira Estrela', 'Evolua um personagem para 1★.', { type: 'characterStars', value: 1 }, 'journey-mastery-10', 150),

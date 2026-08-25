@@ -33,6 +33,7 @@ function slotLabel(slot: InventorySlot): string {
 /** Monograma visual para slots sem asset de ícone. */
 function itemMonogram(itemId: string, name: string): string {
   if (itemId.includes('coin') || itemId.includes('2148')) return '¢';
+  if (itemId.includes('sealing-scroll') || itemId.includes('recruitment')) return 'Cr';
   if (itemId.includes('scroll') || itemId.includes('seal')) return 'Sc';
   if (itemId.includes('kunai') || itemId.includes('sword')) return 'W';
   const clean = name.replace(/[^A-Za-zÀ-ÿ0-9]/g, '');

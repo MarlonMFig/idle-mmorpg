@@ -52,14 +52,14 @@ function enemy(quality: CharacterQuality): EnemyDefinition {
 }
 
 const common = getSealingScrollConfig(SEALING_SCROLL_ITEM_ID)!;
-const legendary = SEALING_SCROLL_TIERS.find((t) => t.itemId.endsWith('legendary'))!;
+const rare = SEALING_SCROLL_TIERS.find((t) => t.itemId.endsWith('rare'))!;
 
 assert('teto 90%', CAPTURE_CHANCE_CAP === 0.9);
 assert('D comum 90%', Math.abs(computeCaptureChance('D', common.itemId) - 0.9) < 1e-9);
-assert('D raro cap 90%', computeCaptureChance('D', legendary.itemId) === 0.9);
+assert('D raro cap 90%', computeCaptureChance('D', rare.itemId) === 0.9);
 assert('SSS comum 5%', Math.abs(computeCaptureChance('SSS', common.itemId) - 0.05) < 1e-9);
-assert('SSS lendário 21%', Math.abs(computeCaptureChance('SSS', legendary.itemId) - 0.21) < 1e-9);
-assert('épico raro 51%', Math.abs(computeCaptureChance('A', 'item-sealing-scroll-rare') - 0.51) < 1e-9);
+assert('SSS raro 8.5%', Math.abs(computeCaptureChance('SSS', rare.itemId) - 0.085) < 1e-9);
+assert('A raro 51%', Math.abs(computeCaptureChance('A', 'item-sealing-scroll-rare') - 0.51) < 1e-9);
 assert('craft 7', SCROLL_CRAFT_PER_STEP === 7);
 
 const percents = appearancePercents();

@@ -11,9 +11,7 @@
   "captureChanceCap": 0.9,
   "scrollMultiplier": {
     "item-sealing-scroll": 1.0,
-    "item-sealing-scroll-rare": 1.7,
-    "item-sealing-scroll-epic": 2.6,
-    "item-sealing-scroll-legendary": 4.2
+    "item-sealing-scroll-rare": 1.7
   },
   "attemptsBeforeFlee": {
     "D": 3,

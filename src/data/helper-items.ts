@@ -96,8 +96,8 @@ export function isSealingScrollId(itemId: string): itemId is SealingScrollTierId
 
 /** Preços de compra no market (cobre). */
 export const HELPER_SHOP_PRICES = {
-  [HP_POTION_ITEM_ID]: 40,
-  [HP_POTION_CONCENTRATED_ITEM_ID]: 120,
-  [HP_POTION_ULTRA_ITEM_ID]: 300,
-  [REVIVE_ITEM_ID]: 350,
+  [HP_POTION_ITEM_ID]: 15,
+  [HP_POTION_CONCENTRATED_ITEM_ID]: 80,
+  [HP_POTION_ULTRA_ITEM_ID]: 500,
+  [REVIVE_ITEM_ID]: 2000,
 } as const;
