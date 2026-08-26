@@ -28,7 +28,7 @@ import { resolveSkillElement } from '@/data/damage-elements';
 import { resolveExecutionType } from '@/data/skill-execution-def';
 import type { CombatSystem } from '@/systems/combat-system';
 import type { EnemyManager } from '@/systems/enemy-manager';
-import { clearLabForcedFx, scheduleSkillFx } from '@/systems/pack-fx';
+import { clearLabForcedFx, computeSkillFxAim, scheduleSkillFx } from '@/systems/pack-fx';
 import { scheduleOfficialSkillFx, SkillExecutionRuntime } from '@/systems/skill-execution';
 import { tryApplySkillStatuses } from '@/systems/skill-status-apply';
 import { applyDirectDamage, clearStatusRuntime, getStatusRuntime } from '@/systems/status-runtime';
@@ -248,11 +248,9 @@ export class CharacterLabSystem {
       characterLabStore.pushEvent('nenhum vfx efeito');
       return;
     }
-    const { start, target } = this.forceTargetPoints(lab);
-    const from = lab.targetMode === 'caster' ? { x: this.player.x, y: this.player.y } : start;
-    const to = lab.targetMode === 'caster' ? from : target;
+    const { from, to, aim } = this.labFxPoints();
     void this.ensureCatalogTexture(lab.vfxId);
-    scheduleSkillFx(this.scene, this.player, anim, 0, from, to, null);
+    scheduleSkillFx(this.scene, this.player, anim, 0, from, to, aim);
     characterLabStore.pushEvent('effect started');
   }
 
@@ -266,9 +264,7 @@ export class CharacterLabSystem {
       return;
     }
     const dummy = this.dummy();
-    const { start, target } = this.forceTargetPoints(lab);
-    const from = lab.targetMode === 'caster' ? { x: this.player.x, y: this.player.y } : start;
-    const to = lab.targetMode === 'caster' ? from : target;
+    const { from, to, aim } = this.labFxPoints();
     const stub = {
       ...(skill ?? {
         id: lab.lastSkillId ?? 'lab-preview',
@@ -289,7 +285,7 @@ export class CharacterLabSystem {
       anim,
       from,
       to,
-      aim: null,
+      aim,
       targetId: dummy?.id ?? null,
       hitDelayMs: anim && 'hitDelayMs' in anim ? (anim.hitDelayMs ?? 280) : 280,
       isCasterDead: () => this.player.isDead(),
@@ -358,6 +354,8 @@ export class CharacterLabSystem {
         targetOffsetX: lab.targetOffsetX,
         targetOffsetY: lab.targetOffsetY,
       },
+      // Lab VFX: Cast Delay agenda o Effect (officialVfxStartDelayMs).
+      castDelayMs: Math.max(0, Math.round(lab.castDelayMs)),
       fxReleaseMs: 0,
       fxFlightFrameCount: undefined,
       fx: undefined,
@@ -544,32 +542,35 @@ export class CharacterLabSystem {
     enemy.sprite.setVelocity(0, 0);
   }
 
-  private spriteCenter(sprite: Phaser.GameObjects.Sprite): { x: number; y: number } {
-    const bounds = sprite.getBounds();
-    return { x: bounds.centerX, y: bounds.centerY };
+  /**
+   * Mesmo ancoramento do combate: `from`/`to` nos pés + `aim` nos centros visuais.
+   * Offsets de Spawn/Target ficam só em `anim.targeting` (resolveAim aplica uma vez).
+   */
+  private labFxPoints() {
+    const dummy = this.dummy();
+    const aim = computeSkillFxAim(this.player, dummy);
+    return {
+      from: { x: this.player.x, y: this.player.y },
+      to: dummy
+        ? { x: dummy.sprite.x, y: dummy.sprite.y }
+        : { x: aim.targetX, y: aim.targetY },
+      aim,
+    };
   }
 
+  /** Caminho já com offsets (debug/overlay) — espelha `resolveAim` do pack-fx. */
   private forceTargetPoints(lab: ReturnType<typeof characterLabStore.getSnapshot>) {
-    const start = this.spriteCenter(this.player.sprite);
-    const dummy = this.dummy();
-    const facingLeft = dummy ? dummy.sprite.x < this.player.x : false;
-    const spawn = {
-      x: start.x + lab.spawnOffsetX * (facingLeft ? -1 : 1),
-      y: start.y + lab.spawnOffsetY,
-    };
-    if (!dummy) {
-      return {
-        start: spawn,
-        target: {
-          x: start.x + 80 * this.player.worldScale + lab.targetOffsetX,
-          y: start.y + lab.targetOffsetY,
-        },
-      };
-    }
-    const mid = this.spriteCenter(dummy.sprite);
+    const { aim } = this.labFxPoints();
+    const facingLeft = aim.targetX < aim.startX;
     return {
-      start: spawn,
-      target: { x: mid.x + lab.targetOffsetX, y: mid.y + lab.targetOffsetY },
+      start: {
+        x: aim.startX + lab.spawnOffsetX * (facingLeft ? -1 : 1),
+        y: aim.startY + lab.spawnOffsetY,
+      },
+      target: {
+        x: aim.targetX + lab.targetOffsetX,
+        y: aim.targetY + lab.targetOffsetY,
+      },
     };
   }
 

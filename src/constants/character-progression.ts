@@ -11,7 +11,7 @@ import {
 
 export const MAX_CHARACTER_STARS = GAME_LIMITS.absoluteMaxStars;
 
-/** Reexport spec: +2% por estrela e helpers de qualidade. */
+/** Reexport spec: +8% por estrela e helpers de qualidade. */
 export {
   STAR_BONUS_PER_LEVEL,
   FRAGMENTS_PER_STAR,

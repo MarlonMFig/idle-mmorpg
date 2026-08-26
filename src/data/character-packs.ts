@@ -317,20 +317,33 @@ function wonsrOutfitSheet(
  * crescem na tela sem esticar o personagem.
  */
 const NARUTO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
+  /**
+   * Rasengan — frames do rasengan.zip, pés traseiros fixos, contentHeight = idle (81).
+   * Gerado por: node scripts/process-naruto-rasengan-zip.js
+   */
   'skill-rasengan': {
-    key: 'naruto-rasengan',
-    url: '/sprites/player/naruto/rasengan.png',
-    frameWidth: 256,
-    frameHeight: 140,
-    frameCount: 48,
+    key: 'naruto-rasengan-dash',
+    url: '/sprites/player/naruto/rasengan-dash.png',
+    frameWidth: 274,
+    frameHeight: 165,
+    frameCount: 16,
     contentHeight: 81,
     frameRate: 12,
-    durationMs: 4000,
-    hitDelayMs: 2583,
+    durationMs: 1333,
+    hitDelayMs: 750,
+    originX: 0.1898,
+    // Mesmo offset do idle/walk — evita “pulo” vertical no cast.
+    offsetY: 4,
+    element: 'yang',
+    ai: {
+      autoUse: true,
+      priority: 1,
+      energyCost: 22,
+    },
   },
   /**
-   * Chakra da Kyūbi — pose idle + cabeça da raposa atrás do Naruto.
-   * VFX: `kurama-head-fx.png` (sheet do usuário, fundo preto → alpha).
+   * Chakra da Kyūbi — pose idle + aura animada (fogo → cabeça da raposa).
+   * Sheet: `kyuubi.png` (NU). Cabeça estática (`kurama-head-fx`) fica de reserva.
    */
   'skill-kyuubi': {
     key: 'naruto-idle',
@@ -339,13 +352,15 @@ const NARUTO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     frameHeight: 85,
     frameCount: 6,
     contentHeight: 81,
-    frameRate: 8,
-    durationMs: 1800,
-    hitDelayMs: 700,
-    fxReleaseMs: 80,
+    frameRate: 15,
+    // Cobre a folha FX (37f @ 12fps ≈ 3083ms)
+    durationMs: 400,
+    // Cabeça da raposa no pico (~f10)
+    hitDelayMs: 833,
+    fxReleaseMs: 0,
     fxAttach: 'caster',
-    fxGround: false,
-    fxScale: 1.45,
+    fxGround: true,
+    fxScale: 2,
     fxIndependentScale: true,
     castDelayMs: 0,
     targeting: {
@@ -357,17 +372,17 @@ const NARUTO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
       targetOffsetY: 0,
     },
     fx: {
-      key: 'naruto-kurama-head-fx',
-      url: '/sprites/player/naruto/kurama-head-fx.png',
-      frameWidth: 160,
-      frameHeight: 128,
-      frameCount: 12,
-      contentHeight: 128,
-      frameRate: 8,
+      key: 'naruto-kyuubi-fx',
+      url: '/sprites/player/naruto/kyuubi.png',
+      frameWidth: 136,
+      frameHeight: 136,
+      frameCount: 37,
+      contentHeight: 40,
+      frameRate: 12,
       originX: 0.5,
-      originY: 0.88,
+      originY: 1,
       offsetX: 0,
-      offsetY: -18,
+      offsetY: 150,
     },
     element: 'fire',
     ai: {
@@ -375,6 +390,28 @@ const NARUTO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
       priority: 2,
       energyCost: 35,
     },
+    loopMode: 'none',
+    loopUntilSkillEnd: false,
+    flipX: false,
+    flipY: false,
+    cast: {
+      scaleX: 1,
+      scaleY: 1,
+      scale: 1,
+      offsetX: 0,
+      offsetY: 0,
+      loopMode: 'none',
+      loopUntilSkillEnd: false,
+      flipX: false,
+      flipY: false,
+    },
+    vfxLoopMode: 'none',
+    vfxLoopStartFrame: 1,
+    vfxLoopEndFrame: 1,
+    vfxLoopDurationMs: 3000,
+    vfxLoopUntilSkillEnd: false,
+    vfxFlipX: false,
+    vfxFlipY: false,
   },
 };
 
@@ -456,7 +493,12 @@ const NARUTO_PACK: CharacterPack = {
   hurt: NARUTO_HURT,
   death: NARUTO_DEATH,
   skillAnims: NARUTO_JUTSU_ANIMS,
-  hotbarSkillIds: ['skill-rasengan', 'skill-kyuubi'],
+  hotbarSkillIds: [
+    'skill-rasengan',
+    'skill-kyuubi',
+    null,
+    null,
+  ],
 };
 
 const SASUKE_WALK: SpriteSheetDef = {
@@ -693,81 +735,315 @@ const ROCK_LEE_PACK: CharacterPack = {
 };
 
 /**
- * Shikamaru Nara (lookType 1426 / slug WONSR).
- * npm run shikamaru:idle | walk | combo | jutsu | jutsu2 | jutsu2-vfx  (or shikamaru:all)
- * Sources: assets/naruto-source/nu/shikamaru/{idle,walk,combo,jutsu,jutsu2,jutsu2-vfx}/frame_*.png
- * Alpha-only pack (no black/green key).
+ * Shikamaru Nara — G6_Shikamaru NUN5 MUGEN (HQ nativo).
+ * node scripts/process-shikamaru-g6.js
+ * lookType 1426 (WONSR vocation).
  */
 const SHIKAMARU_IDLE: SpriteSheetDef = {
   key: 'shikamaru-idle',
   url: '/sprites/player/shikamaru/idle.png',
-  frameWidth: 97,
-  frameHeight: 175,
-  frameCount: 8,
-  contentHeight: 171,
+  frameWidth: 33,
+  frameHeight: 85,
+  frameCount: 6,
+  contentHeight: 81,
+  originX: 0.515,
+  frameRate: 8,
 };
 
 const SHIKAMARU_WALK: SpriteSheetDef = {
   key: 'shikamaru-walk',
   url: '/sprites/player/shikamaru/walk.png',
-  frameWidth: 84,
-  frameHeight: 176,
+  frameWidth: 65,
+  frameHeight: 68,
   frameCount: 6,
-  contentHeight: 171,
+  contentHeight: 81,
+  originX: 0.385,
+  frameRate: 12,
 };
 
 const SHIKAMARU_COMBO_1: SpriteSheetDef = {
   key: 'shikamaru-combo1',
   url: '/sprites/player/shikamaru/combo1.png',
-  frameWidth: 172,
-  frameHeight: 208,
-  frameCount: 5,
-  contentHeight: 171,
+  frameWidth: 77,
+  frameHeight: 81,
+  frameCount: 4,
+  contentHeight: 81,
+  originX: 0.312,
+  frameRate: 12,
 };
 
 const SHIKAMARU_COMBO_2: SpriteSheetDef = {
   key: 'shikamaru-combo2',
   url: '/sprites/player/shikamaru/combo2.png',
-  frameWidth: 172,
-  frameHeight: 208,
-  frameCount: 5,
-  contentHeight: 171,
+  frameWidth: 70,
+  frameHeight: 82,
+  frameCount: 4,
+  contentHeight: 81,
+  originX: 0.329,
+  frameRate: 12,
 };
 
 const SHIKAMARU_COMBO_3: SpriteSheetDef = {
   key: 'shikamaru-combo3',
   url: '/sprites/player/shikamaru/combo3.png',
-  frameWidth: 172,
-  frameHeight: 208,
-  frameCount: 5,
-  contentHeight: 171,
+  frameWidth: 87,
+  frameHeight: 83,
+  frameCount: 9,
+  contentHeight: 81,
+  originX: 0.437,
+  frameRate: 12,
 };
 
 const SHIKAMARU_ATTACK_CHAIN = [SHIKAMARU_COMBO_1, SHIKAMARU_COMBO_2, SHIKAMARU_COMBO_3] as const;
 
+const SHIKAMARU_HURT: CharacterReactionAnimDef = {
+  key: 'shikamaru-hurt',
+  url: '/sprites/player/shikamaru/hurt.png',
+  frameWidth: 39,
+  frameHeight: 84,
+  frameCount: 3,
+  contentHeight: 81,
+  originX: 0.564,
+  frameRate: 10,
+};
+
+const SHIKAMARU_DEATH: CharacterReactionAnimDef = {
+  key: 'shikamaru-death',
+  url: '/sprites/player/shikamaru/death.png',
+  frameWidth: 87,
+  frameHeight: 45,
+  frameCount: 3,
+  contentHeight: 81,
+  originX: 0.517,
+  frameRate: 8,
+};
+
 /**
- * Kunai Explosiva (npm run shikamaru:jutsu2 + jutsu2-vfx) —
- * body cast + separate FX on target (same pattern as Sasuke Goukakyuu).
+ * Kunai Explosiva — Bakushiki Shojin (G6) corpo + FX explosão/fogo.
+ * node scripts/process-shikamaru-g6.js
  */
 const SHIKAMARU_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
-  // npm run shikamaru:jutsu2 + jutsu2-vfx
   'skill-explosion-kunai': {
     key: 'shikamaru-explosion-kunai',
     url: '/sprites/player/shikamaru/explosion-kunai.png',
-    frameWidth: 155,
-    frameHeight: 182,
-    frameCount: 14,
-    contentHeight: 171,
-    frameRate: 10,
-    durationMs: 1400,
-    hitDelayMs: 812,
+    frameWidth: 73,
+    frameHeight: 81,
+    frameCount: 11,
+    contentHeight: 81,
+    frameRate: 18,
+    durationMs: 611,
+    hitDelayMs: 750,
+    originX: 0.6027,
+    fxReleaseMs: 750,
+    fxAttach: 'target',
+    fxGround: true,
+    fxIndependentScale: true,
+    fxScale: 1.05,
+    fxBlend: 'add',
     fx: {
       key: 'shikamaru-explosion-kunai-fx',
       url: '/sprites/player/shikamaru/explosion-kunai-fx.png',
-      frameWidth: 151,
-      frameHeight: 185,
-      frameCount: 18,
-      contentHeight: 185,
+      frameWidth: 171,
+      frameHeight: 169,
+      frameCount: 12,
+      contentHeight: 165,
+      originX: 0.5,
+      frameRate: 8,
+      offsetX: 0,
+      offsetY: 0,
+    },
+    targeting: {
+      mode: 'instant-target',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
+    },
+    execution: {
+      type: 'area',
+      radius: 200,
+    },
+    element: 'fire',
+    ai: {
+      autoUse: true,
+      priority: 1,
+      energyCost: 40,
+    },
+    offsetX: 0,
+    offsetY: 0,
+    loopMode: 'none',
+    loopUntilSkillEnd: false,
+    flipX: false,
+    flipY: false,
+    cast: {
+      scaleX: 1,
+      scaleY: 1,
+      scale: 1,
+      offsetX: 0,
+      offsetY: 0,
+      loopMode: 'none',
+    },
+    castDelayMs: 0,
+    vfxLoopMode: 'none',
+    vfxLoopStartFrame: 1,
+    vfxLoopEndFrame: 1,
+    vfxLoopDurationMs: 3000,
+    vfxLoopUntilSkillEnd: false,
+    vfxFlipX: false,
+    vfxFlipY: false,
+  },
+  'shikamaru-jutsu-2': {
+    key: 'shikamaru-idle',
+    url: '/sprites/player/shikamaru/idle.png',
+    frameWidth: 33,
+    frameHeight: 85,
+    frameCount: 6,
+    contentHeight: 81,
+    frameRate: 8,
+    offsetX: 0,
+    offsetY: 0,
+    durationMs: 750,
+    hitDelayMs: 280,
+    vfxId: 'jutsu-1',
+    fxScale: 3,
+    vfxOffsetX: 0,
+    vfxOffsetY: 0,
+    vfxLoopMode: 'none',
+    vfxLoopStartFrame: 1,
+    vfxLoopEndFrame: 1,
+    vfxLoopDurationMs: 3000,
+    loopMode: 'none',
+    castDelayMs: 0,
+    targeting: {
+      mode: 'instant-target',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
+    },
+    cast: {
+      scaleX: 1,
+      scaleY: 1,
+      scale: 1,
+      offsetX: 0,
+      offsetY: 0,
+      loopMode: 'none',
+      loopUntilSkillEnd: false,
+      flipX: false,
+      flipY: false,
+    },
+    loopUntilSkillEnd: false,
+    flipX: false,
+    flipY: false,
+    vfxLoopUntilSkillEnd: false,
+    vfxFlipX: false,
+    vfxFlipY: false,
+    element: 'neutral',
+        ai: {
+      autoUse: true,
+      priority: 2,
+      energyCost: 40,
+    },
+  },
+  'shikamaru-jutsu-3': {
+    key: 'shikamaru-frame-001',
+    url: '/sprites/player/shikamaru/poses/frame-001/frame-001.png',
+    frames: ['/sprites/player/shikamaru/poses/frame-001/frame-001.png', '/sprites/player/shikamaru/poses/frame-001/frame-002.png'],
+    frameWidth: 120,
+    frameHeight: 240,
+    frameCount: 2,
+    frameRate: 10,
+    offsetX: 0,
+    offsetY: 0,
+    durationMs: 200,
+    hitDelayMs: 280,
+    vfxId: 'jutsu-3',
+    fxScale: 5.55,
+    vfxOffsetX: 0,
+    vfxOffsetY: 0,
+    vfxLoopMode: 'none',
+    vfxLoopStartFrame: 1,
+    vfxLoopEndFrame: 1,
+    vfxLoopDurationMs: 3000,
+    loopMode: 'none',
+    castDelayMs: 0,
+    targeting: {
+      mode: 'instant-target',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
+    },
+    cast: {
+      scaleX: 0.4,
+      scaleY: 0.4,
+      scale: 0.4,
+      offsetX: 0,
+      offsetY: 0,
+      loopMode: 'none',
+      loopUntilSkillEnd: false,
+      flipX: false,
+      flipY: false,
+    },
+    loopUntilSkillEnd: false,
+    flipX: false,
+    flipY: false,
+    vfxLoopUntilSkillEnd: false,
+    vfxFlipX: false,
+    vfxFlipY: false,
+    element: 'neutral',
+        ai: {
+      autoUse: true,
+      priority: 1,
+      energyCost: 40,
+    },
+  },
+  'shikamaru-jutsu-4': {
+    key: 'shikamaru-frame-001',
+    url: '/sprites/player/shikamaru/poses/frame-001/frame-001.png',
+    frames: [
+      '/sprites/player/shikamaru/poses/frame-001/frame-001.png',
+      '/sprites/player/shikamaru/poses/frame-001/frame-002.png',
+    ],
+    frameWidth: 120,
+    frameHeight: 240,
+    frameCount: 2,
+    frameRate: 10,
+    offsetX: 0,
+    offsetY: 0,
+    durationMs: 200,
+    hitDelayMs: 280,
+    vfxId: 'jutsu-4',
+    fxScale: 4,
+    vfxOffsetX: 0,
+    vfxOffsetY: 0,
+    vfxLoopMode: 'none',
+    vfxLoopStartFrame: 1,
+    vfxLoopEndFrame: 1,
+    vfxLoopDurationMs: 3000,
+    loopMode: 'none',
+    castDelayMs: 0,
+    targeting: {
+      mode: 'instant-target',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
+    },
+    execution: {
+      type: 'area',
+      radius: 1000,
+    },
+    cast: {
+      scaleX: 0.35,
+      scaleY: 0.35,
+      scale: 0.35,
+      offsetX: 0,
+      offsetY: 0,
     },
   },
 };
@@ -778,8 +1054,10 @@ const SHIKAMARU_PACK: CharacterPack = {
   idle: SHIKAMARU_IDLE,
   attack: SHIKAMARU_COMBO_1,
   attackChain: SHIKAMARU_ATTACK_CHAIN,
+  hurt: SHIKAMARU_HURT,
+  death: SHIKAMARU_DEATH,
   skillAnims: SHIKAMARU_JUTSU_ANIMS,
-  hotbarSkillIds: ['skill-explosion-kunai'],
+  hotbarSkillIds: ['skill-explosion-kunai', 'shikamaru-jutsu-2', 'shikamaru-jutsu-3', 'shikamaru-jutsu-4'],
 };
 
 /** lookType WONSR do Shikamaru Nara (vocations). */
@@ -1134,12 +1412,8 @@ const SAKURA_PACK: CharacterPack = {
 };
 
 /**
- * Chouji Akimichi (Part I) — idle + walk + combo + Nikudan Sensha.
- * HQ nativePixels: idle scale=1; walk/combo/jutsu matched to idle contentHeight.
- * npm run chouji:idle — assets/naruto-source/nu/chouji-idle-sheet.png
- * npm run chouji:walk — assets/naruto-source/nu/chouji-walk-sheet.png
- * npm run chouji:combo — assets/naruto-source/nu/chouji-combo-sheet.png
- * npm run chouji:jutsu — seal+spin → nikudan-sensha.png
+ * Chouji Akimichi (Part I / Kid) — NUN5 MUGEN `Choji_Kid` (HQ nativo).
+ * node scripts/process-chouji-kid.js
  * lookType 9004 é identidade client-only.
  */
 export const CHOUJI_CURATED_LOOK_TYPE = 9004;
@@ -1147,65 +1421,171 @@ export const CHOUJI_CURATED_LOOK_TYPE = 9004;
 const CHOUJI_IDLE: SpriteSheetDef = {
   key: 'chouji-idle',
   url: '/sprites/player/chouji/idle.png',
-  frameWidth: 51,
-  frameHeight: 89,
-  frameCount: 17,
-  contentHeight: 85,
+  frameWidth: 35,
+  frameHeight: 60,
+  frameCount: 5,
+  contentHeight: 56,
+  originX: 0.571,
+  frameRate: 8,
 };
 
-/** npm run chouji:walk — 6f side walk RIGHT (body matched to idle contentH). */
 const CHOUJI_WALK: SpriteSheetDef = {
   key: 'chouji-walk',
   url: '/sprites/player/chouji/walk.png',
-  frameWidth: 51,
-  frameHeight: 89,
+  frameWidth: 37,
+  frameHeight: 61,
   frameCount: 6,
-  contentHeight: 85,
+  contentHeight: 56,
+  originX: 0.541,
+  frameRate: 12,
 };
 
-/** npm run chouji:combo — punch(3) + kick(4) + multi-size fist finisher */
 const CHOUJI_COMBO_1: SpriteSheetDef = {
   key: 'chouji-combo1',
   url: '/sprites/player/chouji/combo1.png',
-  frameWidth: 87,
-  frameHeight: 90,
-  frameCount: 3,
-  contentHeight: 85,
+  frameWidth: 48,
+  frameHeight: 60,
+  frameCount: 4,
+  contentHeight: 56,
+  originX: 0.438,
+  frameRate: 12,
 };
 
 const CHOUJI_COMBO_2: SpriteSheetDef = {
   key: 'chouji-combo2',
   url: '/sprites/player/chouji/combo2.png',
-  frameWidth: 87,
-  frameHeight: 90,
-  frameCount: 4,
-  contentHeight: 85,
+  frameWidth: 59,
+  frameHeight: 61,
+  frameCount: 5,
+  contentHeight: 56,
+  originX: 0.424,
+  frameRate: 12,
 };
 
 const CHOUJI_COMBO_3: SpriteSheetDef = {
   key: 'chouji-combo3',
   url: '/sprites/player/chouji/combo3.png',
-  frameWidth: 87,
-  frameHeight: 90,
-  frameCount: 8,
-  contentHeight: 85,
+  frameWidth: 62,
+  frameHeight: 62,
+  frameCount: 12,
+  contentHeight: 56,
+  originX: 0.435,
+  frameRate: 12,
 };
 
 const CHOUJI_ATTACK_CHAIN = [CHOUJI_COMBO_1, CHOUJI_COMBO_2, CHOUJI_COMBO_3] as const;
 
-/** npm run chouji:jutsu — seal→expand→spin (single strip). */
+const CHOUJI_HURT: CharacterReactionAnimDef = {
+  key: 'chouji-hurt',
+  url: '/sprites/player/chouji/hurt.png',
+  frameWidth: 43,
+  frameHeight: 58,
+  frameCount: 3,
+  contentHeight: 56,
+  originX: 0.488,
+  frameRate: 10,
+};
+
+const CHOUJI_DEATH: CharacterReactionAnimDef = {
+  key: 'chouji-death',
+  url: '/sprites/player/chouji/death.png',
+  frameWidth: 59,
+  frameHeight: 57,
+  frameCount: 3,
+  contentHeight: 56,
+  originX: 0.492,
+  frameRate: 8,
+};
+
+/**
+ * Chouji Kid jutsus (NUN5) — melhores VFX do pack:
+ * Nikudan (Baika bola), Chō Harite (mãos 1150), Baika Jishin (quake 1200), Bubun Baika (inflate 1100).
+ */
 const CHOUJI_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-nikudan-sensha': {
     key: 'chouji-nikudan-sensha',
     url: '/sprites/player/chouji/nikudan-sensha.png',
-    frameWidth: 103,
-    frameHeight: 137,
+    frameWidth: 95,
+    frameHeight: 85,
+    frameCount: 26,
+    contentHeight: 56,
+    frameRate: 12,
+    durationMs: 2167,
+    hitDelayMs: 1917,
+    originX: 0.5579,
+    element: 'yang',
+    ai: {
+      autoUse: true,
+      priority: 1,
+      energyCost: 28,
+    },
+  },
+  'skill-chou-harite': {
+    key: 'chouji-chou-harite',
+    url: '/sprites/player/chouji/chou-harite.png',
+    frameWidth: 33,
+    frameHeight: 60,
+    frameCount: 6,
+    contentHeight: 56,
+    frameRate: 12,
+    durationMs: 1000,
+    hitDelayMs: 333,
+    originX: 0.2424,
+    fxReleaseMs: 333,
+    fxAttach: 'target',
+    fxGround: false,
+    fxScale: 1.15,
+    fx: {
+      key: 'chouji-chou-harite-fx',
+      url: '/sprites/player/chouji/chou-harite-fx.png',
+      frameWidth: 161,
+      frameHeight: 143,
+      frameCount: 6,
+      contentHeight: 139,
+      originX: 0.5,
+    },
+    element: 'yang',
+    ai: {
+      autoUse: true,
+      priority: 2,
+      energyCost: 24,
+    },
+  },
+  'skill-baika-jishin': {
+    key: 'chouji-baika-jishin',
+    url: '/sprites/player/chouji/baika-jishin.png',
+    frameWidth: 146,
+    frameHeight: 176,
     frameCount: 25,
-    contentHeight: 85,
+    contentHeight: 56,
     frameRate: 12,
     durationMs: 2083,
-    // Spin starts ~f14 (1083ms); hit near end of roll so dash reaches the target.
-    hitDelayMs: 1833,
+    hitDelayMs: 833,
+    originX: 0.3699,
+    element: 'yang',
+    ai: {
+      autoUse: true,
+      priority: 3,
+      energyCost: 26,
+    },
+  },
+  'skill-bubun-baika': {
+    key: 'chouji-bubun-baika',
+    url: '/sprites/player/chouji/bubun-baika.png',
+    frameWidth: 92,
+    frameHeight: 85,
+    frameCount: 14,
+    contentHeight: 56,
+    frameRate: 12,
+    durationMs: 1167,
+    hitDelayMs: 583,
+    originX: 0.5761,
+    element: 'yang',
+    ai: {
+      autoUse: true,
+      priority: 4,
+      energyCost: 22,
+    },
   },
 };
 
@@ -1215,8 +1595,15 @@ const CHOUJI_PACK: CharacterPack = {
   idle: CHOUJI_IDLE,
   attack: CHOUJI_COMBO_1,
   attackChain: CHOUJI_ATTACK_CHAIN,
+  hurt: CHOUJI_HURT,
+  death: CHOUJI_DEATH,
   skillAnims: CHOUJI_JUTSU_ANIMS,
-  hotbarSkillIds: ['skill-nikudan-sensha'],
+  hotbarSkillIds: [
+    'skill-nikudan-sensha',
+    'skill-chou-harite',
+    'skill-baika-jishin',
+    'skill-bubun-baika',
+  ],
 };
 
 /**

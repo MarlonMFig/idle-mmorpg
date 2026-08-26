@@ -130,8 +130,128 @@ export function suggestHorizontalFrameCount(
 ): number | null {
   if (!(frameWidth > 0) || !(frameHeight > 0)) return null;
   if (imageWidth % frameWidth !== 0) return null;
-  if (frameHeight > imageHeight) return null;
+  if (imageHeight % frameHeight !== 0) return null;
   const cols = imageWidth / frameWidth;
-  if (!Number.isInteger(cols) || cols < 1) return null;
-  return cols;
+  const rows = imageHeight / frameHeight;
+  if (!Number.isInteger(cols) || !Number.isInteger(rows) || cols < 1 || rows < 1) return null;
+  return cols * rows;
+}
+
+export interface SpritesheetLayoutGuess {
+  frameWidth: number;
+  frameHeight: number;
+  frameCount: number;
+  cols: number;
+  rows: number;
+}
+
+function positiveDivisors(n: number): number[] {
+  const out: number[] = [];
+  const limit = Math.floor(Math.sqrt(n));
+  for (let i = 1; i <= limit; i += 1) {
+    if (n % i !== 0) continue;
+    out.push(i);
+    const pair = n / i;
+    if (pair !== i) out.push(pair);
+  }
+  return out.sort((a, b) => a - b);
+}
+
+/**
+ * Infere layout de uma spritesheet completa (fileira L→R, depois linhas).
+ * Prioriza faixas horizontais de frames quadrados (altura = frame) e grids
+ * quadrados; depois tenta divisores comuns da largura com altura = frame.
+ */
+export function detectSpritesheetLayout(
+  imageWidth: number,
+  imageHeight: number,
+): SpritesheetLayoutGuess | null {
+  if (!(imageWidth > 0) || !(imageHeight > 0)) return null;
+
+  const candidates: SpritesheetLayoutGuess[] = [];
+  const push = (frameWidth: number, frameHeight: number) => {
+    const count = suggestHorizontalFrameCount(imageWidth, imageHeight, frameWidth, frameHeight);
+    if (count == null || count < 1) return;
+    if (frameWidth < 16 || frameHeight < 16) return;
+    candidates.push({
+      frameWidth,
+      frameHeight,
+      frameCount: count,
+      cols: imageWidth / frameWidth,
+      rows: imageHeight / frameHeight,
+    });
+  };
+
+  // Sempre candidata: imagem inteira = 1 frame (VFX estático / sheet já cortada).
+  push(imageWidth, imageHeight);
+
+  // 1) Faixa horizontal de frames quadrados (H×H).
+  if (imageWidth % imageHeight === 0 && imageWidth / imageHeight >= 2) {
+    push(imageHeight, imageHeight);
+  }
+  // 2) Coluna vertical de frames quadrados (W×W).
+  if (imageHeight % imageWidth === 0 && imageHeight / imageWidth >= 2) {
+    push(imageWidth, imageWidth);
+  }
+  // 3) Grid de células quadradas (ex.: 4×4).
+  const cellSizes = positiveDivisors(Math.min(imageWidth, imageHeight)).filter((n) => n >= 16);
+  for (let i = cellSizes.length - 1; i >= 0; i -= 1) {
+    push(cellSizes[i], cellSizes[i]);
+  }
+  // 4) Faixa única (altura = frameHeight), largura divide em N frames.
+  for (const cols of positiveDivisors(imageWidth)) {
+    if (cols < 2 || cols > 128) continue;
+    const frameWidth = imageWidth / cols;
+    if (frameWidth < 16) continue;
+    push(frameWidth, imageHeight);
+  }
+
+  if (!candidates.length) {
+    return {
+      frameWidth: imageWidth,
+      frameHeight: imageHeight,
+      frameCount: 1,
+      cols: 1,
+      rows: 1,
+    };
+  }
+
+  const score = (c: SpritesheetLayoutGuess): number => {
+    const aspect = c.frameWidth / Math.max(1, c.frameHeight);
+    const aspectPenalty = aspect < 0.25 || aspect > 4 ? 800 : Math.abs(Math.log(aspect)) * 40;
+    const squareBonus = c.frameWidth === c.frameHeight ? -50 : 0;
+    // Faixa horizontal clássica: altura da imagem = altura do frame.
+    const stripBonus = c.rows === 1 && c.frameHeight === imageHeight && c.frameCount >= 2 ? -120 : 0;
+    const singleRowBonus = c.rows === 1 ? -40 : c.rows > 4 ? 80 : 20;
+    const squareImage = imageWidth === imageHeight;
+    const squareImageGridBonus =
+      squareImage && c.frameWidth === c.frameHeight && c.cols >= 2 && c.rows >= 2 ? -90 : 0;
+    // Quadrado pequeno: quase sempre 1 frame; strip larga: nunca 1 frame.
+    const singleFrameScore =
+      c.frameCount === 1
+        ? squareImage
+          ? -160
+          : imageWidth >= imageHeight * 2
+            ? 300
+            : -20
+        : 0;
+    const countBonus = [4, 5, 6, 8, 10, 12, 14, 16, 18, 20, 24, 32].includes(c.frameCount) ? -35 : 0;
+    const tooMany = c.frameCount > 48 ? (c.frameCount - 48) * 8 : 0;
+    const tinyCell = c.frameWidth < 24 || c.frameHeight < 24 ? 120 : 0;
+    return (
+      aspectPenalty +
+      squareBonus +
+      stripBonus +
+      singleRowBonus +
+      squareImageGridBonus +
+      singleFrameScore +
+      countBonus +
+      tooMany +
+      tinyCell -
+      Math.min(c.frameCount, 24)
+    );
+  };
+
+  candidates.sort((a, b) => score(a) - score(b) || b.frameWidth - a.frameWidth);
+  return candidates[0];
 }

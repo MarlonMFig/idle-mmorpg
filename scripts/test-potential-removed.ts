@@ -45,8 +45,8 @@ const created = buildSealedCharacter({
 assert('nova instância sem potential', !('potential' in created));
 
 const withStars = applyStarBonusToBase({ ...BASE_ATTRIBUTES }, 2);
-assert('estrelas +4% sem potential', Math.abs(withStars.strength - BASE_ATTRIBUTES.strength * 1.04) < 1e-9);
-assert('multiplicador 2★ = 1.04', starAttributeMultiplier(2) === 1.04);
+assert('estrelas +16% sem potential', Math.abs(withStars.strength - BASE_ATTRIBUTES.strength * 1.16) < 1e-9);
+assert('multiplicador 2★ = 1.16', starAttributeMultiplier(2) === 1.16);
 
 const target: EnemyDefinition = {
   id: 'test-itachi-def',

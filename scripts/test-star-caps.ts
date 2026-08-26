@@ -63,11 +63,11 @@ for (const rarity of CHARACTER_QUALITIES) {
 }
 
 assert('+0% em 0★', starAttributeMultiplier(0) === 1);
-assert('+2% em 1★', starAttributeMultiplier(1) === 1.02);
-assert('+4% em 2★', starAttributeMultiplier(2) === 1.04);
-assert('+6% em 3★', starAttributeMultiplier(3) === 1.06);
-assert('+8% em 4★', starAttributeMultiplier(4) === 1.08);
-assert('+10% em 5★', starAttributeMultiplier(5) === 1.1);
+assert('+8% em 1★', starAttributeMultiplier(1) === 1.08);
+assert('+16% em 2★', starAttributeMultiplier(2) === 1.16);
+assert('+24% em 3★', starAttributeMultiplier(3) === 1.24);
+assert('+32% em 4★', starAttributeMultiplier(4) === 1.32);
+assert('+40% em 5★', starAttributeMultiplier(5) === 1.4);
 
 const cases: Array<{ quality: CharacterQuality; from: number; to: number }> = [
   { quality: 'D', from: 0, to: 1 },

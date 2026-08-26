@@ -6,6 +6,7 @@ import {
   CHARACTER_QUALITY_COLORS,
   CHARACTER_QUALITY_LABELS,
   FORGE_MATERIAL_COST_BY_QUALITY,
+  STAR_BONUS_PER_LEVEL,
 } from '@/constants/character-progression';
 import { formatQualityStatMultiplier } from '@/constants/character-quality-stats';
 import { formatMaxStarsReachedMessage, getMaxStarsForRarity } from '@/config/gameConfig';
@@ -294,7 +295,7 @@ export function ForgeTab() {
               <div className="char-forge__stats">
                 <header>
                   <h4>Atributos após a forja</h4>
-                  <span>+2% nos atributos base</span>
+                  <span>+{Math.round(STAR_BONUS_PER_LEVEL * 100)}% nos atributos base</span>
                 </header>
                 <ul>
                   {ATTRIBUTE_ORDER.map((id) => {

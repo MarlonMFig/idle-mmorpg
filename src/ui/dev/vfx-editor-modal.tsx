@@ -7,6 +7,7 @@ import {
   isVfxId,
   naturalNameSort,
   suggestHorizontalFrameCount,
+  detectSpritesheetLayout,
   VFX_FPS_PRESETS,
   VFX_RENDER_LAYER_LABELS,
   VFX_RENDER_LAYERS,
@@ -257,6 +258,22 @@ export function VfxEditorModal({
     return suggestHorizontalFrameCount(image.width, image.height, form.frameWidth, form.frameHeight);
   }, [image, form.frameWidth, form.frameHeight, isSequence]);
 
+  const autoLayout = useMemo(() => {
+    if (!image || isSequence) return null;
+    return detectSpritesheetLayout(image.width, image.height);
+  }, [image, isSequence]);
+
+  const applyDetectedLayout = () => {
+    if (!autoLayout) return;
+    patch({
+      frameWidth: autoLayout.frameWidth,
+      frameHeight: autoLayout.frameHeight,
+      frameCount: autoLayout.frameCount,
+    });
+    setRestartToken((n) => n + 1);
+    setPlaying(true);
+  };
+
   const mixedSizes = useMemo(() => sequenceMixedSizes(sequence), [sequence]);
 
   const duration = form.frameRate > 0 ? form.frameCount / form.frameRate : 0;
@@ -316,12 +333,73 @@ export function VfxEditorModal({
     setRestartToken((n) => n + 1);
   };
 
+  const importGifFile = async (file: File, modeAdd: 'replace' | 'append') => {
+    const idCandidate = isVfxId(form.id) ? form.id : slugify(form.name || file.name.replace(/\.[^.]+$/, ''));
+    if (!isVfxId(idCandidate)) {
+      throw new Error('Defina Nome/ID (kebab-case) antes de importar o GIF.');
+    }
+    if (!idLocked) {
+      patch({ id: idCandidate, name: form.name || file.name.replace(/\.[^.]+$/, '') });
+    }
+
+    const body = new FormData();
+    body.set('file', file);
+    body.set('universe', form.universe);
+    body.set('vfxId', idCandidate);
+    body.set('sourceType', 'gif');
+    if (modeAdd === 'append') body.set('append', '1');
+    const res = await fetch('/api/dev/vfx/import', { method: 'POST', body });
+    const json = (await res.json()) as {
+      ok?: boolean;
+      error?: string;
+      frames?: string[];
+      frameCount?: number;
+      frameRate?: number;
+      vfxId?: string;
+      image?: { width: number; height: number };
+    };
+    if (!res.ok || !json.ok || !json.frames?.length) {
+      throw new Error(json.error ?? 'Falha ao importar o GIF.');
+    }
+
+    const items = await Promise.all(
+      json.frames.map((url, index) =>
+        readUrlImage(url, `frame-${String(index + 1).padStart(3, '0')}.png`),
+      ),
+    );
+    const next = modeAdd === 'append' ? [...sequence, ...items] : items;
+    if (modeAdd === 'replace') revokeItems(sequence);
+    setSequence(next);
+    const first = next[0];
+    patch({
+      id: json.vfxId ?? idCandidate,
+      sourceType: 'sequence',
+      frames: next.map((item) => item.publicUrl).filter((url): url is string => Boolean(url)),
+      url: first?.publicUrl || form.url,
+      frameCount: next.length,
+      frameWidth: first?.width || json.image?.width || form.frameWidth,
+      frameHeight: first?.height || json.image?.height || form.frameHeight,
+      frameRate: json.frameRate ?? form.frameRate,
+    });
+    setIdLocked(true);
+    setPlaying(true);
+    setRestartToken((n) => n + 1);
+  };
+
   const importFiles = async (files: File[], modeAdd: 'replace' | 'append') => {
     if (files.length < 1) return;
     setIsSavingVfx(true);
     setError(null);
     try {
       const sorted = [...files].sort((a, b) => naturalNameSort(a.name, b.name));
+      const gifs = sorted.filter((file) => /\.gif$/i.test(file.name));
+      if (gifs.length > 0) {
+        if (sorted.length !== 1 || gifs.length !== 1) {
+          throw new Error('Importe um GIF por vez (ou use vários PNG/WEBP).');
+        }
+        await importGifFile(gifs[0], modeAdd);
+        return;
+      }
       if (isSequence || sorted.length > 1) {
         const items = await Promise.all(sorted.map((file) => readFileImage(file)));
         applySequenceItems(items, modeAdd);
@@ -352,7 +430,14 @@ export function VfxEditorModal({
         url?: string;
         fileName?: string;
         error?: string;
-        image?: { width: number; height: number };
+        image?: { width: number; height: number; suggestedFrameCount?: number | null };
+        layout?: {
+          frameWidth: number;
+          frameHeight: number;
+          frameCount: number;
+          cols: number;
+          rows: number;
+        } | null;
       };
       if (res.status === 409 && json.exists) {
         setConflict({ url: json.url ?? '', fileName: json.fileName ?? file.name });
@@ -364,8 +449,28 @@ export function VfxEditorModal({
       }
       setConflict(null);
       setPendingFile(null);
-      patch({ url: json.url, sourceType: 'spritesheet' });
-      if (json.image) setImage({ ...json.image, suggestedFrameCount: null });
+      const layout =
+        json.layout ??
+        (json.image ? detectSpritesheetLayout(json.image.width, json.image.height) : null);
+      patch({
+        url: json.url,
+        sourceType: 'spritesheet',
+        ...(layout
+          ? {
+              frameWidth: layout.frameWidth,
+              frameHeight: layout.frameHeight,
+              frameCount: layout.frameCount,
+            }
+          : {}),
+      });
+      if (json.image) {
+        setImage({
+          ...json.image,
+          suggestedFrameCount: layout?.frameCount ?? json.image.suggestedFrameCount ?? null,
+        });
+      }
+      setPlaying(true);
+      setRestartToken((n) => n + 1);
       void fetch('/api/dev/vfx/assets')
         .then(async (r) => (await r.json()) as { items?: typeof assets })
         .then((data) => setAssets(data.items ?? []));
@@ -622,7 +727,7 @@ export function VfxEditorModal({
             <input
               type="file"
               multiple
-              accept="image/png,image/webp"
+              accept="image/png,image/webp,image/gif,.gif"
               disabled={isSavingVfx}
               onChange={(event) => {
                 const files = event.target.files ? Array.from(event.target.files) : [];
@@ -637,7 +742,7 @@ export function VfxEditorModal({
               <input
                 type="file"
                 multiple
-                accept="image/png,image/webp"
+                accept="image/png,image/webp,image/gif,.gif"
                 disabled={isSavingVfx}
                 onChange={(event) => {
                   const files = event.target.files ? Array.from(event.target.files) : [];
@@ -649,16 +754,39 @@ export function VfxEditorModal({
           ) : null}
           {suggested != null && suggested !== form.frameCount ? (
             <button type="button" onClick={() => patch({ frameCount: suggested })}>
-              Sugerir {suggested} frames
+              Usar {suggested} frames (com W/H atuais)
+            </button>
+          ) : null}
+          {autoLayout &&
+          (autoLayout.frameWidth !== form.frameWidth ||
+            autoLayout.frameHeight !== form.frameHeight ||
+            autoLayout.frameCount !== form.frameCount) ? (
+            <button type="button" onClick={applyDetectedLayout}>
+              Detectar sheet ({autoLayout.cols}×{autoLayout.rows} · {autoLayout.frameCount} frames ·{' '}
+              {autoLayout.frameWidth}×{autoLayout.frameHeight})
             </button>
           ) : null}
         </div>
+
+        {!isSequence ? (
+          <p className="character-lab__hint">
+            Importe spritesheet (PNG/WEBP) ou GIF animado. O GIF vira sequência de frames (FPS do
+            delay). Sheet estática: o editor detecta colunas×linhas. Se a grade errar, use Detectar
+            sheet.
+          </p>
+        ) : (
+          <p className="character-lab__hint">
+            Sequência: vários PNG/WEBP, ou um GIF animado (extraído frame a frame).
+          </p>
+        )}
 
         {isSequence ? (
           <details className="vfx-editor__frames" open>
             <summary>Frames importados: {sequence.length}</summary>
             {sequence.length === 0 ? (
-              <p className="character-lab__hint">Selecione vários PNGs de uma vez no explorador do Windows.</p>
+              <p className="character-lab__hint">
+                Selecione vários PNGs/WEBPs ou um GIF animado.
+              </p>
             ) : (
               <ol className="vfx-editor__frame-list">
                 {sequence.map((item, index) => (
@@ -716,13 +844,25 @@ export function VfxEditorModal({
           <NumField
             label="Frame Width"
             value={form.frameWidth}
-            onChange={(value) => patch({ frameWidth: value })}
+            onChange={(value) => {
+              const frameWidth = Math.max(1, Math.round(value));
+              const count = image
+                ? suggestHorizontalFrameCount(image.width, image.height, frameWidth, form.frameHeight)
+                : null;
+              patch({ frameWidth, ...(count != null ? { frameCount: count } : {}) });
+            }}
             disabled={isSequence}
           />
           <NumField
             label="Frame Height"
             value={form.frameHeight}
-            onChange={(value) => patch({ frameHeight: value })}
+            onChange={(value) => {
+              const frameHeight = Math.max(1, Math.round(value));
+              const count = image
+                ? suggestHorizontalFrameCount(image.width, image.height, form.frameWidth, frameHeight)
+                : null;
+              patch({ frameHeight, ...(count != null ? { frameCount: count } : {}) });
+            }}
             disabled={isSequence}
           />
           <NumField

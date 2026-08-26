@@ -15,6 +15,7 @@ export {
   isVfxUniverse,
   naturalNameSort,
   resolveVfxRenderLayer,
+  detectSpritesheetLayout,
   suggestHorizontalFrameCount,
   universeFolder,
   VFX_FPS_PRESETS,

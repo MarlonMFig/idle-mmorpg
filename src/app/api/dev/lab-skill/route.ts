@@ -198,17 +198,19 @@ export async function POST(request: Request) {
       let catalogFile: string | undefined;
 
       if (!existingId) {
+        // Elemento entra no insert. Um 2º write via patchLabVisualSkillElement lia o
+        // disco ainda sem a skill e sobrescrevia o catálogo (sumia ao F5).
         skill = buildVisualSkillDefinition(String(body.id ?? ''), String(body.name ?? ''));
+        if (changes.element) skill = { ...skill, element: changes.element };
         skillId = skill.id;
         const catalog = insertLabVisualSkill(skill, { persist: false });
         catalogFile = catalog.relativePath;
         writeDevSourceAfterResponse(catalog.absPath, catalog.source);
-      }
-
-      if (changes.element && skill) {
-        skill = { ...skill, element: changes.element };
-        if (skill.developmentStatus === 'visual-test') {
-          const catalog = patchLabVisualSkillElement(skill.id, changes.element, { persist: false });
+      } else if (changes.element) {
+        const catalog = patchLabVisualSkillElement(existingId, changes.element, { persist: false });
+        const idToken = `id: '${existingId}'`;
+        const idTokenAlt = `id: "${existingId}"`;
+        if (catalog.source.includes(idToken) || catalog.source.includes(idTokenAlt)) {
           catalogFile = catalog.relativePath;
           writeDevSourceAfterResponse(catalog.absPath, catalog.source);
         }

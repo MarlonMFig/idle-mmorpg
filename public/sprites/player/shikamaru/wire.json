@@ -1,0 +1,117 @@
+{
+  "id": "shikamaru",
+  "name": "Shikamaru Nara (G6)",
+  "lookType": 1426,
+  "contentHeight": 81,
+  "idle": {
+    "image": "/sprites/player/shikamaru/idle.png",
+    "frameWidth": 33,
+    "frameHeight": 85,
+    "frameCount": 6,
+    "contentHeight": 81,
+    "scale": 1,
+    "originX": 0.5151515151515151,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/shikamaru/walk.png",
+    "frameWidth": 65,
+    "frameHeight": 68,
+    "frameCount": 6,
+    "contentHeight": 81,
+    "scale": 1,
+    "originX": 0.38461538461538464,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/shikamaru/combo1.png",
+      "frameWidth": 77,
+      "frameHeight": 81,
+      "frameCount": 4,
+      "contentHeight": 81,
+      "scale": 1,
+      "originX": 0.3116883116883117,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/shikamaru/combo2.png",
+      "frameWidth": 70,
+      "frameHeight": 82,
+      "frameCount": 4,
+      "contentHeight": 81,
+      "scale": 1,
+      "originX": 0.32857142857142857,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/shikamaru/combo3.png",
+      "frameWidth": 87,
+      "frameHeight": 83,
+      "frameCount": 9,
+      "contentHeight": 81,
+      "scale": 1,
+      "originX": 0.4367816091954023,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/shikamaru/hurt.png",
+    "frameWidth": 39,
+    "frameHeight": 84,
+    "frameCount": 3,
+    "contentHeight": 81,
+    "scale": 1,
+    "originX": 0.5641025641025641,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/shikamaru/death.png",
+    "frameWidth": 87,
+    "frameHeight": 45,
+    "frameCount": 3,
+    "contentHeight": 81,
+    "scale": 1,
+    "originX": 0.5172413793103449,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-explosion-kunai",
+      "skillName": "Kunai Explosiva",
+      "file": "explosion-kunai",
+      "entry": {
+        "image": "/sprites/player/shikamaru/explosion-kunai.png",
+        "frameWidth": 73,
+        "frameHeight": 81,
+        "frameCount": 11,
+        "contentHeight": 81,
+        "originX": 0.6027,
+        "frameRate": 8,
+        "durationMs": 1375,
+        "hitDelayMs": 750,
+        "scale": 1,
+        "nativePixels": true,
+        "feetFixed": true,
+        "source": "G6_Shikamaru Bakushiki Shojin 1200",
+        "note": "Kunai Explosiva corpo HQ @8fps"
+      },
+      "fx": {
+        "image": "/sprites/player/shikamaru/explosion-kunai-fx.png",
+        "frameWidth": 171,
+        "frameHeight": 169,
+        "frameCount": 12,
+        "contentHeight": 165,
+        "originX": 0.5,
+        "frameRate": 8,
+        "durationMs": 1500,
+        "hitDelayMs": 0,
+        "scale": 1,
+        "nativePixels": true,
+        "source": "G6_Shikamaru 1260/1270 (9007+9026)",
+        "note": "Kunai Explosiva VFX explosão+fogo HQ"
+      },
+      "index": 0
+    }
+  ]
+}

@@ -5,6 +5,10 @@ import {
   PLAYER_ATTACK_RANGE,
   PLAYER_JUTSU_GAP_MS,
 } from '@/constants/combat';
+import {
+  COMPANION_BASIC_ATTACK_FLAT,
+  SKILL_ATTACK_ATK_FACTOR,
+} from '@/constants/combat-damage';
 import { isSkillCooldownIgnored, scaleOutgoingDamage } from '@/config/devConfig';
 import { SKILL_DEFAULT_RANGE } from '@/constants/skill';
 import { BASIC_ATTACK_ELEMENT, resolveSkillElement, type DamageElement } from '@/data/damage-elements';
@@ -442,7 +446,7 @@ export class TeamCompanionSystem {
       Decimal.max(
         d(1),
         d(skill.damage)
-          .add(getEffectiveCombatStats(unitId).attack.mul(0.35))
+          .add(getEffectiveCombatStats(unitId).attack.mul(SKILL_ATTACK_ATK_FACTOR))
           .mul(COMPANION_DAMAGE_FACTOR)
           .mul(impact.multiplier)
           .floor(),
@@ -531,7 +535,9 @@ export class TeamCompanionSystem {
     this.scene.time.delayedCall(hitDelay, () => {
       if (!target.isAlive) return;
       const damage = scaleOutgoingDamage(
-        d(5).add(getEffectiveCombatStats(unitId).attack.mul(COMPANION_DAMAGE_FACTOR).floor()),
+        d(COMPANION_BASIC_ATTACK_FLAT).add(
+          getEffectiveCombatStats(unitId).attack.mul(COMPANION_DAMAGE_FACTOR).floor(),
+        ),
       );
       if (this.damageEnemy(target, damage, unitId)) {
         this.energyFor(companion.id).gainFromBasicHit(1);

@@ -1,11 +1,16 @@
 {
   "naruto-rasengan-dash": {
     "image": "/sprites/player/naruto/rasengan-dash.png",
-    "frameWidth": 68,
-    "frameHeight": 64,
-    "frameCount": 14,
-    "contentHeight": 37,
-    "source": "rasengan-dash.png"
+    "frameWidth": 274,
+    "frameHeight": 165,
+    "frameCount": 16,
+    "contentHeight": 81,
+    "originX": 0.1898,
+    "frameRate": 12,
+    "durationMs": 1333,
+    "hitDelayMs": 750,
+    "source": "rasengan.zip",
+    "feetFixed": true
   },
   "naruto-sexy-jutsu": {
     "image": "/sprites/player/naruto/sexy-jutsu.png",
@@ -21,7 +26,8 @@
     "frameHeight": 136,
     "frameCount": 37,
     "contentHeight": 40,
-    "source": "kyuubi.png"
+    "source": "kyuubi.png",
+    "frameRate": 12
   },
   "naruto-idle": {
     "image": "/sprites/player/naruto/idle.png",
@@ -110,18 +116,17 @@
     "scale": 1
   },
   "skill-rasengan": {
-    "image": "/sprites/player/naruto/rasengan.png",
-    "frameWidth": 256,
-    "frameHeight": 140,
-    "frameCount": 48,
+    "image": "/sprites/player/naruto/rasengan-dash.png",
+    "frameWidth": 274,
+    "frameHeight": 165,
+    "frameCount": 16,
     "contentHeight": 81,
-    "scale": 1,
+    "originX": 0.1898,
     "frameRate": 12,
-    "durationMs": 4000,
-    "hitDelayMs": 2583,
-    "residualGreen": 0,
-    "pureBlack": 34342,
-    "originX": 0.54296875
+    "durationMs": 1333,
+    "hitDelayMs": 750,
+    "source": "rasengan.zip",
+    "feetFixed": true
   },
   "naruto-kurama-head-fx": {
     "image": "/sprites/player/naruto/kurama-head-fx.png",
@@ -133,6 +138,16 @@
     "originX": 0.5,
     "originY": 0.88
   },
+  "naruto-kyuubi-fx": {
+    "image": "/sprites/player/naruto/kyuubi.png",
+    "frameWidth": 136,
+    "frameHeight": 136,
+    "frameCount": 37,
+    "contentHeight": 40,
+    "frameRate": 12,
+    "originX": 0.5,
+    "originY": 1
+  },
   "skill-kyuubi": {
     "image": "/sprites/player/naruto/idle.png",
     "frameWidth": 61,
@@ -140,8 +155,8 @@
     "frameCount": 6,
     "contentHeight": 81,
     "frameRate": 8,
-    "durationMs": 1800,
-    "hitDelayMs": 700,
-    "fx": "/sprites/player/naruto/kurama-head-fx.png"
+    "durationMs": 3100,
+    "hitDelayMs": 833,
+    "fx": "/sprites/player/naruto/kyuubi.png"
   }
 }

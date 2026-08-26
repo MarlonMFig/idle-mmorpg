@@ -13,7 +13,8 @@ export const CHARACTER_SKILL_LEVELS = [1, 5, 15, 30] as const;
  */
 export const FORCE_ALL_SKILLS_LEVEL_1 = shouldForceAllSkillsLevel1();
 export const CHARACTER_SKILL_COOLDOWNS_MS = [5500, 7000, 9000, 12000] as const;
-export const CHARACTER_SKILL_DAMAGE = [24, 36, 58, 88] as const;
+/** Flats por slot (1–4). Com SKILL_ATTACK_ATK_FACTOR, jutsus ficam acima do básico. */
+export const CHARACTER_SKILL_DAMAGE = [36, 54, 80, 120] as const;
 export const CHARACTER_SKILL_AREA_RADIUS = 96;
 
 /** Alcance padrão se a skill não definir `range`. */

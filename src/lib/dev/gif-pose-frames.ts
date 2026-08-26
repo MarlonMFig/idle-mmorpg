@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { padImagesToCommonCanvas } from '@/lib/dev/pad-sequence-frames';
+import { padImagesToCommonCanvas, type SequencePadAlign } from '@/lib/dev/pad-sequence-frames';
 
 function averageDelayMs(delay: number[] | number | undefined): number {
   if (typeof delay === 'number' && delay > 0) return delay;
@@ -16,8 +16,12 @@ export function frameRateFromGifDelay(delay: number[] | number | undefined): num
 /**
  * Extrai cada página do GIF como PNG (mesmo tamanho).
  * Phaser não toca GIF animado; o lab grava sequência de frames.
+ * `align`: pose usa `feet`; VFX usa `center`.
  */
-export async function gifBufferToPngFrames(buffer: Buffer): Promise<{
+export async function gifBufferToPngFrames(
+  buffer: Buffer,
+  align: SequencePadAlign = 'feet',
+): Promise<{
   frames: Buffer[];
   width: number;
   height: number;
@@ -60,7 +64,7 @@ export async function gifBufferToPngFrames(buffer: Buffer): Promise<{
     frames.push(png);
   }
 
-  const padded = await padImagesToCommonCanvas(frames, 'feet');
+  const padded = await padImagesToCommonCanvas(frames, align);
   return {
     frames: padded.buffers,
     width: padded.width,

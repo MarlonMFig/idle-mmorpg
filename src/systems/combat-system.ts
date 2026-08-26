@@ -6,6 +6,11 @@ import {
   PLAYER_DEATH_RESPAWN_MS,
   PLAYER_JUTSU_GAP_MS,
 } from '@/constants/combat';
+import {
+  BASIC_ATTACK_ATK_FACTOR,
+  BASIC_ATTACK_FLAT,
+  SKILL_ATTACK_ATK_FACTOR,
+} from '@/constants/combat-damage';
 import { isSkillCooldownIgnored, scaleOutgoingDamage } from '@/config/devConfig';
 import { characterLabStore, isLabBlockingHuntGameplay } from '@/stores/character-lab-store';
 import { SKILL_DEFAULT_RANGE } from '@/constants/skill';
@@ -193,7 +198,9 @@ export class CombatSystem {
       characterLabStore.pushEvent('hit applied');
       if (!target?.isAlive) return;
       const damage = scaleOutgoingDamage(
-        d(8).add(getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).attack.mul(0.85).floor()),
+        d(BASIC_ATTACK_FLAT).add(
+          getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).attack.mul(BASIC_ATTACK_ATK_FACTOR).floor(),
+        ),
       );
       if (this.hitEnemy(target, damage, PLAYER_STATUS_UNIT_ID)) {
         combatEnergyStore.gainFromBasicHit(1);
@@ -477,7 +484,9 @@ export class CombatSystem {
       const dropY = target.sprite.y;
       this.vfx.playComboHit(dropX, dropY, this.player.sprite.scaleX * 0.95);
       const damage = scaleOutgoingDamage(
-        d(8).add(getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).attack.mul(0.85).floor()),
+        d(BASIC_ATTACK_FLAT).add(
+          getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).attack.mul(BASIC_ATTACK_ATK_FACTOR).floor(),
+        ),
       );
       // Item 41: Energia só no hit confirmado de Basic Attack (applyDirectDamage true).
       if (this.hitEnemy(target, damage, PLAYER_STATUS_UNIT_ID)) {
@@ -624,7 +633,7 @@ export class CombatSystem {
       Decimal.max(
         d(0),
         d(skill.damage)
-          .add(getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).attack.mul(0.35).floor())
+          .add(getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).attack.mul(SKILL_ATTACK_ATK_FACTOR).floor())
           .mul(impact.multiplier)
           .floor(),
       ),

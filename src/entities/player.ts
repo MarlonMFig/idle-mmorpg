@@ -445,6 +445,7 @@ export class Player {
     );
     return {
       ...overlayed,
+      castDelayMs: Math.max(0, Math.round(lab.castDelayMs)),
       execution: lab.execution,
       statusEffects: cloneSkillStatusEffects(lab.statusEffects),
       element: lab.skillElement,

@@ -13,7 +13,7 @@ import {
   toPublicPlayerUrl,
   wipePoseSequenceImages,
 } from '@/lib/dev/player-sprite-paths';
-import { naturalNameSort, suggestHorizontalFrameCount } from '@/data/vfx/types';
+import { naturalNameSort, suggestHorizontalFrameCount, detectSpritesheetLayout } from '@/data/vfx/types';
 
 function deny() {
   return NextResponse.json({ error: 'forbidden' }, { status: 403 });
@@ -110,7 +110,9 @@ export async function POST(request: Request) {
         key: `${characterId}-${stem}`,
         fileName: path.basename(dest),
         image: size,
-        suggestedFrameCount: suggestHorizontalFrameCount(size.width, size.height, size.height, size.height),
+        suggestedFrameCount: suggestHorizontalFrameCount(size.width, size.height, size.height, size.height) ??
+          detectSpritesheetLayout(size.width, size.height)?.frameCount ??
+          1,
         frameRate: 12,
       });
     }

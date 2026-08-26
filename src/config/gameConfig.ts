@@ -20,7 +20,7 @@ export const RARITIES: Record<
 };
 
 export const STAR_RULES = {
-  /** Teto oficial por raridade. Bônus continua +2% por estrela. */
+  /** Teto oficial por raridade. Bônus continua +8% por estrela. */
   maxByRarity: {
     D: 2,
     C: 2,
@@ -43,7 +43,8 @@ export const STAR_RULES = {
 } as const;
 
 export const STAR_BONUSES = {
-  perStar: 0.02,
+  /** +8% nos atributos base por estrela (0★ = base, 5★ = +40%). */
+  perStar: 0.08,
 } as const;
 
 export interface XpStageBand {
