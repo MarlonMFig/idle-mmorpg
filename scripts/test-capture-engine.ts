@@ -1,6 +1,6 @@
 import { DEV_FLAGS } from '../src/config/devConfig';
 import { clampCaptureChance, CAPTURE_INITIAL_LEVEL, CAPTURE_INITIAL_STARS, CAPTURE_INITIAL_XP } from '../src/constants/capture';
-import { SEALING_SCROLL_ITEM_ID, SEALING_SCROLL_TIERS, SEAL_SUCCESS_CHANCE } from '../src/constants/sealing';
+import { SEALING_SCROLL_ITEM_ID, SEALING_SCROLL_TIERS } from '../src/constants/sealing';
 import { MAP_KEYS } from '../src/maps/map-registry';
 import { onCharacterCaptured } from '../src/lib/capture-events';
 import { inventoryStore } from '../src/stores/inventory-store';
@@ -42,6 +42,7 @@ const TARGET: EnemyDefinition = {
     lookType: 1,
     level: 1,
     quality: 'D',
+    captureTier: 'comum',
   },
 };
 
@@ -82,9 +83,20 @@ assert('clamp 0.9', clampCaptureChance(0.9) === 0.9);
 const scroll = getSealingScrollConfig(SEALING_SCROLL_ITEM_ID);
 const chance = getCaptureChance(TARGET, scroll);
 assert('alvo common usa raridade D', chance.quality === 'D');
-assert('chance common = pergaminho 90%', chance.finalChance === SEAL_SUCCESS_CHANCE);
-assert('base = scroll', chance.baseChance === SEAL_SUCCESS_CHANCE);
+assert('chance comum + básico = 60%', chance.finalChance === 0.6);
+assert('base = 60%', chance.baseChance === 0.6);
 assert('rarity modifier 1 no common', chance.rarityModifier === 1);
+assert(
+  'nível alto sem perfil vira chefe',
+  getCaptureChance(
+    {
+      ...TARGET,
+      level: 400,
+      sealable: { ...TARGET.sealable!, level: 400, captureTier: undefined },
+    },
+    scroll,
+  ).finalChance === 0.06,
+);
 
 setup(0);
 const noScroll = attemptCapture({ target: TARGET, source: 'manual', attemptKey: 'k-empty' });
@@ -115,8 +127,9 @@ withOfficialProgress(() => {
     attemptKey: 'k-fail',
     rng: () => 0,
   });
-  assert('segunda tentativa no mesmo cadáver', retry.success && retry.scrollConsumed);
-  assert('sucesso na 2ª tenta', inventoryStore.countItem(SEALING_SCROLL_ITEM_ID) === 6);
+  assert('segunda no mesmo cadáver recusada', retry.reason === 'already-resolved');
+  assert('2ª não consome', !retry.scrollConsumed);
+  assert('estoque igual após recusa', inventoryStore.countItem(SEALING_SCROLL_ITEM_ID) === 7);
 
   let events = 0;
   const off = onCharacterCaptured(() => {
@@ -139,7 +152,7 @@ withOfficialProgress(() => {
   assert('sucesso 1', ok1.success && ok1.capturedCharacter != null);
   assert('sucesso 2 (helper)', ok2.success && ok2.capturedCharacter != null);
   assert('nível inicial 1', ok1.capturedCharacter!.level === CAPTURE_INITIAL_LEVEL);
-  assert('xp inicial 0', ok1.capturedCharacter!.xp === CAPTURE_INITIAL_XP);
+  assert('xp inicial 0', ok1.capturedCharacter!.xp.eq(CAPTURE_INITIAL_XP));
   assert('estrelas iniciais 0', ok1.capturedCharacter!.stars === CAPTURE_INITIAL_STARS);
   assert('quality preservada D', ok1.capturedCharacter!.quality === 'D');
   assert('mesmo characterId', ok1.capturedCharacter!.characterId === ok2.capturedCharacter!.characterId);
@@ -178,7 +191,7 @@ const batch = simulateCaptureBatch(TARGET, SEALING_SCROLL_ITEM_ID, 100, () => 0.
 assert('simulação 100 não consome', inventoryStore.countItem(SEALING_SCROLL_ITEM_ID) === simScrolls);
 assert('simulação 100 não altera coleção', teamStore.getSnapshot().collection.length === simSize);
 assert('simulação conta tentativas', batch.success + batch.failure === 100);
-assert('expected rate = 0.9', batch.expectedRate === SEAL_SUCCESS_CHANCE);
+assert('expected rate = 0.6', batch.expectedRate === 0.6);
 
 const legacy = normalizeSealedCharacter({
   id: 'stable-legacy-id',

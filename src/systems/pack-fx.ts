@@ -24,6 +24,7 @@ export interface PackFxOptions {
   blend?: 'normal' | 'add';
   scaleMult?: number;
   originX?: number;
+  originY?: number;
   offsetX?: number;
   offsetY?: number;
   independentScale?: boolean;
@@ -144,7 +145,9 @@ function bodyLiftOf(caster: Player): number {
  * segue o `layoutScale` do mapa — nasce centrado nos pés e some no chão.
  */
 function clampAboveFloor(fx: Phaser.GameObjects.Sprite, feetY: number, bodyLift: number): void {
-  const maxCenterY = feetY + bodyLift * 0.1 - fx.displayHeight / 2;
+  if (fx.displayHeight > bodyLift * 1.2) return;
+  const belowOrigin = fx.displayHeight * (1 - fx.originY);
+  const maxCenterY = feetY + bodyLift * 0.1 - belowOrigin;
   fx.y = Math.min(fx.y, maxCenterY);
 }
 
@@ -239,11 +242,12 @@ export function playPackFx(
   // caster, senão o jato nasce nas costas quando ele olha para a esquerda.
   const facingLeft = caster.sprite.flipX;
   const originX = opts?.originX ?? 0.5;
+  const originY = opts?.originY ?? (ground ? 1 : 0.5);
   const offsetX = (opts?.offsetX ?? 0) * (facingLeft ? -1 : 1);
   const offsetY = opts?.offsetY ?? 0;
   fx.x += offsetX;
   fx.y += offsetY;
-  fx.setOrigin(facingLeft ? 1 - originX : originX, ground ? 1 : 0.5);
+  fx.setOrigin(facingLeft ? 1 - originX : originX, originY);
   fx.setFlipX(Boolean(facingLeft) !== Boolean(opts?.flipX));
   fx.setFlipY(Boolean(opts?.flipY));
   applyFxDepth(fx, fx.y, opts?.vfxId, opts?.renderLayer);
@@ -758,8 +762,9 @@ function scheduleLegacyPrimary(
 
   const releaseAt = anim.fxReleaseMs ?? Math.max(0, hitDelay - 80);
   const attach = anim.fxAttach ?? 'target';
-  const fxX = attach === 'caster' ? from.x : to.x;
-  const fxY = attach === 'caster' ? from.y : to.y;
+  const resolved = resolveAim(anim, aim, from, to);
+  const fxX = attach === 'caster' ? resolved.spawnX : to.x;
+  const fxY = attach === 'caster' ? resolved.spawnY : to.y;
   labDelay(scene, releaseAt, () => {
     playPackFx(scene, caster, anim.fx!.key, fxX, fxY, {
       ground: anim.fxGround ?? attach === 'caster',
@@ -767,6 +772,7 @@ function scheduleLegacyPrimary(
       fxH: anim.fx!.contentHeight ?? anim.fx!.frameHeight,
       scaleMult: anim.fxScale,
       originX: anim.fx!.originX,
+      originY: anim.fx!.originY,
       offsetX: anim.fx!.offsetX,
       offsetY: anim.fx!.offsetY,
       independentScale: anim.fxIndependentScale,
@@ -844,12 +850,14 @@ export function scheduleSkillFx(
   } else if (anim.fx && mode === 'caster') {
     const releaseAt = anim.fxReleaseMs ?? Math.max(0, hitDelay - 80);
     labDelay(scene, releaseAt, () => {
-      playPackFx(scene, caster, anim.fx!.key, from.x, from.y, {
+      const resolved = resolveAim(anim, aim, from, to);
+      playPackFx(scene, caster, anim.fx!.key, resolved.spawnX, resolved.spawnY, {
         ground: anim.fxGround ?? true,
         bodyH: anim.contentHeight,
         fxH: anim.fx!.contentHeight ?? anim.fx!.frameHeight,
         scaleMult: anim.fxScale,
         originX: anim.fx!.originX,
+        originY: anim.fx!.originY,
         offsetX: anim.fx!.offsetX,
         offsetY: anim.fx!.offsetY,
         independentScale: anim.fxIndependentScale,

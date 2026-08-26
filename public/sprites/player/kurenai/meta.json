@@ -1,0 +1,150 @@
+{
+  "kurenai-combo1": {
+    "image": "/sprites/player/kurenai/combo1.png",
+    "frameWidth": 77,
+    "frameHeight": 69,
+    "frameCount": 4,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.3246753246753247,
+    "frameRate": 12
+  },
+  "kurenai-combo2": {
+    "image": "/sprites/player/kurenai/combo2.png",
+    "frameWidth": 66,
+    "frameHeight": 69,
+    "frameCount": 4,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.3181818181818182,
+    "frameRate": 12
+  },
+  "kurenai-combo3": {
+    "image": "/sprites/player/kurenai/combo3.png",
+    "frameWidth": 77,
+    "frameHeight": 68,
+    "frameCount": 3,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.2727272727272727,
+    "frameRate": 12
+  },
+  "kurenai-idle": {
+    "image": "/sprites/player/kurenai/idle.png",
+    "frameWidth": 32,
+    "frameHeight": 76,
+    "frameCount": 4,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.53125,
+    "frameRate": 8
+  },
+  "kurenai-walk": {
+    "image": "/sprites/player/kurenai/walk.png",
+    "frameWidth": 70,
+    "frameHeight": 54,
+    "frameCount": 6,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.5285714285714286,
+    "frameRate": 12
+  },
+  "kurenai-hurt": {
+    "image": "/sprites/player/kurenai/hurt.png",
+    "frameWidth": 46,
+    "frameHeight": 64,
+    "frameCount": 3,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.3695652173913043,
+    "frameRate": 10
+  },
+  "kurenai-death": {
+    "image": "/sprites/player/kurenai/death.png",
+    "frameWidth": 53,
+    "frameHeight": 59,
+    "frameCount": 3,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.5471698113207547,
+    "frameRate": 8
+  },
+  "kurenai-special1": {
+    "image": "/sprites/player/kurenai/special1.png",
+    "frameWidth": 77,
+    "frameHeight": 69,
+    "frameCount": 4,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.2727272727272727,
+    "durationMs": 1217,
+    "hitDelayMs": 833,
+    "frameRate": 8,
+    "skillId": "skill-kurenai-1",
+    "skillName": "Flower Strike",
+    "actionId": 1000
+  },
+  "kurenai-special1-fx": {
+    "image": "/sprites/player/kurenai/special1-fx.png",
+    "frameWidth": 292,
+    "frameHeight": 198,
+    "frameCount": 17,
+    "contentHeight": 190,
+    "scale": 1,
+    "originX": 0.4305182883773478,
+    "frameRate": 18,
+    "durationMs": 667
+  },
+  "kurenai-special2": {
+    "image": "/sprites/player/kurenai/special2.png",
+    "frameWidth": 49,
+    "frameHeight": 78,
+    "frameCount": 2,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.5510204081632653,
+    "durationMs": 1417,
+    "hitDelayMs": 667,
+    "frameRate": 8,
+    "skillId": "skill-kurenai-2",
+    "skillName": "Genjutsu",
+    "actionId": 1100
+  },
+  "kurenai-special2-fx": {
+    "image": "/sprites/player/kurenai/special2-fx.png",
+    "frameWidth": 150,
+    "frameHeight": 137,
+    "frameCount": 5,
+    "contentHeight": 133,
+    "scale": 1,
+    "originX": 0.49333333333333335,
+    "frameRate": 18,
+    "durationMs": 280
+  },
+  "kurenai-special3": {
+    "image": "/sprites/player/kurenai/special3.png",
+    "frameWidth": 62,
+    "frameHeight": 68,
+    "frameCount": 4,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.43548387096774194,
+    "durationMs": 1167,
+    "hitDelayMs": 533,
+    "frameRate": 8,
+    "skillId": "skill-kurenai-3",
+    "skillName": "Trap - Start",
+    "actionId": 1300
+  },
+  "kurenai-special3-fx": {
+    "image": "/sprites/player/kurenai/special3-fx.png",
+    "frameWidth": 292,
+    "frameHeight": 74,
+    "frameCount": 3,
+    "contentHeight": 67,
+    "scale": 1,
+    "originX": 0.5202664665040345,
+    "frameRate": 12,
+    "durationMs": 280
+  }
+}

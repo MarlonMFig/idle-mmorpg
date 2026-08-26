@@ -1,0 +1,146 @@
+{
+  "id": "hanabi",
+  "name": "Hyuga Hanabi",
+  "lookType": 9101,
+  "contentHeight": 51,
+  "idle": {
+    "image": "/sprites/player/hanabi/idle.png",
+    "frameWidth": 41,
+    "frameHeight": 55,
+    "frameCount": 6,
+    "contentHeight": 51,
+    "scale": 1,
+    "originX": 0.43902439024390244,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/hanabi/walk.png",
+    "frameWidth": 33,
+    "frameHeight": 58,
+    "frameCount": 6,
+    "contentHeight": 51,
+    "scale": 1,
+    "originX": 0.48484848484848486,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/hanabi/combo1.png",
+      "frameWidth": 75,
+      "frameHeight": 63,
+      "frameCount": 9,
+      "contentHeight": 51,
+      "scale": 1,
+      "originX": 0.4,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/hanabi/combo2.png",
+      "frameWidth": 48,
+      "frameHeight": 50,
+      "frameCount": 3,
+      "contentHeight": 51,
+      "scale": 1,
+      "originX": 0.4375,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/hanabi/combo3.png",
+      "frameWidth": 63,
+      "frameHeight": 54,
+      "frameCount": 5,
+      "contentHeight": 51,
+      "scale": 1,
+      "originX": 0.31746031746031744,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/hanabi/hurt.png",
+    "frameWidth": 67,
+    "frameHeight": 55,
+    "frameCount": 3,
+    "contentHeight": 51,
+    "scale": 1,
+    "originX": 0.4925373134328358,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/hanabi/death.png",
+    "frameWidth": 57,
+    "frameHeight": 42,
+    "frameCount": 1,
+    "contentHeight": 51,
+    "scale": 1,
+    "originX": 0.49122807017543857,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-hanabi-1",
+      "skillName": "Crouching Light Punch",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/hanabi/special1.png",
+        "frameWidth": 97,
+        "frameHeight": 80,
+        "frameCount": 11,
+        "contentHeight": 51,
+        "scale": 1,
+        "originX": 0.4948453608247423,
+        "durationMs": 1833,
+        "hitDelayMs": 833,
+        "frameRate": 8,
+        "skillId": "skill-hanabi-1",
+        "skillName": "Crouching Light Punch",
+        "actionId": 400
+      },
+      "fx": null,
+      "index": 0
+    },
+    {
+      "skillId": "skill-hanabi-2",
+      "skillName": "Standing Strong Kick",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/hanabi/special2.png",
+        "frameWidth": 65,
+        "frameHeight": 59,
+        "frameCount": 6,
+        "contentHeight": 51,
+        "scale": 1,
+        "originX": 0.3076923076923077,
+        "durationMs": 667,
+        "hitDelayMs": 250,
+        "frameRate": 9,
+        "skillId": "skill-hanabi-2",
+        "skillName": "Standing Strong Kick",
+        "actionId": 250
+      },
+      "fx": null,
+      "index": 1
+    },
+    {
+      "skillId": "skill-hanabi-3",
+      "skillName": "Crouching Strong Punch",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/hanabi/special3.png",
+        "frameWidth": 311,
+        "frameHeight": 125,
+        "frameCount": 12,
+        "contentHeight": 51,
+        "scale": 1,
+        "originX": 0.04180064308681672,
+        "durationMs": 1467,
+        "hitDelayMs": 800,
+        "frameRate": 10,
+        "skillId": "skill-hanabi-3",
+        "skillName": "Crouching Strong Punch",
+        "actionId": 420
+      },
+      "fx": null,
+      "index": 2
+    }
+  ]
+}

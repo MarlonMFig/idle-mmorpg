@@ -1,0 +1,208 @@
+{
+  "id": "sasori",
+  "name": "Sasori",
+  "lookType": 9097,
+  "contentHeight": 76,
+  "idle": {
+    "image": "/sprites/player/sasori/idle.png",
+    "frameWidth": 43,
+    "frameHeight": 80,
+    "frameCount": 4,
+    "contentHeight": 76,
+    "scale": 1,
+    "originX": 0.4883720930232558,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/sasori/walk.png",
+    "frameWidth": 74,
+    "frameHeight": 63,
+    "frameCount": 6,
+    "contentHeight": 76,
+    "scale": 1,
+    "originX": 0.44594594594594594,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/sasori/combo1.png",
+      "frameWidth": 99,
+      "frameHeight": 80,
+      "frameCount": 6,
+      "contentHeight": 76,
+      "scale": 1,
+      "originX": 0.35353535353535354,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/sasori/combo2.png",
+      "frameWidth": 116,
+      "frameHeight": 80,
+      "frameCount": 7,
+      "contentHeight": 76,
+      "scale": 1,
+      "originX": 0.4051724137931034,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/sasori/combo3.png",
+      "frameWidth": 75,
+      "frameHeight": 80,
+      "frameCount": 4,
+      "contentHeight": 76,
+      "scale": 1,
+      "originX": 0.4,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/sasori/hurt.png",
+    "frameWidth": 52,
+    "frameHeight": 78,
+    "frameCount": 3,
+    "contentHeight": 76,
+    "scale": 1,
+    "originX": 0.5576923076923077,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/sasori/death.png",
+    "frameWidth": 62,
+    "frameHeight": 57,
+    "frameCount": 3,
+    "contentHeight": 76,
+    "scale": 1,
+    "originX": 0.5161290322580645,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-sasori-1",
+      "skillName": "Satetsuso",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/sasori/special1.png",
+        "frameWidth": 49,
+        "frameHeight": 77,
+        "frameCount": 6,
+        "contentHeight": 76,
+        "scale": 1,
+        "originX": 0.5102040816326531,
+        "durationMs": 867,
+        "hitDelayMs": 383,
+        "frameRate": 8,
+        "skillId": "skill-sasori-1",
+        "skillName": "Satetsuso",
+        "actionId": 1000
+      },
+      "fx": {
+        "image": "/sprites/player/sasori/special1-fx.png",
+        "frameWidth": 126,
+        "frameHeight": 247,
+        "frameCount": 3,
+        "contentHeight": 240,
+        "scale": 1,
+        "originX": 0.40915032679738556,
+        "frameRate": 8,
+        "durationMs": 850
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-sasori-2",
+      "skillName": "Katon",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/sasori/special2.png",
+        "frameWidth": 75,
+        "frameHeight": 80,
+        "frameCount": 6,
+        "contentHeight": 76,
+        "scale": 1,
+        "originX": 0.4,
+        "durationMs": 1333,
+        "hitDelayMs": 600,
+        "frameRate": 8,
+        "skillId": "skill-sasori-2",
+        "skillName": "Katon",
+        "actionId": 1100
+      },
+      "fx": {
+        "image": "/sprites/player/sasori/special2-fx.png",
+        "frameWidth": 308,
+        "frameHeight": 159,
+        "frameCount": 9,
+        "contentHeight": 143,
+        "scale": 1,
+        "originX": 0.49782596258367184,
+        "frameRate": 18,
+        "durationMs": 550
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-sasori-3",
+      "skillName": "Satetsuso",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/sasori/special3.png",
+        "frameWidth": 65,
+        "frameHeight": 75,
+        "frameCount": 3,
+        "contentHeight": 76,
+        "scale": 1,
+        "originX": 0.4153846153846154,
+        "durationMs": 883,
+        "hitDelayMs": 400,
+        "frameRate": 8,
+        "skillId": "skill-sasori-3",
+        "skillName": "Satetsuso",
+        "actionId": 1200
+      },
+      "fx": {
+        "image": "/sprites/player/sasori/special3-fx.png",
+        "frameWidth": 167,
+        "frameHeight": 247,
+        "frameCount": 8,
+        "contentHeight": 240,
+        "scale": 1,
+        "originX": 0.5027122226135964,
+        "frameRate": 15,
+        "durationMs": 517
+      },
+      "index": 2
+    },
+    {
+      "skillId": "skill-sasori-4",
+      "skillName": "Satetsuso",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/sasori/special4.png",
+        "frameWidth": 60,
+        "frameHeight": 77,
+        "frameCount": 3,
+        "contentHeight": 76,
+        "scale": 1,
+        "originX": 0.4666666666666667,
+        "durationMs": 883,
+        "hitDelayMs": 400,
+        "frameRate": 8,
+        "skillId": "skill-sasori-4",
+        "skillName": "Satetsuso",
+        "actionId": 1300
+      },
+      "fx": {
+        "image": "/sprites/player/sasori/special4-fx.png",
+        "frameWidth": 107,
+        "frameHeight": 96,
+        "frameCount": 2,
+        "contentHeight": 92,
+        "scale": 1,
+        "originX": 0.48598130841121495,
+        "frameRate": 8,
+        "durationMs": 433
+      },
+      "index": 3
+    }
+  ]
+}

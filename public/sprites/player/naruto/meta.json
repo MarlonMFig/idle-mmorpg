@@ -122,5 +122,26 @@
     "residualGreen": 0,
     "pureBlack": 34342,
     "originX": 0.54296875
+  },
+  "naruto-kurama-head-fx": {
+    "image": "/sprites/player/naruto/kurama-head-fx.png",
+    "frameWidth": 160,
+    "frameHeight": 128,
+    "frameCount": 12,
+    "contentHeight": 128,
+    "frameRate": 8,
+    "originX": 0.5,
+    "originY": 0.88
+  },
+  "skill-kyuubi": {
+    "image": "/sprites/player/naruto/idle.png",
+    "frameWidth": 61,
+    "frameHeight": 85,
+    "frameCount": 6,
+    "contentHeight": 81,
+    "frameRate": 8,
+    "durationMs": 1800,
+    "hitDelayMs": 700,
+    "fx": "/sprites/player/naruto/kurama-head-fx.png"
   }
 }

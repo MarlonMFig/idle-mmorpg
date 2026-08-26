@@ -1,6 +1,6 @@
-import { resolveEnemyCaptureQuality } from '@/lib/resolve-character-quality';
+import { resolveCaptureEnemyTierFromDefinition } from '@/lib/capture-enemy-tier';
 import { createStore } from '@/stores/create-store';
-import type { CharacterQuality } from '@/types/character-meta';
+import type { CaptureEnemyTier } from '@/constants/capture-system';
 import type { EnemyDefinition } from '@/types/enemy';
 
 /** Fila máxima de corpos no chão (FIFO). */
@@ -12,7 +12,7 @@ export interface CaptureOffer {
   name: string;
   level: number;
   lookType: number;
-  quality: CharacterQuality;
+  captureTier: CaptureEnemyTier;
   definition: EnemyDefinition;
 }
 
@@ -48,7 +48,7 @@ export const captureStore = {
       name: seal.name,
       level,
       lookType: seal.lookType,
-      quality: resolveEnemyCaptureQuality(definition),
+      captureTier: resolveCaptureEnemyTierFromDefinition(definition),
       definition,
     };
 

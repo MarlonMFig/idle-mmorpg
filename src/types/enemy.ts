@@ -1,4 +1,5 @@
 import type { CombatAffinityFields } from '@/data/damage-elements';
+import type { CaptureEnemyTier } from '@/constants/capture-system';
 import type { CharacterQuality } from '@/types/character-meta';
 import type { WonsrDirection, WonsrSpriteFit } from '@/data/wonsr-sprites';
 import type { MapKey } from '@/maps/map-registry';
@@ -58,6 +59,8 @@ export interface EnemySealableIdentity {
    */
   quality?: CharacterQuality;
   qualityStatMultiplier?: number;
+  /** ETAPA 1 do spec de captura (comum/elite/raro/chefe). Qualidade não entra. */
+  captureTier?: CaptureEnemyTier;
 }
 
 /** Definição autoritativa de um monstro. */

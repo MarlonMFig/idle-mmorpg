@@ -1,0 +1,166 @@
+{
+  "id": "sai",
+  "name": "Sai",
+  "lookType": 9099,
+  "contentHeight": 72,
+  "idle": {
+    "image": "/sprites/player/sai/idle.png",
+    "frameWidth": 54,
+    "frameHeight": 76,
+    "frameCount": 8,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.5,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/sai/walk.png",
+    "frameWidth": 72,
+    "frameHeight": 55,
+    "frameCount": 6,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.375,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/sai/combo1.png",
+      "frameWidth": 90,
+      "frameHeight": 75,
+      "frameCount": 4,
+      "contentHeight": 72,
+      "scale": 1,
+      "originX": 0.26666666666666666,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/sai/combo2.png",
+      "frameWidth": 75,
+      "frameHeight": 74,
+      "frameCount": 4,
+      "contentHeight": 72,
+      "scale": 1,
+      "originX": 0.30666666666666664,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/sai/combo3.png",
+      "frameWidth": 121,
+      "frameHeight": 76,
+      "frameCount": 7,
+      "contentHeight": 72,
+      "scale": 1,
+      "originX": 0.24793388429752067,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/sai/hurt.png",
+    "frameWidth": 47,
+    "frameHeight": 68,
+    "frameCount": 3,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.3829787234042553,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/sai/death.png",
+    "frameWidth": 64,
+    "frameHeight": 64,
+    "frameCount": 3,
+    "contentHeight": 72,
+    "scale": 1,
+    "originX": 0.484375,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-sai-1",
+      "skillName": "Ninpou: Choujuu Giga",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/sai/special1.png",
+        "frameWidth": 54,
+        "frameHeight": 76,
+        "frameCount": 8,
+        "contentHeight": 72,
+        "scale": 1,
+        "originX": 0.5,
+        "durationMs": 1083,
+        "hitDelayMs": 483,
+        "frameRate": 8,
+        "skillId": "skill-sai-1",
+        "skillName": "Ninpou: Choujuu Giga",
+        "actionId": 1000
+      },
+      "fx": null,
+      "index": 0
+    },
+    {
+      "skillId": "skill-sai-2",
+      "skillName": "Kunai Explosivo - Start",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/sai/special2.png",
+        "frameWidth": 69,
+        "frameHeight": 76,
+        "frameCount": 4,
+        "contentHeight": 72,
+        "scale": 1,
+        "originX": 0.36231884057971014,
+        "durationMs": 700,
+        "hitDelayMs": 317,
+        "frameRate": 8,
+        "skillId": "skill-sai-2",
+        "skillName": "Kunai Explosivo - Start",
+        "actionId": 1200
+      },
+      "fx": {
+        "image": "/sprites/player/sai/special2-fx.png",
+        "frameWidth": 53,
+        "frameHeight": 20,
+        "frameCount": 3,
+        "contentHeight": 14,
+        "scale": 1,
+        "originX": 0.6415094339622641,
+        "frameRate": 18,
+        "durationMs": 280
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-sai-3",
+      "skillName": "Ink Bird (Fly)",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/sai/special3.png",
+        "frameWidth": 90,
+        "frameHeight": 53,
+        "frameCount": 3,
+        "contentHeight": 72,
+        "scale": 1,
+        "originX": 0.6444444444444445,
+        "durationMs": 617,
+        "hitDelayMs": 283,
+        "frameRate": 8,
+        "skillId": "skill-sai-3",
+        "skillName": "Ink Bird (Fly)",
+        "actionId": 1301
+      },
+      "fx": {
+        "image": "/sprites/player/sai/special3-fx.png",
+        "frameWidth": 70,
+        "frameHeight": 56,
+        "frameCount": 14,
+        "contentHeight": 52,
+        "scale": 1,
+        "originX": 0.5428571428571428,
+        "frameRate": 8,
+        "durationMs": 2100
+      },
+      "index": 2
+    }
+  ]
+}

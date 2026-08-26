@@ -4,7 +4,6 @@
  * Quality RNG só após sucesso.
  */
 
-import { sealChance } from '@/anime-idle/formulas';
 import { applyHuntCaptureToOfficialFreeze } from '@/lib/official-progress-freeze';
 import {
   CAPTURE_INITIAL_LEVEL,
@@ -12,18 +11,20 @@ import {
   CAPTURE_INITIAL_XP,
   clampCaptureChance,
 } from '@/constants/capture';
-import { rollCaptureQualityBundle, resolveAppearanceQuality } from '@/lib/hunt-spawn';
+import { rollCaptureQualityBundle } from '@/lib/hunt-spawn';
 import type { CharacterQuality } from '@/types/character-meta';
 import {
-  SEALING_SCROLL_TIERS,
+  listCaptureScrollTiers,
   type SealingScrollTier,
   type SealingScrollTierId,
 } from '@/constants/sealing';
 import {
   computeCaptureChance,
   scrollCaptureMultiplier,
-  captureBaseChance,
+  captureBaseChanceForTier,
+  type CaptureEnemyTier,
 } from '@/constants/capture-system';
+import { resolveCaptureEnemyTierFromDefinition } from '@/lib/capture-enemy-tier';
 import { getItem } from '@/data/items';
 import { resolveCharacterLineageId } from '@/data/character-lineages';
 import { getCaptureForceMode } from '@/lib/capture-dev';
@@ -33,7 +34,6 @@ import { helperStore } from '@/stores/helper-store';
 import { huntAnalyzerStore } from '@/stores/hunt-analyzer-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { teamStore } from '@/stores/team-store';
-import { vitalsStore } from '@/stores/vitals-store';
 import { consumeItem } from '@/systems/reward-application';
 import type { EnemyDefinition } from '@/types/enemy';
 import type { SealedCharacter } from '@/types/team';
@@ -46,11 +46,13 @@ import {
 export type CaptureSource = 'manual' | 'auto' | 'dev';
 
 export interface CaptureChanceBreakdown {
+  captureTier: CaptureEnemyTier;
   baseChance: number;
   scrollModifier: number;
   rarityModifier: number;
   otherModifiers: number;
   finalChance: number;
+  /** Preenchido só após sucesso (etapa 2). Antes disso é placeholder. */
   quality: CharacterQuality;
 }
 
@@ -81,6 +83,7 @@ export interface CaptureResult {
 export type SealRng = () => number;
 
 const ZERO_CHANCE: CaptureChanceBreakdown = {
+  captureTier: 'comum',
   baseChance: 0,
   scrollModifier: 0,
   rarityModifier: 0,
@@ -97,7 +100,7 @@ export function isEnemySealable(definition: EnemyDefinition): boolean {
 }
 
 export function getSealingScrollConfig(scrollId: string): SealingScrollTier | null {
-  return SEALING_SCROLL_TIERS.find((tier) => tier.itemId === scrollId) ?? null;
+  return listCaptureScrollTiers().find((tier) => tier.itemId === scrollId) ?? null;
 }
 
 /** Chance oficial do pergaminho (alias de successChance). */
@@ -106,41 +109,43 @@ export function getScrollCaptureModifier(scroll: SealingScrollTier): number {
 }
 
 /**
- * Chance = base da quality da aparição × multiplicador do pergaminho, teto 90%.
+ * ETAPA 1 — selar: base do tier do inimigo × cartão, piso 2% / teto 95%.
+ * Qualidade não existe ainda.
  */
 export function getCaptureChance(
   target: EnemyDefinition | null,
   scroll: SealingScrollTier | null,
 ): CaptureChanceBreakdown {
   if (!scroll || !getItem(scroll.itemId)) return { ...ZERO_CHANCE };
-  const quality = resolveAppearanceQuality(target);
+  const captureTier = resolveCaptureEnemyTierFromDefinition(target);
   const scrollModifier = scrollCaptureMultiplier(scroll.itemId);
-  const baseChance = captureBaseChance(quality);
-  const playerLevel = vitalsStore.getLevel();
-  const enemyLevel = target?.level ?? playerLevel;
-  const sealMod = sealChance(enemyLevel - playerLevel);
-  const finalChance = clampCaptureChance(computeCaptureChance(quality, scroll.itemId) * sealMod);
+  const baseChance = captureBaseChanceForTier(captureTier);
+  const finalChance = computeCaptureChance(captureTier, scroll.itemId);
   return {
+    captureTier,
     baseChance,
     scrollModifier,
     rarityModifier: 1,
-    otherModifiers: sealMod,
+    otherModifiers: 1,
     finalChance,
-    quality,
+    quality: 'D',
   };
 }
 
 export function pickSelectedSealingScroll(): SealingScrollTier | null {
   const { scrollItemId } = helperStore.getSnapshot();
-  const tier = getSealingScrollConfig(scrollItemId);
-  if (!tier) return null;
-  if (inventoryStore.countItem(tier.itemId) < 1) return null;
-  return tier;
+  const selected = getSealingScrollConfig(scrollItemId);
+  if (selected && inventoryStore.countItem(selected.itemId) >= 1) return selected;
+  const sorted = [...listCaptureScrollTiers()].sort((a, b) => b.rank - a.rank);
+  for (const tier of sorted) {
+    if (inventoryStore.countItem(tier.itemId) >= 1) return tier;
+  }
+  return null;
 }
 
 /** @deprecated prioriza o maior tier — o Engine usa o pergaminho selecionado. */
 export function pickSealingScroll(): SealingScrollTier | null {
-  const sorted = [...SEALING_SCROLL_TIERS].sort((a, b) => b.rank - a.rank);
+  const sorted = [...listCaptureScrollTiers()].sort((a, b) => b.rank - a.rank);
   for (const tier of sorted) {
     if (inventoryStore.countItem(tier.itemId) >= 1) return tier;
   }

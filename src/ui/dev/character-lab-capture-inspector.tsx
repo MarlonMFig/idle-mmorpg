@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { formatCapturePercent } from '@/constants/capture';
-import { CAPTURE_QUALITY_MODIFIERS, spawnQualityPercents } from '@/constants/capture-rarity';
+import { spawnQualityPercents } from '@/constants/capture-rarity';
 import { CHARACTER_QUALITY_LABELS } from '@/constants/character-progression';
 import { qualityStatMidpoint } from '@/constants/character-quality-stats';
 import { SEALING_SCROLL_TIERS, type SealingScrollTierId } from '@/constants/sealing';
@@ -101,8 +101,9 @@ export function CharacterLabCaptureInspector() {
     <section className="character-lab__section">
       <h4>CAPTURE QUALITY TESTER</h4>
       <p className="character-lab__hint">
-        Quality aparece no encontro (pesos do spec). A captura usa base da quality ×
-        multiplicador do cartão, teto 90%. Force quality aplica na aparição.
+        Quality só é sorteada DEPOIS do sucesso (pesos D→SSS). Selar usa o tier
+        do inimigo (comum/elite/raro/chefe) × cartão, teto 95%. Force quality
+        aplica só no resultado pós-sucesso.
       </p>
       <label>
         Character
@@ -129,7 +130,10 @@ export function CharacterLabCaptureInspector() {
         </select>
       </label>
       <p className="character-lab__hint">
-        Spawn quality (preview): {quality} · {CHARACTER_QUALITY_LABELS[quality]} · force{' '}
+        Tier do inimigo: {chance.captureTier} · selar {formatCapturePercent(chance.finalChance)}
+      </p>
+      <p className="character-lab__hint">
+        Force quality (etapa 2): {quality} · {CHARACTER_QUALITY_LABELS[quality]} · force{' '}
         {getForceSpawnQuality() ?? 'off'}
       </p>
       <label>
@@ -145,11 +149,9 @@ export function CharacterLabCaptureInspector() {
           ))}
         </select>
       </label>
-      <p className="character-lab__hint">Base Scroll Chance: {formatCapturePercent(chance.baseChance)}</p>
-      <p className="character-lab__hint">
-        Quality Modifier: ×{CAPTURE_QUALITY_MODIFIERS[quality]} ({chance.rarityModifier})
-      </p>
-      <p className="character-lab__hint">Final Capture Chance: {formatCapturePercent(chance.finalChance)}</p>
+      <p className="character-lab__hint">Base: {formatCapturePercent(chance.baseChance)}</p>
+      <p className="character-lab__hint">Cartão: ×{chance.scrollModifier}</p>
+      <p className="character-lab__hint">Selar: {formatCapturePercent(chance.finalChance)}</p>
       <div className="character-lab__chips">
         {(['off', 'success', 'failure'] as const).map((mode) => (
           <button

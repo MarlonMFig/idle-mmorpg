@@ -30,7 +30,7 @@ import { type MapKey } from '@/maps/map-registry';
 import type { EnemyDefinition, EnemySkill, EnemyWalkAnimation } from '@/types/enemy';
 import type { HuntCatalog, HuntTargetAttack } from '@/types/hunt';
 import { pickHuntTargetIndex } from '@/lib/hunt-spawn';
-import { rollSpawnQualityFromWeights } from '@/lib/hunt-spawn';
+import { resolveCaptureEnemyTier } from '@/lib/capture-enemy-tier';
 import { isHuntCatalogSealable } from '@/lib/resolve-character-quality';
 
 const WONSR_SPRITE_INDEX_KEY = 'wonsr-sprite-index';
@@ -473,7 +473,13 @@ export class EnemyManager {
             name: target.name,
             lookType: target.lookType,
             level: rawHunt?.targets[targetIndex]?.level ?? target.level,
-            quality: rollSpawnQualityFromWeights(),
+            captureTier: resolveCaptureEnemyTier({
+              huntTab: hunt.tab,
+              lookType: target.lookType,
+              characterId: target.sourceId,
+              sourceId: target.sourceId,
+              level: target.level,
+            }),
           }
         : undefined,
       skills: this.mapHuntAttacks(target.attacks),

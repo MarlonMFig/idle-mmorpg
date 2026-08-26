@@ -388,6 +388,14 @@ export function collectLabSaveChanges(input: {
   return { header, lines, changes };
 }
 
+export function jutsuFpsDirty(
+  poseSheet: LabPoseSheet | null,
+  original: LabPoseSheet | null,
+): boolean {
+  if (!poseSheet || !original) return false;
+  return poseSheet.frameRate !== original.frameRate;
+}
+
 export function skillLogicDirty(
   test: Pick<
     Omit<LabSkillOriginals, 'hasOfficialTargetMode'>,

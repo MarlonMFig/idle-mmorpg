@@ -1,10 +1,11 @@
 /**
- * Spec de captura: aparição, chance × pergaminho, teto 90%, tentativas, craft 7:1.
+ * Spec de captura v1: selar por tier do inimigo × cartão; qualidade só após sucesso.
  */
 import {
   appearancePercents,
   computeCaptureChance,
   CAPTURE_CHANCE_CAP,
+  CAPTURE_CHANCE_FLOOR,
   SCROLL_CRAFT_PER_STEP,
 } from '../src/constants/capture-system';
 import { SEALING_SCROLL_ITEM_ID, SEALING_SCROLL_TIERS } from '../src/constants/sealing';
@@ -21,17 +22,17 @@ import {
 import { craftSealingScroll } from '../src/systems/sealing-scroll-craft';
 import { MAP_KEYS } from '../src/maps/map-registry';
 import type { EnemyDefinition } from '../src/types/enemy';
-import type { CharacterQuality } from '../src/types/character-meta';
+import type { CaptureEnemyTier } from '../src/constants/capture-system';
 
 function assert(name: string, cond: boolean): void {
   if (!cond) throw new Error(`FAIL ${name}`);
   console.log(`ok  ${name}`);
 }
 
-function enemy(quality: CharacterQuality): EnemyDefinition {
+function enemy(opts: { captureTier: CaptureEnemyTier; lookType?: number; characterId?: string }): EnemyDefinition {
   return {
-    id: `cap-${quality}`,
-    name: 'Itachi',
+    id: `cap-${opts.captureTier}`,
+    name: 'Alvo',
     hp: 1,
     level: 1,
     xp: 0,
@@ -42,35 +43,39 @@ function enemy(quality: CharacterQuality): EnemyDefinition {
     sprite: 'enemy',
     mapKey: MAP_KEYS.leafVillage,
     sealable: {
-      characterId: 'uchiha-itachi',
-      sourceId: 'uchiha-itachi',
-      name: 'Itachi',
-      lookType: 9002,
-      quality,
+      characterId: opts.characterId ?? 'test-unit',
+      sourceId: opts.characterId ?? 'test-unit',
+      name: 'Alvo',
+      lookType: opts.lookType ?? 1,
+      captureTier: opts.captureTier,
     },
   };
 }
 
 const common = getSealingScrollConfig(SEALING_SCROLL_ITEM_ID)!;
 const rare = SEALING_SCROLL_TIERS.find((t) => t.itemId.endsWith('rare'))!;
+const mestre = getSealingScrollConfig('item-sealing-scroll-legendary')!;
 
-assert('teto 90%', CAPTURE_CHANCE_CAP === 0.9);
-assert('D comum 90%', Math.abs(computeCaptureChance('D', common.itemId) - 0.9) < 1e-9);
-assert('D raro cap 90%', computeCaptureChance('D', rare.itemId) === 0.9);
-assert('SSS comum 5%', Math.abs(computeCaptureChance('SSS', common.itemId) - 0.05) < 1e-9);
-assert('SSS raro 8.5%', Math.abs(computeCaptureChance('SSS', rare.itemId) - 0.085) < 1e-9);
-assert('A raro 51%', Math.abs(computeCaptureChance('A', 'item-sealing-scroll-rare') - 0.51) < 1e-9);
+assert('teto 95%', CAPTURE_CHANCE_CAP === 0.95);
+assert('piso 2%', CAPTURE_CHANCE_FLOOR === 0.02);
+assert('comum + básico 60%', Math.abs(computeCaptureChance('comum', common.itemId) - 0.6) < 1e-9);
+assert('elite + básico 35%', Math.abs(computeCaptureChance('elite', common.itemId) - 0.35) < 1e-9);
+assert('raro + básico 18%', Math.abs(computeCaptureChance('raro', common.itemId) - 0.18) < 1e-9);
+assert('chefe + básico 6%', Math.abs(computeCaptureChance('chefe', common.itemId) - 0.06) < 1e-9);
+assert('comum + raro 81%', Math.abs(computeCaptureChance('comum', rare.itemId) - 0.81) < 1e-9);
+assert('comum + mestre teto 95%', computeCaptureChance('comum', mestre.itemId) === 0.95);
+assert('chefe + mestre 14.4%', Math.abs(computeCaptureChance('chefe', mestre.itemId) - 0.144) < 1e-9);
 assert('craft 7', SCROLL_CRAFT_PER_STEP === 7);
 
 const percents = appearancePercents();
-assert('aparência D > C', percents.D > percents.C);
-assert('aparência SSS < S', percents.SSS < percents.S);
+assert('qualidade D > C (etapa 2)', percents.D > percents.C);
+assert('qualidade SSS < S (etapa 2)', percents.SSS < percents.S);
 
-assert('engine usa quality do alvo', getCaptureChance(enemy('SSS'), common).quality === 'SSS');
 assert(
-  'engine base SSS 5%',
-  Math.abs(getCaptureChance(enemy('SSS'), common).baseChance - 0.05) < 1e-9,
+  'engine ignora quality no selar',
+  getCaptureChance(enemy({ captureTier: 'chefe' }), common).finalChance === 0.06,
 );
+assert('engine usa tier', getCaptureChance(enemy({ captureTier: 'comum' }), common).captureTier === 'comum');
 
 const profile = NARUTO_CHARACTER_LOOT['uchiha-itachi'];
 assert('itachi tem perfil', Boolean(profile));
@@ -83,17 +88,16 @@ clearCaptureResolved();
 inventoryStore.addItem(SEALING_SCROLL_ITEM_ID, 10);
 
 const fail1 = attemptCapture({
-  target: enemy('SSS'),
+  target: enemy({ captureTier: 'chefe' }),
   source: 'manual',
-  attemptKey: 'flee-sss',
+  attemptKey: 'flee-chefe',
   rng: () => 0.999,
 });
 assert('1ª falha encerra', fail1.reason === 'failed' && fail1.scrollConsumed === true);
-assert('sem consolo', (fail1.consolationFragments ?? 0) === 0);
 const fail2 = attemptCapture({
-  target: enemy('SSS'),
+  target: enemy({ captureTier: 'chefe' }),
   source: 'manual',
-  attemptKey: 'flee-sss',
+  attemptKey: 'flee-chefe',
   rng: () => 0.999,
 });
 assert('2ª no mesmo inimigo recusada', fail2.reason === 'already-resolved');

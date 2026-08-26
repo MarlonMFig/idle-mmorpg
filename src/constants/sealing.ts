@@ -16,7 +16,11 @@ export const SEAL_SUCCESS_CHANCE = 0.9;
 /** Tamanho máximo da equipe ativa. */
 export const TEAM_SLOT_COUNT = 3;
 
-export type SealingScrollTierId = 'item-sealing-scroll' | 'item-sealing-scroll-rare';
+export type SealingScrollTierId =
+  | 'item-sealing-scroll'
+  | 'item-sealing-scroll-rare'
+  | 'item-sealing-scroll-epic'
+  | 'item-sealing-scroll-legendary';
 
 export interface SealingScrollTier {
   itemId: SealingScrollTierId;
@@ -52,12 +56,38 @@ export const SEALING_SCROLL_TIERS: readonly SealingScrollTier[] = [
     itemId: 'item-sealing-scroll-rare',
     rank: 2,
     successChance: 0.94,
-    captureModifier: 1.7,
-    multiplier: 1.7,
+    captureModifier: 1.35,
+    multiplier: 1.35,
     label: 'Raro',
     iconSrc: '/ui/items/recruitment-cards/rare.png',
   },
 ] as const;
+
+/** Cartões épico/lendário saíram da loja; ainda valem no recrutamento se existirem no inventário. */
+export const LEFTOVER_SEALING_SCROLL_TIERS: readonly SealingScrollTier[] = [
+  {
+    itemId: 'item-sealing-scroll-epic',
+    rank: 3,
+    successChance: 0.97,
+    captureModifier: 1.8,
+    multiplier: 1.8,
+    label: 'Épico',
+    iconSrc: '/ui/items/recruitment-cards/epic.png',
+  },
+  {
+    itemId: 'item-sealing-scroll-legendary',
+    rank: 4,
+    successChance: 0.99,
+    captureModifier: 2.4,
+    multiplier: 2.4,
+    label: 'Lendário',
+    iconSrc: '/ui/items/recruitment-cards/legendary.png',
+  },
+];
+
+export function listCaptureScrollTiers(): readonly SealingScrollTier[] {
+  return [...SEALING_SCROLL_TIERS, ...LEFTOVER_SEALING_SCROLL_TIERS];
+}
 
 export function getSealingScrollTiersHighFirst(): readonly SealingScrollTier[] {
   return [...SEALING_SCROLL_TIERS].sort((a, b) => b.rank - a.rank);

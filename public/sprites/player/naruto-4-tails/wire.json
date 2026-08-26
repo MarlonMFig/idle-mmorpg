@@ -1,0 +1,198 @@
+{
+  "id": "naruto-4-tails",
+  "name": "Naruto (4 Caudas)",
+  "lookType": 9100,
+  "contentHeight": 68,
+  "idle": {
+    "image": "/sprites/player/naruto-4-tails/idle.png",
+    "frameWidth": 59,
+    "frameHeight": 72,
+    "frameCount": 4,
+    "contentHeight": 68,
+    "scale": 1,
+    "originX": 0.5423728813559322,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/naruto-4-tails/walk.png",
+    "frameWidth": 71,
+    "frameHeight": 57,
+    "frameCount": 6,
+    "contentHeight": 68,
+    "scale": 1,
+    "originX": 0.323943661971831,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/naruto-4-tails/combo1.png",
+      "frameWidth": 83,
+      "frameHeight": 71,
+      "frameCount": 4,
+      "contentHeight": 68,
+      "scale": 1,
+      "originX": 0.27710843373493976,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/naruto-4-tails/combo2.png",
+      "frameWidth": 67,
+      "frameHeight": 74,
+      "frameCount": 5,
+      "contentHeight": 68,
+      "scale": 1,
+      "originX": 0.44776119402985076,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/naruto-4-tails/combo3.png",
+      "frameWidth": 86,
+      "frameHeight": 75,
+      "frameCount": 11,
+      "contentHeight": 68,
+      "scale": 1,
+      "originX": 0.43023255813953487,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/naruto-4-tails/hurt.png",
+    "frameWidth": 60,
+    "frameHeight": 67,
+    "frameCount": 3,
+    "contentHeight": 68,
+    "scale": 1,
+    "originX": 0.38333333333333336,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/naruto-4-tails/death.png",
+    "frameWidth": 58,
+    "frameHeight": 62,
+    "frameCount": 3,
+    "contentHeight": 68,
+    "scale": 1,
+    "originX": 0.4827586206896552,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-naruto-4-tails-1",
+      "skillName": "Sempou Rasengan - Start",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/naruto-4-tails/special1.png",
+        "frameWidth": 78,
+        "frameHeight": 70,
+        "frameCount": 4,
+        "contentHeight": 68,
+        "scale": 1,
+        "originX": 0.5769230769230769,
+        "durationMs": 650,
+        "hitDelayMs": 300,
+        "frameRate": 12,
+        "skillId": "skill-naruto-4-tails-1",
+        "skillName": "Sempou Rasengan - Start",
+        "actionId": 1000
+      },
+      "fx": {
+        "image": "/sprites/player/naruto-4-tails/special1-fx.png",
+        "frameWidth": 224,
+        "frameHeight": 195,
+        "frameCount": 11,
+        "contentHeight": 190,
+        "scale": 1,
+        "originX": 0.5089285714285714,
+        "frameRate": 18,
+        "durationMs": 280
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-naruto-4-tails-2",
+      "skillName": "Kage Bunshin no Jutsu",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/naruto-4-tails/special2.png",
+        "frameWidth": 67,
+        "frameHeight": 70,
+        "frameCount": 4,
+        "contentHeight": 68,
+        "scale": 1,
+        "originX": 0.44776119402985076,
+        "durationMs": 1083,
+        "hitDelayMs": 483,
+        "frameRate": 8,
+        "skillId": "skill-naruto-4-tails-2",
+        "skillName": "Kage Bunshin no Jutsu",
+        "actionId": 1100
+      },
+      "fx": {
+        "image": "/sprites/player/naruto-4-tails/special2-fx.png",
+        "frameWidth": 105,
+        "frameHeight": 123,
+        "frameCount": 7,
+        "contentHeight": 117,
+        "scale": 1,
+        "originX": 0.4857142857142857,
+        "frameRate": 18,
+        "durationMs": 333
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-naruto-4-tails-3",
+      "skillName": "Fuuma Shuriken - Start",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/naruto-4-tails/special3.png",
+        "frameWidth": 52,
+        "frameHeight": 71,
+        "frameCount": 2,
+        "contentHeight": 68,
+        "scale": 1,
+        "originX": 0.4423076923076923,
+        "durationMs": 1000,
+        "hitDelayMs": 450,
+        "frameRate": 8,
+        "skillId": "skill-naruto-4-tails-3",
+        "skillName": "Fuuma Shuriken - Start",
+        "actionId": 1200
+      },
+      "fx": null,
+      "index": 2
+    },
+    {
+      "skillId": "skill-naruto-4-tails-4",
+      "skillName": "Oodama Rasengan - Start",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/naruto-4-tails/special4.png",
+        "frameWidth": 78,
+        "frameHeight": 70,
+        "frameCount": 4,
+        "contentHeight": 68,
+        "scale": 1,
+        "originX": 0.5769230769230769,
+        "durationMs": 650,
+        "hitDelayMs": 300,
+        "frameRate": 12,
+        "skillId": "skill-naruto-4-tails-4",
+        "skillName": "Oodama Rasengan - Start",
+        "actionId": 3000
+      },
+      "fx": {
+        "image": "/sprites/player/naruto-4-tails/special4-fx.png",
+        "frameWidth": 97,
+        "frameHeight": 68,
+        "frameCount": 4,
+        "contentHeight": 64,
+        "scale": 1,
+        "originX": 0.32989690721649484,
+        "frameRate": 11,
+        "durationMs": 350
+      },
+      "index": 3
+    }
+  ]
+}

@@ -6,8 +6,17 @@ const { JUMP_FORCE_ROSTER } = require('./lib/jump-force-roster');
 
 const ROOT = path.resolve(__dirname, '..');
 const OUT = path.join(ROOT, 'src', 'data', 'jump-force-packs.ts');
-// Rotação atual: Naruto + Dragon Ball + Ichigo (Bleach).
-const ACTIVE_ROSTER = JUMP_FORCE_ROSTER;
+/** Roster jogável: só Naruto (exclui Bleach / Dragon Ball legados no arquivo). */
+const NON_NARUTO_JUMP_FORCE_IDS = new Set([
+  'ichigo',
+  'gohan',
+  'bardock',
+  'beerus',
+  'broly',
+  'ulquiorra',
+  'ichigo-zanpakuto',
+]);
+const ACTIVE_ROSTER = JUMP_FORCE_ROSTER.filter((row) => !NON_NARUTO_JUMP_FORCE_IDS.has(row.id));
 
 /** Âncora / timing / range que o wire.json não expressa. */
 const FX_OVERRIDES = {
@@ -18,6 +27,23 @@ const FX_OVERRIDES = {
   'skill-ichigo-3': { fxAttach: 'caster', fxGround: false, range: 100 },
   // Reiatsu Explosion estoura em área ao redor dele.
   'skill-ichigo-4': { fxAttach: 'caster', fxGround: false, range: 120 },
+  'skill-ulquiorra-1': { fxAttach: 'target', range: 140 },
+  'skill-ulquiorra-2': { fxAttach: 'target', range: 160 },
+  'skill-ulquiorra-3': { fxAttach: 'target', range: 180 },
+  'skill-ulquiorra-4': {
+    fxAttach: 'caster',
+    fxGround: false,
+    range: 200,
+    fxScale: 2,
+    fxIndependentScale: true,
+    fxOriginY: 0.72,
+    fxOffsetX: -150,
+    fxOffsetY: -6,
+  },
+  'skill-ichigo-zanpakuto-1': { fxAttach: 'caster', fxGround: false, range: 120 },
+  'skill-ichigo-zanpakuto-2': { fxAttach: 'target', range: 150 },
+  'skill-ichigo-zanpakuto-3': { fxAttach: 'target', range: 170 },
+  'skill-ichigo-zanpakuto-4': { fxAttach: 'target', range: 190 },
 };
 
 function num(n, digits = 3) {
@@ -117,11 +143,34 @@ function main() {
       const releaseMs = override.fxReleaseMs ?? sk.entry.hitDelayMs ?? 400;
       const fxAttach = override.fxAttach === 'target' ? 'target' : 'caster';
       const fxGround = override.fxGround ?? fxAttach === 'caster';
+      const fxOriginY =
+        override.fxOriginY != null
+          ? override.fxOriginY
+          : sk.fx && sk.fx.originY != null
+            ? sk.fx.originY
+            : null;
+      const fxOffsetX =
+        override.fxOffsetX != null
+          ? override.fxOffsetX
+          : sk.fx && sk.fx.offsetX != null
+            ? sk.fx.offsetX
+            : null;
+      const fxOffsetY =
+        override.fxOffsetY != null
+          ? override.fxOffsetY
+          : sk.fx && sk.fx.offsetY != null
+            ? sk.fx.offsetY
+            : null;
+      const fxScaleLine =
+        override.fxScale != null ? `\n      fxScale: ${override.fxScale},` : '';
+      const fxIndependentLine = override.fxIndependentScale
+        ? `\n      fxIndependentScale: true as const,`
+        : '';
       const fx = sk.fx
         ? `,
       fxReleaseMs: ${releaseMs},
       fxAttach: '${fxAttach}' as const,
-      fxGround: ${fxGround} as const,
+      fxGround: ${fxGround} as const,${fxIndependentLine}${fxScaleLine}
       fx: {
         key: '${w.id}-${sk.file}-fx',
         url: '${sk.fx.image}',
@@ -129,7 +178,7 @@ function main() {
         frameHeight: ${sk.fx.frameHeight},
         frameCount: ${sk.fx.frameCount},
         contentHeight: ${sk.fx.contentHeight},
-        originX: ${num(sk.fx.originX)},
+        originX: ${num(sk.fx.originX)},${fxOriginY != null ? `\n        originY: ${num(fxOriginY)},` : ''}${fxOffsetX != null ? `\n        offsetX: ${fxOffsetX},` : ''}${fxOffsetY != null ? `\n        offsetY: ${fxOffsetY},` : ''}
       }`
         : '';
       skillAnims.push(`    '${skillId}': {

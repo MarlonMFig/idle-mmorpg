@@ -434,6 +434,7 @@ function CharacterTestLabBody() {
   const editingVfx = editingVfxId ? getVfxDefinition(editingVfxId) : null;
   const skillOverrideDirty = characterLabStore.skillOverrideDirty();
   const skillLogicDirty = characterLabStore.hasUnsavedSkillLogic();
+  const jutsuFpsDirty = characterLabStore.hasUnsavedJutsuFps();
   const skillVisualDirty = characterLabStore.hasUnsavedSkillVisual();
   const spriteDefinitionDirty = characterLabStore.hasUnsavedSpriteChanges();
   const skillOrderDirty = orderDirty;
@@ -542,6 +543,13 @@ function CharacterTestLabBody() {
       const orig = snap.skillOriginals;
       const visual = scope === 'logic' ? orig : snap;
       const logic = scope === 'visual' ? orig : snap;
+      const pose =
+        scope === 'logic' &&
+        snap.poseSheet &&
+        orig.poseSheet &&
+        snap.poseSheet.frameRate !== orig.poseSheet.frameRate
+          ? { ...orig.poseSheet, frameRate: snap.poseSheet.frameRate }
+          : visual.poseSheet;
       const payload = JSON.stringify({
           action: 'save-visual',
           characterId: playerId,
@@ -551,7 +559,7 @@ function CharacterTestLabBody() {
           existingAnim: selectedSkillAnim,
           name: draft?.name,
           id: draft?.id,
-          pose: visual.poseSheet,
+          pose: pose,
           vfxId: visual.vfxId,
           targetMode: visual.targetMode,
           travelSpeed: visual.travelSpeed,
@@ -1123,7 +1131,7 @@ function CharacterTestLabBody() {
               lastSkillId={lastSkillId}
               skillName={skillName}
               saveBusy={isSavingSkill}
-              logicDirty={skillLogicDirty}
+              logicDirty={skillLogicDirty || jutsuFpsDirty}
               onManageStatus={() => setStatusLibraryOpen(true)}
               onSave={() => {
                 if (!lastSkillId) {

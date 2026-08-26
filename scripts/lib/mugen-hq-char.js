@@ -802,15 +802,23 @@ async function extractGroupRefs(sff, spec, max = 48) {
   return refs;
 }
 
-function capFxSprites(sprites) {
+function capFxSprites(sprites, maxFrames) {
   if (sprites.length <= 2) return sprites;
   const maxW = Math.max(...sprites.map((s) => s.width));
   const maxH = Math.max(...sprites.map((s) => s.height));
-  let cap = 36;
-  if (maxW > 1400 || maxH > 700) cap = 6;
-  else if (maxW > 900 || maxH > 480) cap = 10;
-  else if (maxW > 500 || maxH > 320) cap = 16;
-  return sprites.slice(0, cap);
+  let cap = maxFrames || 36;
+  if (!maxFrames) {
+    if (maxW > 1400 || maxH > 700) cap = 6;
+    else if (maxW > 900 || maxH > 480) cap = 10;
+    else if (maxW > 500 || maxH > 320) cap = 16;
+  }
+  if (sprites.length <= cap) return sprites;
+  const out = [];
+  for (let i = 0; i < cap; i += 1) {
+    const idx = Math.round((i * (sprites.length - 1)) / (cap - 1));
+    out.push(sprites[idx]);
+  }
+  return out;
 }
 
 /** VFX sheet não deve misturar o corpo do personagem (grupo alto com sprite pequeno). */
@@ -852,7 +860,50 @@ function dropSolidFillFx(sprites) {
   return kept.length >= 2 ? kept : sprites.filter((s) => spriteQuality(s.rgba).opaque >= 16);
 }
 
+function eraseTinyIslands(frame, w, h, minSize = 4) {
+  const seen = new Uint8Array(w * h);
+  for (let i = 0; i < w * h; i += 1) {
+    if (seen[i] || frame[i * 4 + 3] < ALPHA_KEEP) continue;
+    const stack = [i];
+    seen[i] = 1;
+    const cells = [];
+    while (stack.length) {
+      const p = stack.pop();
+      cells.push(p);
+      const px = p % w;
+      const py = (p - px) / w;
+      for (const [dx, dy] of [
+        [1, 0],
+        [-1, 0],
+        [0, 1],
+        [0, -1],
+        [1, 1],
+        [-1, -1],
+        [1, -1],
+        [-1, 1],
+      ]) {
+        const nx = px + dx;
+        const ny = py + dy;
+        if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+        const np = ny * w + nx;
+        if (seen[np] || frame[np * 4 + 3] < ALPHA_KEEP) continue;
+        seen[np] = 1;
+        stack.push(np);
+      }
+    }
+    if (cells.length < minSize) {
+      for (const p of cells) frame[p * 4 + 3] = 0;
+    }
+  }
+}
+
 async function writeSheet(outDir, qaDir, metaJson, id, name, packed, contentHeight, extra, qa) {
+  const stableBody = name === 'idle' || name === 'walk' || /^combo\d+$/.test(name);
+  if (stableBody) {
+    for (const frame of packed.frames) {
+      eraseTinyIslands(frame, packed.frameWidth, packed.frameHeight);
+    }
+  }
   const sheet = stitch(packed.frames, packed.frameWidth, packed.frameHeight);
   assertSheet(
     sheet.data,
@@ -1038,7 +1089,7 @@ async function packMugenCharacter(cfg) {
         }
         const fxSprites = dropSolidFillFx(dropBodySizedFx(fxSeq.sprites, contentHeight));
         if (fxSprites.length >= 2) {
-          let fxPacked = await packSprites(capFxSprites(fxSprites), {
+          let fxPacked = await packSprites(capFxSprites(fxSprites, cfg.fxFrameCap), {
             fx: true,
             additive: Boolean(cfg.fxAdditive),
           });
@@ -1198,7 +1249,7 @@ async function packMugenCharacter(cfg) {
         if (fxSprites.length < 2) {
           console.log(`  ${file}-fx skipped: body-sized only`);
         } else {
-          let fxPacked = await packSprites(capFxSprites(fxSprites), {
+          let fxPacked = await packSprites(capFxSprites(fxSprites, cfg.fxFrameCap), {
             fx: true,
             additive: Boolean(cfg.fxAdditive),
           });

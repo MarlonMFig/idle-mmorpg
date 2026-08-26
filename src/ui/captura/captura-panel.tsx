@@ -6,13 +6,15 @@ import {
   type SealingScrollTierId,
 } from '@/constants/sealing';
 import { getCuratedPortraitUrl } from '@/data/curated-map-sprites';
+import { formatCapturePercent } from '@/constants/capture';
+import { CAPTURE_ENEMY_TIER_LABELS } from '@/constants/capture-system';
 import { useDraggablePanel } from '@/hooks/use-draggable-panel';
 import { useStore } from '@/hooks/use-store';
 import { captureStore, type CaptureOffer } from '@/stores/capture-store';
 import { helperStore } from '@/stores/helper-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { locationStore } from '@/stores/location-store';
-import { attemptCapture } from '@/systems/capture-engine';
+import { attemptCapture, getCaptureChance, getSealingScrollConfig } from '@/systems/capture-engine';
 
 function formatQty(n: number): string {
   return n.toLocaleString('pt-BR');
@@ -25,10 +27,12 @@ function portraitUrl(lookType: number): string {
 function CaptureRow({
   offer,
   canThrow,
+  chanceLabel,
   onThrow,
 }: {
   offer: CaptureOffer;
   canThrow: boolean;
+  chanceLabel: string;
   onThrow: (id: string) => void;
 }) {
   return (
@@ -42,7 +46,7 @@ function CaptureRow({
       <div className="captura__meta">
         <strong className="captura__name">{offer.name}</strong>
         <span className="captura__level">
-          {offer.quality} · Caça Nv.{Math.max(1, offer.level || offer.definition.level)} · entra Nv.1
+          {CAPTURE_ENEMY_TIER_LABELS[offer.captureTier]} · {chanceLabel} · entra Nv.1
         </span>
       </div>
       <button
@@ -145,14 +149,18 @@ export function CapturaPanel() {
         <p className="captura__empty">Nenhum alvo no chão.</p>
       ) : (
         <ul className="captura__list">
-          {offers.map((offer) => (
+          {offers.map((offer) => {
+            const chance = getCaptureChance(offer.definition, getSealingScrollConfig(scrollItemId));
+            return (
             <CaptureRow
               key={offer.id}
               offer={offer}
               canThrow={canThrow && busyId !== offer.id}
+              chanceLabel={formatCapturePercent(chance.finalChance)}
               onThrow={onThrow}
             />
-          ))}
+            );
+          })}
         </ul>
       )}
     </div>

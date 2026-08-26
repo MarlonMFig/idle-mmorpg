@@ -89,12 +89,14 @@ function normalizedStats(level, source) {
  * Sem vocations/monstros brutos do WONSR.
  */
 function isActiveCharacterLookType(lookType) {
-  // Rotação atual: Naruto + Dragon Ball + Ichigo (Bleach, lookType 9073)
-  // + Pain / Choji JF / Haku JF / Danzo (9087–9090).
+  // Naruto curado + Jump Force Naruto (exclui DB 9083–86 / Bleach 9073,9091–92).
   return (
     lookType <= 9027 ||
-    (lookType >= 9030 && lookType <= 9036) ||
-    (lookType >= 9073 && lookType <= 9090)
+    lookType === 9030 ||
+    lookType === 9031 ||
+    (lookType >= 9074 && lookType <= 9082) ||
+    (lookType >= 9087 && lookType <= 9090) ||
+    (lookType >= 9093 && lookType <= 9105)
   );
 }
 
@@ -157,56 +159,6 @@ function buildCuratedExtraCharacters() {
       category: 'personagem',
       source: 'curated/naruto-shippuden',
       lookType: 9031,
-      hasSprite: false,
-      sourceMonster: null,
-    },
-    {
-      id: 'curated-character-goku',
-      sourceId: 'curated-character-goku',
-      name: 'Son Goku',
-      category: 'personagem',
-      source: 'curated/goku',
-      lookType: 9032,
-      hasSprite: false,
-      sourceMonster: null,
-    },
-    {
-      id: 'curated-character-freeza',
-      sourceId: 'curated-character-freeza',
-      name: 'Freeza',
-      category: 'personagem',
-      source: 'curated/freeza',
-      lookType: 9033,
-      hasSprite: false,
-      sourceMonster: null,
-    },
-    {
-      id: 'curated-character-gotenks',
-      sourceId: 'curated-character-gotenks',
-      name: 'Gotenks',
-      category: 'personagem',
-      source: 'curated/gotenks',
-      lookType: 9034,
-      hasSprite: false,
-      sourceMonster: null,
-    },
-    {
-      id: 'curated-character-majin-boo',
-      sourceId: 'curated-character-majin-boo',
-      name: 'Majin Boo',
-      category: 'personagem',
-      source: 'curated/majin-boo',
-      lookType: 9035,
-      hasSprite: false,
-      sourceMonster: null,
-    },
-    {
-      id: 'curated-character-piccolo',
-      sourceId: 'curated-character-piccolo',
-      name: 'Piccolo',
-      category: 'personagem',
-      source: 'curated/piccolo',
-      lookType: 9036,
       hasSprite: false,
       sourceMonster: null,
     },
@@ -450,77 +402,9 @@ function buildCuratedExtraCharacters() {
       hasSprite: false,
       sourceMonster: null,
     },
-    {
-      id: 'wonsr-character-momo-hinamori',
-      sourceId: 'wonsr-character-momo-hinamori',
-      name: 'Momo Hinamori',
-      category: 'personagem',
-      source: 'curated/momo-hinamori',
-      lookType: 9028,
-      hasSprite: false,
-      sourceMonster: null,
-    },
-    {
-      id: 'wonsr-character-hitsugaya',
-      sourceId: 'wonsr-character-hitsugaya',
-      name: 'Toshiro Hitsugaya',
-      category: 'personagem',
-      source: 'curated/hitsugaya',
-      lookType: 9029,
-      hasSprite: false,
-      sourceMonster: null,
-    },
-    {
-      id: 'curated-character-asta',
-      sourceId: 'curated-character-asta',
-      name: 'Asta',
-      category: 'personagem',
-      source: 'curated/asta',
-      lookType: 9037,
-      hasSprite: false,
-      sourceMonster: null,
-    },
-    {
-      id: 'curated-character-luffy',
-      sourceId: 'curated-character-luffy',
-      name: 'Monkey D. Luffy',
-      category: 'personagem',
-      source: 'curated/luffy',
-      lookType: 9038,
-      hasSprite: false,
-      sourceMonster: null,
-    },
-    ...require('./lib/bc-roster').BC_ROSTER.map((row) => ({
-      id: `curated-character-${row.id}`,
-      sourceId: `curated-character-${row.id}`,
-      name: row.name,
-      category: 'personagem',
-      source: `curated/${row.id}`,
-      lookType: row.lookType,
-      hasSprite: false,
-      sourceMonster: null,
-    })),
-    ...require('./lib/jjk-roster').JJK_ROSTER.map((row) => ({
-      id: `curated-character-${row.id}`,
-      sourceId: `curated-character-${row.id}`,
-      name: row.name,
-      category: 'personagem',
-      source: `curated/${row.id}`,
-      lookType: row.lookType,
-      hasSprite: false,
-      sourceMonster: null,
-    })),
-    {
-      id: 'curated-character-kenshin',
-      sourceId: 'curated-character-kenshin',
-      name: 'Kenshin Himura',
-      category: 'personagem',
-      source: 'curated/kenshin',
-      lookType: 9072,
-      hasSprite: false,
-      sourceMonster: null,
-    },
-    ...require('./lib/jump-force-roster').JUMP_FORCE_ROSTER.map((row) => ({
+    ...require('./lib/jump-force-roster')
+      .JUMP_FORCE_ROSTER.filter((row) => isActiveCharacterLookType(row.lookType))
+      .map((row) => ({
       id: `curated-character-${row.id}`,
       sourceId: `curated-character-${row.id}`,
       name: row.name,
@@ -722,7 +606,7 @@ function pickHuntMapKey(index, targets) {
   if (/gojo|itadori|yuji|agito|mahito|maki|sukuna|toji|jujutsu|zenin/.test(id)) {
     return 'huntForestClearing';
   }
-  if (/hitsugaya|hinamori|bleach|ichigo/.test(id)) return 'huntArenaExameChunnin';
+  if (/hitsugaya|hinamori|bleach|ichigo|ulquiorra/.test(id)) return 'huntArenaExameChunnin';
   return HUNT_ARENA_KEYS[index % HUNT_ARENA_KEYS.length];
 }
 

@@ -1,9 +1,6 @@
 import type * as Phaser from 'phaser';
 import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
-import { BLACK_CLOVER_BY_LOOK_TYPE, BLACK_CLOVER_BY_SLUG } from '@/data/black-clover-packs';
-import { JUJUTSU_KAISEN_BY_LOOK_TYPE, JUJUTSU_KAISEN_BY_SLUG } from '@/data/jujutsu-kaisen-packs';
 import { JUMP_FORCE_BY_LOOK_TYPE, JUMP_FORCE_BY_SLUG } from '@/data/jump-force-packs';
-import { TINY_RPG_BY_LOOK_TYPE, TINY_RPG_BY_SLUG } from '@/data/tiny-rpg-packs';
 import { getVfxDefinition, sharedVfxToSheet } from '@/data/vfx/registry';
 import { isSequenceVfx } from '@/data/vfx/types';
 import { applyDevPackOverlay } from '@/lib/dev/dev-runtime-registry';
@@ -331,6 +328,54 @@ const NARUTO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     durationMs: 4000,
     hitDelayMs: 2583,
   },
+  /**
+   * Chakra da Kyūbi — pose idle + cabeça da raposa atrás do Naruto.
+   * VFX: `kurama-head-fx.png` (sheet do usuário, fundo preto → alpha).
+   */
+  'skill-kyuubi': {
+    key: 'naruto-idle',
+    url: '/sprites/player/naruto/idle.png',
+    frameWidth: 61,
+    frameHeight: 85,
+    frameCount: 6,
+    contentHeight: 81,
+    frameRate: 8,
+    durationMs: 1800,
+    hitDelayMs: 700,
+    fxReleaseMs: 80,
+    fxAttach: 'caster',
+    fxGround: false,
+    fxScale: 1.45,
+    fxIndependentScale: true,
+    castDelayMs: 0,
+    targeting: {
+      mode: 'caster',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
+    },
+    fx: {
+      key: 'naruto-kurama-head-fx',
+      url: '/sprites/player/naruto/kurama-head-fx.png',
+      frameWidth: 160,
+      frameHeight: 128,
+      frameCount: 12,
+      contentHeight: 128,
+      frameRate: 8,
+      originX: 0.5,
+      originY: 0.88,
+      offsetX: 0,
+      offsetY: -18,
+    },
+    element: 'fire',
+    ai: {
+      autoUse: true,
+      priority: 2,
+      energyCost: 35,
+    },
+  },
 };
 
 const NARUTO_WALK: SpriteSheetDef = {
@@ -411,7 +456,7 @@ const NARUTO_PACK: CharacterPack = {
   hurt: NARUTO_HURT,
   death: NARUTO_DEATH,
   skillAnims: NARUTO_JUTSU_ANIMS,
-  hotbarSkillIds: ['skill-rasengan'],
+  hotbarSkillIds: ['skill-rasengan', 'skill-kyuubi'],
 };
 
 const SASUKE_WALK: SpriteSheetDef = {
@@ -795,20 +840,88 @@ const NEJI_COMBO_3: SpriteSheetDef = {
 
 const NEJI_ATTACK_CHAIN = [NEJI_COMBO_1, NEJI_COMBO_2, NEJI_COMBO_3] as const;
 
-/** Hakkeshou Kaiten — JUTSU COMPLETO 18f alpha. npm run neji:jutsu */
+const NEJI_PALM_FX: SpriteSheetDef = {
+  key: 'neji-hakke-palm-fx',
+  url: '/sprites/player/hinata/hakke-shou-fx.png',
+  frameWidth: 56,
+  frameHeight: 67,
+  frameCount: 4,
+  contentHeight: 63,
+};
+
+/** WONSR Hyūga (pasta hinata) — Neji não tem vocação própria no spells.xml. npm run neji:jutsu */
+const NEJI_KAITEN_ANIM: CharacterSkillAnimDef = {
+  key: 'neji-kaiten',
+  url: '/sprites/player/neji/kaiten.png',
+  frameWidth: 342,
+  frameHeight: 222,
+  frameCount: 18,
+  contentHeight: 117,
+  frameRate: 12,
+  durationMs: 1500,
+  hitDelayMs: 333,
+  fxReleaseMs: 333,
+  fxAttach: 'caster',
+  fxGround: true,
+  fx: NEJI_PALM_FX,
+};
+
+const NEJI_JUUKEN_ANIM: CharacterSkillAnimDef = {
+  key: 'neji-juuken',
+  url: '/sprites/player/neji/combo1.png',
+  frameWidth: 131,
+  frameHeight: 121,
+  frameCount: 5,
+  contentHeight: 117,
+  frameRate: 12,
+  durationMs: 417,
+  hitDelayMs: 200,
+  fxReleaseMs: 200,
+  fxAttach: 'target',
+  fxGround: true,
+  fx: NEJI_PALM_FX,
+};
+
+const NEJI_KUSHOU_ANIM: CharacterSkillAnimDef = {
+  key: 'neji-juuken-kushou',
+  url: '/sprites/player/neji/combo2.png',
+  frameWidth: 131,
+  frameHeight: 121,
+  frameCount: 5,
+  contentHeight: 117,
+  frameRate: 12,
+  durationMs: 417,
+  hitDelayMs: 200,
+  fxReleaseMs: 200,
+  fxAttach: 'target',
+  fx: NEJI_PALM_FX,
+};
+
+const NEJI_SOSHI_ANIM: CharacterSkillAnimDef = {
+  key: 'neji-juhou-soshiken',
+  url: '/sprites/player/neji/combo3.png',
+  frameWidth: 131,
+  frameHeight: 121,
+  frameCount: 9,
+  contentHeight: 117,
+  frameRate: 12,
+  durationMs: 750,
+  hitDelayMs: 400,
+  fxReleaseMs: 400,
+  fxAttach: 'target',
+  fxGround: true,
+  fx: NEJI_PALM_FX,
+};
+
 const NEJI_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
-  'skill-hakke-kaiten': {
-    key: 'neji-kaiten',
-    url: '/sprites/player/neji/kaiten.png',
-    frameWidth: 342,
-    frameHeight: 222,
-    frameCount: 18,
-    contentHeight: 117,
-    frameRate: 12,
-    durationMs: 1500,
-    // Hit when blue dome fully formed (frame 5 @ 12fps).
-    hitDelayMs: 333,
-  },
+  'skill-juuken': NEJI_JUUKEN_ANIM,
+  'skill-juuken-kushou': NEJI_KUSHOU_ANIM,
+  'skill-hakke-kaiten': NEJI_KAITEN_ANIM,
+  'skill-juhou-soshiken': NEJI_SOSHI_ANIM,
+  'character-neji-skill-1': NEJI_JUUKEN_ANIM,
+  'character-neji-skill-2': NEJI_KUSHOU_ANIM,
+  'character-neji-skill-3': NEJI_SOSHI_ANIM,
+  'character-neji-skill-4': NEJI_KAITEN_ANIM,
 };
 
 const NEJI_PACK: CharacterPack = {
@@ -818,7 +931,12 @@ const NEJI_PACK: CharacterPack = {
   attack: NEJI_COMBO_1,
   attackChain: NEJI_ATTACK_CHAIN,
   skillAnims: NEJI_JUTSU_ANIMS,
-  hotbarSkillIds: ['skill-hakke-kaiten'],
+  hotbarSkillIds: [
+    null,
+    null,
+    'skill-hakke-kaiten',
+    'skill-juhou-soshiken',
+  ],
 };
 
 /** Gaara (vocation 1395 + variantes de mapa). npm run gaara:all */
@@ -1184,8 +1302,8 @@ const HINATA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     frameHeight: 85,
     frameCount: 27,
     contentHeight: 54,
-    frameRate: 12,
-    durationMs: 2250,
+    frameRate: 24,
+    durationMs: 1125,
     // Frame 22 @ 12fps — palm impact after smear; handstand f26–27 is follow-up
     hitDelayMs: 1750,
     originX: 0.5,
@@ -1199,6 +1317,60 @@ const HINATA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
       frameHeight: 67,
       frameCount: 4,
       contentHeight: 63,
+      offsetX: 0,
+      offsetY: 0,
+    },
+    offsetX: 0,
+    offsetY: 0,
+    loop: true,
+    loopMode: 'persistent-range',
+    loopStartFrame: 1,
+    loopEndFrame: 24,
+    loopUntilSkillEnd: true,
+    flipX: false,
+    flipY: false,
+    cast: {
+      scaleX: 1,
+      scaleY: 1,
+      scale: 1,
+      offsetX: 0,
+      offsetY: 0,
+      loop: true,
+      loopMode: 'persistent-range',
+      loopStartFrame: 1,
+      loopEndFrame: 24,
+      loopUntilSkillEnd: true,
+      flipX: false,
+      flipY: false,
+    },
+    fxScale: 2,
+    castDelayMs: 0,
+    vfxLoopMode: 'none',
+    vfxLoopStartFrame: 1,
+    vfxLoopEndFrame: 1,
+    vfxLoopDurationMs: 3000,
+    vfxLoopUntilSkillEnd: false,
+    vfxFlipX: false,
+    vfxFlipY: false,
+    targeting: {
+      mode: 'instant-target',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
+    },
+    element: 'yang',
+        ai: {
+      autoUse: true,
+      priority: 1,
+      energyCost: 40,
+    },
+        execution: {
+      type: 'persistent',
+      duration: 1000,
+      tickInterval: 1000,
+      persistentAnchor: 'target',
     },
   },
 };
@@ -1212,7 +1384,12 @@ const HINATA_PACK: CharacterPack = {
   hurt: HINATA_HURT,
   death: HINATA_DEATH,
   skillAnims: HINATA_JUTSU_ANIMS,
-  hotbarSkillIds: ['skill-hakke-shouhou'],
+  hotbarSkillIds: [
+    'skill-hakke-shouhou',
+    null,
+    null,
+    null,
+  ],
 };
 
 /**
@@ -5135,14 +5312,6 @@ const CURATED_BY_SLUG: Record<string, CharacterPack> = {
   'uchiha-shisui': SHISUI_PACK,
   'naruto-shippuden': NARUTO_SHIPPUDEN_PACK,
   'uzumaki-naruto-shippuden': NARUTO_SHIPPUDEN_PACK,
-  goku: GOKU_PACK,
-  'son-goku': GOKU_PACK,
-  freeza: FREEZA_PACK,
-  frieza: FREEZA_PACK,
-  'final-form-frieza': FREEZA_PACK,
-  gotenks: GOTENKS_PACK,
-  'majin-boo': MAJIN_BOO_PACK,
-  piccolo: PICCOLO_PACK,
   jiraiya: JIRAIYA_PACK,
   jiraya: JIRAIYA_PACK,
   jirobo: JIROBO_PACK,
@@ -5167,33 +5336,7 @@ const CURATED_BY_SLUG: Record<string, CharacterPack> = {
   tayuya: TAYUYA_PACK,
   shino: SHINO_PACK,
   'aburame-shino': SHINO_PACK,
-  'momo-hinamori': MOMO_HINAMORI_PACK,
-  momo: MOMO_HINAMORI_PACK,
-  hinamori: MOMO_HINAMORI_PACK,
-  hitsugaya: HITSUGAYA_PACK,
-  'toshiro-hitsugaya': HITSUGAYA_PACK,
-  toshiro: HITSUGAYA_PACK,
-  asta: ASTA_PACK,
-  luffy: LUFFY_PACK,
-  'monkey-d-luffy': LUFFY_PACK,
-  'monkey d luffy': LUFFY_PACK,
-  ...BLACK_CLOVER_BY_SLUG,
-  ...JUJUTSU_KAISEN_BY_SLUG,
-  yuji: JUJUTSU_KAISEN_BY_SLUG.itadori,
-  'yuji-itadori': JUJUTSU_KAISEN_BY_SLUG.itadori,
-  'gojo-satoru': JUJUTSU_KAISEN_BY_SLUG.gojo,
-  satoru: JUJUTSU_KAISEN_BY_SLUG.gojo,
-  'maki-zenin': JUJUTSU_KAISEN_BY_SLUG.maki,
-  zenin: JUJUTSU_KAISEN_BY_SLUG.maki,
-  ryomen: JUJUTSU_KAISEN_BY_SLUG.sukuna,
-  'ryomen-sukuna': JUJUTSU_KAISEN_BY_SLUG.sukuna,
-  'toji-fushiguro': JUJUTSU_KAISEN_BY_SLUG.toji,
-  kenshin: KENSHIN_PACK,
-  himura: KENSHIN_PACK,
-  'kenshin-himura': KENSHIN_PACK,
-  'himura-kenshin': KENSHIN_PACK,
   ...JUMP_FORCE_BY_SLUG,
-  ...TINY_RPG_BY_SLUG,
 };
 
 const CURATED_BY_LOOK_TYPE: Record<number, CharacterPack> = {
@@ -5214,11 +5357,6 @@ const CURATED_BY_LOOK_TYPE: Record<number, CharacterPack> = {
   [UCHIHA_ITACHI_LOOK_TYPE]: UCHIHA_ITACHI_PACK,
   ...Object.fromEntries(SHISUI_LOOK_TYPES.map((look) => [look, SHISUI_PACK])),
   ...Object.fromEntries(NARUTO_SHIPPUDEN_LOOK_TYPES.map((look) => [look, NARUTO_SHIPPUDEN_PACK])),
-  ...Object.fromEntries(GOKU_LOOK_TYPES.map((look) => [look, GOKU_PACK])),
-  ...Object.fromEntries(FREEZA_LOOK_TYPES.map((look) => [look, FREEZA_PACK])),
-  ...Object.fromEntries(GOTENKS_LOOK_TYPES.map((look) => [look, GOTENKS_PACK])),
-  ...Object.fromEntries(MAJIN_BOO_LOOK_TYPES.map((look) => [look, MAJIN_BOO_PACK])),
-  ...Object.fromEntries(PICCOLO_LOOK_TYPES.map((look) => [look, PICCOLO_PACK])),
   ...Object.fromEntries(JIRAIYA_LOOK_TYPES.map((look) => [look, JIRAIYA_PACK])),
   ...Object.fromEntries(JIROBO_LOOK_TYPES.map((look) => [look, JIROBO_PACK])),
   [KABUTO_CURATED_LOOK_TYPE]: KABUTO_PACK,
@@ -5235,30 +5373,14 @@ const CURATED_BY_LOOK_TYPE: Record<number, CharacterPack> = {
   [TEMARI_CURATED_LOOK_TYPE]: TEMARI_PACK,
   [TAYUYA_CURATED_LOOK_TYPE]: TAYUYA_PACK,
   [SHINO_CURATED_LOOK_TYPE]: SHINO_PACK,
-  [MOMO_HINAMORI_CURATED_LOOK_TYPE]: MOMO_HINAMORI_PACK,
-  [HITSUGAYA_CURATED_LOOK_TYPE]: HITSUGAYA_PACK,
-  [ASTA_CURATED_LOOK_TYPE]: ASTA_PACK,
-  [LUFFY_CURATED_LOOK_TYPE]: LUFFY_PACK,
-  ...BLACK_CLOVER_BY_LOOK_TYPE,
-  ...JUJUTSU_KAISEN_BY_LOOK_TYPE,
   ...JUMP_FORCE_BY_LOOK_TYPE,
-  [KENSHIN_CURATED_LOOK_TYPE]: KENSHIN_PACK,
-  ...TINY_RPG_BY_LOOK_TYPE,
 };
 
 /**
  * Conteúdo temporariamente fora da rotação. Os packs e assets ficam preservados
  * para reativação futura, mas não podem ser resolvidos pelo mapa/coleção.
  */
-const INACTIVE_CHARACTER_PACK_IDS = new Set<string>([
-  'momo-hinamori',
-  'hitsugaya',
-  'asta',
-  'luffy',
-  'kenshin',
-  ...Object.values(BLACK_CLOVER_BY_SLUG).map((pack) => pack.id),
-  ...Object.values(JUJUTSU_KAISEN_BY_SLUG).map((pack) => pack.id),
-]);
+const INACTIVE_CHARACTER_PACK_IDS = new Set<string>([]);
 
 function isActiveCharacterPack(pack: CharacterPack | null | undefined): pack is CharacterPack {
   return Boolean(pack && !INACTIVE_CHARACTER_PACK_IDS.has(pack.id));

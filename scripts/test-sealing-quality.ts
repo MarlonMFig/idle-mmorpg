@@ -1,9 +1,8 @@
 import {
-  CAPTURE_QUALITY_MODIFIERS,
   QUALITY_SPAWN_WEIGHTS,
-  computeCaptureFinalChance,
   spawnQualityPercents,
 } from '../src/constants/capture-rarity';
+import { computeCaptureChance } from '../src/constants/capture-system';
 import { SEALING_SCROLL_ITEM_ID, SEALING_SCROLL_TIERS } from '../src/constants/sealing';
 import { MAP_KEYS } from '../src/maps/map-registry';
 import {
@@ -84,17 +83,15 @@ assert(
 );
 
 const commonScroll = getSealingScrollConfig(SEALING_SCROLL_TIERS[0].itemId)!;
-const baseChance = getCaptureChance(itachiEnemy('D'), commonScroll).finalChance;
 for (const quality of CHARACTER_QUALITIES) {
   const chance = getCaptureChance(itachiEnemy(quality), commonScroll);
-  assert(`selável ${quality}`, chance.finalChance > 0);
-  assert(`chance segue quality ${quality}`, chance.quality === quality);
+  assert(`selável ${quality}`, chance.finalChance === 0.06);
+  assert(`tier chefe ${quality}`, chance.captureTier === 'chefe');
 }
 
 assert(
-  'tabela de captura por quality intacta',
-  computeCaptureFinalChance(commonScroll.successChance, 'SSS') <
-    computeCaptureFinalChance(commonScroll.successChance, 'D'),
+  'tabela de selar por tier do inimigo',
+  computeCaptureChance('chefe', commonScroll.itemId) < computeCaptureChance('comum', commonScroll.itemId),
 );
 
 let prevScroll = -1;
@@ -192,7 +189,6 @@ DEV_FLAGS.enabled = false;
 const seeded = mulberry32(7);
 assert('rng determinístico', rollSpawnQualityFromWeights(seeded) === rollSpawnQualityFromWeights(mulberry32(7)));
 void pickWeightedIndex;
-void CAPTURE_QUALITY_MODIFIERS;
 
 console.log('matrix scroll x spawn quality');
 for (const quality of CHARACTER_QUALITIES) {

@@ -16,6 +16,7 @@ import {
   skillLogicDirty,
   skillVisualDirty,
   skillFieldsDirty,
+  jutsuFpsDirty,
   type LabSkillOriginals,
 } from '@/lib/dev/lab-save-fields';
 import { cloneExecutionDef, type SkillExecutionDef } from '@/data/skill-execution-def';
@@ -1012,6 +1013,11 @@ export const characterLabStore = {
     );
   },
 
+  hasUnsavedJutsuFps(): boolean {
+    const state = store.getSnapshot();
+    return jutsuFpsDirty(state.poseSheet, state.skillOriginals.poseSheet);
+  },
+
   hasUnsavedSkillVisual(): boolean {
     const state = store.getSnapshot();
     return skillVisualDirty(
@@ -1331,7 +1337,16 @@ export const characterLabStore = {
       poseOffsetY: scope === 'logic' ? prev.poseOffsetY : state.poseOffsetY,
       castDelayMs: scope === 'visual' ? prev.castDelayMs : state.castDelayMs,
       castAnimationId: scope === 'logic' ? prev.castAnimationId : state.castAnimationId,
-      poseSheet: cloneLabPoseSheet(scope === 'logic' ? prev.poseSheet : state.poseSheet),
+      poseSheet: cloneLabPoseSheet(
+        scope === 'logic' &&
+          state.poseSheet &&
+          prev.poseSheet &&
+          state.poseSheet.frameRate !== prev.poseSheet.frameRate
+          ? { ...prev.poseSheet, frameRate: state.poseSheet.frameRate }
+          : scope === 'logic'
+            ? prev.poseSheet
+            : state.poseSheet,
+      ),
       execution: cloneExecutionDef(scope === 'visual' ? prev.execution : state.execution),
       statusEffects: cloneSkillStatusEffects(scope === 'visual' ? prev.statusEffects : state.statusEffects),
       skillElement: scope === 'visual' ? prev.skillElement : state.skillElement,

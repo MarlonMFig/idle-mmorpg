@@ -1,11 +1,6 @@
 import type { CharacterQuality } from '@/types/character-meta';
 import { CHARACTER_QUALITIES } from '@/types/character-meta';
-import { clampCaptureChance } from '@/constants/capture';
-import {
-  APPEARANCE_WEIGHTS,
-  computeCaptureChance,
-  appearancePercents,
-} from '@/constants/capture-system';
+import { APPEARANCE_WEIGHTS, computeCaptureChance, appearancePercents } from '@/constants/capture-system';
 
 /**
  * Peso relativo da qualidade na aparição (roll exclusivo normalizado).
@@ -47,7 +42,8 @@ export function spawnQualityPercents(): Record<CharacterQuality, number> {
 }
 
 export function computeCaptureFinalChance(_scrollChance: number, quality: CharacterQuality): number {
-  return computeCaptureChance(quality, 'item-sealing-scroll');
+  void quality;
+  return computeCaptureChance('comum', 'item-sealing-scroll');
 }
 
 export const CAPTURE_QUALITY_ORDER: readonly CharacterQuality[] = CHARACTER_QUALITIES;

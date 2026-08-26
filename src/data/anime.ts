@@ -6,7 +6,7 @@ import { ANIME_IDS, type AnimeId } from '@/types/anime';
 const SOURCE_HINTS: Array<{ anime: AnimeId; tokens: readonly string[] }> = [
   {
     anime: 'bleach',
-    tokens: ['bleach', 'hitsugaya', 'hinamori', 'shinigami', 'ichigo', 'aizen', 'rukia'],
+    tokens: ['bleach', 'hitsugaya', 'hinamori', 'shinigami', 'ichigo', 'aizen', 'rukia', 'ulquiorra', 'zanpakuto'],
   },
   {
     anime: 'one-piece',
@@ -77,6 +77,19 @@ const SOURCE_HINTS: Array<{ anime: AnimeId; tokens: readonly string[] }> = [
       'pain',
       'danzo',
       'danzou',
+      'kurenai',
+      'hashirama',
+      'tobirama',
+      'minato',
+      'sasori',
+      'kankuro',
+      'sai',
+      'hanabi',
+      'anko',
+      'hinata-g6',
+      'yamato',
+      'hiruzen',
+      'konohamaru',
       'ino',
       'guy',
       'lee',

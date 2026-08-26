@@ -1,6 +1,6 @@
 import type { ItemDefinition } from '@/types/loot';
 import {
-  SEALING_SCROLL_TIERS,
+  listCaptureScrollTiers,
   type SealingScrollTierId,
 } from '@/constants/sealing';
 import {
@@ -57,28 +57,28 @@ export const HELPER_ITEM_DEFS: Record<string, ItemDefinition> = {
     name: 'Poção',
     rarity: 'common',
     stackMax: ITEM_STACK_LIMITS.potion,
-    iconSrc: '/ui/items/potions/pocao.png',
+    iconSrc: '/ui/items/potions/pocao.png?v=2',
   },
   [HP_POTION_CONCENTRATED_ITEM_ID]: {
     id: HP_POTION_CONCENTRATED_ITEM_ID,
     name: 'Poção Concentrada',
     rarity: 'uncommon',
     stackMax: ITEM_STACK_LIMITS.potion,
-    iconSrc: '/ui/items/potions/pocao-concentrada.png',
+    iconSrc: '/ui/items/potions/pocao-concentrada.png?v=2',
   },
   [HP_POTION_ULTRA_ITEM_ID]: {
     id: HP_POTION_ULTRA_ITEM_ID,
     name: 'Poção Ultra Concentrada',
     rarity: 'epic',
     stackMax: ITEM_STACK_LIMITS.potion,
-    iconSrc: '/ui/items/potions/pocao-ultra-concentrada.png',
+    iconSrc: '/ui/items/potions/pocao-ultra-concentrada.png?v=2',
   },
   [REVIVE_ITEM_ID]: {
     id: REVIVE_ITEM_ID,
     name: 'Revive',
     rarity: 'rare',
     stackMax: ITEM_STACK_LIMITS.revive,
-    iconSrc: '/ui/items/potions/revive.png',
+    iconSrc: '/ui/items/potions/revive.png?v=2',
   },
 };
 
@@ -91,7 +91,7 @@ export function isHelperPotion(itemId: string): itemId is HelperPotionId {
 }
 
 export function isSealingScrollId(itemId: string): itemId is SealingScrollTierId {
-  return SEALING_SCROLL_TIERS.some((t) => t.itemId === itemId);
+  return listCaptureScrollTiers().some((t) => t.itemId === itemId);
 }
 
 /** Preços de compra no market (cobre). */

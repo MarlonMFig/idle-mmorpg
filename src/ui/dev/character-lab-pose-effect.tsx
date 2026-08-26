@@ -20,6 +20,7 @@ import { VfxSheetPreview } from '@/ui/dev/vfx-sheet-preview';
 import { VisualSkillEditor } from '@/ui/dev/visual-skill-editor';
 import { ValueRow } from '@/ui/dev/character-lab-value-row';
 import { CharacterLabExecutionEditor } from '@/ui/dev/character-lab-execution';
+import { CharacterLabJutsuFps } from '@/ui/dev/character-lab-jutsu-fps';
 import type { LabSkillSlot } from '@/lib/dev/lab-skill-slots';
 
 const SCALE_PRESETS = [0.5, 0.75, 1, 1.25, 1.5, 2];
@@ -317,6 +318,7 @@ export function CharacterLabPoseEffect({
         disabled={!labPoseHasContent(poseSheet)}
         onChange={(value) => characterLabStore.patchPoseSheet({ offsetY: value })}
       />
+      <CharacterLabJutsuFps />
       <button type="button" className="character-lab__run-btn" onClick={() => characterLabStore.playPose()}>
         Executar Pose
       </button>

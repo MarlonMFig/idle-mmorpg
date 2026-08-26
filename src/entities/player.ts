@@ -45,8 +45,13 @@ function labSkillVfxOverlay(
   const orig = lab.skillOriginals;
   const overlay: SkillVfxOverlay = {};
   if (anim.fxScale != null || lab.vfxScale !== orig.vfxScale) overlay.scale = lab.vfxScale;
-  if (anim.vfxOffsetX != null || lab.vfxOffsetX !== orig.vfxOffsetX) overlay.offsetX = lab.vfxOffsetX;
-  if (anim.vfxOffsetY != null || lab.vfxOffsetY !== orig.vfxOffsetY) overlay.offsetY = lab.vfxOffsetY;
+  if (anim.fx) {
+    overlay.offsetX = lab.vfxOffsetX;
+    overlay.offsetY = lab.vfxOffsetY;
+  } else {
+    if (anim.vfxOffsetX != null || lab.vfxOffsetX !== orig.vfxOffsetX) overlay.offsetX = lab.vfxOffsetX;
+    if (anim.vfxOffsetY != null || lab.vfxOffsetY !== orig.vfxOffsetY) overlay.offsetY = lab.vfxOffsetY;
+  }
   return overlay;
 }
 

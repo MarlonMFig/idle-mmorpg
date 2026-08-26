@@ -1,0 +1,43 @@
+{
+  "_leia": "Só números de captura. Duas etapas SEPARADAS e independentes: (1) selarChance decide SE capturou; (2) qualidadePesos decide O QUE saiu. A etapa 2 só roda depois que a 1 deu certo. Não coloque falha na etapa 2 — o jogador falharia duas vezes e a taxa real cairia pela metade sem aparecer em lugar nenhum.",
+  "versao": 1,
+
+  "selarChance": {
+    "_leia": "ETAPA 1 — chance de a captura dar certo. Depende do INIMIGO e do PERGAMINHO, nunca da qualidade: a qualidade ainda não existe neste momento, ela é sorteada depois. chanceFinal = base[tierInimigo] x mult[pergaminho], limitado por teto.",
+    "teto": 0.95,
+    "piso": 0.02,
+
+    "basePorTier": {
+      "comum": 0.6,
+      "elite": 0.35,
+      "raro": 0.18,
+      "chefe": 0.06
+    },
+
+    "multPorPergaminho": {
+      "basico": 1.0,
+      "reforcado": 1.35,
+      "superior": 1.8,
+      "mestre": 2.4
+    }
+  },
+
+  "qualidadePesos": {
+    "D": 4000,
+    "C": 1400,
+    "B": 500,
+    "A": 160,
+    "S": 40,
+    "SS": 8,
+    "SSS": 1,
+    "sorte": {
+      "padrao": 1.0,
+      "evento": 1.2,
+      "maximo": 1.5
+    }
+  },
+
+  "scrollCraft": {
+    "perStep": 7
+  }
+}

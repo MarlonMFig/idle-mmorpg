@@ -11,6 +11,7 @@ import { CharacterLabAiEditor } from '@/ui/dev/character-lab-ai';
 import { CharacterLabElementEditor } from '@/ui/dev/character-lab-element';
 import { CharacterLabExecutionEditor } from '@/ui/dev/character-lab-execution';
 import { CharacterLabStatusEditor } from '@/ui/dev/character-lab-status';
+import { CharacterLabJutsuFps } from '@/ui/dev/character-lab-jutsu-fps';
 import { ValueRow } from '@/ui/dev/character-lab-value-row';
 
 const TRIGGER_LABELS: Record<SkillDamageTrigger, string> = {
@@ -81,6 +82,8 @@ export function CharacterLabSkillLogic({
         onChange={(value) => characterLabStore.setFlag('castDelayMs', Math.max(0, Math.round(value)))}
       />
       <p className="character-lab__hint">Pose → Cast Delay → Effect</p>
+
+      <CharacterLabJutsuFps disabled={!lastSkillId} />
 
       <h4>MOMENTO DO DANO</h4>
       <p className="character-lab__hint">
