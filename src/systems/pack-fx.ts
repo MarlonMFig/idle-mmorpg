@@ -851,7 +851,7 @@ export function playPackImpactFx(
   const impactStart = flightN > 0 && flightN < totalFrames ? flightN : 0;
   const impactOnly = impactStart > 0;
   const scaleMult = (anim.fxScale ?? 1) * (opts?.scaleMult ?? 0.92);
-  const bodyH = anim.contentHeight;
+  const bodyH = anim.contentHeight ?? 0;
   const fxH = fxDef.contentHeight ?? fxDef.frameHeight;
   const bodyLift = bodyLiftOf(caster);
 

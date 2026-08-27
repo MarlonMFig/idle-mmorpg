@@ -303,7 +303,8 @@ export class EnemyManager {
         true,
         instanceIndex,
       );
-      const { id: _id, spawn: _spawn, ...rest } = built;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars -- strip per-instance fields
+      const { id, spawn: spawnPoint, ...rest } = built;
       template = rest;
       this.duelTemplateCache.set(cacheKey, template);
     }
