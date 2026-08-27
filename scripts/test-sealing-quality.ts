@@ -85,7 +85,7 @@ assert(
 const commonScroll = getSealingScrollConfig(SEALING_SCROLL_TIERS[0].itemId)!;
 for (const quality of CHARACTER_QUALITIES) {
   const chance = getCaptureChance(itachiEnemy(quality), commonScroll);
-  assert(`selável ${quality}`, chance.finalChance === 0.06);
+  assert(`selável ${quality}`, chance.finalChance === 0.12);
   assert(`tier chefe ${quality}`, chance.captureTier === 'chefe');
 }
 

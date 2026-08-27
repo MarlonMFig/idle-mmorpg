@@ -620,6 +620,7 @@ function formatSkillAnimLiteral(
     vfxLoopUntilSkillEnd?: boolean;
     vfxFlipX?: boolean;
     vfxFlipY?: boolean;
+    areaImpactFxPerTarget?: boolean;
     loopMode?: FrameLoopModeInput;
     loopStartFrame?: number;
     loopEndFrame?: number;
@@ -688,6 +689,8 @@ function formatSkillAnimLiteral(
   if (anim.vfxLoopUntilSkillEnd) lines.push(`${inner}vfxLoopUntilSkillEnd: true,`);
   if (anim.vfxFlipX) lines.push(`${inner}vfxFlipX: true,`);
   if (anim.vfxFlipY) lines.push(`${inner}vfxFlipY: true,`);
+  if (anim.areaImpactFxPerTarget === true) lines.push(`${inner}areaImpactFxPerTarget: true,`);
+  if (anim.areaImpactFxPerTarget === false) lines.push(`${inner}areaImpactFxPerTarget: false,`);
   if (anim.loopMode) {
     const mode = canonicalizeLoopMode(anim.loopMode) ?? anim.loopMode;
     lines.push(`${inner}loopMode: '${mode}',`);
@@ -937,7 +940,7 @@ function sanitizeChanges(raw: Record<string, unknown>): LabSaveChanges {
       out.vfxLoopMode = canonicalizeLoopMode(value) ?? 'none';
       continue;
     }
-    if (key === 'vfxFlipX' || key === 'vfxFlipY' || key === 'vfxLoopUntilSkillEnd') {
+    if (key === 'vfxFlipX' || key === 'vfxFlipY' || key === 'vfxLoopUntilSkillEnd' || key === 'areaImpactFxPerTarget') {
       out[key] = Boolean(value);
       continue;
     }
@@ -1143,7 +1146,8 @@ export function patchCharacterSource(input: LabSourcePatch, options?: LabPatchOp
     changes.vfxLoopDurationMs != null ||
     changes.vfxLoopUntilSkillEnd != null ||
     changes.vfxFlipX != null ||
-    changes.vfxFlipY != null;
+    changes.vfxFlipY != null ||
+    changes.areaImpactFxPerTarget != null;
 
   if (wantsSkill) {
     if (!skillId) throw new Error('Selecione uma skill para salvar VFX/targeting.');
@@ -1197,6 +1201,10 @@ export function patchCharacterSource(input: LabSourcePatch, options?: LabPatchOp
     if (changes.vfxFlipY != null) {
       skillBlock = setBooleanProp(skillBlock, 'vfxFlipY', changes.vfxFlipY);
       applied.vfxFlipY = changes.vfxFlipY ? 'true' : 'false';
+    }
+    if (changes.areaImpactFxPerTarget != null) {
+      skillBlock = setBooleanProp(skillBlock, 'areaImpactFxPerTarget', changes.areaImpactFxPerTarget);
+      applied.areaImpactFxPerTarget = changes.areaImpactFxPerTarget ? 'true' : 'false';
     }
 
     if (changes.vfxId !== undefined) {

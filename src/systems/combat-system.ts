@@ -33,7 +33,7 @@ import { bossStore } from '@/stores/boss-store';
 import { createBossAiState, decideBossAction } from '@/lib/boss-ai';
 import { getSkill } from '@/data/skills';
 import { autoHelperSystem } from '@/systems/auto-helper-system';
-import { handleEnemyKill } from '@/systems/combat-rewards';
+import { scheduleHandleEnemyKill } from '@/systems/combat-rewards';
 import {
   getEffectiveCombatStats,
   PLAYER_STATUS_UNIT_ID,
@@ -42,7 +42,7 @@ import {
 import type { EnemyManager } from '@/systems/enemy-manager';
 import { findNearestAliveEnemy, findUnclaimedEnemy } from '@/systems/find-nearest-enemy';
 import type { LootManager } from '@/systems/loot-manager';
-import { computeSkillFxAim, playPackFx, type SkillFxAim } from '@/systems/pack-fx';
+import { computeSkillFxAim, playPackFx, shouldSpawnAreaImpactFxPerTarget, spawnAreaImpactFxForTargets, type SkillFxAim } from '@/systems/pack-fx';
 import { playPlayerPulse } from '@/systems/player-feedback';
 import { SkillVfx } from '@/systems/skill-vfx';
 import {
@@ -661,6 +661,12 @@ export class CombatSystem {
       hit.push(origin);
       this.hitEnemy(origin, damage, PLAYER_STATUS_UNIT_ID, resolveSkillElement(skill, anim));
     }
+    if (
+      anim &&
+      shouldSpawnAreaImpactFxPerTarget(anim, impact.kind, hit.length, radius)
+    ) {
+      spawnAreaImpactFxForTargets(this.scene, this.player, anim, hit, target?.id);
+    }
     this.applyStatuses(skill, anim, 'on-hit', execution, target, hit, impact.index);
   }
 
@@ -854,7 +860,7 @@ export class CombatSystem {
       this.enemyManager.setHuntPaused(true);
       return;
     }
-    handleEnemyKill(enemy, this.lootManager, dropX, dropY);
+    scheduleHandleEnemyKill(this.scene, enemy, this.lootManager, dropX, dropY);
     this.enemyManager.onEnemyKilled(enemy.id);
   }
 }

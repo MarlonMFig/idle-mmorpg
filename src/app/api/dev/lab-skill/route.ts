@@ -172,6 +172,9 @@ export async function POST(request: Request) {
         ...(body.vfxLoopUntilSkillEnd != null ? { vfxLoopUntilSkillEnd: Boolean(body.vfxLoopUntilSkillEnd) } : {}),
         ...(body.vfxFlipX != null ? { vfxFlipX: Boolean(body.vfxFlipX) } : {}),
         ...(body.vfxFlipY != null ? { vfxFlipY: Boolean(body.vfxFlipY) } : {}),
+        ...(body.areaImpactFxPerTarget != null
+          ? { areaImpactFxPerTarget: Boolean(body.areaImpactFxPerTarget) }
+          : {}),
         spawnOffsetX: asNum(body.spawnOffsetX, 0),
         spawnOffsetY: asNum(body.spawnOffsetY, 0),
         targetOffsetX: asNum(body.targetOffsetX, 0),

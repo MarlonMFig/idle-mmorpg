@@ -60,11 +60,11 @@ assert('teto 95%', CAPTURE_CHANCE_CAP === 0.95);
 assert('piso 2%', CAPTURE_CHANCE_FLOOR === 0.02);
 assert('comum + básico 60%', Math.abs(computeCaptureChance('comum', common.itemId) - 0.6) < 1e-9);
 assert('elite + básico 35%', Math.abs(computeCaptureChance('elite', common.itemId) - 0.35) < 1e-9);
-assert('raro + básico 18%', Math.abs(computeCaptureChance('raro', common.itemId) - 0.18) < 1e-9);
-assert('chefe + básico 6%', Math.abs(computeCaptureChance('chefe', common.itemId) - 0.06) < 1e-9);
+assert('raro + básico 28%', Math.abs(computeCaptureChance('raro', common.itemId) - 0.28) < 1e-9);
+assert('chefe + básico 12%', Math.abs(computeCaptureChance('chefe', common.itemId) - 0.12) < 1e-9);
 assert('comum + raro 81%', Math.abs(computeCaptureChance('comum', rare.itemId) - 0.81) < 1e-9);
 assert('comum + mestre teto 95%', computeCaptureChance('comum', mestre.itemId) === 0.95);
-assert('chefe + mestre 14.4%', Math.abs(computeCaptureChance('chefe', mestre.itemId) - 0.144) < 1e-9);
+assert('chefe + mestre 28.8%', Math.abs(computeCaptureChance('chefe', mestre.itemId) - 0.288) < 1e-9);
 assert('craft 7', SCROLL_CRAFT_PER_STEP === 7);
 
 const percents = appearancePercents();
@@ -73,7 +73,7 @@ assert('qualidade SSS < S (etapa 2)', percents.SSS < percents.S);
 
 assert(
   'engine ignora quality no selar',
-  getCaptureChance(enemy({ captureTier: 'chefe' }), common).finalChance === 0.06,
+  getCaptureChance(enemy({ captureTier: 'chefe' }), common).finalChance === 0.12,
 );
 assert('engine usa tier', getCaptureChance(enemy({ captureTier: 'comum' }), common).captureTier === 'comum');
 

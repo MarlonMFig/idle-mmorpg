@@ -7,7 +7,7 @@ import {
   type CombatAffinityFields,
   type DamageElement,
 } from '@/data/damage-elements';
-import { characterLabStore, LAB_DUMMY_ID, isCharacterLabSession } from '@/stores/character-lab-store';
+import { characterLabStore, isLabDummyId, isCharacterLabSession } from '@/stores/character-lab-store';
 import { teamStore } from '@/stores/team-store';
 import { PLAYER_STATUS_UNIT_ID } from '@/systems/combat-stats';
 import type { EnemyDefinition } from '@/types/enemy';
@@ -27,7 +27,7 @@ export function getCombatAffinity(
   }
 
   const base = fromFields(enemyDef);
-  if (isCharacterLabSession() && targetId === LAB_DUMMY_ID) {
+  if (isCharacterLabSession() && isLabDummyId(targetId)) {
     const override = characterLabStore.getSnapshot().enemyAffinityOverride;
     if (override) {
       return {

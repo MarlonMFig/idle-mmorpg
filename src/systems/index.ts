@@ -11,6 +11,7 @@ export { RemotePlayerManager } from '@/systems/remote-player-manager';
 export { PlayerSyncSystem } from '@/systems/player-sync-system';
 export { PlayerInputSystem } from '@/systems/player-input-system';
 export { HubInteractableManager } from '@/systems/hub-interactable-manager';
+export { HubAmbientEffectsSystem } from '@/systems/hub-ambient-effects';
 export { HubBirdFlockSystem } from '@/systems/hub-bird-flock';
 export { HubChimneySmokeSystem } from '@/systems/hub-chimney-smoke';
 export { TeamCompanionSystem } from '@/systems/team-companion-system';

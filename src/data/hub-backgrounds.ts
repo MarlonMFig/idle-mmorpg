@@ -47,11 +47,11 @@ export interface HubBackgroundDef {
 }
 
 /**
- * Mundo do hub — PNG nativo 8000×4216 (sem resample).
- * Fonte: Hub upscale.rar / Hub_Anime_Visao_Aerea_4096x2160_upscaled.png
+ * Mundo do hub Konoha — PNG nativo 8192×4320 (cópia bit-a-bit, sem resample).
+ * Fonte: Hub_Konoha_RPG_HD_4096x2160.png (8192×4320 nativo).
  */
-export const HUB_NATIVE_WIDTH = 8000;
-export const HUB_NATIVE_HEIGHT = 4216;
+export const HUB_NATIVE_WIDTH = 8192;
+export const HUB_NATIVE_HEIGHT = 4320;
 /** Fator contra o layout legado de 1024 de largura. */
 export const HUB_LAYOUT_SCALE = HUB_NATIVE_WIDTH / 1024;
 
@@ -60,9 +60,9 @@ export const HUB_LAYOUT_SCALE = HUB_NATIVE_WIDTH / 1024;
  */
 export const HUB_UI_SCALE = 4.3;
 
-/** Centro da praça (folha) — hub isométrico, caminhar 2D. */
-const HUB_SPAWN = { x: 4000, y: 2520 };
-const HUB_ART = '/hubs/hub-interdimensional.png?v=hub-upscale-8000';
+/** Centro da praça (folha) — hub isométrico Konoha, caminhar 2D. */
+const HUB_SPAWN = { x: 4104, y: 2856 };
+const HUB_ART = '/hubs/hub-interdimensional.png?v=konoha-rpg-hd-8192';
 
 export const HUB_BACKGROUNDS: Record<HubKey, HubBackgroundDef> = {
   [HUB_KEYS.interdimensional]: {
@@ -78,7 +78,7 @@ export const HUB_BACKGROUNDS: Record<HubKey, HubBackgroundDef> = {
     tilemapWidth: HUB_NATIVE_WIDTH,
     tilemapHeight: HUB_NATIVE_HEIGHT,
     tilemapSpawn: { x: HUB_SPAWN.x, y: HUB_SPAWN.y },
-    layoutScale: 4.8,
+    layoutScale: 4.9,
   },
 };
 

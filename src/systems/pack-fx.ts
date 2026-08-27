@@ -820,6 +820,102 @@ function catalogFxOpts(anim: CharacterSkillAnimDef): Pick<
   };
 }
 
+export function shouldSpawnAreaImpactFxPerTarget(
+  anim: CharacterSkillAnimDef | undefined,
+  impactKind: string,
+  hitCount: number,
+  radius: number | null | undefined,
+): boolean {
+  if (!anim?.fx || hitCount <= 1) return false;
+  if (anim.areaImpactFxPerTarget === false) return false;
+  if (anim.areaImpactFxPerTarget === true) return true;
+  return impactKind === 'area' || (radius != null && radius > 0);
+}
+
+/** Impacto local (frames de impacto ou strip completa) — usado em duplicatas de área. */
+export function playPackImpactFx(
+  scene: Phaser.Scene,
+  caster: Player,
+  anim: CharacterSkillAnimDef,
+  x: number,
+  y: number,
+  opts?: { scaleMult?: number },
+): void {
+  if (!scene.sys?.isActive() || !caster.sprite || !anim.fx) return;
+  const fxDef = anim.fx;
+  const textureKey = fxDef.key;
+  if (!scene.textures.exists(textureKey)) return;
+
+  const flightN = anim.fxFlightFrameCount ?? 0;
+  const totalFrames = fxDef.frameCount;
+  const impactStart = flightN > 0 && flightN < totalFrames ? flightN : 0;
+  const impactOnly = impactStart > 0;
+  const scaleMult = (anim.fxScale ?? 1) * (opts?.scaleMult ?? 0.92);
+  const bodyH = anim.contentHeight;
+  const fxH = fxDef.contentHeight ?? fxDef.frameHeight;
+  const bodyLift = bodyLiftOf(caster);
+
+  if (impactOnly) {
+    const impactAnimKey = `fx-${textureKey}-area-impact`;
+    const fps = anim.fxSecondaryFrameRate ?? anim.fx.frameRate ?? 12;
+    if (
+      !ensureSpriteAnim(scene, impactAnimKey, textureKey, impactStart, totalFrames - 1, fps, 0)
+    ) {
+      return;
+    }
+    const fx = trackLabSprite(
+      scene.add.sprite(x, y - bodyLift * PACK_FX_MID_BODY_FACTOR, textureKey, impactStart),
+    );
+    applyFxDepth(fx, fx.y, anim.vfxId);
+    fx.setScale(
+      packFxDisplayScale({
+        bodyH,
+        fxW: fxDef.frameWidth,
+        fxH,
+        casterSpriteScaleX: caster.sprite.scaleX,
+        scaleMult,
+        ground: false,
+        independentScale: anim.fxIndependentScale === true,
+        worldScale: caster.worldScale,
+      }),
+    );
+    if (anim.fxBlend === 'add') fx.setBlendMode(Phaser.BlendModes.ADD);
+    if (safePlay(scene, fx, impactAnimKey)) {
+      fx.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => fx.destroy());
+    } else {
+      fx.destroy();
+    }
+    return;
+  }
+
+  playPackFx(scene, caster, textureKey, x, y, {
+    bodyH,
+    fxH,
+    scaleMult,
+    independentScale: anim.fxIndependentScale,
+    blend: anim.fxBlend,
+    offsetX: fxDef.offsetX,
+    offsetY: fxDef.offsetY,
+    originX: fxDef.originX,
+    originY: fxDef.originY,
+    ...catalogFxOpts(anim),
+  });
+}
+
+/** Duplica impacto nos demais alvos de um jutsu de área (primário já tem o VFX principal). */
+export function spawnAreaImpactFxForTargets(
+  scene: Phaser.Scene,
+  caster: Player,
+  anim: CharacterSkillAnimDef,
+  targets: ReadonlyArray<{ id: string; sprite: Phaser.GameObjects.Sprite }>,
+  primaryTargetId: string | null | undefined,
+): void {
+  for (const target of targets) {
+    if (primaryTargetId && target.id === primaryTargetId) continue;
+    playPackImpactFx(scene, caster, anim, target.sprite.x, target.sprite.y);
+  }
+}
+
 /**
  * Agenda o FX de uma folha de jutsu: legado (`fxAttach` / projétil) ou
  * `targeting.mode` oficial. Skills sem `targeting` não mudam.

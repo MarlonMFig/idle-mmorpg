@@ -1,19 +1,27 @@
 import * as Phaser from 'phaser';
 import { RENDER_LAYER } from '@/constants/render-layers';
-import { HUB_FORGE_CHIMNEY } from '@/data/hub-interactables';
 
 const TEX_KEY = 'hub-chimney-puff';
 
+export interface HubSmokeEmitterOptions {
+  x: number;
+  y: number;
+  tint?: number;
+}
+
 /**
- * Fumaça contínua da chaminé da forja. Textura suave + LINEAR —
+ * Fumaça contínua (chaminé, fogueira…). Textura suave + LINEAR —
  * combina com o hub pintado (sem nearest).
  */
 export class HubChimneySmokeSystem {
   private particles: Phaser.GameObjects.Particles.ParticleEmitter | null = null;
 
-  constructor(private readonly scene: Phaser.Scene) {
+  constructor(
+    private readonly scene: Phaser.Scene,
+    private readonly opts: HubSmokeEmitterOptions,
+  ) {
     ensurePuffTexture(scene);
-    const { x, y } = HUB_FORGE_CHIMNEY;
+    const { x, y } = opts;
     this.particles = scene.add.particles(x, y, TEX_KEY, {
       lifespan: { min: 2800, max: 5200 },
       frequency: 140,
@@ -29,7 +37,13 @@ export class HubChimneySmokeSystem {
       blendMode: Phaser.BlendModes.NORMAL,
     });
     this.particles.setDepth(RENDER_LAYER.world + 60);
-    this.particles.setParticleTint(0xd8d4e4);
+    this.particles.setParticleTint(opts.tint ?? 0xd8d4e4);
+  }
+
+  setPosition(x: number, y: number): void {
+    this.opts.x = x;
+    this.opts.y = y;
+    this.particles?.setPosition(x, y);
   }
 
   destroy(): void {

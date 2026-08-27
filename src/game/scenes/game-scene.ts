@@ -41,8 +41,9 @@ import {
   TeamCompanionSystem,
 } from '@/systems';
 import { MapViewportLabSystem } from '@/systems/map-viewport-lab-system';
-import { HubBirdFlockSystem } from '@/systems/hub-bird-flock';
-import { HubChimneySmokeSystem } from '@/systems/hub-chimney-smoke';
+import { HubAmbientEffectsSystem } from '@/systems/hub-ambient-effects';
+import { HubEffectsLabSystem } from '@/systems/hub-effects-lab-system';
+import { resolveHubEffects } from '@/lib/resolve-hub-effects';
 import { dialogueStore } from '@/stores/dialogue-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { locationStore, type GameMode } from '@/stores/location-store';
@@ -55,6 +56,7 @@ import { skillsStore } from '@/stores/skills-store';
 import { teamStore } from '@/stores/team-store';
 import { vitalsStore } from '@/stores/vitals-store';
 import { mapViewportLabStore } from '@/stores/map-viewport-lab-store';
+import { hubEffectsLabStore } from '@/stores/hub-effects-lab-store';
 import { getDevMapConfig } from '@/lib/dev/dev-runtime-registry';
 
 interface GameSceneData {
@@ -88,8 +90,9 @@ export class GameScene extends Phaser.Scene {
   private targetClaims: TargetClaims | null = null;
   private playerInput: PlayerInputSystem | null = null;
   private hubInteractables!: HubInteractableManager;
-  private hubBirds: HubBirdFlockSystem | null = null;
-  private hubChimneySmoke: HubChimneySmokeSystem | null = null;
+  private hubAmbient: HubAmbientEffectsSystem | null = null;
+  private hubEffectsLab: HubEffectsLabSystem | null = null;
+  private unsubHubEffects: (() => void) | null = null;
   private hubCollisionLayer: Phaser.Tilemaps.TilemapLayer | null = null;
   private remotePlayers!: RemotePlayerManager;
   private playerSync!: PlayerSyncSystem;
@@ -540,13 +543,10 @@ export class GameScene extends Phaser.Scene {
     this.hubInteractables = new HubInteractableManager(this);
     this.hubInteractables.load(this.mode, this.mapKey);
 
-    this.hubBirds?.destroy();
-    this.hubBirds = null;
-    this.hubChimneySmoke?.destroy();
-    this.hubChimneySmoke = null;
+    this.hubAmbient?.destroy();
+    this.hubAmbient = null;
     if (this.mode === 'hub') {
-      this.hubBirds = new HubBirdFlockSystem(this, this.worldW, this.worldH);
-      this.hubChimneySmoke = new HubChimneySmokeSystem(this);
+      this.rebuildHubAmbientEffects();
     }
 
     this.lootPickup = new LootPickupSystem(this.lootManager);
@@ -608,6 +608,16 @@ export class GameScene extends Phaser.Scene {
       applyCameraLayout: () => this.applyCameraLayout(),
     });
 
+    this.hubEffectsLab?.destroy();
+    this.hubEffectsLab = new HubEffectsLabSystem({
+      scene: this,
+      getWorldSize: () => ({ w: this.worldW, h: this.worldH }),
+    });
+    this.unsubHubEffects?.();
+    this.unsubHubEffects = hubEffectsLabStore.subscribe(() => {
+      if (this.mode === 'hub') this.rebuildHubAmbientEffects();
+    });
+
     this.worldReady = true;
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -616,10 +626,12 @@ export class GameScene extends Phaser.Scene {
       this.unsubLocation?.();
       this.unsubLocation = null;
       this.hubInteractables?.clear();
-      this.hubBirds?.destroy();
-      this.hubBirds = null;
-      this.hubChimneySmoke?.destroy();
-      this.hubChimneySmoke = null;
+      this.hubAmbient?.destroy();
+      this.hubAmbient = null;
+      this.hubEffectsLab?.destroy();
+      this.hubEffectsLab = null;
+      this.unsubHubEffects?.();
+      this.unsubHubEffects = null;
       this.characterLab?.destroy();
       this.characterLab = null;
       this.mapViewportLab?.destroy();
@@ -637,6 +649,16 @@ export class GameScene extends Phaser.Scene {
       this.remotePlayers.clear();
       multiplayerStore.setDisconnected();
     });
+  }
+
+  private rebuildHubAmbientEffects(): void {
+    this.hubAmbient?.destroy();
+    this.hubAmbient = new HubAmbientEffectsSystem(
+      this,
+      this.worldW,
+      this.worldH,
+      resolveHubEffects(),
+    );
   }
 
   /** Velocidade do mapa atual (mapa de teste farm usa multiplicador do vídeo). */
@@ -869,7 +891,8 @@ export class GameScene extends Phaser.Scene {
     if (manualMove) this.targetClaims?.release(LEADER_CLAIM_ID);
     else if (!isCharacterLabSession() && !isLabBlockingHuntGameplay()) this.idleAi?.update();
     if (!isCharacterLabSession() && !isLabBlockingHuntGameplay()) this.teamCompanions?.update(time);
-    this.hubBirds?.update(time, this.game.loop.delta);
+    this.hubAmbient?.update(time, this.game.loop.delta);
+    this.hubEffectsLab?.update();
     this.characterLab?.update(time);
     this.mapViewportLab?.update();
     this.combatSystem?.update(time);

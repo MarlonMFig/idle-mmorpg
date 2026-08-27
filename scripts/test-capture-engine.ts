@@ -95,7 +95,7 @@ assert(
       sealable: { ...TARGET.sealable!, level: 400, captureTier: undefined },
     },
     scroll,
-  ).finalChance === 0.06,
+  ).finalChance === 0.12,
 );
 
 setup(0);

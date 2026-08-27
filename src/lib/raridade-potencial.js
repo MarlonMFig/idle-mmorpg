@@ -30,13 +30,13 @@ export const CONFIG = {
     'id = o que está gravado no banco (D..SSS). rotulo = o que o jogador lê. ' +
     'Se os nomes divergirem em algum lugar do projeto, o id manda.',
   qualidades: [
-    { id: 'D',   rotulo: 'Comum',    peso: 4000, min: 0.23, max: 0.38 },
-    { id: 'C',   rotulo: 'Incomum',  peso: 1400, min: 0.32, max: 0.54 },
+    { id: 'D',   rotulo: 'Comum',    peso: 4500, min: 0.23, max: 0.38 },
+    { id: 'C',   rotulo: 'Incomum',  peso: 1600, min: 0.32, max: 0.54 },
     { id: 'B',   rotulo: 'Raro',     peso:  500, min: 0.45, max: 0.75 },
     { id: 'A',   rotulo: 'Épico',    peso:  160, min: 0.68, max: 1.13 },
     { id: 'S',   rotulo: 'Lendário', peso:   40, min: 0.98, max: 1.63 },
-    { id: 'SS',  rotulo: 'Mítico',   peso:    8, min: 1.35, max: 2.25 },
-    { id: 'SSS', rotulo: 'Supremo',  peso:    1, min: 1.88, max: 3.13 },
+    { id: 'SS',  rotulo: 'Mítico',   peso:    2, min: 1.35, max: 2.25 },
+    { id: 'SSS', rotulo: 'Supremo',  peso: 0.25, min: 1.88, max: 3.13 },
   ],
 
   _leiaPotencial:

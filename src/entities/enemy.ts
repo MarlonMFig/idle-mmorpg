@@ -63,7 +63,8 @@ function lerpColor(from: number, to: number, t: number): number {
  */
 export class Enemy {
   readonly sprite: Phaser.Physics.Arcade.Sprite;
-  readonly definition: EnemyDefinition;
+  /** Mutável para recycle na fila lateral (evita destroy/create a cada kill). */
+  definition: EnemyDefinition;
   readonly stats: EnemyRuntimeStats;
 
   /** Contorno da barra (anel escuro). */
@@ -90,6 +91,8 @@ export class Enemy {
   private reactingUntil = 0;
   private deathHold = false;
   private reactionEpoch = 0;
+  /** Scene time da morte — recycle da fila lateral espera o fade do cadáver. */
+  private diedAt = 0;
   /** Último golpe no jogador (ms scene). */
   private lastAttackAt = 0;
   /** Próximo instante em que cada habilidade WONSR pode ser usada. */
@@ -237,6 +240,12 @@ export class Enemy {
 
   get isAlive(): boolean {
     return this.alive;
+  }
+
+  /** true se morto e o fade do cadáver já terminou (pronto para recycle). */
+  get canRecycle(): boolean {
+    if (this.alive) return false;
+    return this.scene.time.now - this.diedAt >= ENEMY_CORPSE_MS;
   }
 
   /** Aplica dano. Retorna true se o golpe matou o monstro. */
@@ -568,15 +577,13 @@ export class Enemy {
 
   private die(): void {
     this.alive = false;
+    this.diedAt = this.scene.time.now;
     getStatusRuntime(this.scene).clearTarget(this.id);
     this.statusIcons.setText('');
     this.patrolTarget = null;
     this.reactingUntil = 0;
     this.pendingHit = null;
     this.scene.tweens.killTweensOf(this.sprite);
-    this.scene.tweens.killTweensOf(this.hpBarFill);
-    this.scene.tweens.killTweensOf(this.hpBarGloss);
-    this.scene.tweens.killTweensOf(this.hpBarBorder);
     this.sprite.clearTint();
     this.sprite.setVelocity(0, 0);
     this.sprite.body!.enable = false;
@@ -588,7 +595,6 @@ export class Enemy {
 
     const playedDeath = this.playDeathAnim();
     if (!playedDeath) {
-      // Fallback: tint + dim without death sheet.
       this.sprite.anims.stop();
       this.sprite.setTint(0x555555);
       this.sprite.setAlpha(0.85);
@@ -606,8 +612,65 @@ export class Enemy {
     });
   }
 
+  /**
+   * Reusa a instância na fila lateral (mesmo look ou template cacheado).
+   * Evita alocar physics body / nameplate / HP bar a cada kill — crítico em produção.
+   */
+  recycle(next: EnemyDefinition): void {
+    this.scene.tweens.killTweensOf(this.sprite);
+    this.scene.tweens.killTweensOf(this.hpBarFill);
+    this.scene.tweens.killTweensOf(this.hpBarGloss);
+    this.scene.tweens.killTweensOf(this.hpBarBorder);
+    getStatusRuntime(this.scene).clearTarget(this.id);
+
+    this.definition = next;
+    this.alive = true;
+    this.diedAt = 0;
+    this.rewardClaimed = false;
+    this.captureResolved = false;
+    this.deathHold = false;
+    this.reactingUntil = 0;
+    this.pendingHit = null;
+    this.comboStep = 0;
+    this.patrolTarget = null;
+    this.lastPlayerPos = null;
+    this.skillReadyAt.clear();
+    this.reactionEpoch += 1;
+    this.respawnAt = 0;
+
+    const hpMax = enemyMaxHpForDefinition(next);
+    this.stats.hpMax = hpMax;
+    this.stats.hp = hpMax;
+    this.stats.level = next.level;
+    this.stats.xp = next.xp;
+
+    this.sprite.clearTint();
+    this.sprite.setVisible(true);
+    this.sprite.setAlpha(1);
+    if (this.sprite.texture.key !== next.sprite) {
+      this.sprite.setTexture(next.sprite, next.spriteFrame ?? 0);
+      this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    } else if (next.spriteFrame != null) {
+      this.sprite.setFrame(next.spriteFrame);
+    }
+    this.sprite.enableBody(true, next.spawn.x, next.spawn.y, true, true);
+    this.sprite.setVelocity(0, 0);
+    this.sprite.setData('enemyId', next.id);
+    this.sprite.setData('enemyLevel', next.level);
+
+    this.nameLabel.setText(next.name);
+    this.nameLabel.setVisible(true);
+    this.statusIcons.setText('');
+    this.setHpBarVisible(true);
+    this.nextPatrolAt = this.scene.time.now + Phaser.Math.Between(250, 900);
+    this.playIdleAnim();
+    this.refreshHpBar();
+    this.syncOverlays();
+  }
+
   private respawn(): void {
     this.alive = true;
+    this.diedAt = 0;
     this.rewardClaimed = false;
     this.captureResolved = false;
     this.deathHold = false;

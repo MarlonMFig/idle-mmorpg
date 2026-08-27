@@ -25,7 +25,7 @@ import {
 } from '@/data/wonsr-sprites';
 import { Enemy } from '@/entities/enemy';
 import { type Decimal as DecimalValue } from '@/lib/decimal';
-import { LAB_DUMMY_ID } from '@/stores/character-lab-store';
+import { isLabDummyId } from '@/stores/character-lab-store';
 import { type MapKey } from '@/maps/map-registry';
 import type { EnemyDefinition, EnemySkill, EnemyWalkAnimation } from '@/types/enemy';
 import type { HuntCatalog, HuntTargetAttack } from '@/types/hunt';
@@ -71,6 +71,8 @@ export class EnemyManager {
   /** Timer de fila: próximo entra mesmo com os anteriores vivos. */
   private duelSpawnLoop = false;
   private huntPaused = false;
+  /** Template de inimigo por caça/alvo — evita rebuild a cada spawn lateral. */
+  private readonly duelTemplateCache = new Map<string, Omit<EnemyDefinition, 'id' | 'spawn'>>();
 
   constructor(private readonly scene: Phaser.Scene) {}
 
@@ -154,7 +156,7 @@ export class EnemyManager {
   update(time: number, playerX?: number, playerY?: number): DecimalValue[] {
     const hits: DecimalValue[] = [];
     for (const enemy of this.enemies.values()) {
-      if (this.huntPaused && enemy.id !== LAB_DUMMY_ID) continue;
+      if (this.huntPaused && !isLabDummyId(enemy.id)) continue;
       const damage = enemy.update(
         time,
         this.huntPaused ? undefined : playerX,
@@ -191,24 +193,16 @@ export class EnemyManager {
   }
 
   /**
-   * Após kill em caça sequencial: remove o cadáver.
-   * Na fila lateral o próximo já entra pelo timer — não espera a morte.
+   * Após kill em caça sequencial/lateral: reusa o cadáver no próximo spawn.
+   * Não destroy+create — isso travava o frame em mapas 4K (Itachi etc.).
    */
   onEnemyKilled(enemyId: string): void {
     if (!this.duelHuntId || !this.mapKey) return;
     const dead = this.enemies.get(enemyId);
     if (!dead) return;
 
-    this.scheduleDuel(ENEMY_CORPSE_MS, () => {
-      const still = this.enemies.get(enemyId);
-      if (still) {
-        still.destroy();
-        this.enemies.delete(enemyId);
-      }
-    });
-
     if (!this.duelSpawnLoop) {
-      this.scheduleDuel(this.duelEntryDelayMs, () => {
+      this.scheduleDuel(Math.max(this.duelEntryDelayMs, ENEMY_CORPSE_MS), () => {
         this.spawnDuelNext();
       });
     }
@@ -228,6 +222,7 @@ export class EnemyManager {
     this.duelLeft = null;
     this.duelRight = null;
     this.duelSpawnLoop = false;
+    this.duelTemplateCache.clear();
   }
 
   private scheduleDuel(delayMs: number, fn: () => void): void {
@@ -246,10 +241,27 @@ export class EnemyManager {
     return count;
   }
 
+  private takeRecyclableEnemy(): Enemy | null {
+    for (const enemy of this.enemies.values()) {
+      if (!enemy.isAlive && enemy.canRecycle) {
+        this.enemies.delete(enemy.id);
+        return enemy;
+      }
+    }
+    return null;
+  }
+
   private spawnDuelNext(): void {
     if (!this.duelHuntId || !this.mapKey) return;
     if (this.huntPaused) return;
     if (this.aliveCount() >= this.duelMaxAlive) return;
+
+    const recycled = this.takeRecyclableEnemy();
+    // Cadáver ainda no fade: espera o próximo tick da fila (não cria clone extra).
+    if (!recycled) {
+      const hasDead = [...this.enemies.values()].some((enemy) => !enemy.isAlive);
+      if (hasDead) return;
+    }
 
     const raw = this.scene.cache.json.get(WONSR_HUNTS_KEY) as HuntCatalog | undefined;
     const catalog = raw ? applyForcedHuntLevels(raw) : undefined;
@@ -257,7 +269,13 @@ export class EnemyManager {
     const rawHunt = raw?.hunts.find((entry) => entry.id === this.duelHuntId);
     if (!hunt?.targets.length) return;
 
-    this.spawn(this.buildDuelDefinition(hunt, rawHunt, this.mapKey));
+    const definition = this.buildDuelDefinition(hunt, rawHunt, this.mapKey);
+    if (recycled) {
+      recycled.recycle(definition);
+      this.enemies.set(definition.id, recycled);
+      return;
+    }
+    this.spawn(definition);
   }
 
   private buildDuelDefinition(
@@ -273,16 +291,29 @@ export class EnemyManager {
     this.duelSide = this.duelSide === 0 ? 1 : 0;
     this.duelSpawnSeq += 1;
 
-    const def = this.buildHuntEnemyDefinition(
-      hunt,
-      rawHunt,
-      mapKey,
-      targetIndex,
-      spawn ?? EnemyManager.FALLBACK_SPAWNS[0],
-      true,
-      instanceIndex,
-    );
-    return def;
+    const cacheKey = `${hunt.id}:${targetIndex}:${mapKey}`;
+    let template = this.duelTemplateCache.get(cacheKey);
+    if (!template) {
+      const built = this.buildHuntEnemyDefinition(
+        hunt,
+        rawHunt,
+        mapKey,
+        targetIndex,
+        spawn ?? EnemyManager.FALLBACK_SPAWNS[0],
+        true,
+        instanceIndex,
+      );
+      const { id: _id, spawn: _spawn, ...rest } = built;
+      template = rest;
+      this.duelTemplateCache.set(cacheKey, template);
+    }
+
+    const target = hunt.targets[targetIndex];
+    return {
+      ...template,
+      id: `${hunt.id}-${target.id}-${instanceIndex}-d${Date.now() % 1_000_000}`,
+      spawn: spawn ?? EnemyManager.FALLBACK_SPAWNS[0],
+    };
   }
 
   private spawn(definition: EnemyDefinition): Enemy {
@@ -313,7 +344,7 @@ export class EnemyManager {
   setHuntPaused(paused: boolean): void {
     this.huntPaused = paused;
     for (const enemy of this.enemies.values()) {
-      if (enemy.id === LAB_DUMMY_ID) continue;
+      if (isLabDummyId(enemy.id)) continue;
       enemy.sprite.setVisible(!paused);
       const body = enemy.sprite.body;
       if (body) body.enable = !paused;
@@ -529,34 +560,32 @@ export class EnemyManager {
     const hurtAnimKey = `${prefix}-hurt`;
     const deathAnimKey = `${prefix}-death`;
 
-    // Recria se o pack mudou de contagem/tamanho de frames (hot reload de assets).
-    if (this.scene.anims.exists(idleAnimKey)) this.scene.anims.remove(idleAnimKey);
-    if (this.scene.anims.exists(walkAnimKey)) this.scene.anims.remove(walkAnimKey);
-    if (this.scene.anims.exists(hurtAnimKey)) this.scene.anims.remove(hurtAnimKey);
-    if (this.scene.anims.exists(deathAnimKey)) this.scene.anims.remove(deathAnimKey);
-
     // Idle com 1 frame quando reutiliza a sheet de walk (evita “caminhar no lugar”).
     const idleSharesWalk = idle.key === pack.walk.key;
     const idleEnd = idleSharesWalk || !pack.idle ? 0 : pack.idle.frameCount - 1;
 
-    this.scene.anims.create({
-      key: idleAnimKey,
-      frames: this.scene.anims.generateFrameNumbers(idle.key, {
-        start: 0,
-        end: idleEnd,
-      }),
-      frameRate: idle.frameRate ?? 8,
-      repeat: -1,
-    });
-    this.scene.anims.create({
-      key: walkAnimKey,
-      frames: this.scene.anims.generateFrameNumbers(pack.walk.key, {
-        start: 0,
-        end: pack.walk.frameCount - 1,
-      }),
-      frameRate: pack.walk.frameRate ?? 12,
-      repeat: -1,
-    });
+    if (!this.scene.anims.exists(idleAnimKey)) {
+      this.scene.anims.create({
+        key: idleAnimKey,
+        frames: this.scene.anims.generateFrameNumbers(idle.key, {
+          start: 0,
+          end: idleEnd,
+        }),
+        frameRate: idle.frameRate ?? 8,
+        repeat: -1,
+      });
+    }
+    if (!this.scene.anims.exists(walkAnimKey)) {
+      this.scene.anims.create({
+        key: walkAnimKey,
+        frames: this.scene.anims.generateFrameNumbers(pack.walk.key, {
+          start: 0,
+          end: pack.walk.frameCount - 1,
+        }),
+        frameRate: pack.walk.frameRate ?? 12,
+        repeat: -1,
+      });
+    }
 
     const attackSheets =
       pack.attackChain && pack.attackChain.length > 0
@@ -570,16 +599,17 @@ export class EnemyManager {
       const sheet = attackSheets[i];
       if (!this.scene.textures.exists(sheet.key)) continue;
       const attackAnimKey = `${prefix}-attack-${i}`;
-      if (this.scene.anims.exists(attackAnimKey)) this.scene.anims.remove(attackAnimKey);
-      this.scene.anims.create({
-        key: attackAnimKey,
-        frames: this.scene.anims.generateFrameNumbers(sheet.key, {
-          start: 0,
-          end: sheet.frameCount - 1,
-        }),
-        frameRate: sheet.frameRate ?? 12,
-        repeat: 0,
-      });
+      if (!this.scene.anims.exists(attackAnimKey)) {
+        this.scene.anims.create({
+          key: attackAnimKey,
+          frames: this.scene.anims.generateFrameNumbers(sheet.key, {
+            start: 0,
+            end: sheet.frameCount - 1,
+          }),
+          frameRate: sheet.frameRate ?? 12,
+          repeat: 0,
+        });
+      }
       attackAnimKeys.push(attackAnimKey);
       attackTextureKeys.push(sheet.key);
     }
@@ -587,27 +617,31 @@ export class EnemyManager {
     let hurtTextureKey: string | undefined;
     let deathTextureKey: string | undefined;
     if (pack.hurt && this.scene.textures.exists(pack.hurt.key)) {
-      this.scene.anims.create({
-        key: hurtAnimKey,
-        frames: this.scene.anims.generateFrameNumbers(pack.hurt.key, {
-          start: 0,
-          end: pack.hurt.frameCount - 1,
-        }),
-        frameRate: pack.hurt.frameRate ?? 10,
-        repeat: 0,
-      });
+      if (!this.scene.anims.exists(hurtAnimKey)) {
+        this.scene.anims.create({
+          key: hurtAnimKey,
+          frames: this.scene.anims.generateFrameNumbers(pack.hurt.key, {
+            start: 0,
+            end: pack.hurt.frameCount - 1,
+          }),
+          frameRate: pack.hurt.frameRate ?? 10,
+          repeat: 0,
+        });
+      }
       hurtTextureKey = pack.hurt.key;
     }
     if (pack.death && this.scene.textures.exists(pack.death.key)) {
-      this.scene.anims.create({
-        key: deathAnimKey,
-        frames: this.scene.anims.generateFrameNumbers(pack.death.key, {
-          start: 0,
-          end: pack.death.frameCount - 1,
-        }),
-        frameRate: pack.death.frameRate ?? 8,
-        repeat: 0,
-      });
+      if (!this.scene.anims.exists(deathAnimKey)) {
+        this.scene.anims.create({
+          key: deathAnimKey,
+          frames: this.scene.anims.generateFrameNumbers(pack.death.key, {
+            start: 0,
+            end: pack.death.frameCount - 1,
+          }),
+          frameRate: pack.death.frameRate ?? 8,
+          repeat: 0,
+        });
+      }
       deathTextureKey = pack.death.key;
     }
 

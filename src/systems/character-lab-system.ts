@@ -7,6 +7,7 @@ import { ensureSharedVfxTexture, invalidateSharedVfxTexture } from '@/data/vfx/l
 import { CharacterRegistry } from '@/data/characters';
 import { applySharedVfxToAnim } from '@/data/vfx/apply-skill-vfx';
 import { Player } from '@/entities/player';
+import type { Enemy } from '@/entities/enemy';
 import { DEFAULT_TRAVEL_SPEED_PX } from '@/lib/dev/lab-save-fields';
 import { labPoseHasContent, poseSheetToSpriteDef } from '@/lib/dev/lab-pose-sheet';
 import { getWonsrRenderedMap } from '@/data/wonsr-rendered-maps';
@@ -17,7 +18,10 @@ import {
   isCharacterLabSession,
   LAB_DISTANCE_PX,
   LAB_DUMMY_ID,
+  LAB_ENEMY_COUNT_MAX,
   LAB_HP_MULT,
+  labDummyId,
+  clampLabEnemyCount,
   type LabCommand,
   type LabEnemyHpMode,
 } from '@/stores/character-lab-store';
@@ -28,7 +32,7 @@ import { resolveSkillElement } from '@/data/damage-elements';
 import { resolveExecutionType } from '@/data/skill-execution-def';
 import type { CombatSystem } from '@/systems/combat-system';
 import type { EnemyManager } from '@/systems/enemy-manager';
-import { clearLabForcedFx, computeSkillFxAim, scheduleSkillFx } from '@/systems/pack-fx';
+import { clearLabForcedFx, computeSkillFxAim, scheduleSkillFx, shouldSpawnAreaImpactFxPerTarget, spawnAreaImpactFxForTargets } from '@/systems/pack-fx';
 import { scheduleOfficialSkillFx, SkillExecutionRuntime } from '@/systems/skill-execution';
 import { tryApplySkillStatuses } from '@/systems/skill-status-apply';
 import { applyDirectDamage, clearStatusRuntime, getStatusRuntime } from '@/systems/status-runtime';
@@ -181,7 +185,7 @@ export class CharacterLabSystem {
     this.cancelComplete();
     clearStatusRuntime(this.scene);
     clearLabForcedFx();
-    this.enemyManager.removeById(LAB_DUMMY_ID);
+    this.removeAllLabDummies();
     this.enemyManager.setHuntPaused(false);
     this.dummyKey = null;
     this.dummyHpMode = null;
@@ -197,8 +201,32 @@ export class CharacterLabSystem {
     this.lastOpen = false;
   }
 
-  private dummy() {
+  private dummy(): Enemy | null {
     return this.enemyManager.get(LAB_DUMMY_ID) ?? null;
+  }
+
+  private labDummies(): Enemy[] {
+    const count = clampLabEnemyCount(characterLabStore.getSnapshot().labEnemyCount);
+    const out: Enemy[] = [];
+    for (let i = 0; i < count; i++) {
+      const enemy = this.enemyManager.get(labDummyId(i));
+      if (enemy?.isAlive) out.push(enemy);
+    }
+    return out;
+  }
+
+  private removeAllLabDummies(): void {
+    for (let i = 0; i < LAB_ENEMY_COUNT_MAX; i++) {
+      this.enemyManager.removeById(labDummyId(i));
+    }
+  }
+
+  private allLabDummiesReady(count: number): boolean {
+    for (let i = 0; i < count; i++) {
+      const enemy = this.enemyManager.get(labDummyId(i));
+      if (!enemy?.isAlive) return false;
+    }
+    return count > 0;
   }
 
   /** Na caçada o idle AI vai para o canto; o lab testa no spawn central. */
@@ -292,16 +320,43 @@ export class CharacterLabSystem {
       isOriginalTargetDead: () => Boolean(dummy) && !dummy!.isAlive,
       getTargetPos: () => (dummy ? { x: dummy.sprite.x, y: dummy.sprite.y } : { x: to.x, y: to.y }),
       onHit: (impact, execution) => {
-        if (!dummy?.isAlive || impact.multiplier <= 0) return;
-        applyDirectDamage({
-          runtime: getStatusRuntime(this.scene),
-          targetId: dummy.id,
-          rawAmount: Math.max(1, Math.floor((stub.damage || 40) * impact.multiplier)),
-          sourceId: PLAYER_STATUS_UNIT_ID,
-          enemy: dummy,
-          element: resolveSkillElement(stub, anim),
-          onKill: () => undefined,
-        });
+        const primary = this.dummy();
+        const radius =
+          impact.kind === 'area'
+            ? (impact.radius ?? lab.execution.radius ?? stub.areaRadius ?? null)
+            : null;
+        const hit: Enemy[] = [];
+        if (radius != null && radius > 0) {
+          const ox = primary?.sprite.x ?? to.x;
+          const oy = primary?.sprite.y ?? to.y;
+          for (const enemy of this.labDummies()) {
+            if (!enemy.isAlive) continue;
+            const distance = Phaser.Math.Distance.Between(ox, oy, enemy.sprite.x, enemy.sprite.y);
+            if (distance > radius) continue;
+            hit.push(enemy);
+          }
+        } else if (primary?.isAlive) {
+          hit.push(primary);
+        }
+        const rawDamage = Math.max(1, Math.floor((stub.damage || 40) * impact.multiplier));
+        for (const enemy of hit) {
+          if (!enemy.isAlive || impact.multiplier <= 0) continue;
+          applyDirectDamage({
+            runtime: getStatusRuntime(this.scene),
+            targetId: enemy.id,
+            rawAmount: rawDamage,
+            sourceId: PLAYER_STATUS_UNIT_ID,
+            enemy,
+            element: resolveSkillElement(stub, anim),
+            onKill: () => undefined,
+          });
+        }
+        if (
+          anim &&
+          shouldSpawnAreaImpactFxPerTarget(anim, impact.kind, hit.length, radius)
+        ) {
+          spawnAreaImpactFxForTargets(this.scene, this.player, anim, hit, primary?.id);
+        }
         tryApplySkillStatuses({
           scene: this.scene,
           skill: stub,
@@ -310,12 +365,14 @@ export class CharacterLabSystem {
           executionId: execution.executionId,
           rolledKeys: execution.statusRolled,
           casterId: PLAYER_STATUS_UNIT_ID,
-          primaryTargetId: dummy.id,
-          hitTargets: [dummy],
+          primaryTargetId: primary?.id ?? null,
+          hitTargets: hit,
           hitIndex: impact.index,
         });
       },
       onStatusMoment: (moment, execution) => {
+        const primary = this.dummy();
+        const dummies = this.labDummies();
         tryApplySkillStatuses({
           scene: this.scene,
           skill: stub,
@@ -324,8 +381,8 @@ export class CharacterLabSystem {
           executionId: execution.executionId,
           rolledKeys: execution.statusRolled,
           casterId: PLAYER_STATUS_UNIT_ID,
-          primaryTargetId: dummy?.id ?? null,
-          hitTargets: dummy ? [dummy] : [],
+          primaryTargetId: primary?.id ?? null,
+          hitTargets: dummies,
           hitIndex: 0,
         });
       },
@@ -431,7 +488,7 @@ export class CharacterLabSystem {
       this.player.resetLabPose();
       this.dummyKey = null;
       this.dummyHpMode = null;
-      this.enemyManager.removeById(LAB_DUMMY_ID);
+      this.removeAllLabDummies();
       characterLabStore.setActiveVfx(null);
       void this.syncDummy();
       characterLabStore.pushEvent('reset test');
@@ -467,18 +524,22 @@ export class CharacterLabSystem {
 
   private async syncDummy(): Promise<void> {
     const lab = characterLabStore.getSnapshot();
+    const count = clampLabEnemyCount(lab.labEnemyCount);
     if (!lab.enemyId) {
-      this.enemyManager.removeById(LAB_DUMMY_ID);
+      this.removeAllLabDummies();
       this.dummyKey = null;
       this.dummyHpMode = null;
       return;
     }
+    for (let i = count; i < LAB_ENEMY_COUNT_MAX; i++) {
+      this.enemyManager.removeById(labDummyId(i));
+    }
     const layout = this.player.worldScale;
-    const dummyKey = `${lab.enemyId}@${layout}`;
+    const dummyKey = `${lab.enemyId}@${layout}@${count}`;
     if (
       this.dummyKey === dummyKey &&
       this.dummyHpMode === lab.enemyHpMode &&
-      this.dummy()?.isAlive
+      this.allLabDummiesReady(count)
     ) {
       return;
     }
@@ -494,7 +555,6 @@ export class CharacterLabSystem {
       const lookType = def.lookTypes[0] ?? def.pack.outfit?.lookType ?? 0;
       const resolved = this.enemyManager.resolveFromPack(def.pack, lookType, `lab-dummy-${def.id}`);
       if (!resolved) return;
-      const pos = this.dummyPos();
       const hpMult = LAB_HP_MULT[lab.enemyHpMode];
       const hp = hpMult === 0 ? 1_000_000 : Math.max(1, Math.round(BASE_DUMMY_HP * hpMult));
       const spriteFit = {
@@ -502,23 +562,27 @@ export class CharacterLabSystem {
         scale: resolved.fit.scale * layout,
         scaleX: (resolved.fit.scaleX ?? resolved.fit.scale) * layout,
       };
-      this.enemyManager.spawnLabDummy({
-        id: LAB_DUMMY_ID,
-        name: `[LAB] ${characterLabLabelSafe(def.id)}`,
-        hp,
-        level: 1,
-        xp: 0,
-        loot: [],
-        spawn: pos,
-        speed: 0,
-        chaseRadius: 0,
-        sprite: resolved.textureKey,
-        spriteFrame: resolved.idleFrame,
-        walk: resolved.walk,
-        spriteFit,
-        mapKey: this.mapKey,
-        noRespawn: true,
-      });
+      const label = characterLabLabelSafe(def.id);
+      for (let i = 0; i < count; i++) {
+        const pos = this.dummyPos(i);
+        this.enemyManager.spawnLabDummy({
+          id: labDummyId(i),
+          name: count > 1 ? `[LAB] ${label} #${i + 1}` : `[LAB] ${label}`,
+          hp,
+          level: 1,
+          xp: 0,
+          loot: [],
+          spawn: pos,
+          speed: 0,
+          chaseRadius: 0,
+          sprite: resolved.textureKey,
+          spriteFrame: resolved.idleFrame,
+          walk: resolved.walk,
+          spriteFit,
+          mapKey: this.mapKey,
+          noRespawn: true,
+        });
+      }
       this.dummyKey = dummyKey;
       this.dummyHpMode = lab.enemyHpMode;
     } catch (error) {
@@ -528,18 +592,27 @@ export class CharacterLabSystem {
     }
   }
 
-  private dummyPos(): { x: number; y: number } {
+  private dummyPos(index = 0): { x: number; y: number } {
     const lab = characterLabStore.getSnapshot();
     const dist = LAB_DISTANCE_PX[lab.distance] * this.player.worldScale;
-    return { x: this.player.x + dist, y: this.player.y };
+    const baseX = this.player.x + dist;
+    const baseY = this.player.y;
+    if (index === 0) return { x: baseX, y: baseY };
+    const spacing = 48 * this.player.worldScale;
+    const side = index % 2 === 1 ? -1 : 1;
+    const row = Math.ceil(index / 2);
+    return { x: baseX + side * row * spacing, y: baseY };
   }
 
   private placeDummy(): void {
-    const enemy = this.dummy();
-    if (!enemy?.isAlive) return;
-    const pos = this.dummyPos();
-    enemy.sprite.setPosition(pos.x, pos.y);
-    enemy.sprite.setVelocity(0, 0);
+    const count = clampLabEnemyCount(characterLabStore.getSnapshot().labEnemyCount);
+    for (let i = 0; i < count; i++) {
+      const enemy = this.enemyManager.get(labDummyId(i));
+      if (!enemy?.isAlive) continue;
+      const pos = this.dummyPos(i);
+      enemy.sprite.setPosition(pos.x, pos.y);
+      enemy.sprite.setVelocity(0, 0);
+    }
   }
 
   /**
@@ -611,22 +684,25 @@ export class CharacterLabSystem {
     if (lab.showHitbox) {
       const body = this.player.sprite.body;
       if (body) drawBody(body, 0xff4d4d);
-      const dummyBody = this.dummy()?.sprite.body;
-      if (dummyBody) drawBody(dummyBody, 0xff4d4d);
+      for (const enemy of this.labDummies()) {
+        const dummyBody = enemy.sprite.body;
+        if (dummyBody) drawBody(dummyBody, 0xff4d4d);
+      }
     }
     if (lab.showHurtbox) {
       const body = this.player.sprite.body;
       if (body) drawBody(body, 0x4dff88);
-      const dummyBody = this.dummy()?.sprite.body;
-      if (dummyBody) drawBody(dummyBody, 0x4dff88);
+      for (const enemy of this.labDummies()) {
+        const dummyBody = enemy.sprite.body;
+        if (dummyBody) drawBody(dummyBody, 0x4dff88);
+      }
     }
     if (lab.showSpriteOrigin) {
       this.gfx.fillStyle(0xffe066, 1);
       this.gfx.fillCircle(this.player.x, this.player.y, 3);
-      const dummy = this.dummy();
-      if (dummy) {
+      for (const enemy of this.labDummies()) {
         this.gfx.fillStyle(0x66d4ff, 1);
-        this.gfx.fillCircle(dummy.sprite.x, dummy.sprite.y, 3);
+        this.gfx.fillCircle(enemy.sprite.x, enemy.sprite.y, 3);
       }
     }
 

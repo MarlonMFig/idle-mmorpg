@@ -54,6 +54,23 @@ import {
 
 export const CHARACTER_LAB_STORAGE_KEY = 'idle-mmorpg:dev-character-lab-v1';
 export const LAB_DUMMY_ID = 'dev-lab-dummy';
+export const LAB_ENEMY_COUNT_MAX = 6;
+const LAB_DUMMY_EXTRA_PREFIX = `${LAB_DUMMY_ID}-`;
+
+/** ID estável do dummy do Lab — índice 0 mantém o id legado. */
+export function labDummyId(index: number): string {
+  if (index <= 0) return LAB_DUMMY_ID;
+  return `${LAB_DUMMY_EXTRA_PREFIX}${index}`;
+}
+
+export function isLabDummyId(id: string): boolean {
+  return id === LAB_DUMMY_ID || id.startsWith(LAB_DUMMY_EXTRA_PREFIX);
+}
+
+export function clampLabEnemyCount(value: number): number {
+  if (!Number.isFinite(value)) return 1;
+  return Math.max(1, Math.min(LAB_ENEMY_COUNT_MAX, Math.round(value)));
+}
 
 export type LabEnemyHpMode = 'normal' | 'x2' | 'x5' | 'x10' | 'infinite';
 export type LabDistancePreset = 'very-close' | 'close' | 'normal' | 'far' | 'very-far';
@@ -145,6 +162,8 @@ export interface CharacterLabState {
   playerInvincible: boolean;
   enemyInvincible: boolean;
   enemyHpMode: LabEnemyHpMode;
+  /** Quantidade de dummies spawnados no Lab (para testar jutsus de área). */
+  labEnemyCount: number;
   distance: LabDistancePreset;
   scaleX: number;
   scaleY: number;
@@ -207,6 +226,7 @@ export interface CharacterLabState {
   statusEffects: SkillStatusApplication[];
   skillElement: DamageElement;
   skillAi: SkillAiConfig;
+  areaImpactFxPerTarget: boolean;
   showAiDecisions: boolean;
   aiDecision: import('@/systems/combat-decision').CombatAiDecision | null;
   skillRotationDebug: import('@/systems/combat-decision').CombatSkillRotationDebug | null;
@@ -300,6 +320,7 @@ const DEFAULT_SKILL_ORIGINALS: LabSkillOriginals = {
   statusEffects: [],
   skillElement: DEFAULT_SKILL_ELEMENT,
   skillAi: defaultSkillAi(1),
+  areaImpactFxPerTarget: false,
 };
 
 const emptyState = (): CharacterLabState => ({
@@ -320,6 +341,7 @@ const emptyState = (): CharacterLabState => ({
   playerInvincible: false,
   enemyInvincible: false,
   enemyHpMode: 'x2',
+  labEnemyCount: 1,
   distance: 'normal',
   ...DEFAULT_VISUALS,
   showFrameDebug: false,
@@ -358,6 +380,7 @@ const emptyState = (): CharacterLabState => ({
   statusEffects: [],
   skillElement: DEFAULT_SKILL_ELEMENT,
   skillAi: defaultSkillAi(1),
+  areaImpactFxPerTarget: false,
   aiDecision: null,
   skillRotationDebug: null,
   enemyAffinityOverride: null,
@@ -396,6 +419,7 @@ interface LabPrefs {
   showLog: boolean;
   showAiDecisions: boolean;
   loopIntervalMs: number;
+  labEnemyCount: number;
 }
 
 function loadPrefs(): Partial<LabPrefs> {
@@ -429,6 +453,7 @@ function savePrefs(state: CharacterLabState): void {
     showLog: state.showLog,
     showAiDecisions: state.showAiDecisions,
     loopIntervalMs: state.loopIntervalMs,
+    labEnemyCount: clampLabEnemyCount(state.labEnemyCount),
   };
   try {
     window.localStorage.setItem(CHARACTER_LAB_STORAGE_KEY, JSON.stringify(prefs));
@@ -471,6 +496,7 @@ function createLabStore(): WritableStore<CharacterLabState> {
     showLog: prefs.showLog ?? true,
     showAiDecisions: prefs.showAiDecisions ?? false,
     loopIntervalMs: prefs.loopIntervalMs ?? 1000,
+    labEnemyCount: clampLabEnemyCount(prefs.labEnemyCount ?? 1),
   });
 }
 
@@ -584,6 +610,7 @@ function skillFieldsFrom(originals: LabSkillOriginals) {
     statusEffects: cloneSkillStatusEffects(originals.statusEffects),
     skillElement: originals.skillElement,
     skillAi: cloneSkillAi(originals.skillAi) ?? defaultSkillAi(1),
+    areaImpactFxPerTarget: originals.areaImpactFxPerTarget,
   };
 }
 
@@ -618,6 +645,7 @@ function cloneSkillOriginals(originals: LabSkillOriginals): LabSkillOriginals {
     statusEffects: cloneSkillStatusEffects(originals.statusEffects),
     skillElement: originals.skillElement,
     skillAi: cloneSkillAi(originals.skillAi) ?? defaultSkillAi(1),
+    areaImpactFxPerTarget: originals.areaImpactFxPerTarget,
   };
 }
 
@@ -1008,6 +1036,7 @@ export const characterLabStore = {
         statusEffects: state.statusEffects,
         skillElement: state.skillElement,
         skillAi: state.skillAi,
+        areaImpactFxPerTarget: state.areaImpactFxPerTarget,
       },
       state.skillOriginals,
     );
@@ -1050,6 +1079,7 @@ export const characterLabStore = {
         statusEffects: state.statusEffects,
         skillElement: state.skillElement,
         skillAi: state.skillAi,
+        areaImpactFxPerTarget: state.areaImpactFxPerTarget,
       },
       state.skillOriginals,
     );
@@ -1351,6 +1381,7 @@ export const characterLabStore = {
       statusEffects: cloneSkillStatusEffects(scope === 'visual' ? prev.statusEffects : state.statusEffects),
       skillElement: scope === 'visual' ? prev.skillElement : state.skillElement,
       skillAi: cloneSkillAi(scope === 'visual' ? prev.skillAi : state.skillAi) ?? defaultSkillAi(state.selectedSkillSlot),
+      areaImpactFxPerTarget: scope === 'visual' ? prev.areaImpactFxPerTarget : state.areaImpactFxPerTarget,
     });
     patch({
       ...(options?.skillOnly ? {} : DEFAULT_SPRITE),

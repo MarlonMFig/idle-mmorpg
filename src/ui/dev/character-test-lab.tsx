@@ -47,6 +47,7 @@ import { useStore } from '@/hooks/use-store';
 import {
   characterLabLabel,
   characterLabStore,
+  clampLabEnemyCount,
   friendlyLabAnimName,
   labOriginalVisuals,
   type LabDistancePreset,
@@ -63,6 +64,7 @@ import { CharacterLabSkillsTab } from '@/ui/dev/character-lab-skills-tab';
 import { CharacterLabPoseEffect } from '@/ui/dev/character-lab-pose-effect';
 import { CharacterLabSpriteAlignment } from '@/ui/dev/character-lab-sprite-alignment';
 import { CharacterLabMapViewport } from '@/ui/dev/character-lab-map-viewport';
+import { CharacterLabHubEffects } from '@/ui/dev/character-lab-hub-effects';
 import { CharacterLabMasteryDebug } from '@/ui/dev/character-lab-mastery';
 import { CharacterLabAwakeningDebug } from '@/ui/dev/character-lab-awakening';
 import { CharacterLabLineageDebug } from '@/ui/dev/character-lab-lineage';
@@ -141,6 +143,8 @@ const HP_OPTIONS: { id: LabEnemyHpMode; label: string }[] = [
   { id: 'infinite', label: 'HP infinito' },
 ];
 
+const LAB_ENEMY_COUNT_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
+
 function labSkillVfxLabel(
   vfxId: string | null,
   anim: { fx?: unknown } | undefined,
@@ -179,6 +183,7 @@ function CharacterTestLabBody() {
   const playerInvincible = useStore(characterLabStore, (s) => s.playerInvincible);
   const enemyInvincible = useStore(characterLabStore, (s) => s.enemyInvincible);
   const enemyHpMode = useStore(characterLabStore, (s) => s.enemyHpMode);
+  const labEnemyCount = useStore(characterLabStore, (s) => s.labEnemyCount);
   const distance = useStore(characterLabStore, (s) => s.distance);
   const scaleX = useStore(characterLabStore, (s) => s.scaleX);
   const scaleY = useStore(characterLabStore, (s) => s.scaleY);
@@ -215,6 +220,7 @@ function CharacterTestLabBody() {
   const statusEffects = useStore(characterLabStore, (s) => s.statusEffects);
   const skillElement = useStore(characterLabStore, (s) => s.skillElement);
   const skillAi = useStore(characterLabStore, (s) => s.skillAi);
+  const areaImpactFxPerTarget = useStore(characterLabStore, (s) => s.areaImpactFxPerTarget);
   const executionDebug = useStore(characterLabStore, (s) => s.executionDebug);
   const statusDebug = useStore(combatStatusHudStore, (s) => s.debug);
   const showAreaRadius = useStore(characterLabStore, (s) => s.showAreaRadius);
@@ -311,6 +317,7 @@ function CharacterTestLabBody() {
     statusEffects,
     skillElement,
     skillAi,
+    areaImpactFxPerTarget,
     original: skillOriginals,
   });
   const [saveScope, setSaveScope] = useState<'all' | 'skill' | 'logic' | 'visual'>('all');
@@ -582,6 +589,7 @@ function CharacterTestLabBody() {
           statusEffects: logic.statusEffects,
           element: logic.skillElement,
           ai: logic.skillAi,
+          areaImpactFxPerTarget: logic.areaImpactFxPerTarget,
       });
       saveLog(`payload bytes ${payload.length}`, 'lab-skill');
       const started = performance.now();
@@ -1050,6 +1058,28 @@ function CharacterTestLabBody() {
                 </select>
               </label>
               <label>
+                Inimigos (área)
+                <select
+                  value={labEnemyCount}
+                  disabled={!enemyId}
+                  onChange={(event) =>
+                    characterLabStore.setFlag(
+                      'labEnemyCount',
+                      clampLabEnemyCount(Number(event.target.value)),
+                    )
+                  }
+                >
+                  {LAB_ENEMY_COUNT_OPTIONS.map((count) => (
+                    <option key={count} value={count}>
+                      {count} {count === 1 ? 'inimigo' : 'inimigos'}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <p className="character-lab__hint">
+                O inimigo central é o alvo primário; os extras ficam ao lado para testar jutsus de área.
+              </p>
+              <label>
                 Distância
                 <select
                   value={distance}
@@ -1469,7 +1499,10 @@ function CharacterTestLabBody() {
         ) : null}
 
         {tab === 'mapas' ? (
-          <CharacterLabMapViewport />
+          <>
+            <CharacterLabMapViewport />
+            <CharacterLabHubEffects />
+          </>
         ) : null}
 
         {tab === 'debug' ? (
@@ -1638,7 +1671,6 @@ function CharacterTestLabBody() {
               <CharacterLabEconomyDebug />
               <CharacterLabAwakeningDebug />
               <CharacterLabAiDebug />
-              <CharacterLabLootEconomyAnalyzer />
               <CharacterLabLootEconomyAnalyzer />
               <CharacterLabCaptureInspector />
               <ForceTargetDebug />

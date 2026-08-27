@@ -80,6 +80,8 @@ export type LabSaveChanges = Partial<Record<LabSaveableNumberField, number>> & {
   vfxLoopUntilSkillEnd?: boolean;
   vfxFlipX?: boolean;
   vfxFlipY?: boolean;
+  /** Duplica VFX de impacto pack-fx em cada alvo de área. */
+  areaImpactFxPerTarget?: boolean;
 };
 
 /** Campos de sprite/animação do personagem — o único payload válido em `character-config` sem skillId. */
@@ -140,6 +142,7 @@ export interface LabSkillOriginals {
   statusEffects: SkillStatusApplication[];
   skillElement: DamageElement;
   skillAi: SkillAiConfig;
+  areaImpactFxPerTarget: boolean;
 }
 
 export interface LabSaveDiffLine {
@@ -147,8 +150,17 @@ export interface LabSaveDiffLine {
   label: string;
   from: string;
   to: string;
-  field: LabSaveableField;
-  value: number | SkillVfxTargetMode | string | null | SkillExecutionDef | SkillStatusApplication[] | DamageElement | SkillAiConfig;
+  field: LabSaveableField | 'areaImpactFxPerTarget';
+  value:
+    | number
+    | boolean
+    | SkillVfxTargetMode
+    | string
+    | null
+    | SkillExecutionDef
+    | SkillStatusApplication[]
+    | DamageElement
+    | SkillAiConfig;
 }
 
 function fmt(value: number, digits: number): string {
@@ -207,6 +219,7 @@ export function readLabSkillOriginals(
     statusEffects: cloneSkillStatusEffects(anim?.statusEffects ?? skillStatusEffects),
     skillElement: resolveSkillElement({ element: skillElement }, anim),
     skillAi: resolveSkillAi(anim?.ai, skillAi, slot),
+    areaImpactFxPerTarget: anim?.areaImpactFxPerTarget === true,
   };
 }
 
@@ -239,6 +252,7 @@ export function collectLabSaveChanges(input: {
   statusEffects: SkillStatusApplication[];
   skillElement: DamageElement;
   skillAi: SkillAiConfig;
+  areaImpactFxPerTarget: boolean;
 }): { header: string; lines: LabSaveDiffLine[]; changes: LabSaveChanges } {
   const lines: LabSaveDiffLine[] = [];
   const orig = input.original;
@@ -316,6 +330,16 @@ export function collectLabSaveChanges(input: {
   pushNum('VFX', 'Pose Offset X', 'poseOffsetX', orig.poseOffsetX, input.poseOffsetX, 0);
   pushNum('VFX', 'Pose Offset Y', 'poseOffsetY', orig.poseOffsetY, input.poseOffsetY, 0);
   pushNum('Skill', 'Cast Delay', 'castDelayMs', orig.castDelayMs, input.castDelayMs, 0);
+  if (input.areaImpactFxPerTarget !== orig.areaImpactFxPerTarget) {
+    lines.push({
+      group: 'Skill',
+      label: 'Impacto VFX por alvo',
+      from: orig.areaImpactFxPerTarget ? 'ligado' : 'desligado',
+      to: input.areaImpactFxPerTarget ? 'ligado' : 'desligado',
+      field: 'areaImpactFxPerTarget',
+      value: input.areaImpactFxPerTarget,
+    });
+  }
   if (!executionsEqual(input.execution, orig.execution)) {
     lines.push({
       group: 'Skill',
@@ -379,6 +403,8 @@ export function collectLabSaveChanges(input: {
       changes.element = line.value as DamageElement;
     } else if (line.field === 'ai') {
       changes.ai = line.value as SkillAiConfig;
+    } else if (line.field === 'areaImpactFxPerTarget') {
+      changes.areaImpactFxPerTarget = Boolean(line.value);
     } else {
       changes[line.field as LabSaveableNumberField] = line.value as number;
     }
@@ -399,7 +425,7 @@ export function jutsuFpsDirty(
 export function skillLogicDirty(
   test: Pick<
     Omit<LabSkillOriginals, 'hasOfficialTargetMode'>,
-    'castDelayMs' | 'execution' | 'statusEffects' | 'skillElement' | 'skillAi'
+    'castDelayMs' | 'execution' | 'statusEffects' | 'skillElement' | 'skillAi' | 'areaImpactFxPerTarget'
   >,
   original: LabSkillOriginals,
 ): boolean {
@@ -408,7 +434,8 @@ export function skillLogicDirty(
     !executionsEqual(test.execution, original.execution) ||
     !statusEffectsEqual(test.statusEffects, original.statusEffects) ||
     test.skillElement !== original.skillElement ||
-    !skillAiEqual(test.skillAi, original.skillAi)
+    !skillAiEqual(test.skillAi, original.skillAi) ||
+    test.areaImpactFxPerTarget !== original.areaImpactFxPerTarget
   );
 }
 
@@ -492,6 +519,9 @@ export function applyLabChangesToSkillAnim(
   if (changes.vfxLoopUntilSkillEnd != null) next.vfxLoopUntilSkillEnd = changes.vfxLoopUntilSkillEnd;
   if (changes.vfxFlipX != null) next.vfxFlipX = changes.vfxFlipX;
   if (changes.vfxFlipY != null) next.vfxFlipY = changes.vfxFlipY;
+  if (changes.areaImpactFxPerTarget != null) {
+    next.areaImpactFxPerTarget = changes.areaImpactFxPerTarget;
+  }
   if (changes.hitDelayMs != null) next.hitDelayMs = changes.hitDelayMs;
   if (changes.fxReleaseMs != null) next.fxReleaseMs = changes.fxReleaseMs;
   if (changes.castDelayMs != null) next.castDelayMs = changes.castDelayMs;

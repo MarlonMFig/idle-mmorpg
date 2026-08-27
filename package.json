@@ -17,6 +17,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "map:nature": "node scripts/generate-nature-map.js",
+    "hub:konoha": "node scripts/install-konoha-hub-4096.js",
     "naruto:jutsu": "node scripts/process-naruto-jutsu-nu.js",
     "naruto:body": "node scripts/process-naruto-body-nu.js",
     "naruto:idle": "node scripts/process-naruto-idle.js",

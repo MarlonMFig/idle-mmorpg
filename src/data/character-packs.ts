@@ -134,6 +134,12 @@ export interface CharacterSkillAnimDef extends SpriteSheetDef {
   /** FPS do FX secundário; padrão 12. */
   fxSecondaryFrameRate?: number;
   /**
+   * Em jutsus de área, spawna FX de impacto em cada inimigo atingido
+   * (além do VFX principal no alvo primário).
+   * Default: ligado quando `execution.type === 'area'` ou dano em raio.
+   */
+  areaImpactFxPerTarget?: boolean;
+  /**
    * Comportamento oficial do VFX em relação ao alvo.
    * Ausente = legado (`fxAttach` / `fxFlightFrameCount`). Não quebra skills antigas.
    */
@@ -1004,10 +1010,7 @@ const SHIKAMARU_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'shikamaru-jutsu-4': {
     key: 'shikamaru-frame-001',
     url: '/sprites/player/shikamaru/poses/frame-001/frame-001.png',
-    frames: [
-      '/sprites/player/shikamaru/poses/frame-001/frame-001.png',
-      '/sprites/player/shikamaru/poses/frame-001/frame-002.png',
-    ],
+    frames: ['/sprites/player/shikamaru/poses/frame-001/frame-001.png', '/sprites/player/shikamaru/poses/frame-001/frame-002.png'],
     frameWidth: 120,
     frameHeight: 240,
     frameCount: 2,
@@ -1031,12 +1034,12 @@ const SHIKAMARU_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
       travelSpeed: 600,
       spawnOffsetX: 0,
       spawnOffsetY: 0,
-      targetOffsetX: 0,
+      targetOffsetX: -50,
       targetOffsetY: 0,
     },
     execution: {
       type: 'area',
-      radius: 1000,
+      radius: 4000,
     },
     cast: {
       scaleX: 0.35,
@@ -1044,7 +1047,24 @@ const SHIKAMARU_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
       scale: 0.35,
       offsetX: 0,
       offsetY: 0,
+      loopMode: 'none',
+      loopUntilSkillEnd: false,
+      flipX: false,
+      flipY: false,
     },
+    loopUntilSkillEnd: false,
+    flipX: false,
+    flipY: false,
+    vfxLoopUntilSkillEnd: false,
+    vfxFlipX: false,
+    vfxFlipY: false,
+    element: 'neutral',
+        ai: {
+      autoUse: true,
+      priority: 4,
+      energyCost: 40,
+    },
+    areaImpactFxPerTarget: true,
   },
 };
 

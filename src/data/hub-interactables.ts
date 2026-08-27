@@ -31,12 +31,12 @@ export interface HubInteractableDef {
   mapKey?: MapKey;
 }
 
-/** Boca da chaminé da forja (mundo 8000×4216). */
-export const HUB_FORGE_CHIMNEY = { x: 6348, y: 2328 };
+/** @deprecated Use hub-effects (`forge-chimney-smoke`). Mantido para referência legada. */
+export const HUB_FORGE_CHIMNEY = { x: 6660, y: 2500 };
 
 /**
- * Zonas dos 5 prédios da praça isométrica (arte 8000×4216).
- * Hover acende a fachada e sobe o nome — sem marcação permanente.
+ * Zonas dos 5 prédios da praça Konoha (arte 8192×4320).
+ * Mapeamento: loja NW, Hokage N, hospital NE, guilda SW, forja SE.
  */
 export const HUB_INTERACTABLES: readonly HubInteractableDef[] = [
   {
@@ -44,35 +44,8 @@ export const HUB_INTERACTABLES: readonly HubInteractableDef[] = [
     label: 'Loja',
     action: 'shop',
     color: 0x7cc0ff,
-    position: { x: 1990, y: 2040 },
-    building: { width: 820, top: 1220, bottom: 2120 },
-    mode: 'hub',
-  },
-  {
-    id: 'hub-heal',
-    label: 'Clínica',
-    action: 'heal',
-    color: 0x8fe3d0,
-    position: { x: 5760, y: 2080 },
-    building: { width: 1040, top: 1140, bottom: 2120 },
-    mode: 'hub',
-  },
-  {
-    id: 'hub-guild',
-    label: 'Guild',
-    action: 'guild',
-    color: 0xffc46a,
-    position: { x: 1880, y: 3280 },
-    building: { width: 920, top: 2320, bottom: 3400 },
-    mode: 'hub',
-  },
-  {
-    id: 'hub-forge',
-    label: 'Forja',
-    action: 'forge',
-    color: 0xffab5e,
-    position: { x: 6140, y: 3180 },
-    building: { width: 1240, top: 2180, bottom: 3280 },
+    position: { x: 2792, y: 2104 },
+    building: { width: 1408, top: 976, bottom: 2160 },
     mode: 'hub',
   },
   {
@@ -80,8 +53,35 @@ export const HUB_INTERACTABLES: readonly HubInteractableDef[] = [
     label: 'Equipe',
     action: 'bag',
     color: 0xc9a0ff,
-    position: { x: 4020, y: 1820 },
-    building: { width: 1000, top: 720, bottom: 1900 },
+    position: { x: 4104, y: 1816 },
+    building: { width: 1376, top: 640, bottom: 1728 },
+    mode: 'hub',
+  },
+  {
+    id: 'hub-heal',
+    label: 'Clínica',
+    action: 'heal',
+    color: 0x8fe3d0,
+    position: { x: 5416, y: 2104 },
+    building: { width: 1408, top: 976, bottom: 2160 },
+    mode: 'hub',
+  },
+  {
+    id: 'hub-guild',
+    label: 'Guild',
+    action: 'guild',
+    color: 0xffc46a,
+    position: { x: 2792, y: 2984 },
+    building: { width: 1536, top: 2768, bottom: 3920 },
+    mode: 'hub',
+  },
+  {
+    id: 'hub-forge',
+    label: 'Forja',
+    action: 'forge',
+    color: 0xffab5e,
+    position: { x: 5416, y: 2984 },
+    building: { width: 1664, top: 2752, bottom: 3936 },
     mode: 'hub',
   },
   {

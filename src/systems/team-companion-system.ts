@@ -17,7 +17,7 @@ import { resolveEffectiveSkill } from '@/lib/resolve-effective-skill';
 import { Decimal, d, hpRatio } from '@/lib/decimal';
 import type { Enemy } from '@/entities/enemy';
 import type { Player } from '@/entities/player';
-import { handleEnemyKill } from '@/systems/combat-rewards';
+import { scheduleHandleEnemyKill } from '@/systems/combat-rewards';
 import {
   getEffectiveCombatStats,
   scaledAttackCooldown,
@@ -38,7 +38,7 @@ import {
   type SkillRotationCursor,
 } from '@/systems/combat-decision';
 import type { LootManager } from '@/systems/loot-manager';
-import { computeSkillFxAim } from '@/systems/pack-fx';
+import { computeSkillFxAim, shouldSpawnAreaImpactFxPerTarget, spawnAreaImpactFxForTargets } from '@/systems/pack-fx';
 import { SkillVfx } from '@/systems/skill-vfx';
 import { scheduleOfficialSkillFx, SkillExecutionRuntime, type SkillExecution, type SkillImpact } from '@/systems/skill-execution';
 import { tryApplySkillStatuses } from '@/systems/skill-status-apply';
@@ -474,6 +474,9 @@ export class TeamCompanionSystem {
       hit.push(target);
       this.damageEnemy(target, damage, unitId, resolveSkillElement(skill, anim));
     }
+    if (anim && shouldSpawnAreaImpactFxPerTarget(anim, impact.kind, hit.length, radius)) {
+      spawnAreaImpactFxForTargets(this.scene, companion.player, anim, hit, target.id);
+    }
     tryApplySkillStatuses({
       scene: this.scene,
       skill,
@@ -501,7 +504,7 @@ export class TeamCompanionSystem {
       enemy,
       element: element ?? BASIC_ATTACK_ELEMENT,
       onKill: (killed) => {
-        handleEnemyKill(killed, lootManager, killed.sprite.x, killed.sprite.y);
+        scheduleHandleEnemyKill(this.scene, killed, lootManager, killed.sprite.x, killed.sprite.y);
         enemyManager.onEnemyKilled(killed.id);
       },
     });

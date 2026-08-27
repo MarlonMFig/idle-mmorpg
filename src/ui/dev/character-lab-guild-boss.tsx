@@ -8,13 +8,12 @@ import { guildStore } from '@/stores/guild-store';
 import { useEffect, useState } from 'react';
 
 export function CharacterLabGuildBossDebug() {
-  const tick = useStore(guildBossStore, (s) => s.tick);
   const guildId = useStore(guildStore, (s) => s.guildId);
   const [conc, setConc] = useState<string>('—');
 
   useEffect(() => {
     if (guildId) void guildBossStore.refresh();
-  }, [guildId, tick]);
+  }, [guildId]);
 
   if (!isDevMode()) return null;
 

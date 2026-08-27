@@ -22,15 +22,22 @@ import { Decimal, d, hpRatio } from '@/lib/decimal';
 import { computeInstanceTotals } from '@/lib/character-instance-stats';
 
 function estimateHpMax(member: SealedCharacter, level: number): number {
-  return Math.max(
-    1,
-    Math.round(
-      computeInstanceTotals(member, level).hp,
-    ),
-  );
+  return Math.max(1, Math.round(computeInstanceTotals(member, level).hp));
 }
 
-function ActiveTeamRow({
+function entryIcons(statusIcons: CombatStatusHudIcon[]) {
+  return statusIcons.map((entry) => (
+    <span
+      key={entry.statusId}
+      title={`${entry.statusId}${entry.stacks > 1 ? ` x${entry.stacks}` : ''}`}
+    >
+      {entry.icon}
+      {entry.stacks > 1 ? entry.stacks : ''}
+    </span>
+  ));
+}
+
+function ActiveTeamCard({
   member,
   isActive,
   level,
@@ -66,94 +73,98 @@ function ActiveTeamRow({
   return (
     <button
       type="button"
-      className={`active-team__row${isActive ? ' is-active' : ''}`}
+      className={`active-team__card${isActive ? ' is-active' : ''}`}
+      style={{ ['--q' as string]: qualityColor }}
       onClick={() => {
         if (!isActive) switchActiveCharacter(member.id);
       }}
       title={isActive ? `${member.name} (ativo)` : `Tornar ${member.name} ativo`}
     >
-      <div className="active-team__avatar" style={{ ['--q' as string]: qualityColor }}>
+      <div className="active-team__card-top">
+        <span className="active-team__rank">[{member.quality}]</span>
+        <span className="active-team__lv">
+          Lv.{level}
+          {atMaxLevel ? ' MAX' : ''}
+        </span>
+      </div>
+
+      <div className="active-team__portrait">
         <Image
           className="active-team__sprite"
           src={member.previewUrl}
           alt=""
-          width={52}
-          height={52}
+          width={56}
+          height={68}
           unoptimized
         />
-        <span className="active-team__rank" style={{ background: qualityColor }}>
-          {member.quality}
-        </span>
       </div>
 
-      <div className="active-team__stats">
-        <div className="active-team__title-row">
-          <span className="active-team__name">
-            <span className="active-team__name-quality" style={{ color: qualityColor }}>
-              [{member.quality}]
-            </span>{' '}
-            {member.name}
-          </span>
-          <span className="active-team__lv">
-            Lv.{level}
-            {atMaxLevel ? ' MAX' : ''}
-          </span>
-        </div>
+      <span className="active-team__name">{member.name.toUpperCase()}</span>
+
+      <div className="active-team__bars">
         <div className="active-team__bar active-team__bar--hp">
-          <span className="active-team__bar-fill" style={{ width: `${hpPct}%` }} />
-          <span className="active-team__bar-label">
-            {formatStat(hp)}/{formatStat(hpMax)}
+          <span className="active-team__bar-icon" aria-hidden>
+            ♥
+          </span>
+          <span className="active-team__bar-track">
+            <span className="active-team__bar-fill" style={{ width: `${hpPct}%` }} />
+            <span className="active-team__bar-label">
+              {formatStat(hp)}/{formatStat(hpMax)}
+            </span>
           </span>
         </div>
+
         {energyPct != null && energy != null && energyMax != null ? (
           <div className="active-team__bar active-team__bar--energy" title="ENERGIA">
-            <span className="active-team__bar-fill" style={{ width: `${energyPct}%` }} />
-            <span className="active-team__bar-label">
-              ENERGIA {formatStat(Math.floor(energy))}/{formatStat(Math.floor(energyMax))}
+            <span className="active-team__bar-icon" aria-hidden>
+              ⚡
+            </span>
+            <span className="active-team__bar-track">
+              <span className="active-team__bar-fill" style={{ width: `${energyPct}%` }} />
+              <span className="active-team__bar-label">
+                ENERGIA {formatStat(Math.floor(energy))}/{formatStat(Math.floor(energyMax))}
+              </span>
             </span>
           </div>
         ) : null}
+
+        <div className="active-team__bar active-team__bar--exp">
+          <span className="active-team__bar-track">
+            <span className="active-team__bar-fill" style={{ width: `${expSafe}%` }} />
+            <span className="active-team__bar-label">
+              {atMaxLevel ? 'EXP MAX' : `EXP ${Math.round(expSafe)}%`}
+            </span>
+          </span>
+        </div>
+
         {statusIcons.length > 0 ? (
           <div className="active-team__status" aria-label="Status ativos">
             {entryIcons(statusIcons)}
           </div>
         ) : null}
-        <div className="active-team__bar active-team__bar--exp">
-          <span className="active-team__bar-fill" style={{ width: `${expSafe}%` }} />
-          <span className="active-team__bar-label">
-            {atMaxLevel ? 'EXP MAX' : `EXP ${Math.round(expSafe)}%`}
-          </span>
-        </div>
       </div>
     </button>
   );
-}
-
-function entryIcons(statusIcons: CombatStatusHudIcon[]) {
-  return statusIcons.map((entry) => (
-    <span key={entry.statusId} title={`${entry.statusId}${entry.stacks > 1 ? ` x${entry.stacks}` : ''}`}>
-      {entry.icon}
-      {entry.stacks > 1 ? entry.stacks : ''}
-    </span>
-  ));
 }
 
 function ActiveTeamEmpty({ index }: { index: number }) {
   return (
     <button
       type="button"
-      className="active-team__row active-team__row--empty"
+      className="active-team__card active-team__card--empty"
       onClick={() => teamStore.setOpen(true)}
       title="Abrir equipe"
       aria-label={`Slot de equipe ${index + 1} vazio`}
     >
-      <div className="active-team__avatar active-team__avatar--empty">
+      <div className="active-team__card-top">
+        <span className="active-team__rank">[—]</span>
+        <span className="active-team__lv">Lv.—</span>
+      </div>
+      <div className="active-team__portrait active-team__portrait--empty">
         <span>+</span>
       </div>
-      <div className="active-team__stats">
-        <p className="active-team__empty-label">Slot vazio</p>
-        <p className="active-team__empty-hint">Toque para equipar</p>
-      </div>
+      <span className="active-team__name">SLOT VAZIO</span>
+      <p className="active-team__empty-hint">Toque para equipar</p>
     </button>
   );
 }
@@ -163,7 +174,7 @@ export interface TeamCombatStripProps {
 }
 
 /**
- * Janela Equipe Ativa no mapa de caça — arrastável pelo cabeçalho.
+ * Janela Equipe Ativa — 3 cards verticais (estilo HUD ninja).
  */
 export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
   const collection = useStore(teamStore, (s) => s.collection);
@@ -199,7 +210,6 @@ export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
     teamMembers.find((entry) => entry?.id === activeId) ?? teamMembers.find(Boolean) ?? null;
   const guild = useMemo(
     () => (guildId ? guildStore.getMyGuild() : null),
-    // registryTick garante releitura quando emblema/nome mudam no registro.
     [guildId, guildRegistryTick],
   );
 
@@ -215,43 +225,55 @@ export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
         title="Arrastar para mover"
         {...handleProps}
       >
-        <p className="active-team__brand">Equipe</p>
-        <h2 className="active-team__player">
-          <span className="active-team__nick-wrap">
-            <span className="active-team__nick">{nickname || 'Shinobi'}</span>
+        <div className="active-team__brand-row">
+          <span className="active-team__brand-icon" aria-hidden>
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+              <circle cx="8" cy="8" r="3.2" />
+              <circle cx="16" cy="8" r="3.2" />
+              <circle cx="12" cy="16.5" r="3.2" />
+            </svg>
+          </span>
+          <h2 className="active-team__brand">EQUIPE</h2>
+          <p className="active-team__sub">
+            Conta Nv. {vitals.level}
+            {isMaxLevel(vitals.level) ? ' (máx.)' : ''}
+            {activeMember
+              ? ` – ${activeMember.name} Nv.${Math.max(1, activeMember.level || 1)}`
+              : ''}
+          </p>
+          <span className="active-team__leaf" aria-hidden title="Konoha" />
+        </div>
+        {(nickname || equippedTitle || guild) && (
+          <p className="active-team__meta">
+            {nickname ? <span className="active-team__nick">{nickname}</span> : null}
             {equippedTitle ? (
-              <span className="active-team__title" title={equippedTitle.description}>
+              <span className="active-team__title-badge" title={equippedTitle.description}>
                 [{equippedTitle.name}]
               </span>
             ) : null}
-          </span>
-          {guild ? (
-            <span
-              className="active-team__guild"
-              style={{ ['--g' as string]: guild.legacy?.emblemBg ?? '#7f1d1d' }}
-              title={`Guild ${guild.name} [${guild.tag}]`}
-            >
-              {(guild.legacy?.emblemIcon ?? '').startsWith('/') ? (
-                <Image
-                  className="active-team__guild-emblem"
-                  src={guild.legacy!.emblemIcon!}
-                  alt=""
-                  width={22}
-                  height={28}
-                  unoptimized
-                />
-              ) : (
-                <span className="active-team__guild-emblem">[{guild.tag}]</span>
-              )}
-              <span className="active-team__guild-name">{guild.name}</span>
-            </span>
-          ) : null}
-        </h2>
-        <p className="active-team__sub">
-          Conta Nv. {vitals.level}
-          {isMaxLevel(vitals.level) ? ' (máx.)' : ''}
-          {activeMember ? ` — ${activeMember.name} Nv.${Math.max(1, activeMember.level || 1)}` : ''}
-        </p>
+            {guild ? (
+              <span
+                className="active-team__guild"
+                style={{ ['--g' as string]: guild.legacy?.emblemBg ?? '#7f1d1d' }}
+                title={`Guild ${guild.name} [${guild.tag}]`}
+              >
+                {(guild.legacy?.emblemIcon ?? '').startsWith('/') ? (
+                  <Image
+                    className="active-team__guild-emblem"
+                    src={guild.legacy!.emblemIcon!}
+                    alt=""
+                    width={16}
+                    height={20}
+                    unoptimized
+                  />
+                ) : (
+                  <span className="active-team__guild-emblem">[{guild.tag}]</span>
+                )}
+                <span className="active-team__guild-name">{guild.name}</span>
+              </span>
+            ) : null}
+          </p>
+        )}
       </header>
 
       <ul className="active-team__list">
@@ -275,7 +297,7 @@ export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
 
           return (
             <li key={member.id}>
-              <ActiveTeamRow
+              <ActiveTeamCard
                 member={member}
                 isActive={isActive}
                 level={memberLevel}

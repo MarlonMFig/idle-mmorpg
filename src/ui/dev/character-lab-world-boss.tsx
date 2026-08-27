@@ -2,19 +2,17 @@
 
 import { isDevMode } from '@/config/devConfig';
 import { getWorldBossDefinition } from '@/constants/world-boss';
-import { useStore } from '@/hooks/use-store';
 import { guildStore } from '@/stores/guild-store';
 import { worldBossStore } from '@/stores/world-boss-store';
 import { useEffect, useState } from 'react';
 
 export function CharacterLabWorldBossDebug() {
-  const tick = useStore(worldBossStore, (s) => s.tick);
   const [conc, setConc] = useState<string>('—');
 
   useEffect(() => {
     guildStore.ensurePlayerId();
     void worldBossStore.refresh();
-  }, [tick]);
+  }, []);
 
   if (!isDevMode()) return null;
 

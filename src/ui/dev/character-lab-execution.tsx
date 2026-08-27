@@ -22,6 +22,7 @@ const RADIUS_PRESETS = [40, 80, 120, 150, 200];
 export function CharacterLabExecutionEditor() {
   const execution = useStore(characterLabStore, (s) => s.execution);
   const originals = useStore(characterLabStore, (s) => s.skillOriginals);
+  const areaImpactFxPerTarget = useStore(characterLabStore, (s) => s.areaImpactFxPerTarget);
   const type = resolveExecutionType(execution);
   const origType = resolveExecutionType(originals.execution);
 
@@ -104,15 +105,35 @@ export function CharacterLabExecutionEditor() {
       ) : null}
 
       {type === 'area' ? (
-        <ValueRow
-          label="Radius"
-          original={originals.execution.radius ?? 80}
-          value={execution.radius ?? 80}
-          presets={RADIUS_PRESETS}
-          step={1}
-          suffix=" px"
-          onChange={(value) => characterLabStore.patchExecution({ radius: Math.max(0, Math.round(value)) })}
-        />
+        <>
+          <ValueRow
+            label="Radius"
+            original={originals.execution.radius ?? 80}
+            value={execution.radius ?? 80}
+            presets={RADIUS_PRESETS}
+            step={1}
+            suffix=" px"
+            onChange={(value) => characterLabStore.patchExecution({ radius: Math.max(0, Math.round(value)) })}
+          />
+          <label className={`character-lab__toggle${areaImpactFxPerTarget ? ' is-on' : ''}`}>
+            <input
+              type="checkbox"
+              checked={areaImpactFxPerTarget}
+              onChange={(event) =>
+                characterLabStore.setFlag('areaImpactFxPerTarget', event.target.checked)
+              }
+            />
+            Impacto VFX por alvo
+          </label>
+          <p className="character-lab__hint">
+            Duplica o VFX de impacto em cada inimigo atingido no raio (requer spritesheet fx no pack).
+          </p>
+          {areaImpactFxPerTarget !== originals.areaImpactFxPerTarget ? (
+            <p className="character-lab__hint">
+              Original: {originals.areaImpactFxPerTarget ? 'ligado' : 'desligado'}
+            </p>
+          ) : null}
+        </>
       ) : null}
 
       {type === 'persistent' ? (
