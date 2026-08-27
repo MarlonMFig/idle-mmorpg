@@ -6253,7 +6253,8 @@ export function createSpriteSheetAnimation(
   }
   if (!sequence) {
     const tex = scene.textures.get(sheet.key);
-    const valid = frames.filter((f) => tex.has(f.frame as string | number));
+    const numbered = frames as Phaser.Types.Animations.AnimationFrame[];
+    const valid = numbered.filter((f) => f.frame != null && tex.has(String(f.frame)));
     if (!valid.length) return false;
     if (scene.anims.exists(animKey)) scene.anims.remove(animKey);
     scene.anims.create({

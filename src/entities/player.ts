@@ -1091,7 +1091,7 @@ function buildSheetFrames(
   const end = Math.min(Math.max(1, sheet.frameCount), available) - 1;
   const frames = scene.anims.generateFrameNumbers(sheet.key, { start: 0, end });
   const tex = scene.textures.get(sheet.key);
-  return frames.filter((f) => tex.has(f.frame as string | number));
+  return frames.filter((f) => f.frame != null && tex.has(String(f.frame)));
 }
 
 function ensureLoopAnimFromSheet(
