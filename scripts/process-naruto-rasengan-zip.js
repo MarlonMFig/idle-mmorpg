@@ -17,8 +17,8 @@ const SRC_DIR = path.join(ROOT, 'assets', 'naruto-source', 'nu', 'rasengan-zip-i
 const OUT_DIR = path.join(ROOT, 'public', 'sprites', 'player', 'naruto');
 const OUT_FILE = 'rasengan-dash.png';
 const PREVIEW_DIR = path.join(OUT_DIR, '_rasengan-qa');
-/** Altura do corpo idle/walk clássico — skill deve casar para não crescer/encolher. */
-const TARGET_BODY_H = 81;
+/** Altura do corpo idle G6 Naruto Kid — skill deve casar para não crescer/encolher. */
+const TARGET_BODY_H = 60;
 const PAD = 4;
 
 function isNearBlack(r, g, b, a) {
@@ -63,23 +63,96 @@ function isBody(r, g, b, a) {
 
 
 
+/**
+ * Remove fundo preto sem apagar contorno/cabelo:
+ * 1) miolo colorido (corpo + VFX)
+ * 2) flood da borda apaga preto/transparente
+ * 3) restaura preto só se for vizinho do miolo (outline)
+ */
 function keyFrame(data, w, h) {
-  const out = Buffer.alloc(w * h * 4);
-  for (let i = 0; i < w * h; i += 1) {
+  const n = w * h;
+  const core = new Uint8Array(n);
+  for (let i = 0; i < n; i += 1) {
     const si = i * 4;
+    if (data[si + 3] < 8) continue;
     const r = data[si];
     const g = data[si + 1];
     const b = data[si + 2];
+    if (isNearBlack(r, g, b, data[si + 3])) continue;
+    core[i] = 1;
+  }
+
+  const touchesCore = (x, y) => {
+    for (let dy = -1; dy <= 1; dy += 1) {
+      for (let dx = -1; dx <= 1; dx += 1) {
+        if (dx === 0 && dy === 0) continue;
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= w || ny >= h) continue;
+        if (core[ny * w + nx]) return true;
+      }
+    }
+    return false;
+  };
+
+  const drop = new Uint8Array(n);
+  const queue = [];
+  const tryPush = (x, y) => {
+    if (x < 0 || y < 0 || x >= w || y >= h) return;
+    const i = y * w + x;
+    if (drop[i] || core[i]) return;
+    const si = i * 4;
     const a = data[si + 3];
-    const di = i * 4;
-    if (isNearBlack(r, g, b, a)) {
-      out[di + 3] = 0;
+    const black = a >= 8 && isNearBlack(data[si], data[si + 1], data[si + 2], a);
+    if (!(a < 8 || black)) return;
+    drop[i] = 1;
+    queue.push(i);
+  };
+  for (let x = 0; x < w; x += 1) {
+    tryPush(x, 0);
+    tryPush(x, h - 1);
+  }
+  for (let y = 0; y < h; y += 1) {
+    tryPush(0, y);
+    tryPush(w - 1, y);
+  }
+  for (let qi = 0; qi < queue.length; qi += 1) {
+    const i = queue[qi];
+    const x = i % w;
+    const y = (i - x) / w;
+    tryPush(x + 1, y);
+    tryPush(x - 1, y);
+    tryPush(x, y + 1);
+    tryPush(x, y - 1);
+  }
+
+  const out = Buffer.alloc(w * h * 4);
+  for (let i = 0; i < n; i += 1) {
+    const si = i * 4;
+    const di = si;
+    const a = data[si + 3];
+    const r = data[si];
+    const g = data[si + 1];
+    const b = data[si + 2];
+    if (core[i]) {
+      out[di] = r;
+      out[di + 1] = g;
+      out[di + 2] = b;
+      out[di + 3] = 255;
       continue;
     }
-    out[di] = r;
-    out[di + 1] = g;
-    out[di + 2] = b;
-    out[di + 3] = 255;
+    if (a >= 8 && isNearBlack(r, g, b, a)) {
+      const x = i % w;
+      const y = (i - x) / w;
+      if (!drop[i] || touchesCore(x, y)) {
+        out[di] = r;
+        out[di + 1] = g;
+        out[di + 2] = b;
+        out[di + 3] = 255;
+        continue;
+      }
+    }
+    // fundo
   }
   return out;
 }
@@ -167,6 +240,21 @@ function nearestScale(frame, w, h, scale) {
     }
   }
   return { data: out, width: nw, height: nh };
+}
+
+/** Upscale suave (casa melhor com o body G6 HQ). */
+async function softScale(frame, w, h, scale) {
+  if (Math.abs(scale - 1) < 0.001) {
+    return { data: Buffer.from(frame), width: w, height: h };
+  }
+  const nw = Math.max(1, Math.round(w * scale));
+  const nh = Math.max(1, Math.round(h * scale));
+  const { data, info } = await sharp(frame, { raw: { width: w, height: h, channels: 4 } })
+    .resize(nw, nh, { kernel: 'lanczos3' })
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
+  return { data, width: info.width, height: info.height };
 }
 
 function paste(dest, dw, dh, src, sw, sh, dx, dy) {
@@ -273,11 +361,12 @@ async function main() {
   const scale = TARGET_BODY_H / Math.max(1, medianBodyH);
   console.log(`scale ${scale.toFixed(4)} (preVfx medianBodyH=${medianBodyH} → ${TARGET_BODY_H})`);
 
-  const scaled = raw.map((r) => {
-    const s = nearestScale(r.data, r.width, r.height, scale);
+  const scaled = [];
+  for (const r of raw) {
+    const s = await softScale(r.data, r.width, r.height, scale);
     const meta = analyze(s.data, s.width, s.height);
-    return { ...s, meta, file: r.file };
-  });
+    scaled.push({ ...s, meta, file: r.file });
+  }
 
   // Canvas: espaço para VFX relativo ao pé traseiro fixo
   let maxLeft = 0;

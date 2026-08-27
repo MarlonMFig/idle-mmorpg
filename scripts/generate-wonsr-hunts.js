@@ -96,7 +96,7 @@ function isActiveCharacterLookType(lookType) {
     lookType === 9031 ||
     (lookType >= 9074 && lookType <= 9082) ||
     (lookType >= 9087 && lookType <= 9090) ||
-    (lookType >= 9093 && lookType <= 9105)
+    (lookType >= 9093 && lookType <= 9122)
   );
 }
 
@@ -404,6 +404,18 @@ function buildCuratedExtraCharacters() {
     },
     ...require('./lib/jump-force-roster')
       .JUMP_FORCE_ROSTER.filter((row) => isActiveCharacterLookType(row.lookType))
+      .map((row) => ({
+      id: `curated-character-${row.id}`,
+      sourceId: `curated-character-${row.id}`,
+      name: row.name,
+      category: 'personagem',
+      source: `curated/${row.id}`,
+      lookType: row.lookType,
+      hasSprite: false,
+      sourceMonster: null,
+    })),
+    ...require('./lib/nun5-batch-roster')
+      .NUN5_BATCH_ROSTER.filter((row) => isActiveCharacterLookType(row.lookType))
       .map((row) => ({
       id: `curated-character-${row.id}`,
       sourceId: `curated-character-${row.id}`,

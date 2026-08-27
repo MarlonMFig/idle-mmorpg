@@ -16,7 +16,7 @@ import { getSkill } from '@/data/skills';
 import type { SkillDefinition } from '@/types/skill';
 import { resolveEffectiveSkill, resolveEffectiveSkillAnim } from '@/lib/resolve-effective-skill';
 import type { SkillVfxTargetMode } from '@/data/character-packs';
-import { SKILL_EXECUTION_TYPE_LABELS, resolveExecutionType } from '@/data/skill-execution-def';
+import { formatExecutionTypesLabel } from '@/data/skill-execution-def';
 import {
   collectLabSaveChanges,
   hasLabSpriteChanges,
@@ -24,6 +24,7 @@ import {
   TARGET_MODE_LABELS,
   type LabSaveChanges,
 } from '@/lib/dev/lab-save-fields';
+import { isBodyAnimSlot, readSheetScale } from '@/lib/dev/lab-sheet-scale';
 import {
   extraLegacySkillIds,
   LAB_SKILL_SLOTS,
@@ -189,6 +190,9 @@ function CharacterTestLabBody() {
   const scaleY = useStore(characterLabStore, (s) => s.scaleY);
   const offsetX = useStore(characterLabStore, (s) => s.offsetX);
   const offsetY = useStore(characterLabStore, (s) => s.offsetY);
+  const animPreviewSlot = useStore(characterLabStore, (s) => s.animPreviewSlot);
+  const sheetScaleDrafts = useStore(characterLabStore, (s) => s.sheetScaleDrafts);
+  const sheetScaleOriginals = useStore(characterLabStore, (s) => s.sheetScaleOriginals);
   const vfxScale = useStore(characterLabStore, (s) => s.vfxScale);
   const vfxOffsetX = useStore(characterLabStore, (s) => s.vfxOffsetX);
   const vfxOffsetY = useStore(characterLabStore, (s) => s.vfxOffsetY);
@@ -319,7 +323,21 @@ function CharacterTestLabBody() {
     skillAi,
     areaImpactFxPerTarget,
     original: skillOriginals,
+    sheetScaleDrafts,
+    sheetScaleOriginals,
   });
+  const activeSheetScale = useMemo(() => {
+    if (!animPreviewSlot || !isBodyAnimSlot(animPreviewSlot) || !playerDef) return null;
+    return (
+      sheetScaleDrafts[animPreviewSlot] ??
+      sheetScaleOriginals[animPreviewSlot] ??
+      readSheetScale(playerDef.pack, animPreviewSlot)
+    );
+  }, [animPreviewSlot, sheetScaleDrafts, sheetScaleOriginals, playerDef]);
+  const activeSheetScaleOriginal = useMemo(() => {
+    if (!animPreviewSlot || !isBodyAnimSlot(animPreviewSlot)) return { scaleX: 1, scaleY: 1 };
+    return sheetScaleOriginals[animPreviewSlot] ?? { scaleX: 1, scaleY: 1 };
+  }, [animPreviewSlot, sheetScaleOriginals]);
   const [saveScope, setSaveScope] = useState<'all' | 'skill' | 'logic' | 'visual'>('all');
   const scopedSave = useMemo(() => {
     if (saveScope === 'all') return pendingSave;
@@ -344,6 +362,12 @@ function CharacterTestLabBody() {
       else if (line.field === 'statusEffects') changes.statusEffects = line.value as LabSaveChanges['statusEffects'];
       else if (line.field === 'element') changes.element = line.value as LabSaveChanges['element'];
       else if (line.field === 'ai') changes.ai = line.value as LabSaveChanges['ai'];
+      else if (line.field === 'sheetScales') {
+        changes.sheetScales = {
+          ...changes.sheetScales,
+          ...(line.value as NonNullable<LabSaveChanges['sheetScales']>),
+        };
+      }
       else changes[line.field as keyof LabSaveChanges] = line.value as never;
     }
     return { header: pendingSave.header, lines, changes };
@@ -1130,7 +1154,9 @@ function CharacterTestLabBody() {
                   {' · '}
                   {effectiveSkill?.name ?? lastSkillId}
                   {effectiveVfxId ? ` · VFX: ${effectiveVfxId}` : ''}
-                  {effectiveSkill?.execution?.type ? ` · Execution: ${effectiveSkill.execution.type}` : ''}
+                  {effectiveSkill?.execution
+                    ? ` · Execution: ${formatExecutionTypesLabel(effectiveSkill.execution)}`
+                    : ''}
                   {effectiveSkill ? ` · dmg ${effectiveSkill.damage}` : ''}
                 </p>
               </section>
@@ -1187,12 +1213,41 @@ function CharacterTestLabBody() {
                 <button
                   key={slot}
                   type="button"
+                  className={animPreviewSlot === slot ? 'is-active' : undefined}
                   onClick={() => characterLabStore.playSlot(slot)}
                 >
                   {SLOT_LABELS[slot] ?? slot}
                 </button>
               ))}
             </div>
+            {activeSheetScale && animPreviewSlot && isBodyAnimSlot(animPreviewSlot) ? (
+              <>
+                <h3>Escala desta animação ({SLOT_LABELS[animPreviewSlot]})</h3>
+                <p className="character-lab__hint">
+                  Só esta folha — não muda Scale X/Y do corpo inteiro abaixo.
+                </p>
+                <ValueRow
+                  label="Sheet Scale X"
+                  original={activeSheetScaleOriginal.scaleX}
+                  value={activeSheetScale.scaleX}
+                  presets={SCALE_PRESETS}
+                  step={0.05}
+                  onChange={(value) => characterLabStore.setSheetScale('scaleX', value)}
+                />
+                <ValueRow
+                  label="Sheet Scale Y"
+                  original={activeSheetScaleOriginal.scaleY}
+                  value={activeSheetScale.scaleY}
+                  presets={SCALE_PRESETS}
+                  step={0.05}
+                  onChange={(value) => characterLabStore.setSheetScale('scaleY', value)}
+                />
+              </>
+            ) : (
+              <p className="character-lab__hint">
+                Clique Idle, Walk, Combo… para ajustar a escala só dessa sprite.
+              </p>
+            )}
             {labPoseHasContent(poseSheet) && poseSheet ? (
               <>
                 <h3>Pose da Skill selecionada</h3>
@@ -1357,7 +1412,7 @@ function CharacterTestLabBody() {
               </p>
               <p>
                 <strong>Tipo de execução</strong>
-                {SKILL_EXECUTION_TYPE_LABELS[resolveExecutionType(execution)]}
+                {formatExecutionTypesLabel(execution)}
               </p>
               <p>
                 <strong>VFX EM EDIÇÃO</strong>

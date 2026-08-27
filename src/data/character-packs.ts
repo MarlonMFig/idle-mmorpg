@@ -1,6 +1,7 @@
 import type * as Phaser from 'phaser';
 import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
 import { JUMP_FORCE_BY_LOOK_TYPE, JUMP_FORCE_BY_SLUG } from '@/data/jump-force-packs';
+import { NUN5_BATCH_BY_LOOK_TYPE, NUN5_BATCH_BY_SLUG } from '@/data/nun5-batch-packs';
 import { getVfxDefinition, sharedVfxToSheet } from '@/data/vfx/registry';
 import { isSequenceVfx } from '@/data/vfx/types';
 import { applyDevPackOverlay } from '@/lib/dev/dev-runtime-registry';
@@ -51,6 +52,12 @@ export interface SpriteSheetDef {
    */
   offsetX?: number;
   offsetY?: number;
+  /**
+   * Escala local só desta folha (1 = tamanho do pack).
+   * Ex.: walk menor que idle sem mudar `displayScale` global.
+   */
+  scaleX?: number;
+  scaleY?: number;
   /**
    * Sequência de imagens (um PNG por quadro). Sem isto, `url` é spritesheet.
    * Usado sobretudo em poses de Skill no Test Lab.
@@ -173,8 +180,8 @@ export interface CharacterSkillAnimDef extends SpriteSheetDef {
    */
   damageTrigger?: SkillDamageTrigger;
   /**
-   * Tipo de execução avançada. Ausente = `single-hit` (comportamento atual).
-   * Não migrar Skills automaticamente.
+   * Tipo(s) de execução avançada. Ausente = `single-hit`.
+   * Pode combinar via `types` (ex.: area + persistent). Não migrar automaticamente.
    */
   execution?: SkillExecutionDef;
   /**
@@ -324,27 +331,60 @@ function wonsrOutfitSheet(
  */
 const NARUTO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   /**
-   * Rasengan — frames do rasengan.zip, pés traseiros fixos, contentHeight = idle (81).
+   * Rasengan — frames do rasengan.zip (corpo baked = idle G6 ~60px).
    * Gerado por: node scripts/process-naruto-rasengan-zip.js
    */
   'skill-rasengan': {
     key: 'naruto-rasengan-dash',
     url: '/sprites/player/naruto/rasengan-dash.png',
-    frameWidth: 274,
-    frameHeight: 165,
+    frameWidth: 204,
+    frameHeight: 125,
     frameCount: 16,
-    contentHeight: 81,
-    frameRate: 12,
-    durationMs: 1333,
+    contentHeight: 60,
+    frameRate: 15,
+    durationMs: 1067,
     hitDelayMs: 750,
-    originX: 0.1898,
-    // Mesmo offset do idle/walk — evita “pulo” vertical no cast.
-    offsetY: 4,
+    originX: 0.1863,
+    offsetY: 0,
     element: 'yang',
+    cast: {
+      scale: 0.9,
+      scaleX: 0.8,
+      scaleY: 0.9,
+      offsetX: 0,
+      offsetY: 4,
+      loopMode: 'none',
+      loopUntilSkillEnd: false,
+      flipX: false,
+      flipY: false,
+    },
     ai: {
       autoUse: true,
       priority: 1,
       energyCost: 22,
+    },
+    offsetX: 0,
+    loopMode: 'none',
+    loopUntilSkillEnd: false,
+    flipX: false,
+    flipY: false,
+    fxScale: 1,
+    castDelayMs: 0,
+    vfxLoopMode: 'none',
+    vfxLoopStartFrame: 1,
+    vfxLoopEndFrame: 1,
+    vfxLoopDurationMs: 3000,
+    vfxLoopUntilSkillEnd: false,
+    vfxFlipX: false,
+    vfxFlipY: false,
+    areaImpactFxPerTarget: false,
+    targeting: {
+      mode: 'caster',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
     },
   },
   /**
@@ -354,10 +394,11 @@ const NARUTO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
   'skill-kyuubi': {
     key: 'naruto-idle',
     url: '/sprites/player/naruto/idle.png',
-    frameWidth: 61,
-    frameHeight: 85,
+    frameWidth: 50,
+    frameHeight: 64,
     frameCount: 6,
-    contentHeight: 81,
+    contentHeight: 60,
+    originX: 0.5,
     frameRate: 15,
     // Cobre a folha FX (37f @ 12fps ≈ 3083ms)
     durationMs: 400,
@@ -366,7 +407,7 @@ const NARUTO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     fxReleaseMs: 0,
     fxAttach: 'caster',
     fxGround: true,
-    fxScale: 2,
+    fxScale: 1,
     fxIndependentScale: true,
     castDelayMs: 0,
     targeting: {
@@ -418,54 +459,129 @@ const NARUTO_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     vfxLoopUntilSkillEnd: false,
     vfxFlipX: false,
     vfxFlipY: false,
+    areaImpactFxPerTarget: false,
+  },
+  'naruto-henge-no-jutsu': {
+    key: 'naruto-idle',
+    url: '/sprites/player/naruto/idle.png',
+    frameWidth: 50,
+    frameHeight: 64,
+    frameCount: 6,
+    contentHeight: 60,
+    originX: 0.5,
+    frameRate: 15,
+    offsetX: 0,
+    offsetY: 0,
+    durationMs: 400,
+    hitDelayMs: 280,
+    vfxId: 'henge',
+    fxScale: 1.2,
+    vfxOffsetX: 0,
+    vfxOffsetY: 0,
+    vfxLoopMode: 'none',
+    vfxLoopStartFrame: 1,
+    vfxLoopEndFrame: 1,
+    vfxLoopDurationMs: 3000,
+    areaImpactFxPerTarget: true,
+    loopMode: 'none',
+    castDelayMs: 0,
+    targeting: {
+      mode: 'instant-target',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: -50,
+    },
+    execution: {
+      type: 'area',
+      radius: 200,
+    },
+    cast: {
+      scaleX: 1,
+      scaleY: 1,
+      scale: 1,
+      offsetX: 0,
+      offsetY: 0,
+      loopMode: 'none',
+      loopUntilSkillEnd: false,
+      flipX: false,
+      flipY: false,
+    },
+    loopUntilSkillEnd: false,
+    flipX: false,
+    flipY: false,
+    vfxLoopUntilSkillEnd: false,
+    vfxFlipX: false,
+    vfxFlipY: false,
+    element: 'neutral',
+        ai: {
+      autoUse: true,
+      priority: 3,
+      energyCost: 40,
+    },
   },
 };
 
+/** Body: `node scripts/process-naruto-classic-g6-body.js` (G6_Naruto_Kid MUGEN). */
 const NARUTO_WALK: SpriteSheetDef = {
   key: 'naruto-walk',
   url: '/sprites/player/naruto/walk.png',
-  frameWidth: 55,
-  frameHeight: 86,
+  frameWidth: 78,
+  frameHeight: 64,
   frameCount: 6,
-  contentHeight: 81,
-  offsetY: 4,
+  contentHeight: 60,
+  originX: 0.276,
+  scaleX: 0.8,
+  scaleY: 0.85,
 };
 
 const NARUTO_IDLE: SpriteSheetDef = {
   key: 'naruto-idle',
   url: '/sprites/player/naruto/idle.png',
-  frameWidth: 61,
-  frameHeight: 85,
+  frameWidth: 50,
+  frameHeight: 64,
   frameCount: 6,
-  contentHeight: 81,
-  offsetY: 4,
+  contentHeight: 60,
+  originX: 0.5,
+  scaleX: 0.85,
+  scaleY: 0.9,
 };
 
 const NARUTO_COMBO_1: SpriteSheetDef = {
   key: 'naruto-combo1',
   url: '/sprites/player/naruto/combo1.png',
-  frameWidth: 86,
-  frameHeight: 83,
+  frameWidth: 83,
+  frameHeight: 64,
   frameCount: 4,
-  contentHeight: 81,
+  contentHeight: 60,
+  originX: 0.289,
+  scaleX: 0.9,
+  scaleY: 0.95,
 };
 
 const NARUTO_COMBO_2: SpriteSheetDef = {
   key: 'naruto-combo2',
   url: '/sprites/player/naruto/combo2.png',
-  frameWidth: 86,
-  frameHeight: 83,
+  frameWidth: 78,
+  frameHeight: 59,
   frameCount: 4,
-  contentHeight: 81,
+  contentHeight: 60,
+  originX: 0.321,
+  scaleX: 0.9,
+  scaleY: 0.95,
 };
 
 const NARUTO_COMBO_3: SpriteSheetDef = {
   key: 'naruto-combo3',
   url: '/sprites/player/naruto/combo3.png',
-  frameWidth: 86,
-  frameHeight: 83,
-  frameCount: 4,
-  contentHeight: 81,
+  frameWidth: 61,
+  frameHeight: 64,
+  frameCount: 5,
+  contentHeight: 60,
+  originX: 0.443,
+  scaleX: 0.9,
+  scaleY: 0.95,
 };
 
 const NARUTO_ATTACK_CHAIN = [NARUTO_COMBO_1, NARUTO_COMBO_2, NARUTO_COMBO_3] as const;
@@ -473,21 +589,25 @@ const NARUTO_ATTACK_CHAIN = [NARUTO_COMBO_1, NARUTO_COMBO_2, NARUTO_COMBO_3] as 
 const NARUTO_HURT: CharacterReactionAnimDef = {
   key: 'naruto-hurt',
   url: '/sprites/player/naruto/hurt.png',
-  frameWidth: 97,
-  frameHeight: 85,
-  frameCount: 2,
-  contentHeight: 81,
+  frameWidth: 47,
+  frameHeight: 60,
+  frameCount: 3,
+  contentHeight: 60,
   frameRate: 10,
+  originX: 0.319,
+  scaleX: 0.85,
+  scaleY: 0.9,
 };
 
 const NARUTO_DEATH: CharacterReactionAnimDef = {
   key: 'naruto-death',
   url: '/sprites/player/naruto/death.png',
-  frameWidth: 97,
-  frameHeight: 85,
+  frameWidth: 77,
+  frameHeight: 56,
   frameCount: 3,
-  contentHeight: 81,
+  contentHeight: 60,
   frameRate: 8,
+  originX: 0.506,
 };
 
 const NARUTO_PACK: CharacterPack = {
@@ -502,7 +622,7 @@ const NARUTO_PACK: CharacterPack = {
   hotbarSkillIds: [
     'skill-rasengan',
     'skill-kyuubi',
-    null,
+    'naruto-henge-no-jutsu',
     null,
   ],
 };
@@ -1874,6 +1994,44 @@ const GUY_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     // Last frame only: (frameCount - 1) / frameRate * 1000
     hitDelayMs: 1071,
   },
+  'guy-hirudora': {
+    key: 'guy-combo1',
+    url: '/sprites/player/guy/combo1.png',
+    frameWidth: 136,
+    frameHeight: 163,
+    frameCount: 5,
+    frameRate: 12,
+    offsetX: 0,
+    offsetY: 0,
+    durationMs: 417,
+    hitDelayMs: 280,
+    vfxId: 'might-guy-hirudora-vfx-only',
+    fxScale: 3,
+    vfxOffsetX: 0,
+    vfxOffsetY: 0,
+    vfxLoopMode: 'none',
+    vfxLoopStartFrame: 1,
+    vfxLoopEndFrame: 1,
+    vfxLoopDurationMs: 3000,
+    areaImpactFxPerTarget: false,
+    loopMode: 'none',
+    castDelayMs: 0,
+    targeting: {
+      mode: 'travel-to-target',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
+    },
+    cast: {
+      scaleX: 1,
+      scaleY: 1,
+      scale: 1,
+      offsetX: 0,
+      offsetY: 0,
+    },
+  },
 };
 
 const GUY_PACK: CharacterPack = {
@@ -1883,7 +2041,12 @@ const GUY_PACK: CharacterPack = {
   attack: GUY_COMBO_1,
   attackChain: GUY_ATTACK_CHAIN,
   skillAnims: GUY_JUTSU_ANIMS,
-  hotbarSkillIds: ['skill-asa-kujaku'],
+  hotbarSkillIds: [
+    'skill-asa-kujaku',
+    'guy-hirudora',
+    null,
+    null,
+  ],
 };
 
 /**
@@ -5744,6 +5907,7 @@ const CURATED_BY_SLUG: Record<string, CharacterPack> = {
   shino: SHINO_PACK,
   'aburame-shino': SHINO_PACK,
   ...JUMP_FORCE_BY_SLUG,
+  ...NUN5_BATCH_BY_SLUG,
 };
 
 const CURATED_BY_LOOK_TYPE: Record<number, CharacterPack> = {
@@ -5781,6 +5945,7 @@ const CURATED_BY_LOOK_TYPE: Record<number, CharacterPack> = {
   [TAYUYA_CURATED_LOOK_TYPE]: TAYUYA_PACK,
   [SHINO_CURATED_LOOK_TYPE]: SHINO_PACK,
   ...JUMP_FORCE_BY_LOOK_TYPE,
+  ...NUN5_BATCH_BY_LOOK_TYPE,
 };
 
 /**
@@ -5931,7 +6096,11 @@ export function preloadCharacterPack(scene: Phaser.Scene, pack: CharacterPack): 
   for (const sheet of sheets) {
     if (seen.has(sheet.key)) continue;
     seen.add(sheet.key);
-    scene.load.spritesheet(sheet.key, sheet.url, {
+    // HMR / reentrada: se a folha mudou de frame size, a textura antiga
+    // (ex.: idle 61×85 → 41×55) deixa generateFrameNumbers com frames
+    // undefined → TypeError em anims.play (...duration).
+    invalidateMismatchedSheetTexture(scene, sheet);
+    scene.load.spritesheet(sheet.key, sheetCacheUrl(sheet), {
       frameWidth: sheet.frameWidth,
       frameHeight: sheet.frameHeight,
     });
@@ -5986,6 +6155,71 @@ function applyNearestFilter(scene: Phaser.Scene, keys: Iterable<string>): void {
   }
 }
 
+/** Bust de cache HTTP quando frame size muda (evita PNG antigo com meta nova). */
+function sheetCacheUrl(sheet: SpriteSheetDef): string {
+  const sep = sheet.url.includes('?') ? '&' : '?';
+  return `${sheet.url}${sep}fw=${sheet.frameWidth}&fh=${sheet.frameHeight}&n=${sheet.frameCount}`;
+}
+
+/**
+ * Remove textura + anims ligadas se o frame size no pack mudou (HMR / re-preload).
+ * Sem isto, `load.spritesheet` no-op na chave existente e o play idle quebra.
+ *
+ * Também detecta slice falho: só `__BASE` (folha inteira = N Narutos em fila)
+ * quando `frameHeight` antigo > altura da PNG nova.
+ */
+export function invalidateMismatchedSheetTexture(
+  scene: Phaser.Scene,
+  sheet: SpriteSheetDef,
+): boolean {
+  if (!scene.textures.exists(sheet.key)) return false;
+  if (sheetTextureSliceOk(scene, sheet)) return false;
+
+  const animsMap = (
+    scene.anims as unknown as {
+      anims?: Map<string, Phaser.Animations.Animation>;
+    }
+  ).anims;
+  const toRemove: string[] = [];
+  if (animsMap) {
+    for (const anim of animsMap.values()) {
+      if (!anim?.frames?.length) continue;
+      if (anim.frames.some((f) => f != null && f.textureKey === sheet.key)) {
+        toRemove.push(anim.key);
+      }
+    }
+  }
+  for (const animKey of toRemove) {
+    try {
+      if (scene.anims.exists(animKey)) scene.anims.remove(animKey);
+    } catch {
+      // ignore
+    }
+  }
+  try {
+    scene.textures.remove(sheet.key);
+  } catch {
+    // ignore
+  }
+  return true;
+}
+
+/** True se a textura tem células no tamanho do pack (não a folha inteira). */
+export function sheetTextureSliceOk(scene: Phaser.Scene, sheet: SpriteSheetDef): boolean {
+  if (!scene.textures.exists(sheet.key)) return false;
+  const tex = scene.textures.get(sheet.key);
+  // frameTotal inclui `__BASE`. Precisamos de ≥ frameCount células.
+  const usable = Math.max(0, tex.frameTotal - 1);
+  if (usable < Math.max(1, sheet.frameCount)) return false;
+  const frame = tex.get(0);
+  if (!frame) return false;
+  if (frame.width !== sheet.frameWidth || frame.height !== sheet.frameHeight) return false;
+  // `__BASE` tem o tamanho da PNG inteira — nunca deve ser o frame 0 de um strip.
+  const src = tex.source[0] as { width?: number; height?: number } | undefined;
+  if (src?.width != null && sheet.frameCount > 1 && frame.width >= src.width) return false;
+  return true;
+}
+
 export function sequenceFrameKey(sheetKey: string, index: number): string {
   return `${sheetKey}__f${index}`;
 }
@@ -5996,17 +6230,40 @@ export function createSpriteSheetAnimation(
   animKey: string,
   options?: { start?: number; end?: number; repeat?: number },
 ): boolean {
-  const last = Math.max(0, (sheet.frames?.length || sheet.frameCount) - 1);
+  const sequence = sheet.frames && sheet.frames.length > 0;
+  if (!sequence && !sheetTextureSliceOk(scene, sheet)) {
+    if (scene.anims.exists(animKey)) scene.anims.remove(animKey);
+    return false;
+  }
+
+  const available = sequence
+    ? sheet.frames!.length
+    : Math.max(0, scene.textures.get(sheet.key).frameTotal - 1);
+  const last = Math.min(Math.max(0, (sheet.frames?.length || sheet.frameCount) - 1), Math.max(0, available - 1));
   const start = Math.min(last, Math.max(0, options?.start ?? 0));
   const end = Math.min(last, Math.max(start, options?.end ?? last));
-  const sequence = sheet.frames && sheet.frames.length > 0;
   const frames = sequence
-    ? sheet.frames!.slice(start, end + 1).map((_, index) => ({ key: sequenceFrameKey(sheet.key, start + index) }))
-    : scene.textures.exists(sheet.key)
-      ? scene.anims.generateFrameNumbers(sheet.key, { start, end })
-      : null;
-  if (!frames || frames.length === 0) return false;
-  if (sequence && frames.some((frame) => !frame.key || !scene.textures.exists(frame.key))) return false;
+    ? sheet.frames!.slice(start, end + 1).map((_, index) => ({
+        key: sequenceFrameKey(sheet.key, start + index),
+      }))
+    : scene.anims.generateFrameNumbers(sheet.key, { start, end });
+  if (!frames.length) return false;
+  if (sequence && frames.some((frame) => !frame.key || !scene.textures.exists(frame.key))) {
+    return false;
+  }
+  if (!sequence) {
+    const tex = scene.textures.get(sheet.key);
+    const valid = frames.filter((f) => tex.has(f.frame as string | number));
+    if (!valid.length) return false;
+    if (scene.anims.exists(animKey)) scene.anims.remove(animKey);
+    scene.anims.create({
+      key: animKey,
+      frames: valid,
+      frameRate: sheet.frameRate ?? 12,
+      repeat: options?.repeat ?? (sheet.loop ? -1 : 0),
+    });
+    return true;
+  }
   if (scene.anims.exists(animKey)) scene.anims.remove(animKey);
   scene.anims.create({
     key: animKey,
@@ -6015,6 +6272,14 @@ export function createSpriteSheetAnimation(
     repeat: options?.repeat ?? (sheet.loop ? -1 : 0),
   });
   return true;
+}
+
+/** True se a animação existe e todos os frames têm duration (play-safe). */
+export function animationPlayable(scene: Phaser.Scene, animKey: string): boolean {
+  if (!scene.anims.exists(animKey)) return false;
+  const anim = scene.anims.get(animKey);
+  if (!anim?.frames?.length) return false;
+  return anim.frames.every((f) => f != null && f.duration != null && f.frame != null);
 }
 
 /**
@@ -6037,27 +6302,13 @@ export function loadSpriteSheets(scene: Phaser.Scene, sheets: SpriteSheetDef[]):
     if (queued.has(sheet.key)) continue;
 
     if (scene.textures.exists(sheet.key)) {
-      const existing = scene.textures.get(sheet.key).get(0);
-      const sameSize =
-        existing != null &&
-        existing.width === sheet.frameWidth &&
-        existing.height === sheet.frameHeight;
-      if (sameSize) continue;
-      scene.textures.remove(sheet.key);
-      const animsMap = (
-        scene.anims as unknown as {
-          anims: Map<string, Phaser.Animations.Animation>;
-        }
-      ).anims;
-      for (const anim of animsMap.values()) {
-        if (anim.frames.some((f) => f.textureKey === sheet.key)) {
-          scene.anims.remove(anim.key);
-        }
+      if (!invalidateMismatchedSheetTexture(scene, sheet) && scene.textures.exists(sheet.key)) {
+        continue;
       }
     }
 
     queued.add(sheet.key);
-    scene.load.spritesheet(sheet.key, sheet.url, {
+    scene.load.spritesheet(sheet.key, sheetCacheUrl(sheet), {
       frameWidth: sheet.frameWidth,
       frameHeight: sheet.frameHeight,
     });

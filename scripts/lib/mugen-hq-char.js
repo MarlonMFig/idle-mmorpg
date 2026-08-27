@@ -1142,7 +1142,8 @@ async function packMugenCharacter(cfg) {
     hurtPacked,
     contentHeight,
     { frameRate: 10 },
-    { lockFeet: hurtPacked.frames.length >= 2 },
+    // Hurt costuma levantar o pé — feet-lock falso positivo em rips MUGEN.
+    { lockFeet: false },
   );
   const deathEntry = await writeSheet(
     outDir,

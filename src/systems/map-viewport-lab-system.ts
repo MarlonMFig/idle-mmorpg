@@ -121,11 +121,17 @@ export class MapViewportLabSystem {
       cam.setRoundPixels(ov.roundPixelsOverride);
     }
 
-    cam.setZoom(ov.cameraZoom);
+    if (ov.pendingFit) {
+      mapViewportLabStore.fitEntireMap(viewW, viewH, worldW, worldH);
+    }
+    const live = mapViewportLabStore.getLiveOverrides() ?? ov;
 
-    if (ov.panMode) {
-      cam.stopFollow();
-      cam.centerOn(ov.camX, ov.camY);
+    cam.setZoom(live.cameraZoom);
+
+    // Lab de mapas: sempre solta o follow do avatar para poder enquadrar o mundo.
+    cam.stopFollow();
+    if (live.panMode) {
+      cam.centerOn(live.camX, live.camY);
     }
 
     cam.setBounds(0, 0, worldW, worldH);

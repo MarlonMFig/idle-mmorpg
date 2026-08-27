@@ -5,11 +5,13 @@ import type { SkillVfxTargetMode } from '@/data/character-packs';
 import { CharacterRegistry } from '@/data/characters';
 import { STARTERS } from '@/data/starters';
 import {
-  cloneLabPoseSheet,
-  labDraftHasVisual,
-  labPoseHasContent,
-  type LabPoseSheet,
-} from '@/lib/dev/lab-pose-sheet';
+  isBodyAnimSlot,
+  readSheetScale,
+  writeSheetScale,
+  sheetScaleDirty,
+  type SheetScale,
+} from '@/lib/dev/lab-sheet-scale';
+import { listAvailableAnimSlots } from '@/data/characters/animation-slots';
 import {
   DEFAULT_TRAVEL_SPEED_PX,
   readLabSkillOriginals,
@@ -19,7 +21,7 @@ import {
   jutsuFpsDirty,
   type LabSkillOriginals,
 } from '@/lib/dev/lab-save-fields';
-import { cloneExecutionDef, type SkillExecutionDef } from '@/data/skill-execution-def';
+import { cloneExecutionDef, executionWithTypes, type SkillExecutionDef } from '@/data/skill-execution-def';
 import { cloneSkillAi, defaultSkillAi, type SkillAiConfig } from '@/data/skill-ai-def';
 import { cloneSkillStatusEffects, type SkillStatusApplication } from '@/data/status-effect-def';
 import {
@@ -45,6 +47,12 @@ import { locationStore } from '@/stores/location-store';
 import type { CharacterAnimSlot } from '@/types/character-definition';
 import type { LineageId } from '@/types/character-meta';
 import type { LineageSpecializationSlot } from '@/types/lineage';
+import {
+  cloneLabPoseSheet,
+  labDraftHasVisual,
+  labPoseHasContent,
+  type LabPoseSheet,
+} from '@/lib/dev/lab-pose-sheet';
 import {
   alignmentsEqual,
   normalizeSpriteAlignment,
@@ -169,6 +177,15 @@ export interface CharacterLabState {
   scaleY: number;
   offsetX: number;
   offsetY: number;
+  /**
+   * Slot de animação selecionado no painel SPRITE (walk, combo1, …).
+   * Usado para editar escala só dessa folha.
+   */
+  animPreviewSlot: CharacterAnimSlot | null;
+  /** Escalas locais rascunho por slot (persistidas no fonte ao salvar Sprite). */
+  sheetScaleDrafts: Partial<Record<CharacterAnimSlot, { scaleX: number; scaleY: number }>>;
+  /** Baseline ao abrir o personagem (para dirty / restaurar). */
+  sheetScaleOriginals: Partial<Record<CharacterAnimSlot, { scaleX: number; scaleY: number }>>;
   /** Contexto editado no painel SPRITE ALIGNMENT. */
   alignContext: SpriteAlignmentContext;
   alignHubX: number;
@@ -344,6 +361,9 @@ const emptyState = (): CharacterLabState => ({
   labEnemyCount: 1,
   distance: 'normal',
   ...DEFAULT_VISUALS,
+  animPreviewSlot: null,
+  sheetScaleDrafts: {},
+  sheetScaleOriginals: {},
   showFrameDebug: false,
   showHitTiming: false,
   showHitbox: false,
@@ -836,6 +856,11 @@ export const characterLabStore = {
     const resolved = resolveOfficialSlot(canonicalId, prev.lastSkillId, prev.selectedSkillSlot);
     const originals = loadSkillFromPack(canonicalId, resolved.skillId);
     const alignment = alignmentFromPack(canonicalId);
+    const sheetScaleOriginals: Partial<Record<CharacterAnimSlot, SheetScale>> = {};
+    for (const slot of listAvailableAnimSlots(def.pack)) {
+      if (!isBodyAnimSlot(slot)) continue;
+      sheetScaleOriginals[slot] = readSheetScale(def.pack, slot);
+    }
     patch({
       playerId: canonicalId,
       selectedSkillSlot: resolved.slot,
@@ -847,6 +872,9 @@ export const characterLabStore = {
       travelDebug: null,
       skillOriginals: originals,
       ...DEFAULT_SPRITE,
+      animPreviewSlot: null,
+      sheetScaleDrafts: {},
+      sheetScaleOriginals,
       ...alignmentDraftFrom(alignment),
       gameSpeed: store.getSnapshot().gameSpeed,
       ...skillFieldsFrom(originals),
@@ -890,7 +918,17 @@ export const characterLabStore = {
 
   patchExecution(partial: Partial<SkillExecutionDef>): void {
     const current = cloneExecutionDef(store.getSnapshot().execution);
-    patch({ execution: cloneExecutionDef({ ...current, ...partial }) });
+    const merged = { ...current, ...partial };
+    if (partial.types) {
+      const next = executionWithTypes(current, partial.types);
+      patch({ execution: next });
+      return;
+    }
+    if (partial.type && !partial.types) {
+      patch({ execution: executionWithTypes(current, [partial.type]) });
+      return;
+    }
+    patch({ execution: cloneExecutionDef(merged) });
   },
 
   setStatusEffects(statusEffects: SkillStatusApplication[]): void {
@@ -1016,7 +1054,8 @@ export const characterLabStore = {
   },
 
   restoreSprite(): void {
-    patch({ ...DEFAULT_SPRITE });
+    this.restoreSheetScales();
+    patch({ ...DEFAULT_SPRITE, sheetScaleDrafts: {} });
   },
 
   restoreVfx(): void {
@@ -1092,7 +1131,8 @@ export const characterLabStore = {
       state.scaleY !== DEFAULT_SPRITE.scaleY ||
       state.offsetX !== DEFAULT_SPRITE.offsetX ||
       state.offsetY !== DEFAULT_SPRITE.offsetY ||
-      state.animationSpeed !== DEFAULT_SPRITE.animationSpeed
+      state.animationSpeed !== DEFAULT_SPRITE.animationSpeed ||
+      sheetScaleDirty(state.sheetScaleDrafts, state.sheetScaleOriginals)
     );
   },
 
@@ -1304,7 +1344,46 @@ export const characterLabStore = {
   },
 
   playSlot(slot: CharacterAnimSlot): void {
-    patch({ command: { kind: 'play-slot', slot } });
+    patch({ animPreviewSlot: slot, command: { kind: 'play-slot', slot } });
+  },
+
+  /**
+   * Escala só da folha do slot (walk / combo / …). Preview ao vivo no pack;
+   * persiste com Salvar Sprite.
+   */
+  setSheetScale(axis: 'scaleX' | 'scaleY', value: number): void {
+    const state = store.getSnapshot();
+    const slot = state.animPreviewSlot;
+    if (!slot || !isBodyAnimSlot(slot) || !state.playerId) return;
+    const pack = CharacterRegistry.get(state.playerId)?.pack;
+    if (!pack) return;
+    const current = state.sheetScaleDrafts[slot] ?? readSheetScale(pack, slot);
+    const next: SheetScale = {
+      scaleX: axis === 'scaleX' ? value : current.scaleX,
+      scaleY: axis === 'scaleY' ? value : current.scaleY,
+    };
+    writeSheetScale(pack, slot, next);
+    patch({
+      sheetScaleDrafts: { ...state.sheetScaleDrafts, [slot]: next },
+      command: { kind: 'play-slot', slot },
+    });
+  },
+
+  restoreSheetScales(): void {
+    const state = store.getSnapshot();
+    const pack = state.playerId ? CharacterRegistry.get(state.playerId)?.pack : undefined;
+    if (pack) {
+      for (const slot of Object.keys(state.sheetScaleOriginals) as CharacterAnimSlot[]) {
+        const original = state.sheetScaleOriginals[slot];
+        if (original) writeSheetScale(pack, slot, original);
+      }
+    }
+    const slot = state.animPreviewSlot;
+    patch({
+      sheetScaleDrafts: {},
+      animPreviewSlot: slot,
+      ...(slot ? { command: { kind: 'play-slot' as const, slot } } : {}),
+    });
   },
 
   castSkill(skillId: string): void {
@@ -1383,8 +1462,18 @@ export const characterLabStore = {
       skillAi: cloneSkillAi(scope === 'visual' ? prev.skillAi : state.skillAi) ?? defaultSkillAi(state.selectedSkillSlot),
       areaImpactFxPerTarget: scope === 'visual' ? prev.areaImpactFxPerTarget : state.areaImpactFxPerTarget,
     });
+    const sheetScaleOriginals = { ...state.sheetScaleOriginals };
+    if (!options?.skillOnly) {
+      for (const slot of Object.keys(state.sheetScaleDrafts) as CharacterAnimSlot[]) {
+        const draft = state.sheetScaleDrafts[slot];
+        if (draft) sheetScaleOriginals[slot] = draft;
+      }
+    }
     patch({
       ...(options?.skillOnly ? {} : DEFAULT_SPRITE),
+      ...(options?.skillOnly
+        ? {}
+        : { sheetScaleDrafts: {}, sheetScaleOriginals }),
       skillOriginals: originals,
       dataEpoch: state.dataEpoch + 1,
       command: { kind: 'sync-runtime' },

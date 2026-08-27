@@ -1,0 +1,79 @@
+{
+  "id": "naruto",
+  "name": "Uzumaki Naruto (Kid / G6)",
+  "lookType": 9011,
+  "contentHeight": 60,
+  "idle": {
+    "image": "/sprites/player/naruto/idle.png",
+    "frameWidth": 50,
+    "frameHeight": 64,
+    "frameCount": 6,
+    "contentHeight": 60,
+    "scale": 1,
+    "originX": 0.5,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/naruto/walk.png",
+    "frameWidth": 78,
+    "frameHeight": 64,
+    "frameCount": 6,
+    "contentHeight": 60,
+    "scale": 1,
+    "originX": 0.27564102564102566,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/naruto/combo1.png",
+      "frameWidth": 83,
+      "frameHeight": 64,
+      "frameCount": 4,
+      "contentHeight": 60,
+      "scale": 1,
+      "originX": 0.2891566265060241,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/naruto/combo2.png",
+      "frameWidth": 78,
+      "frameHeight": 59,
+      "frameCount": 4,
+      "contentHeight": 60,
+      "scale": 1,
+      "originX": 0.32051282051282054,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/naruto/combo3.png",
+      "frameWidth": 61,
+      "frameHeight": 64,
+      "frameCount": 5,
+      "contentHeight": 60,
+      "scale": 1,
+      "originX": 0.4426229508196721,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/naruto/hurt.png",
+    "frameWidth": 47,
+    "frameHeight": 60,
+    "frameCount": 3,
+    "contentHeight": 60,
+    "scale": 1,
+    "originX": 0.3191489361702128,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/naruto/death.png",
+    "frameWidth": 77,
+    "frameHeight": 56,
+    "frameCount": 3,
+    "contentHeight": 60,
+    "scale": 1,
+    "originX": 0.5064935064935064,
+    "frameRate": 8
+  },
+  "skills": []
+}

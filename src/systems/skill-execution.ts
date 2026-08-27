@@ -2,9 +2,12 @@ import * as Phaser from 'phaser';
 import type { CharacterSkillAnimDef, SkillDamageTrigger } from '@/data/character-packs';
 import {
   cloneExecutionDef,
+  hasExecutionType,
+  isInstantExecution,
   normalizeHits,
   planTickOffsets,
   resolveExecutionType,
+  resolveExecutionTypes,
   tickMultiplier,
   type LabExecutionDebug,
   type SkillExecutionDef,
@@ -335,8 +338,11 @@ export function scheduleOfficialSkillFx(opts: OfficialSkillFxSchedule): SkillExe
 
   warnSkillVisualIssues(player.pack, skill.id);
   const execDef = resolveSkillExecutionDef(anim, skill);
+  const types = resolveExecutionTypes(execDef);
   const type = resolveExecutionType(execDef);
-  const persistVfx = type === 'beam' || type === 'persistent';
+  const instant = isInstantExecution(execDef);
+  const area = hasExecutionType(execDef, 'area');
+  const persistVfx = hasExecutionType(execDef, 'beam') || hasExecutionType(execDef, 'persistent');
 
   const execution = runtime.begin({
     characterId: player.pack.id,
@@ -350,22 +356,32 @@ export function scheduleOfficialSkillFx(opts: OfficialSkillFxSchedule): SkillExe
   const abortIfDeadTarget = (): boolean => {
     if (!targetId) return false;
     if (!isOriginalTargetDead()) return false;
-    if (type === 'persistent' && execDef.persistentAnchor === 'world-position') {
+    if (hasExecutionType(execDef, 'persistent') && execDef.persistentAnchor === 'world-position') {
       runtime.disarmDamage(execution.executionId);
       labLog('persistent: alvo morto — dano interrompido');
       return false;
     }
     runtime.cancel(execution.executionId);
-    labLog(`${type}: alvo morto — execução encerrada`);
+    labLog(`${types.join('+')}: alvo morto — execução encerrada`);
     return true;
   };
+
+  const hitKindFor = (fallback: SkillImpactKind): SkillImpactKind => (area ? 'area' : fallback);
 
   const applySingle = () => {
     if (isCasterDead() || runtime.isCancelled(execution.executionId)) return;
     if (abortIfDeadTarget()) return;
     if (!runtime.tryApplyDamage(execution.executionId)) return;
-    onHit({ multiplier: 1, kind: type === 'area' ? 'area' : 'single', index: 0, radius: execDef.radius }, execution);
-    if (type === 'single-hit' || type === 'area') {
+    onHit(
+      {
+        multiplier: 1,
+        kind: hitKindFor(area ? 'area' : 'single'),
+        index: 0,
+        radius: area ? execDef.radius : undefined,
+      },
+      execution,
+    );
+    if (instant) {
       onStatusMoment?.('on-end', execution);
     }
   };
@@ -375,9 +391,124 @@ export function scheduleOfficialSkillFx(opts: OfficialSkillFxSchedule): SkillExe
     const effectAt = scene.time.now;
     execution.startedAt = effectAt;
 
-    if (type === 'multi-hit') {
+    // Prioridade: persistent > beam > multi-hit. Area é modificador ortogonal.
+    if (hasExecutionType(execDef, 'persistent')) {
+      const duration = execDef.duration ?? 5000;
+      const interval = execDef.tickInterval ?? 1000;
+      const offsets = planTickOffsets(duration, interval);
+      const perTick = tickMultiplier(execDef, offsets.length);
+      execution.endsAt = effectAt + duration;
+      runtime.setPhase(execution.executionId, 'persistent-active');
+      const anchor = execDef.persistentAnchor ?? 'target';
+      runtime.setFollow(execution.executionId, anchor === 'world-position' ? 'world' : anchor, {
+        getTarget: getTargetPos,
+        getCaster: () => ({ x: player.x, y: player.y }),
+      });
+      labLog(area ? 'Persistent Area Effect' : 'Persistent Effect');
+      offsets.forEach((at, index) => {
+        runtime.trackTimer(
+          execution.executionId,
+          scene.time.delayedCall(at, () => {
+            if (runtime.isCancelled(execution.executionId) || isCasterDead()) return;
+            if (abortIfDeadTarget()) return;
+            if (!runtime.get(execution.executionId)?.damageArmed) return;
+            const key = `tick:${index}`;
+            if (!runtime.tryApplyKey(execution.executionId, key)) return;
+            execution.tickCount = index + 1;
+            publishLabDebug(execution, {
+              status: area ? 'Persistent Area' : 'Persistent Effect',
+              tick: index + 1,
+              tickMax: offsets.length,
+              elapsedMs: at,
+              durationMs: duration,
+            });
+            labLog(`Persistent tick ${index + 1} / ${offsets.length}`);
+            onHit(
+              {
+                multiplier: perTick,
+                kind: hitKindFor('tick'),
+                index,
+                radius: area ? execDef.radius : undefined,
+              },
+              execution,
+            );
+          }),
+        );
+      });
+      runtime.trackTimer(
+        execution.executionId,
+        scene.time.delayedCall(duration, () => {
+          if (runtime.isCancelled(execution.executionId)) return;
+          labLog('Persistent End');
+          onStatusMoment?.('on-end', execution);
+          runtime.finish(execution.executionId, { keepVfx: false });
+        }),
+      );
+      return;
+    }
+
+    if (hasExecutionType(execDef, 'beam')) {
+      const duration = execDef.beamDuration ?? 2000;
+      const interval = execDef.tickInterval ?? 250;
+      const offsets = planTickOffsets(duration, interval);
+      const perTick = tickMultiplier(execDef, offsets.length);
+      execution.endsAt = effectAt + duration;
+      runtime.setPhase(execution.executionId, 'beam-active');
+      if (execDef.trackTarget) {
+        runtime.setFollow(execution.executionId, 'target', {
+          getTarget: getTargetPos,
+          getCaster: () => ({ x: player.x, y: player.y }),
+        });
+      }
+      labLog(area ? 'Beam Area Active' : 'Beam Active');
+      offsets.forEach((at, index) => {
+        runtime.trackTimer(
+          execution.executionId,
+          scene.time.delayedCall(at, () => {
+            if (runtime.isCancelled(execution.executionId) || isCasterDead()) return;
+            if (abortIfDeadTarget()) return;
+            const key = `tick:${index}`;
+            if (!runtime.tryApplyKey(execution.executionId, key)) return;
+            execution.tickCount = index + 1;
+            labLog(`Tick ${index + 1}`);
+            publishLabDebug(execution, {
+              status: area ? 'Beam Area Active' : 'Beam Active',
+              tick: index + 1,
+              tickMax: offsets.length,
+              elapsedMs: at,
+              durationMs: duration,
+            });
+            onHit(
+              {
+                multiplier: perTick,
+                kind: hitKindFor('tick'),
+                index,
+                radius: area ? execDef.radius : undefined,
+              },
+              execution,
+            );
+          }),
+        );
+      });
+      runtime.trackTimer(
+        execution.executionId,
+        scene.time.delayedCall(duration, () => {
+          if (runtime.isCancelled(execution.executionId)) return;
+          labLog('Beam End');
+          onStatusMoment?.('on-end', execution);
+          runtime.finish(execution.executionId, { keepVfx: false });
+        }),
+      );
+      return;
+    }
+
+    if (hasExecutionType(execDef, 'multi-hit')) {
       const hits = normalizeHits(execDef.hits);
-      publishLabDebug(execution, { status: 'multi-hit', hitMax: hits.length, durationMs: hits.at(-1)?.delay ?? 0 });
+      publishLabDebug(execution, {
+        status: area ? 'multi-hit area' : 'multi-hit',
+        hitMax: hits.length,
+        durationMs: hits.at(-1)?.delay ?? 0,
+      });
       hits.forEach((hit, index) => {
         runtime.trackTimer(
           execution.executionId,
@@ -396,7 +527,15 @@ export function scheduleOfficialSkillFx(opts: OfficialSkillFxSchedule): SkillExe
               elapsedMs: elapsed,
               durationMs: hits.at(-1)?.delay ?? 0,
             });
-            onHit({ multiplier: hit.damageMultiplier, kind: 'hit', index }, execution);
+            onHit(
+              {
+                multiplier: hit.damageMultiplier,
+                kind: hitKindFor('hit'),
+                index,
+                radius: area ? execDef.radius : undefined,
+              },
+              execution,
+            );
             if (index === hits.length - 1) {
               onStatusMoment?.('on-end', execution);
               runtime.finish(execution.executionId, { keepVfx: true });
@@ -407,101 +546,7 @@ export function scheduleOfficialSkillFx(opts: OfficialSkillFxSchedule): SkillExe
       return;
     }
 
-    if (type === 'beam') {
-      const duration = execDef.beamDuration ?? 2000;
-      const interval = execDef.tickInterval ?? 250;
-      const offsets = planTickOffsets(duration, interval);
-      const perTick = tickMultiplier(execDef, offsets.length);
-      execution.endsAt = effectAt + duration;
-      runtime.setPhase(execution.executionId, 'beam-active');
-      if (execDef.trackTarget) {
-        runtime.setFollow(execution.executionId, 'target', {
-          getTarget: getTargetPos,
-          getCaster: () => ({ x: player.x, y: player.y }),
-        });
-      }
-      labLog('Beam Active');
-      offsets.forEach((at, index) => {
-        runtime.trackTimer(
-          execution.executionId,
-          scene.time.delayedCall(at, () => {
-            if (runtime.isCancelled(execution.executionId) || isCasterDead()) return;
-            if (abortIfDeadTarget()) return;
-            const key = `tick:${index}`;
-            if (!runtime.tryApplyKey(execution.executionId, key)) return;
-            execution.tickCount = index + 1;
-            labLog(`Tick ${index + 1}`);
-            publishLabDebug(execution, {
-              status: 'Beam Active',
-              tick: index + 1,
-              tickMax: offsets.length,
-              elapsedMs: at,
-              durationMs: duration,
-            });
-            onHit({ multiplier: perTick, kind: 'tick', index }, execution);
-          }),
-        );
-      });
-      runtime.trackTimer(
-        execution.executionId,
-        scene.time.delayedCall(duration, () => {
-          if (runtime.isCancelled(execution.executionId)) return;
-          labLog('Beam End');
-          onStatusMoment?.('on-end', execution);
-          runtime.finish(execution.executionId, { keepVfx: false });
-        }),
-      );
-      return;
-    }
-
-    if (type === 'persistent') {
-      const duration = execDef.duration ?? 5000;
-      const interval = execDef.tickInterval ?? 1000;
-      const offsets = planTickOffsets(duration, interval);
-      const perTick = tickMultiplier(execDef, offsets.length);
-      execution.endsAt = effectAt + duration;
-      runtime.setPhase(execution.executionId, 'persistent-active');
-      const anchor = execDef.persistentAnchor ?? 'target';
-      runtime.setFollow(execution.executionId, anchor === 'world-position' ? 'world' : anchor, {
-        getTarget: getTargetPos,
-        getCaster: () => ({ x: player.x, y: player.y }),
-      });
-      labLog('Persistent Effect');
-      offsets.forEach((at, index) => {
-        runtime.trackTimer(
-          execution.executionId,
-          scene.time.delayedCall(at, () => {
-            if (runtime.isCancelled(execution.executionId) || isCasterDead()) return;
-            if (abortIfDeadTarget()) return;
-            if (!runtime.get(execution.executionId)?.damageArmed) return;
-            const key = `tick:${index}`;
-            if (!runtime.tryApplyKey(execution.executionId, key)) return;
-            execution.tickCount = index + 1;
-            publishLabDebug(execution, {
-              status: 'Persistent Effect',
-              tick: index + 1,
-              tickMax: offsets.length,
-              elapsedMs: at,
-              durationMs: duration,
-            });
-            labLog(`Persistent tick ${index + 1} / ${offsets.length}`);
-            onHit({ multiplier: perTick, kind: 'tick', index }, execution);
-          }),
-        );
-      });
-      runtime.trackTimer(
-        execution.executionId,
-        scene.time.delayedCall(duration, () => {
-          if (runtime.isCancelled(execution.executionId)) return;
-          labLog('Persistent End');
-          onStatusMoment?.('on-end', execution);
-          runtime.finish(execution.executionId, { keepVfx: false });
-        }),
-      );
-      return;
-    }
-
-    if (type === 'area') {
+    if (area) {
       applySingle();
     }
   };
@@ -516,7 +561,7 @@ export function scheduleOfficialSkillFx(opts: OfficialSkillFxSchedule): SkillExe
     },
   };
 
-  if (type === 'single-hit' || type === 'area') {
+  if (instant) {
     if (hasFx && trigger === 'on-effect-start') hooks.onEffectStart = applySingle;
     if (hasFx && trigger === 'on-arrival') hooks.onArrival = applySingle;
   } else {
@@ -545,7 +590,7 @@ export function scheduleOfficialSkillFx(opts: OfficialSkillFxSchedule): SkillExe
     runtime.setPhase(execution.executionId, 'effect');
     onStatusMoment?.('on-start', execution);
     if (!anim) {
-      if (type !== 'single-hit' && type !== 'area') startAdvancedFromEffect();
+      if (!instant) startAdvancedFromEffect();
       return;
     }
     const playback = officialDelay != null ? playbackAnimForOfficialVfx(anim) : anim;
@@ -559,7 +604,7 @@ export function scheduleOfficialSkillFx(opts: OfficialSkillFxSchedule): SkillExe
       aim,
       hooks,
     );
-    if ((type !== 'single-hit' && type !== 'area') && !hasFx) startAdvancedFromEffect();
+    if (!instant && !hasFx) startAdvancedFromEffect();
   };
 
   if (officialDelay != null && officialDelay > 0) {
@@ -567,20 +612,19 @@ export function scheduleOfficialSkillFx(opts: OfficialSkillFxSchedule): SkillExe
     runtime.trackTimer(execution.executionId, scene.time.delayedCall(officialDelay, startFx));
   } else if (anim) {
     startFx();
-  } else if (type !== 'single-hit' && type !== 'area') {
+  } else if (!instant) {
     onStatusMoment?.('on-start', execution);
     startAdvancedFromEffect();
   } else {
     onStatusMoment?.('on-start', execution);
   }
 
-  const needsLegacyTimer =
-    (type === 'single-hit' || type === 'area') && (!hasFx || trigger === 'hit-delay');
+  const needsLegacyTimer = instant && (!hasFx || trigger === 'hit-delay');
   if (needsLegacyTimer) {
     runtime.trackTimer(execution.executionId, scene.time.delayedCall(hitDelayMs, applySingle));
   }
 
-  if (type === 'single-hit' || type === 'area') {
+  if (instant) {
     const lockMs = skillActionLockMs(anim);
     runtime.trackTimer(
       execution.executionId,

@@ -52,17 +52,36 @@ function canvasToImage(canvas: HTMLCanvasElement): Promise<HTMLImageElement> {
 }
 
 function removeTextureAndAnims(scene: Phaser.Scene, key: string): void {
-  if (!scene.textures.exists(key)) return;
-  scene.textures.remove(key);
+  if (!scene?.sys || scene.sys.isActive?.() === false || !scene.textures || !scene.anims) return;
+
+  // Anims primeiro: Phaser.anims.remove lê frame.sourceSize; se a textura
+  // já sumiu, sourceSize/glTexture ficam null e explode no Character Lab.
   const animsMap = (
     scene.anims as unknown as {
-      anims: Map<string, Phaser.Animations.Animation>;
+      anims?: Map<string, Phaser.Animations.Animation>;
     }
   ).anims;
-  for (const anim of animsMap.values()) {
-    if (anim.frames.some((frame) => frame.textureKey === key)) {
-      scene.anims.remove(anim.key);
+  const toRemove: string[] = [];
+  if (animsMap) {
+    for (const anim of animsMap.values()) {
+      if (!anim?.frames?.length) continue;
+      const usesKey = anim.frames.some((frame) => frame != null && frame.textureKey === key);
+      if (usesKey) toRemove.push(anim.key);
     }
+  }
+  for (const animKey of toRemove) {
+    try {
+      if (scene.anims.exists(animKey)) scene.anims.remove(animKey);
+    } catch {
+      // teardown / HMR
+    }
+  }
+
+  if (!scene.textures.exists(key)) return;
+  try {
+    scene.textures.remove(key);
+  } catch {
+    // GL texture já liberada
   }
 }
 

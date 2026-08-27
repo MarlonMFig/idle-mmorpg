@@ -39,6 +39,20 @@ export interface EnemyWalkAnimation {
    */
   attackAnimKeys?: string[];
   attackTextureKeys?: string[];
+  /**
+   * Escala local da folha (`SpriteSheetDef.scaleX/Y`) — mesma do Lab/jogador.
+   * Omitido = 1.
+   */
+  idleScaleX?: number;
+  idleScaleY?: number;
+  walkScaleX?: number;
+  walkScaleY?: number;
+  hurtScaleX?: number;
+  hurtScaleY?: number;
+  deathScaleX?: number;
+  deathScaleY?: number;
+  attackScaleXs?: number[];
+  attackScaleYs?: number[];
 }
 
 /** @deprecated use LootDropEntry — mantido como alias. */

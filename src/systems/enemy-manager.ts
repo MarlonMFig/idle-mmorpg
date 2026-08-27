@@ -10,7 +10,7 @@ import { ENEMY_SPRITE_URL, ENEMY_TEXTURE_KEY } from '@/constants/enemy';
 import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
 import { resolveAnimeId } from '@/data/anime';
 import { buildAnimeHuntLoot } from '@/data/anime-loot';
-import { characterLateralOrigin, type CharacterPack } from '@/data/character-packs';
+import { characterLateralOrigin, createSpriteSheetAnimation, type CharacterPack } from '@/data/character-packs';
 import { getCuratedMapPack } from '@/data/curated-map-sprites';
 import { getEnemiesForMap } from '@/data/enemies';
 import { combatLayoutScale, enemyRespawnMsForMap, enemySpeedMultForMap, getWonsrRenderedMap, isLateralSideSpawnMap } from '@/data/wonsr-rendered-maps';
@@ -173,6 +173,46 @@ export class EnemyManager {
 
   list(): Enemy[] {
     return Array.from(this.enemies.values());
+  }
+
+  /**
+   * Propaga `SpriteSheetDef.scaleX/Y` do pack para inimigos laterais já spawnados
+   * (Lab ao vivo + caça com o mesmo pack).
+   */
+  refreshLateralSheetScales(pack: CharacterPack): void {
+    const idle = pack.idle ?? pack.walk;
+    const attackSheets =
+      pack.attackChain && pack.attackChain.length > 0
+        ? [...pack.attackChain]
+        : pack.attack
+          ? [pack.attack]
+          : [];
+    for (const enemy of this.enemies.values()) {
+      const walk = enemy.definition.walk;
+      if (!walk?.lateral) continue;
+      const matchesIdle = walk.idleTextureKey === idle.key;
+      const matchesWalk = walk.walkTextureKey === pack.walk.key;
+      if (!matchesIdle && !matchesWalk) continue;
+      enemy.syncSheetScalesFromWalk({
+        ...walk,
+        idleScaleX: idle.scaleX ?? 1,
+        idleScaleY: idle.scaleY ?? 1,
+        walkScaleX: pack.walk.scaleX ?? 1,
+        walkScaleY: pack.walk.scaleY ?? 1,
+        hurtScaleX: pack.hurt?.scaleX ?? 1,
+        hurtScaleY: pack.hurt?.scaleY ?? 1,
+        deathScaleX: pack.death?.scaleX ?? 1,
+        deathScaleY: pack.death?.scaleY ?? 1,
+        attackScaleXs: (walk.attackTextureKeys ?? []).map((key) => {
+          const sheet = attackSheets.find((entry) => entry.key === key);
+          return sheet?.scaleX ?? 1;
+        }),
+        attackScaleYs: (walk.attackTextureKeys ?? []).map((key) => {
+          const sheet = attackSheets.find((entry) => entry.key === key);
+          return sheet?.scaleY ?? 1;
+        }),
+      });
+    }
   }
 
   values(): IterableIterator<Enemy> {
@@ -565,28 +605,28 @@ export class EnemyManager {
     const idleSharesWalk = idle.key === pack.walk.key;
     const idleEnd = idleSharesWalk || !pack.idle ? 0 : pack.idle.frameCount - 1;
 
-    if (!this.scene.anims.exists(idleAnimKey)) {
-      this.scene.anims.create({
-        key: idleAnimKey,
-        frames: this.scene.anims.generateFrameNumbers(idle.key, {
-          start: 0,
-          end: idleEnd,
-        }),
-        frameRate: idle.frameRate ?? 8,
+    // Sempre recria com frames válidos — anim stale (HMR / slice falho) quebra play (...duration).
+    const idleOk = createSpriteSheetAnimation(
+      this.scene,
+      { ...idle, frameRate: idle.frameRate ?? 8 },
+      idleAnimKey,
+      {
+        start: 0,
+        end: idleEnd,
         repeat: -1,
-      });
-    }
-    if (!this.scene.anims.exists(walkAnimKey)) {
-      this.scene.anims.create({
-        key: walkAnimKey,
-        frames: this.scene.anims.generateFrameNumbers(pack.walk.key, {
-          start: 0,
-          end: pack.walk.frameCount - 1,
-        }),
-        frameRate: pack.walk.frameRate ?? 12,
+      },
+    );
+    const walkOk = createSpriteSheetAnimation(
+      this.scene,
+      { ...pack.walk, frameRate: pack.walk.frameRate ?? 12 },
+      walkAnimKey,
+      {
+        start: 0,
+        end: pack.walk.frameCount - 1,
         repeat: -1,
-      });
-    }
+      },
+    );
+    if (!idleOk || !walkOk) return null;
 
     const attackSheets =
       pack.attackChain && pack.attackChain.length > 0
@@ -596,54 +636,50 @@ export class EnemyManager {
           : [];
     const attackAnimKeys: string[] = [];
     const attackTextureKeys: string[] = [];
+    const attackScaleXs: number[] = [];
+    const attackScaleYs: number[] = [];
     for (let i = 0; i < attackSheets.length; i += 1) {
       const sheet = attackSheets[i];
       if (!this.scene.textures.exists(sheet.key)) continue;
       const attackAnimKey = `${prefix}-attack-${i}`;
-      if (!this.scene.anims.exists(attackAnimKey)) {
-        this.scene.anims.create({
-          key: attackAnimKey,
-          frames: this.scene.anims.generateFrameNumbers(sheet.key, {
-            start: 0,
-            end: sheet.frameCount - 1,
-          }),
-          frameRate: sheet.frameRate ?? 12,
+      if (
+        !createSpriteSheetAnimation(this.scene, sheet, attackAnimKey, {
+          start: 0,
+          end: sheet.frameCount - 1,
           repeat: 0,
-        });
+        })
+      ) {
+        continue;
       }
       attackAnimKeys.push(attackAnimKey);
       attackTextureKeys.push(sheet.key);
+      attackScaleXs.push(sheet.scaleX ?? 1);
+      attackScaleYs.push(sheet.scaleY ?? 1);
     }
 
     let hurtTextureKey: string | undefined;
     let deathTextureKey: string | undefined;
     if (pack.hurt && this.scene.textures.exists(pack.hurt.key)) {
-      if (!this.scene.anims.exists(hurtAnimKey)) {
-        this.scene.anims.create({
-          key: hurtAnimKey,
-          frames: this.scene.anims.generateFrameNumbers(pack.hurt.key, {
-            start: 0,
-            end: pack.hurt.frameCount - 1,
-          }),
-          frameRate: pack.hurt.frameRate ?? 10,
+      if (
+        createSpriteSheetAnimation(this.scene, pack.hurt, hurtAnimKey, {
+          start: 0,
+          end: pack.hurt.frameCount - 1,
           repeat: 0,
-        });
+        })
+      ) {
+        hurtTextureKey = pack.hurt.key;
       }
-      hurtTextureKey = pack.hurt.key;
     }
     if (pack.death && this.scene.textures.exists(pack.death.key)) {
-      if (!this.scene.anims.exists(deathAnimKey)) {
-        this.scene.anims.create({
-          key: deathAnimKey,
-          frames: this.scene.anims.generateFrameNumbers(pack.death.key, {
-            start: 0,
-            end: pack.death.frameCount - 1,
-          }),
-          frameRate: pack.death.frameRate ?? 8,
+      if (
+        createSpriteSheetAnimation(this.scene, pack.death, deathAnimKey, {
+          start: 0,
+          end: pack.death.frameCount - 1,
           repeat: 0,
-        });
+        })
+      ) {
+        deathTextureKey = pack.death.key;
       }
-      deathTextureKey = pack.death.key;
     }
 
     const contentH = idle.contentHeight ?? pack.walk.contentHeight ?? pack.walk.frameHeight;
@@ -676,6 +712,16 @@ export class EnemyManager {
         deathAnimKey: deathTextureKey ? deathAnimKey : undefined,
         attackAnimKeys: attackAnimKeys.length > 0 ? attackAnimKeys : undefined,
         attackTextureKeys: attackTextureKeys.length > 0 ? attackTextureKeys : undefined,
+        idleScaleX: idle.scaleX ?? 1,
+        idleScaleY: idle.scaleY ?? 1,
+        walkScaleX: pack.walk.scaleX ?? 1,
+        walkScaleY: pack.walk.scaleY ?? 1,
+        hurtScaleX: pack.hurt?.scaleX ?? 1,
+        hurtScaleY: pack.hurt?.scaleY ?? 1,
+        deathScaleX: pack.death?.scaleX ?? 1,
+        deathScaleY: pack.death?.scaleY ?? 1,
+        attackScaleXs: attackScaleXs.length > 0 ? attackScaleXs : undefined,
+        attackScaleYs: attackScaleYs.length > 0 ? attackScaleYs : undefined,
       },
       fit: {
         scale: scaleY,

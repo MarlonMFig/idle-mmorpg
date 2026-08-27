@@ -2,10 +2,22 @@
  * Tipos de execução avançada da Skill.
  * Ausente = `single-hit` (compatível com o Combat Engine atual).
  * Não migrar Skills antigas automaticamente.
+ *
+ * Uma Skill pode combinar vários tipos (`types`), ex.: area + persistent.
+ * `type` permanece como tipo primário (compat / debug).
  */
 
 export const SKILL_EXECUTION_TYPES = ['single-hit', 'multi-hit', 'beam', 'area', 'persistent'] as const;
 export type SkillExecutionType = (typeof SKILL_EXECUTION_TYPES)[number];
+
+/** Prioridade do tipo primário e do schedule de dano quando há vários. */
+export const SKILL_EXECUTION_TYPE_PRIORITY: readonly SkillExecutionType[] = [
+  'persistent',
+  'beam',
+  'multi-hit',
+  'area',
+  'single-hit',
+] as const;
 
 export const SKILL_PERSISTENT_ANCHORS = ['target', 'world-position', 'caster'] as const;
 export type SkillPersistentAnchor = (typeof SKILL_PERSISTENT_ANCHORS)[number];
@@ -18,7 +30,13 @@ export interface SkillMultiHitDef {
 }
 
 export interface SkillExecutionDef {
+  /** Tipo primário (compat). Preferir `resolveExecutionType`. */
   type?: SkillExecutionType;
+  /**
+   * Tipos ativos. Ausente = só `[type ?? 'single-hit']`.
+   * Gravar só quando length > 1.
+   */
+  types?: SkillExecutionType[];
   hits?: SkillMultiHitDef[];
   beamDuration?: number;
   tickInterval?: number;
@@ -69,22 +87,73 @@ export function isSkillPersistentAnchor(value: unknown): value is SkillPersisten
   return typeof value === 'string' && (SKILL_PERSISTENT_ANCHORS as readonly string[]).includes(value);
 }
 
+export function primaryExecutionType(types: readonly SkillExecutionType[]): SkillExecutionType {
+  for (const candidate of SKILL_EXECUTION_TYPE_PRIORITY) {
+    if (types.includes(candidate)) return candidate;
+  }
+  return 'single-hit';
+}
+
+/** Normaliza lista: únicos, ordem estável; `single-hit` some se houver outro tipo. */
+export function normalizeExecutionTypes(raw: readonly SkillExecutionType[]): SkillExecutionType[] {
+  const set = new Set<SkillExecutionType>();
+  for (const entry of raw) {
+    if (isSkillExecutionType(entry)) set.add(entry);
+  }
+  if (set.size === 0) return ['single-hit'];
+  if (set.size > 1) set.delete('single-hit');
+  const ordered: SkillExecutionType[] = [];
+  for (const id of SKILL_EXECUTION_TYPES) {
+    if (set.has(id)) ordered.push(id);
+  }
+  return ordered.length ? ordered : ['single-hit'];
+}
+
+export function resolveExecutionTypes(def: SkillExecutionDef | undefined): SkillExecutionType[] {
+  if (def?.types?.length) {
+    return normalizeExecutionTypes(def.types);
+  }
+  return normalizeExecutionTypes([def?.type ?? 'single-hit']);
+}
+
 export function resolveExecutionType(def: SkillExecutionDef | undefined): SkillExecutionType {
-  return def?.type ?? 'single-hit';
+  return primaryExecutionType(resolveExecutionTypes(def));
+}
+
+export function hasExecutionType(
+  def: SkillExecutionDef | undefined,
+  type: SkillExecutionType,
+): boolean {
+  return resolveExecutionTypes(def).includes(type);
+}
+
+/** Single-hit e/ou area sem duração (sem multi-hit / beam / persistent). */
+export function isInstantExecution(def: SkillExecutionDef | undefined): boolean {
+  const types = resolveExecutionTypes(def);
+  return !types.includes('multi-hit') && !types.includes('beam') && !types.includes('persistent');
+}
+
+export function formatExecutionTypesLabel(def: SkillExecutionDef | undefined): string {
+  return resolveExecutionTypes(def)
+    .map((id) => SKILL_EXECUTION_TYPE_LABELS[id])
+    .join(' + ');
 }
 
 /** Duração oficial da Skill (persistent / beam). Visual loop reutiliza isto quando existir. */
 export function officialSkillDurationMs(def: SkillExecutionDef | undefined): number | null {
-  const type = resolveExecutionType(def);
-  if (type === 'persistent' && def?.duration && def.duration > 0) return def.duration;
-  if (type === 'beam' && def?.beamDuration && def.beamDuration > 0) return def.beamDuration;
+  const types = resolveExecutionTypes(def);
+  if (types.includes('persistent') && def?.duration && def.duration > 0) return def.duration;
+  if (types.includes('beam') && def?.beamDuration && def.beamDuration > 0) return def.beamDuration;
   if (def?.duration && def.duration > 0) return def.duration;
   return null;
 }
 
 export function cloneExecutionDef(def: SkillExecutionDef | undefined): SkillExecutionDef {
+  const types = resolveExecutionTypes(def);
+  const primary = primaryExecutionType(types);
   return {
-    type: def?.type ?? 'single-hit',
+    type: primary,
+    types: types.length > 1 ? [...types] : undefined,
     hits: (def?.hits ?? []).map((hit) => ({ delay: hit.delay, damageMultiplier: hit.damageMultiplier })),
     beamDuration: def?.beamDuration,
     tickInterval: def?.tickInterval,
@@ -106,7 +175,10 @@ export function defaultHits(): SkillMultiHitDef[] {
 }
 
 export function executionsEqual(a: SkillExecutionDef, b: SkillExecutionDef): boolean {
-  if (resolveExecutionType(a) !== resolveExecutionType(b)) return false;
+  const typesA = resolveExecutionTypes(a);
+  const typesB = resolveExecutionTypes(b);
+  if (typesA.length !== typesB.length) return false;
+  if (typesA.some((id, index) => id !== typesB[index])) return false;
   if ((a.beamDuration ?? 0) !== (b.beamDuration ?? 0)) return false;
   if ((a.tickInterval ?? 0) !== (b.tickInterval ?? 0)) return false;
   if ((a.tickDamageMultiplier ?? 0) !== (b.tickDamageMultiplier ?? 0)) return false;
@@ -140,6 +212,14 @@ export function normalizeHits(raw: unknown): SkillMultiHitDef[] {
   return hits.sort((a, b) => a.delay - b.delay);
 }
 
+function parseTypesField(raw: unknown, fallbackType: SkillExecutionType): SkillExecutionType[] {
+  if (Array.isArray(raw)) {
+    const listed = raw.filter(isSkillExecutionType);
+    if (listed.length) return normalizeExecutionTypes(listed);
+  }
+  return normalizeExecutionTypes([fallbackType]);
+}
+
 /**
  * Whitelist DEV — rejeita objetos arbitrários.
  * `single-hit` omite campos extras.
@@ -151,6 +231,7 @@ export function parseSkillExecution(raw: unknown): SkillExecutionDef {
   const value = raw as Record<string, unknown>;
   const allowed = new Set([
     'type',
+    'types',
     'hits',
     'beamDuration',
     'tickInterval',
@@ -163,13 +244,17 @@ export function parseSkillExecution(raw: unknown): SkillExecutionDef {
   for (const key of Object.keys(value)) {
     if (!allowed.has(key)) throw new Error(`Campo de execução não permitido: ${key}`);
   }
-  const type = isSkillExecutionType(value.type) ? value.type : 'single-hit';
-  const next: SkillExecutionDef = { type };
-  if (type === 'multi-hit') {
+  const fallbackType = isSkillExecutionType(value.type) ? value.type : 'single-hit';
+  const types = parseTypesField(value.types, fallbackType);
+  const primary = primaryExecutionType(types);
+  const next: SkillExecutionDef = { type: primary };
+  if (types.length > 1) next.types = types;
+
+  if (types.includes('multi-hit')) {
     next.hits = normalizeHits(value.hits);
     if (next.hits.length < 1) next.hits = defaultHits();
   }
-  if (type === 'beam') {
+  if (types.includes('beam')) {
     next.beamDuration = Math.min(
       MAX_EXECUTION_DURATION_MS,
       Math.max(1, Math.round(asFiniteNumber(value.beamDuration, 2000))),
@@ -183,17 +268,20 @@ export function parseSkillExecution(raw: unknown): SkillExecutionDef {
     }
     next.trackTarget = value.trackTarget === true;
   }
-  if (type === 'area') {
+  if (types.includes('area')) {
     next.radius = Math.max(0, Math.round(asFiniteNumber(value.radius, 80)));
   }
-  if (type === 'persistent') {
+  if (types.includes('persistent')) {
     next.duration = Math.min(
       MAX_EXECUTION_DURATION_MS,
       Math.max(1, Math.round(asFiniteNumber(value.duration, 5000))),
     );
     next.tickInterval = Math.min(
       MAX_EXECUTION_DURATION_MS,
-      Math.max(MIN_TICK_INTERVAL_MS, Math.round(asFiniteNumber(value.tickInterval, 1000))),
+      Math.max(
+        MIN_TICK_INTERVAL_MS,
+        Math.round(asFiniteNumber(value.tickInterval, types.includes('beam') ? 250 : 1000)),
+      ),
     );
     if (value.tickDamageMultiplier != null) {
       next.tickDamageMultiplier = Math.max(0, asFiniteNumber(value.tickDamageMultiplier, 0));
@@ -203,6 +291,31 @@ export function parseSkillExecution(raw: unknown): SkillExecutionDef {
       : 'target';
   }
   return next;
+}
+
+/** Monta def a partir da seleção de tipos no Lab, preservando campos já editados. */
+export function executionWithTypes(
+  previous: SkillExecutionDef | undefined,
+  nextTypes: readonly SkillExecutionType[],
+): SkillExecutionDef {
+  const types = normalizeExecutionTypes(nextTypes);
+  return parseSkillExecution({
+    ...(previous ?? {}),
+    type: primaryExecutionType(types),
+    types: types.length > 1 ? types : undefined,
+    hits: types.includes('multi-hit')
+      ? previous?.hits?.length
+        ? previous.hits
+        : defaultHits()
+      : undefined,
+    beamDuration: previous?.beamDuration ?? 2000,
+    tickInterval:
+      previous?.tickInterval ?? (types.includes('persistent') && !types.includes('beam') ? 1000 : 250),
+    trackTarget: previous?.trackTarget === true,
+    radius: previous?.radius ?? 80,
+    duration: previous?.duration ?? 5000,
+    persistentAnchor: previous?.persistentAnchor ?? 'target',
+  });
 }
 
 export function planTickOffsets(durationMs: number, intervalMs: number): number[] {
@@ -223,9 +336,13 @@ export function tickMultiplier(def: SkillExecutionDef, tickCount: number): numbe
 }
 
 export function formatExecutionLiteral(def: SkillExecutionDef, indent: string, innerIndent: string): string {
-  const type = resolveExecutionType(def);
-  const lines = [`${indent}execution: {`, `${innerIndent}type: '${type}',`];
-  if (type === 'multi-hit') {
+  const types = resolveExecutionTypes(def);
+  const primary = primaryExecutionType(types);
+  const lines = [`${indent}execution: {`, `${innerIndent}type: '${primary}',`];
+  if (types.length > 1) {
+    lines.push(`${innerIndent}types: [${types.map((id) => `'${id}'`).join(', ')}],`);
+  }
+  if (types.includes('multi-hit')) {
     const hits = normalizeHits(def.hits);
     lines.push(`${innerIndent}hits: [`);
     for (const hit of hits) {
@@ -235,18 +352,20 @@ export function formatExecutionLiteral(def: SkillExecutionDef, indent: string, i
     }
     lines.push(`${innerIndent}],`);
   }
-  if (type === 'beam') {
+  if (types.includes('beam')) {
     lines.push(`${innerIndent}beamDuration: ${Math.round(def.beamDuration ?? 2000)},`);
-    lines.push(`${innerIndent}tickInterval: ${Math.round(def.tickInterval ?? 250)},`);
-    if (def.tickDamageMultiplier != null) {
+    if (!types.includes('persistent')) {
+      lines.push(`${innerIndent}tickInterval: ${Math.round(def.tickInterval ?? 250)},`);
+    }
+    if (def.tickDamageMultiplier != null && !types.includes('persistent')) {
       lines.push(`${innerIndent}tickDamageMultiplier: ${def.tickDamageMultiplier},`);
     }
     lines.push(`${innerIndent}trackTarget: ${def.trackTarget === true},`);
   }
-  if (type === 'area') {
+  if (types.includes('area')) {
     lines.push(`${innerIndent}radius: ${Math.round(def.radius ?? 80)},`);
   }
-  if (type === 'persistent') {
+  if (types.includes('persistent')) {
     lines.push(`${innerIndent}duration: ${Math.round(def.duration ?? 5000)},`);
     lines.push(`${innerIndent}tickInterval: ${Math.round(def.tickInterval ?? 1000)},`);
     if (def.tickDamageMultiplier != null) {

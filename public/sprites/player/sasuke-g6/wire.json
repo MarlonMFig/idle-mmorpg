@@ -1,0 +1,208 @@
+{
+  "id": "sasuke-g6",
+  "name": "Uchiha Sasuke (G6)",
+  "lookType": 9119,
+  "contentHeight": 76,
+  "idle": {
+    "image": "/sprites/player/sasuke-g6/idle.png",
+    "frameWidth": 46,
+    "frameHeight": 80,
+    "frameCount": 6,
+    "contentHeight": 76,
+    "scale": 1,
+    "originX": 0.5,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/sasuke-g6/walk.png",
+    "frameWidth": 93,
+    "frameHeight": 81,
+    "frameCount": 6,
+    "contentHeight": 76,
+    "scale": 1,
+    "originX": 0.4124423963133641,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/sasuke-g6/combo1.png",
+      "frameWidth": 77,
+      "frameHeight": 75,
+      "frameCount": 4,
+      "contentHeight": 76,
+      "scale": 1,
+      "originX": 0.38961038961038963,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/sasuke-g6/combo2.png",
+      "frameWidth": 86,
+      "frameHeight": 73,
+      "frameCount": 4,
+      "contentHeight": 76,
+      "scale": 1,
+      "originX": 0.29069767441860467,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/sasuke-g6/combo3.png",
+      "frameWidth": 122,
+      "frameHeight": 77,
+      "frameCount": 6,
+      "contentHeight": 76,
+      "scale": 1,
+      "originX": 0.28688524590163933,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/sasuke-g6/hurt.png",
+    "frameWidth": 53,
+    "frameHeight": 74,
+    "frameCount": 3,
+    "contentHeight": 76,
+    "scale": 1,
+    "originX": 0.5471698113207547,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/sasuke-g6/death.png",
+    "frameWidth": 57,
+    "frameHeight": 64,
+    "frameCount": 3,
+    "contentHeight": 76,
+    "scale": 1,
+    "originX": 0.5789473684210527,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-sasuke-g6-1",
+      "skillName": "Chidori - Start",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/sasuke-g6/special1.png",
+        "frameWidth": 61,
+        "frameHeight": 73,
+        "frameCount": 3,
+        "contentHeight": 76,
+        "scale": 1,
+        "originX": 0.45901639344262296,
+        "durationMs": 917,
+        "hitDelayMs": 417,
+        "frameRate": 8,
+        "skillId": "skill-sasuke-g6-1",
+        "skillName": "Chidori - Start",
+        "actionId": 1000
+      },
+      "fx": {
+        "image": "/sprites/player/sasuke-g6/special1-fx.png",
+        "frameWidth": 227,
+        "frameHeight": 247,
+        "frameCount": 16,
+        "contentHeight": 239,
+        "scale": 1,
+        "originX": 0.478364036844213,
+        "frameRate": 18,
+        "durationMs": 667
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-sasuke-g6-2",
+      "skillName": "Shidori - Helper",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/sasuke-g6/special2.png",
+        "frameWidth": 46,
+        "frameHeight": 80,
+        "frameCount": 6,
+        "contentHeight": 76,
+        "scale": 1,
+        "originX": 0.5,
+        "durationMs": 667,
+        "hitDelayMs": 0,
+        "frameRate": 18,
+        "skillId": "skill-sasuke-g6-2",
+        "skillName": "Shidori - Helper",
+        "actionId": 1050
+      },
+      "fx": {
+        "image": "/sprites/player/sasuke-g6/special2-fx.png",
+        "frameWidth": 227,
+        "frameHeight": 247,
+        "frameCount": 13,
+        "contentHeight": 239,
+        "scale": 1,
+        "originX": 0.4905286343612335,
+        "frameRate": 18,
+        "durationMs": 280
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-sasuke-g6-3",
+      "skillName": "Katon Gokakyu no Jutsu - Start",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/sasuke-g6/special3.png",
+        "frameWidth": 46,
+        "frameHeight": 80,
+        "frameCount": 2,
+        "contentHeight": 76,
+        "scale": 1,
+        "originX": 0.5,
+        "durationMs": 1667,
+        "hitDelayMs": 750,
+        "frameRate": 8,
+        "skillId": "skill-sasuke-g6-3",
+        "skillName": "Katon Gokakyu no Jutsu - Start",
+        "actionId": 1100
+      },
+      "fx": {
+        "image": "/sprites/player/sasuke-g6/special3-fx.png",
+        "frameWidth": 202,
+        "frameHeight": 247,
+        "frameCount": 16,
+        "contentHeight": 240,
+        "scale": 1,
+        "originX": 0.5156542681295156,
+        "frameRate": 18,
+        "durationMs": 483
+      },
+      "index": 2
+    },
+    {
+      "skillId": "skill-sasuke-g6-4",
+      "skillName": "Lions Barrage",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/sasuke-g6/special4.png",
+        "frameWidth": 69,
+        "frameHeight": 72,
+        "frameCount": 3,
+        "contentHeight": 76,
+        "scale": 1,
+        "originX": 0.42028985507246375,
+        "durationMs": 1200,
+        "hitDelayMs": 867,
+        "frameRate": 8,
+        "skillId": "skill-sasuke-g6-4",
+        "skillName": "Lions Barrage",
+        "actionId": 1200
+      },
+      "fx": {
+        "image": "/sprites/player/sasuke-g6/special4-fx.png",
+        "frameWidth": 105,
+        "frameHeight": 123,
+        "frameCount": 7,
+        "contentHeight": 117,
+        "scale": 1,
+        "originX": 0.4857142857142857,
+        "frameRate": 18,
+        "durationMs": 333
+      },
+      "index": 3
+    }
+  ]
+}

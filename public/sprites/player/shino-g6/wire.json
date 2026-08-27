@@ -1,0 +1,188 @@
+{
+  "id": "shino-g6",
+  "name": "Aburame Shino (G6)",
+  "lookType": 9116,
+  "contentHeight": 75,
+  "idle": {
+    "image": "/sprites/player/shino-g6/idle.png",
+    "frameWidth": 32,
+    "frameHeight": 79,
+    "frameCount": 8,
+    "contentHeight": 75,
+    "scale": 1,
+    "originX": 0.4375,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/shino-g6/walk.png",
+    "frameWidth": 96,
+    "frameHeight": 77,
+    "frameCount": 6,
+    "contentHeight": 75,
+    "scale": 1,
+    "originX": 0.3936781609195403,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/shino-g6/combo1.png",
+      "frameWidth": 71,
+      "frameHeight": 76,
+      "frameCount": 4,
+      "contentHeight": 75,
+      "scale": 1,
+      "originX": 0.36619718309859156,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/shino-g6/combo2.png",
+      "frameWidth": 67,
+      "frameHeight": 80,
+      "frameCount": 4,
+      "contentHeight": 75,
+      "scale": 1,
+      "originX": 0.373134328358209,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/shino-g6/combo3.png",
+      "frameWidth": 54,
+      "frameHeight": 80,
+      "frameCount": 3,
+      "contentHeight": 75,
+      "scale": 1,
+      "originX": 0.5740740740740741,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/shino-g6/hurt.png",
+    "frameWidth": 49,
+    "frameHeight": 64,
+    "frameCount": 3,
+    "contentHeight": 75,
+    "scale": 1,
+    "originX": 0.46938775510204084,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/shino-g6/death.png",
+    "frameWidth": 53,
+    "frameHeight": 68,
+    "frameCount": 3,
+    "contentHeight": 75,
+    "scale": 1,
+    "originX": 0.49056603773584906,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-shino-g6-1",
+      "skillName": "Sub - Mushitama",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/shino-g6/special1.png",
+        "frameWidth": 54,
+        "frameHeight": 92,
+        "frameCount": 6,
+        "contentHeight": 75,
+        "scale": 1,
+        "originX": 0.35185185185185186,
+        "durationMs": 2267,
+        "hitDelayMs": 1017,
+        "frameRate": 8,
+        "skillId": "skill-shino-g6-1",
+        "skillName": "Sub - Mushitama",
+        "actionId": 1000
+      },
+      "fx": {
+        "image": "/sprites/player/shino-g6/special1-fx.png",
+        "frameWidth": 137,
+        "frameHeight": 178,
+        "frameCount": 24,
+        "contentHeight": 173,
+        "scale": 1,
+        "originX": 0.5912408759124088,
+        "frameRate": 18,
+        "durationMs": 600
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-shino-g6-2",
+      "skillName": "Mushi Bushin no Jutsu",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/shino-g6/special2.png",
+        "frameWidth": 62,
+        "frameHeight": 79,
+        "frameCount": 9,
+        "contentHeight": 75,
+        "scale": 1,
+        "originX": 0.46774193548387094,
+        "durationMs": 1400,
+        "hitDelayMs": 633,
+        "frameRate": 8,
+        "skillId": "skill-shino-g6-2",
+        "skillName": "Mushi Bushin no Jutsu",
+        "actionId": 1100
+      },
+      "fx": {
+        "image": "/sprites/player/shino-g6/special2-fx.png",
+        "frameWidth": 304,
+        "frameHeight": 189,
+        "frameCount": 27,
+        "contentHeight": 182,
+        "scale": 1,
+        "originX": 0.5,
+        "frameRate": 18,
+        "durationMs": 900
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-shino-g6-3",
+      "skillName": "Special",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/shino-g6/special3.png",
+        "frameWidth": 32,
+        "frameHeight": 79,
+        "frameCount": 8,
+        "contentHeight": 75,
+        "scale": 1,
+        "originX": 0.4375,
+        "durationMs": 933,
+        "hitDelayMs": 0,
+        "frameRate": 18,
+        "skillId": "skill-shino-g6-3",
+        "skillName": "Special",
+        "actionId": 1250
+      },
+      "fx": null,
+      "index": 2
+    },
+    {
+      "skillId": "skill-shino-g6-4",
+      "skillName": "Mushin Mest - Start",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/shino-g6/special4.png",
+        "frameWidth": 86,
+        "frameHeight": 80,
+        "frameCount": 7,
+        "contentHeight": 75,
+        "scale": 1,
+        "originX": 0.5,
+        "durationMs": 667,
+        "hitDelayMs": 500,
+        "frameRate": 11,
+        "skillId": "skill-shino-g6-4",
+        "skillName": "Mushin Mest - Start",
+        "actionId": 1300
+      },
+      "fx": null,
+      "index": 3
+    }
+  ]
+}

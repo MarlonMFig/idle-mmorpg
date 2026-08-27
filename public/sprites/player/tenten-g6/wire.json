@@ -1,0 +1,166 @@
+{
+  "id": "tenten-g6",
+  "name": "Tenten (G6)",
+  "lookType": 9114,
+  "contentHeight": 70,
+  "idle": {
+    "image": "/sprites/player/tenten-g6/idle.png",
+    "frameWidth": 63,
+    "frameHeight": 74,
+    "frameCount": 4,
+    "contentHeight": 70,
+    "scale": 1,
+    "originX": 0.5396825396825397,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/tenten-g6/walk.png",
+    "frameWidth": 90,
+    "frameHeight": 74,
+    "frameCount": 6,
+    "contentHeight": 70,
+    "scale": 1,
+    "originX": 0.3586520947176685,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/tenten-g6/combo1.png",
+      "frameWidth": 84,
+      "frameHeight": 72,
+      "frameCount": 4,
+      "contentHeight": 70,
+      "scale": 1,
+      "originX": 0.4642857142857143,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/tenten-g6/combo2.png",
+      "frameWidth": 81,
+      "frameHeight": 78,
+      "frameCount": 6,
+      "contentHeight": 70,
+      "scale": 1,
+      "originX": 0.4691358024691358,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/tenten-g6/combo3.png",
+      "frameWidth": 123,
+      "frameHeight": 86,
+      "frameCount": 6,
+      "contentHeight": 70,
+      "scale": 1,
+      "originX": 0.4634146341463415,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/tenten-g6/hurt.png",
+    "frameWidth": 64,
+    "frameHeight": 59,
+    "frameCount": 3,
+    "contentHeight": 70,
+    "scale": 1,
+    "originX": 0.625,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/tenten-g6/death.png",
+    "frameWidth": 73,
+    "frameHeight": 69,
+    "frameCount": 3,
+    "contentHeight": 70,
+    "scale": 1,
+    "originX": 0.5342465753424658,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-tenten-g6-1",
+      "skillName": "Sogu Ranka Koshin - Start",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/tenten-g6/special1.png",
+        "frameWidth": 69,
+        "frameHeight": 78,
+        "frameCount": 7,
+        "contentHeight": 70,
+        "scale": 1,
+        "originX": 0.5507246376811594,
+        "durationMs": 1233,
+        "hitDelayMs": 550,
+        "frameRate": 8,
+        "skillId": "skill-tenten-g6-1",
+        "skillName": "Sogu Ranka Koshin - Start",
+        "actionId": 1000
+      },
+      "fx": {
+        "image": "/sprites/player/tenten-g6/special1-fx.png",
+        "frameWidth": 178,
+        "frameHeight": 159,
+        "frameCount": 9,
+        "contentHeight": 155,
+        "scale": 1,
+        "originX": 0.6348314606741573,
+        "frameRate": 18,
+        "durationMs": 300
+      },
+      "index": 0
+    },
+    {
+      "skillId": "skill-tenten-g6-2",
+      "skillName": "Rasengan Humo",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/tenten-g6/special2.png",
+        "frameWidth": 63,
+        "frameHeight": 74,
+        "frameCount": 4,
+        "contentHeight": 70,
+        "scale": 1,
+        "originX": 0.5396825396825397,
+        "durationMs": 300,
+        "hitDelayMs": 133,
+        "frameRate": 18,
+        "skillId": "skill-tenten-g6-2",
+        "skillName": "Rasengan Humo",
+        "actionId": 1060
+      },
+      "fx": {
+        "image": "/sprites/player/tenten-g6/special2-fx.png",
+        "frameWidth": 82,
+        "frameHeight": 73,
+        "frameCount": 3,
+        "contentHeight": 69,
+        "scale": 1,
+        "originX": 0.573170731707317,
+        "frameRate": 8,
+        "durationMs": 1017
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-tenten-g6-3",
+      "skillName": "Sugo Shuen Senjin",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/tenten-g6/special3.png",
+        "frameWidth": 69,
+        "frameHeight": 78,
+        "frameCount": 7,
+        "contentHeight": 70,
+        "scale": 1,
+        "originX": 0.5507246376811594,
+        "durationMs": 2583,
+        "hitDelayMs": 1167,
+        "frameRate": 8,
+        "skillId": "skill-tenten-g6-3",
+        "skillName": "Sugo Shuen Senjin",
+        "actionId": 1200
+      },
+      "fx": null,
+      "index": 2
+    }
+  ]
+}

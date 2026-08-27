@@ -38,6 +38,7 @@ import {
   SHINO_CURATED_LOOK_TYPE,
 } from '@/data/character-packs';
 import { JUMP_FORCE_PREVIEW_BY_LOOK_TYPE } from '@/data/jump-force-packs';
+import { NUN5_BATCH_PREVIEW_BY_LOOK_TYPE } from '@/data/nun5-batch-packs';
 
 /** Preview estático (UI caças / inventário). */
 const PREVIEW_BY_LOOK_TYPE: Record<number, string> = {
@@ -86,6 +87,7 @@ const PREVIEW_BY_LOOK_TYPE: Record<number, string> = {
   [TAYUYA_CURATED_LOOK_TYPE]: '/sprites/player/previews/tayuya.png',
   [SHINO_CURATED_LOOK_TYPE]: '/sprites/player/previews/shino.png',
   ...JUMP_FORCE_PREVIEW_BY_LOOK_TYPE,
+  ...NUN5_BATCH_PREVIEW_BY_LOOK_TYPE,
 };
 
 /** lookTypes com pack lateral no mapa (em vez do atlas/outfit WONSR). */

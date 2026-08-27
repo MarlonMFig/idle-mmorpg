@@ -20,6 +20,7 @@ import {
   CHARACTER_DISPLAY_HEIGHT,
 } from '@/constants/sprites';
 import { combatLayoutScale } from '@/data/wonsr-rendered-maps';
+import { animationPlayable } from '@/data/character-packs';
 import { isLabEnemyInvincible } from '@/stores/character-lab-store';
 import { getEffectiveCombatStats, scaledAttackCooldown } from '@/systems/combat-stats';
 import { getStatusRuntime } from '@/systems/status-runtime';
@@ -107,6 +108,12 @@ export class Enemy {
   /** Altura do topo do sprite relativo a `sprite.y` (inclui hover de voo). */
   private readonly spriteTopLift: number;
   private readonly layoutScale: number;
+  /** Escala base do fit (displayScale / contentHeight) — colisão usa isto. */
+  private baseScaleX: number;
+  private baseScaleY: number;
+  /** Multiplicador da folha atual (`SpriteSheetDef.scaleX/Y`). */
+  private sheetScaleX = 1;
+  private sheetScaleY = 1;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -140,9 +147,13 @@ export class Enemy {
       this.layoutScale;
     this.sprite.setOrigin(fit.originX, fit.originY);
     const extra = definition.spriteFit ? 1 : this.layoutScale;
-    const scaleX = (fit.scaleX ?? fit.scale) * extra;
-    const scaleY = fit.scale * extra;
-    this.sprite.setScale(scaleX, scaleY);
+    this.baseScaleX = (fit.scaleX ?? fit.scale) * extra;
+    this.baseScaleY = fit.scale * extra;
+    const idleSx = definition.walk?.idleScaleX ?? 1;
+    const idleSy = definition.walk?.idleScaleY ?? 1;
+    this.sheetScaleX = idleSx;
+    this.sheetScaleY = idleSy;
+    this.applyVisualScale();
     this.sprite.setCollideWorldBounds(true);
     if (this.sprite.texture) {
       this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
@@ -150,8 +161,9 @@ export class Enemy {
 
     // O Phaser multiplica tamanho e offset do corpo pela escala, então a
     // pegada é convertida para px de textura para sair igual no mundo.
-    const bodyWidth = CHARACTER_BODY_WIDTH / scaleX;
-    const bodyHeight = CHARACTER_BODY_HEIGHT / scaleY;
+    // Colisão usa escala base (sem sheetScale) — igual ao Player.
+    const bodyWidth = CHARACTER_BODY_WIDTH / this.baseScaleX;
+    const bodyHeight = CHARACTER_BODY_HEIGHT / this.baseScaleY;
     this.sprite.body!.setSize(bodyWidth, bodyHeight, false);
     this.sprite.body!.setOffset(
       this.sprite.displayOriginX - bodyWidth / 2,
@@ -460,7 +472,7 @@ export class Enemy {
 
     const epoch = this.reactionEpoch;
     this.scene.time.delayedCall(durationMs, () => {
-      if (this.reactionEpoch !== epoch || !this.alive || this.deathHold) return;
+      if (this.reactionEpoch !== epoch || !this.alive || this.deathHold || !this.canTouchSprite()) return;
       if (this.reactingUntil !== unlockAt) return;
       this.reactingUntil = 0;
       this.playIdleAnim();
@@ -487,7 +499,7 @@ export class Enemy {
 
     const epoch = this.reactionEpoch;
     this.scene.time.delayedCall(durationMs, () => {
-      if (this.reactionEpoch !== epoch || !this.alive || this.deathHold) return;
+      if (this.reactionEpoch !== epoch || !this.alive || this.deathHold || !this.canTouchSprite()) return;
       if (this.reactingUntil !== unlockAt) return;
       this.reactingUntil = 0;
       this.playIdleAnim();
@@ -537,6 +549,7 @@ export class Enemy {
 
   /** Toca o próximo hit da cadeia de combo. @returns false se não há sheet. */
   private playAttackAnim(): boolean {
+    if (!this.canTouchSprite()) return false;
     const walk = this.definition.walk;
     const keys = walk?.attackAnimKeys;
     const textures = walk?.attackTextureKeys;
@@ -553,16 +566,27 @@ export class Enemy {
     this.sprite.setVelocity(0, 0);
     this.patrolTarget = null;
     this.reactionEpoch += 1;
-    if (this.sprite.texture.key !== textureKey) {
+    if (this.sprite.texture?.key !== textureKey) {
       this.sprite.setTexture(textureKey, 0);
       this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     }
+    this.applySheetScale(
+      walk?.attackScaleXs?.[index] ?? 1,
+      walk?.attackScaleYs?.[index] ?? 1,
+    );
     // Lateral: flip já aplicado em updateCombatAi.
     this.sprite.anims.play(animKey, false);
     return true;
   }
 
   destroy(): void {
+    // Invalida delayedCall (hurt/attack) — senão setTexture explode após scene teardown.
+    this.alive = false;
+    this.deathHold = true;
+    this.reactingUntil = 0;
+    this.pendingHit = null;
+    this.reactionEpoch += 1;
+    this.scene.tweens.killTweensOf(this.sprite);
     this.mapCollider?.destroy();
     for (const floater of this.damageFloaters) floater.destroy();
     this.damageFloaters.length = 0;
@@ -607,7 +631,7 @@ export class Enemy {
       duration: 350,
       ease: 'Quad.easeIn',
       onComplete: () => {
-        if (!this.alive) this.sprite.setVisible(false);
+        if (!this.alive && this.canTouchSprite()) this.sprite.setVisible(false);
       },
     });
   }
@@ -657,6 +681,20 @@ export class Enemy {
     this.sprite.setVelocity(0, 0);
     this.sprite.setData('enemyId', next.id);
     this.sprite.setData('enemyLevel', next.level);
+
+    const fit = next.spriteFit;
+    if (fit) {
+      this.baseScaleX = fit.scaleX ?? fit.scale;
+      this.baseScaleY = fit.scale;
+      this.sprite.setOrigin(fit.originX, fit.originY);
+      const bodyWidth = CHARACTER_BODY_WIDTH / this.baseScaleX;
+      const bodyHeight = CHARACTER_BODY_HEIGHT / this.baseScaleY;
+      this.sprite.body!.setSize(bodyWidth, bodyHeight, false);
+      this.sprite.body!.setOffset(
+        this.sprite.displayOriginX - bodyWidth / 2,
+        this.sprite.displayOriginY - bodyHeight,
+      );
+    }
 
     this.nameLabel.setText(next.name);
     this.nameLabel.setVisible(true);
@@ -729,8 +767,18 @@ export class Enemy {
     this.choosePatrolStep(time);
   }
 
+  /** Sprite/cena ainda usáveis (evita setTexture após destroy / troca de mapa). */
+  private canTouchSprite(): boolean {
+    const sprite = this.sprite;
+    if (!sprite || !sprite.active || !sprite.scene) return false;
+    const scene = this.scene;
+    if (!scene?.sys || !scene.textures || scene.sys.isActive?.() === false) return false;
+    return true;
+  }
+
   /** Toca a caminhada direcional (sheet) ou apenas espelha (atlas de 1 frame). */
   private playWalkAnim(dx: number, dy: number): void {
+    if (!this.canTouchSprite()) return;
     if (this.scene.time.now < this.reactingUntil || this.deathHold) return;
     const direction = velocityToDirection(dx, dy);
     const walk = this.definition.walk;
@@ -742,32 +790,35 @@ export class Enemy {
     this.facing = walk.directions.includes(direction) ? direction : walk.directions[0];
 
     if (walk.lateral && walk.walkAnimKey) {
-      if (walk.walkTextureKey && this.sprite.texture.key !== walk.walkTextureKey) {
-        this.sprite.setTexture(walk.walkTextureKey);
+      if (walk.walkTextureKey && this.sprite.texture?.key !== walk.walkTextureKey) {
+        this.sprite.setTexture(walk.walkTextureKey, 0);
         this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       }
+      this.applySheetScale(walk.walkScaleX ?? 1, walk.walkScaleY ?? 1);
       // Folhas laterais (Sakura, etc.): flip por componente horizontal.
       if (Math.abs(dx) > 0.5) this.sprite.setFlipX(dx < 0);
-      this.sprite.anims.play(walk.walkAnimKey, true);
+      this.safePlayAnim(walk.walkAnimKey, walk.walkTextureKey);
       return;
     }
 
     const animKey = walk.anims[this.facing];
-    if (animKey) this.sprite.anims.play(animKey, true);
+    if (animKey) this.safePlayAnim(animKey);
   }
 
   private playIdleAnim(): void {
+    if (!this.canTouchSprite()) return;
     if (this.scene.time.now < this.reactingUntil || this.deathHold) return;
     const walk = this.definition.walk;
     if (!walk) return;
 
     if (walk.lateral && walk.idleAnimKey) {
-      if (walk.idleTextureKey && this.sprite.texture.key !== walk.idleTextureKey) {
-        this.sprite.setTexture(walk.idleTextureKey);
+      if (walk.idleTextureKey && this.sprite.texture?.key !== walk.idleTextureKey) {
+        this.sprite.setTexture(walk.idleTextureKey, 0);
         this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       }
+      this.applySheetScale(walk.idleScaleX ?? 1, walk.idleScaleY ?? 1);
       this.sprite.setFlipX(this.facing === 'west');
-      this.sprite.anims.play(walk.idleAnimKey, true);
+      this.safePlayAnim(walk.idleAnimKey, walk.idleTextureKey);
       return;
     }
 
@@ -776,20 +827,69 @@ export class Enemy {
     if (frame != null) this.sprite.setFrame(frame);
   }
 
+  /** Escala visual = fit base × escala local da folha (Lab / pack). */
+  private applySheetScale(scaleX: number, scaleY: number): void {
+    this.sheetScaleX = Number.isFinite(scaleX) && scaleX > 0 ? scaleX : 1;
+    this.sheetScaleY = Number.isFinite(scaleY) && scaleY > 0 ? scaleY : 1;
+    this.applyVisualScale();
+  }
+
+  private applyVisualScale(): void {
+    if (!this.canTouchSprite()) return;
+    this.sprite.setScale(this.baseScaleX * this.sheetScaleX, this.baseScaleY * this.sheetScaleY);
+  }
+
+  /**
+   * Atualiza escalas por folha (Lab editou o pack ao vivo) e reaplica a animação atual.
+   */
+  syncSheetScalesFromWalk(walk: NonNullable<EnemyDefinition['walk']>): void {
+    this.definition = { ...this.definition, walk };
+    const current = this.sprite.anims.currentAnim?.key;
+    if (current && walk.walkAnimKey && current === walk.walkAnimKey) {
+      this.applySheetScale(walk.walkScaleX ?? 1, walk.walkScaleY ?? 1);
+      return;
+    }
+    if (current && walk.attackAnimKeys?.includes(current)) {
+      const index = walk.attackAnimKeys.indexOf(current);
+      this.applySheetScale(walk.attackScaleXs?.[index] ?? 1, walk.attackScaleYs?.[index] ?? 1);
+      return;
+    }
+    if (current && walk.hurtAnimKey && current === walk.hurtAnimKey) {
+      this.applySheetScale(walk.hurtScaleX ?? 1, walk.hurtScaleY ?? 1);
+      return;
+    }
+    this.applySheetScale(walk.idleScaleX ?? 1, walk.idleScaleY ?? 1);
+  }
+
+  /** Evita TypeError do Phaser quando a anim não existe ou tem frames vazios. */
+  private safePlayAnim(animKey: string, fallbackTextureKey?: string): void {
+    if (!animationPlayable(this.scene, animKey)) {
+      this.sprite.anims.stop();
+      const key = fallbackTextureKey ?? this.sprite.texture?.key;
+      if (key && this.scene.textures.exists(key)) {
+        this.sprite.setTexture(key, 0);
+      }
+      return;
+    }
+    this.sprite.anims.play(animKey, true);
+  }
+
   /**
    * Hurt sheet se existir (Gaara etc.); senão flash tint clássico.
    */
   private playHurtReaction(): void {
+    if (!this.canTouchSprite()) return;
     const walk = this.definition.walk;
     const animKey = walk?.hurtAnimKey;
     const textureKey = walk?.hurtTextureKey;
-    if (animKey && textureKey && this.scene.anims.exists(animKey)) {
+    if (animKey && textureKey && animationPlayable(this.scene, animKey)) {
       this.sprite.setVelocity(0, 0);
       this.patrolTarget = null;
-      if (this.sprite.texture.key !== textureKey) {
+      if (this.sprite.texture?.key !== textureKey) {
         this.sprite.setTexture(textureKey, 0);
         this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
       }
+      this.applySheetScale(walk?.hurtScaleX ?? 1, walk?.hurtScaleY ?? 1);
       // Mantém o flip lateral atual.
       const epoch = ++this.reactionEpoch;
       this.sprite.anims.play(animKey, false);
@@ -799,7 +899,7 @@ export class Enemy {
         : 220;
       this.reactingUntil = this.scene.time.now + durationMs;
       this.scene.time.delayedCall(durationMs, () => {
-        if (this.reactionEpoch !== epoch || !this.alive) return;
+        if (this.reactionEpoch !== epoch || !this.alive || !this.canTouchSprite()) return;
         this.reactingUntil = 0;
         this.playIdleAnim();
       });
@@ -810,17 +910,19 @@ export class Enemy {
 
   /** @returns true se tocou animação de morte pack. */
   private playDeathAnim(): boolean {
+    if (!this.canTouchSprite()) return false;
     const walk = this.definition.walk;
     const animKey = walk?.deathAnimKey;
     const textureKey = walk?.deathTextureKey;
-    if (!animKey || !textureKey || !this.scene.anims.exists(animKey)) return false;
+    if (!animKey || !textureKey || !animationPlayable(this.scene, animKey)) return false;
 
     this.deathHold = true;
     this.reactionEpoch += 1;
-    if (this.sprite.texture.key !== textureKey) {
+    if (this.sprite.texture?.key !== textureKey) {
       this.sprite.setTexture(textureKey, 0);
       this.sprite.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
     }
+    this.applySheetScale(walk?.deathScaleX ?? 1, walk?.deathScaleY ?? 1);
     this.sprite.anims.play(animKey, false);
     // Phaser holds last frame after repeat:0 completes by default.
     return true;
@@ -943,12 +1045,13 @@ export class Enemy {
   }
 
   private flashHit(): void {
+    if (!this.canTouchSprite()) return;
     // Tint flash — alpha blink seems like afterimage while the enemy moves.
     this.scene.tweens.killTweensOf(this.sprite);
     this.sprite.setAlpha(1);
     this.sprite.setTintFill(0xffefc2);
     this.scene.time.delayedCall(80, () => {
-      if (!this.sprite.active || !this.alive) return;
+      if (!this.canTouchSprite() || !this.alive) return;
       this.sprite.clearTint();
     });
   }

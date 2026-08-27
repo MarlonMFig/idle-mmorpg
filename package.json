@@ -101,6 +101,8 @@
     "jjk:client": "node scripts/generate-jujutsu-kaisen-client.js",
     "jf:roster": "node scripts/process-jump-force-roster.js",
     "jf:client": "node scripts/generate-jump-force-client.js",
+    "nun5:batch": "node scripts/process-nun5-batch.js",
+    "nun5:client": "node scripts/generate-nun5-batch-client.js",
     "guy:idle": "node scripts/process-guy-idle.js",
     "guy:walk": "node scripts/process-guy-walk.js",
     "guy:combo": "node scripts/process-guy-combo.js",

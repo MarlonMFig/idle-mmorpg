@@ -8,6 +8,7 @@ import {
 } from '@/constants/skill';
 import { shouldForceAllSkillsLevel1 } from '@/config/devConfig';
 import { JUMP_FORCE_SKILLS } from '@/data/jump-force-packs';
+import { NUN5_BATCH_SKILLS } from '@/data/nun5-batch-packs';
 import { getCharacterPack } from '@/data/character-packs';
 import { CHARACTER_PROGRESSION_SKILL_DEFINITIONS } from '@/data/character-skill-progression';
 import { WONSR_SKILL_DEFINITIONS } from '@/data/wonsr-skills';
@@ -908,13 +909,15 @@ export type SkillId = (typeof SKILL_LIST)[number]['id'];
 const ALL_SKILL_DEFINITIONS: readonly SkillDefinition[] = [
   ...SKILL_LIST,
   ...JUMP_FORCE_SKILLS,
+  ...NUN5_BATCH_SKILLS,
   ...CHARACTER_PROGRESSION_SKILL_DEFINITIONS,
   ...WONSR_SKILL_DEFINITIONS.filter((skill) => !SKILL_LIST.some((base) => base.id === skill.id)),
   ...LAB_VISUAL_SKILLS.filter(
     (skill) =>
       !SKILL_LIST.some((base) => base.id === skill.id) &&
       !CHARACTER_PROGRESSION_SKILL_DEFINITIONS.some((base) => base.id === skill.id) &&
-      !JUMP_FORCE_SKILLS.some((base) => base.id === skill.id),
+      !JUMP_FORCE_SKILLS.some((base) => base.id === skill.id) &&
+      !NUN5_BATCH_SKILLS.some((base) => base.id === skill.id),
   ),
 ];
 

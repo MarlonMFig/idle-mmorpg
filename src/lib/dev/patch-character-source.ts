@@ -194,9 +194,83 @@ function sheetRange(
   source: string,
   packStart: number,
   packEnd: number,
-  key: 'idle' | 'walk',
+  key: 'idle' | 'walk' | 'attack' | 'hurt' | 'death',
 ): { start: number; end: number } | null {
   return namedOrInlineObject(source, packStart, packEnd, key);
+}
+
+function resolveNamedArray(source: string, name: string): { start: number; end: number } | null {
+  const re = new RegExp(`(?:const|let|var)\\s+${name}\\s*(?::[^=]+)?=\\s*\\[`);
+  const match = re.exec(source);
+  if (!match || match.index == null) return null;
+  const open = source.indexOf('[', match.index);
+  const end = matchingBracket(source, open);
+  if (end < 0) return null;
+  return { start: open, end };
+}
+
+/** Entradas de um array TS: identificadores ou objetos inline `{...}`. */
+function arrayEntryRanges(
+  source: string,
+  arrayStart: number,
+  arrayEnd: number,
+): Array<{ start: number; end: number; kind: 'object' | 'ident'; name?: string }> {
+  const out: Array<{ start: number; end: number; kind: 'object' | 'ident'; name?: string }> = [];
+  let i = arrayStart + 1;
+  while (i < arrayEnd) {
+    while (i < arrayEnd && /[\s,]/.test(source[i])) i += 1;
+    if (i >= arrayEnd) break;
+    if (source[i] === '{') {
+      const end = matchingBrace(source, i);
+      if (end < 0) break;
+      out.push({ start: i, end, kind: 'object' });
+      i = end + 1;
+      continue;
+    }
+    const ident = /^[A-Za-z_][A-Za-z0-9_]*/.exec(source.slice(i));
+    if (!ident) break;
+    out.push({ start: i, end: i + ident[0].length - 1, kind: 'ident', name: ident[0] });
+    i += ident[0].length;
+  }
+  return out;
+}
+
+/**
+ * Resolve a folha-fonte de um slot de corpo (idle/walk/combo/hurt/death).
+ * Combos usam `attackChain[index]` (const nomeada ou array inline).
+ */
+function animSheetRange(
+  source: string,
+  packStart: number,
+  packEnd: number,
+  slot: 'idle' | 'walk' | 'attack' | 'combo1' | 'combo2' | 'combo3' | 'hurt' | 'death',
+): { start: number; end: number } | null {
+  if (slot === 'idle' || slot === 'walk' || slot === 'attack' || slot === 'hurt' || slot === 'death') {
+    return sheetRange(source, packStart, packEnd, slot);
+  }
+  const index = slot === 'combo1' ? 0 : slot === 'combo2' ? 1 : 2;
+  const pack = source.slice(packStart, packEnd + 1);
+  const assign = firstPropAssignment(pack, 'attackChain');
+  if (!assign) return null;
+  const absStart = packStart + assign.start;
+  let arrayStart = absStart;
+  let arrayEnd: number;
+  if (source[absStart] === '[') {
+    arrayEnd = matchingBracket(source, absStart);
+    if (arrayEnd < 0) return null;
+  } else {
+    const name = source.slice(absStart, packStart + assign.end + 1).trim();
+    const named = resolveNamedArray(source, name);
+    if (!named) return null;
+    arrayStart = named.start;
+    arrayEnd = named.end;
+  }
+  const entries = arrayEntryRanges(source, arrayStart, arrayEnd);
+  const entry = entries[index];
+  if (!entry) return null;
+  if (entry.kind === 'object') return { start: entry.start, end: entry.end };
+  if (!entry.name) return null;
+  return resolveNamedObject(source, entry.name);
 }
 
 function skillRange(
@@ -989,6 +1063,39 @@ function sanitizeChanges(raw: Record<string, unknown>): LabSaveChanges {
       };
       continue;
     }
+    if (key === 'sheetScales') {
+      if (!value || typeof value !== 'object') {
+        throw new Error('sheetScales inválido');
+      }
+      const raw = value as Record<string, unknown>;
+      const next: NonNullable<LabSaveChanges['sheetScales']> = {};
+      const bodySlots = new Set([
+        'idle',
+        'walk',
+        'attack',
+        'combo1',
+        'combo2',
+        'combo3',
+        'hurt',
+        'death',
+      ]);
+      for (const [slot, entry] of Object.entries(raw)) {
+        if (!bodySlots.has(slot)) throw new Error(`sheetScales slot inválido: ${slot}`);
+        if (!entry || typeof entry !== 'object') throw new Error(`sheetScales.${slot} inválido`);
+        const obj = entry as Record<string, unknown>;
+        const scaleX = Number(obj.scaleX);
+        const scaleY = Number(obj.scaleY);
+        if (!Number.isFinite(scaleX) || !Number.isFinite(scaleY)) {
+          throw new Error(`sheetScales.${slot} scale inválido`);
+        }
+        next[slot as keyof typeof next] = {
+          scaleX: Math.max(0.05, scaleX),
+          scaleY: Math.max(0.05, scaleY),
+        };
+      }
+      out.sheetScales = next;
+      continue;
+    }
     if (!allowedNums.has(key)) {
       throw new Error(`Campo não permitido: ${key}`);
     }
@@ -1115,6 +1222,34 @@ export function patchCharacterSource(input: LabSourcePatch, options?: LabPatchOp
       const next = Math.max(1, Math.round(current * changes.frameRate));
       source = patchRange(source, sheetPos.start, sheetPos.end, setNumericProp(block, 'frameRate', next));
       applied[`${sheet}.frameRate`] = next;
+    }
+  }
+
+  if (changes.sheetScales) {
+    const bodySlots = [
+      'idle',
+      'walk',
+      'attack',
+      'combo1',
+      'combo2',
+      'combo3',
+      'hurt',
+      'death',
+    ] as const;
+    for (const slot of bodySlots) {
+      const scale = changes.sheetScales[slot];
+      if (!scale) continue;
+      const range = currentPack();
+      const sheetPos = animSheetRange(source, range.start, range.end, slot);
+      if (!sheetPos) {
+        throw new Error(`Folha ${slot} não encontrada no fonte para sheetScales.`);
+      }
+      let block = source.slice(sheetPos.start, sheetPos.end + 1);
+      block = setNumericProp(block, 'scaleX', scale.scaleX);
+      block = setNumericProp(block, 'scaleY', scale.scaleY);
+      source = patchRange(source, sheetPos.start, sheetPos.end, block);
+      applied[`${slot}.scaleX`] = scale.scaleX;
+      applied[`${slot}.scaleY`] = scale.scaleY;
     }
   }
 
@@ -1294,17 +1429,29 @@ export function patchCharacterSource(input: LabSourcePatch, options?: LabPatchOp
         source = patchRange(source, skillAfter.start, skillAfter.end, nextSkill);
       } else {
         const fx = fxRange(source, skillAfter.start, skillAfter.end);
-        if (!fx) throw new Error(`A skill ${skillId} não tem bloco fx para offset visual.`);
-        let fxBlock = source.slice(fx.start, fx.end + 1);
-        if (changes.vfxOffsetX != null) {
-          fxBlock = setNumericProp(fxBlock, 'offsetX', changes.vfxOffsetX);
-          applied['fx.offsetX'] = changes.vfxOffsetX;
+        if (fx) {
+          let fxBlock = source.slice(fx.start, fx.end + 1);
+          if (changes.vfxOffsetX != null) {
+            fxBlock = setNumericProp(fxBlock, 'offsetX', changes.vfxOffsetX);
+            applied['fx.offsetX'] = changes.vfxOffsetX;
+          }
+          if (changes.vfxOffsetY != null) {
+            fxBlock = setNumericProp(fxBlock, 'offsetY', changes.vfxOffsetY);
+            applied['fx.offsetY'] = changes.vfxOffsetY;
+          }
+          source = patchRange(source, fx.start, fx.end, fxBlock);
+        } else {
+          // Pose baked (ex.: Rasengan): sem bloco fx — offset vai na folha da skill.
+          if (changes.vfxOffsetX != null) {
+            nextSkill = setNumericProp(nextSkill, 'offsetX', changes.vfxOffsetX);
+            applied.offsetX = changes.vfxOffsetX;
+          }
+          if (changes.vfxOffsetY != null) {
+            nextSkill = setNumericProp(nextSkill, 'offsetY', changes.vfxOffsetY);
+            applied.offsetY = changes.vfxOffsetY;
+          }
+          source = patchRange(source, skillAfter.start, skillAfter.end, nextSkill);
         }
-        if (changes.vfxOffsetY != null) {
-          fxBlock = setNumericProp(fxBlock, 'offsetY', changes.vfxOffsetY);
-          applied['fx.offsetY'] = changes.vfxOffsetY;
-        }
-        source = patchRange(source, fx.start, fx.end, fxBlock);
       }
     }
   }

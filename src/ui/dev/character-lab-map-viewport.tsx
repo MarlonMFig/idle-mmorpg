@@ -272,8 +272,8 @@ export function CharacterLabMapViewport() {
     <div className="character-lab__section">
       <h3>Map Viewport Lab</h3>
       <p className="character-lab__hint">
-        Preview = Phaser real (GameScene). Alterações são teste até SALVAR. Colisão/TMX não mudam com
-        Camera Zoom.
+        Preview = Phaser real (GameScene). Ao abrir a aba, a câmera encaixa o mapa inteiro (contain).
+        Alterações são teste até SALVAR. Colisão/TMX não mudam com Camera Zoom.
       </p>
 
       {dirty ? (
@@ -321,11 +321,32 @@ export function CharacterLabMapViewport() {
         dirty={Math.abs(cameraZoom - (officialCameraZoom ?? cameraZoom)) > 0.001}
         onNudge={(d) => mapViewportLabStore.nudgeCameraZoom(d)}
         onSet={(v) => mapViewportLabStore.setCameraZoom(v)}
+        fineSteps={[-0.1, -0.05, -0.01, 0.01, 0.05, 0.1]}
+        nudgeStep={0.05}
       />
       <div className="character-lab__chips">
+        <button
+          type="button"
+          onClick={() => {
+            const d = mapViewportLabStore.getSnapshot().diagnostics;
+            const entry = getMapViewportCatalogEntry(catalogId);
+            if (d && d.viewportW > 0 && entry) {
+              mapViewportLabStore.fitEntireMap(
+                d.viewportW,
+                d.viewportH,
+                entry.worldWidth,
+                entry.worldHeight,
+              );
+            } else {
+              mapViewportLabStore.setFlag('pendingFit', true);
+            }
+          }}
+        >
+          VER MAPA INTEIRO
+        </button>
         {MAP_VIEWPORT_ZOOM_PRESETS.map((z) => (
           <button key={z} type="button" onClick={() => mapViewportLabStore.setCameraZoom(z)}>
-            {z.toFixed(2)}x
+            {z < 1 ? z.toFixed(2) : z.toFixed(2)}x
           </button>
         ))}
       </div>
@@ -385,7 +406,9 @@ export function CharacterLabMapViewport() {
             Pan {panMode ? 'ON' : 'OFF'}
           </button>
         </div>
-        <p className="character-lab__hint">Pan: Shift+arrastar ou botão do meio · Wheel = zoom</p>
+        <p className="character-lab__hint">
+          Pan: Shift+arrastar ou botão do meio · Wheel = zoom (mín. 0.05× para ver o mapa todo)
+        </p>
       </div>
 
       <div className="character-lab__chips">

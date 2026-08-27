@@ -29,7 +29,7 @@ import { skillsStore } from '@/stores/skills-store';
 import { vitalsStore } from '@/stores/vitals-store';
 import { resolveEffectiveSkill } from '@/lib/resolve-effective-skill';
 import { resolveSkillElement } from '@/data/damage-elements';
-import { resolveExecutionType } from '@/data/skill-execution-def';
+import { formatExecutionTypesLabel, hasExecutionType } from '@/data/skill-execution-def';
 import type { CombatSystem } from '@/systems/combat-system';
 import type { EnemyManager } from '@/systems/enemy-manager';
 import { clearLabForcedFx, computeSkillFxAim, scheduleSkillFx, shouldSpawnAreaImpactFxPerTarget, spawnAreaImpactFxForTargets } from '@/systems/pack-fx';
@@ -114,6 +114,7 @@ export class CharacterLabSystem {
       lab.alignHubY,
       lab.alignHuntX,
       lab.alignHuntY,
+      JSON.stringify(lab.sheetScaleDrafts),
     ].join('|');
     if (visKey !== this.lastVisKey) {
       this.lastVisKey = visKey;
@@ -127,6 +128,16 @@ export class CharacterLabSystem {
         vfxOffsetY: lab.vfxOffsetY,
         animationSpeed: lab.animationSpeed,
       });
+      this.player.refreshSheetScale();
+      // Inimigo da caça / dummy Lab usa as mesmas folhas — espelha scaleX/Y por anim.
+      if (lab.playerId) {
+        const playerPack = CharacterRegistry.get(lab.playerId)?.pack;
+        if (playerPack) this.enemyManager.refreshLateralSheetScales(playerPack);
+      }
+      if (lab.enemyId && lab.enemyId !== lab.playerId) {
+        const enemyPack = CharacterRegistry.get(lab.enemyId)?.pack;
+        if (enemyPack) this.enemyManager.refreshLateralSheetScales(enemyPack);
+      }
     }
     this.player.previewLabAlignment();
 
@@ -387,7 +398,7 @@ export class CharacterLabSystem {
         });
       },
     });
-    characterLabStore.pushEvent(`skill complete · ${resolveExecutionType(lab.execution)}`);
+    characterLabStore.pushEvent(`skill complete · ${formatExecutionTypesLabel(lab.execution)}`);
   }
 
   private effectAnimFromLab(): CharacterSkillAnimDef | null {
@@ -501,6 +512,8 @@ export class CharacterLabSystem {
       const def = CharacterRegistry.get(lab.playerId);
       if (def) this.player.replacePack(def.pack);
     }
+    // Destrói sprites/tweens do lab antes de dropar a textura (evita glTexture null).
+    clearLabForcedFx();
     const ids = [lab.vfxId, lab.editingVfxId].filter((id): id is string => Boolean(id));
     for (const id of ids) {
       invalidateSharedVfxTexture(this.scene, id);
@@ -716,7 +729,7 @@ export class CharacterLabSystem {
       this.gfx.lineBetween(this.player.x + 8, y - 6, this.player.x, y);
     }
 
-    if (lab.showAreaRadius && resolveExecutionType(lab.execution) === 'area') {
+    if (lab.showAreaRadius && hasExecutionType(lab.execution, 'area')) {
       const radius = Math.max(0, lab.execution.radius ?? 80);
       const dummy = this.dummy();
       const cx = dummy?.sprite.x ?? this.player.x + 80;

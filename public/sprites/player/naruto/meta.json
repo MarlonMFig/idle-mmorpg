@@ -1,11 +1,11 @@
 {
   "naruto-rasengan-dash": {
     "image": "/sprites/player/naruto/rasengan-dash.png",
-    "frameWidth": 274,
-    "frameHeight": 165,
+    "frameWidth": 204,
+    "frameHeight": 125,
     "frameCount": 16,
-    "contentHeight": 81,
-    "originX": 0.1898,
+    "contentHeight": 60,
+    "originX": 0.1863,
     "frameRate": 12,
     "durationMs": 1333,
     "hitDelayMs": 750,
@@ -31,57 +31,53 @@
   },
   "naruto-idle": {
     "image": "/sprites/player/naruto/idle.png",
-    "frameWidth": 61,
-    "frameHeight": 85,
+    "frameWidth": 50,
+    "frameHeight": 64,
     "frameCount": 6,
-    "contentHeight": 81,
-    "scale": 1
+    "contentHeight": 60,
+    "scale": 1,
+    "originX": 0.5,
+    "frameRate": 8
   },
   "naruto-walk": {
     "image": "/sprites/player/naruto/walk.png",
-    "frameWidth": 55,
-    "frameHeight": 86,
+    "frameWidth": 78,
+    "frameHeight": 64,
     "frameCount": 6,
-    "contentHeight": 81,
+    "contentHeight": 60,
     "scale": 1,
-    "residualGreen": 0,
-    "pureBlack": 3171
+    "originX": 0.27564102564102566,
+    "frameRate": 12
   },
   "naruto-combo1": {
     "image": "/sprites/player/naruto/combo1.png",
-    "frameWidth": 86,
-    "frameHeight": 83,
+    "frameWidth": 83,
+    "frameHeight": 64,
     "frameCount": 4,
-    "contentHeight": 81,
+    "contentHeight": 60,
     "scale": 1,
-    "range": [
-      0,
-      4
-    ]
+    "originX": 0.2891566265060241,
+    "frameRate": 12
   },
   "naruto-combo2": {
     "image": "/sprites/player/naruto/combo2.png",
-    "frameWidth": 86,
-    "frameHeight": 83,
+    "frameWidth": 78,
+    "frameHeight": 59,
     "frameCount": 4,
-    "contentHeight": 81,
+    "contentHeight": 60,
     "scale": 1,
-    "range": [
-      4,
-      8
-    ]
+    "originX": 0.32051282051282054,
+    "frameRate": 12
   },
   "naruto-combo3": {
     "image": "/sprites/player/naruto/combo3.png",
-    "frameWidth": 86,
-    "frameHeight": 83,
-    "frameCount": 4,
-    "contentHeight": 81,
+    "frameWidth": 61,
+    "frameHeight": 64,
+    "frameCount": 5,
+    "contentHeight": 60,
     "scale": 1,
-    "range": [
-      8,
-      12
-    ]
+    "originX": 0.4426229508196721,
+    "frameRate": 12
   },
   "naruto-rasengan": {
     "image": "/sprites/player/naruto/rasengan.png",
@@ -99,29 +95,31 @@
   },
   "naruto-hurt": {
     "image": "/sprites/player/naruto/hurt.png",
-    "frameWidth": 97,
-    "frameHeight": 85,
-    "frameCount": 2,
-    "contentHeight": 81,
-    "frameRate": 10,
-    "scale": 1
+    "frameWidth": 47,
+    "frameHeight": 60,
+    "frameCount": 3,
+    "contentHeight": 60,
+    "scale": 1,
+    "originX": 0.3191489361702128,
+    "frameRate": 10
   },
   "naruto-death": {
     "image": "/sprites/player/naruto/death.png",
-    "frameWidth": 97,
-    "frameHeight": 85,
+    "frameWidth": 77,
+    "frameHeight": 56,
     "frameCount": 3,
-    "contentHeight": 81,
-    "frameRate": 8,
-    "scale": 1
+    "contentHeight": 60,
+    "scale": 1,
+    "originX": 0.5064935064935064,
+    "frameRate": 8
   },
   "skill-rasengan": {
     "image": "/sprites/player/naruto/rasengan-dash.png",
-    "frameWidth": 274,
-    "frameHeight": 165,
+    "frameWidth": 204,
+    "frameHeight": 125,
     "frameCount": 16,
-    "contentHeight": 81,
-    "originX": 0.1898,
+    "contentHeight": 60,
+    "originX": 0.1863,
     "frameRate": 12,
     "durationMs": 1333,
     "hitDelayMs": 750,

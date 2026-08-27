@@ -6,9 +6,10 @@ import {
   type QualityBand,
 } from '@/lib/dev/map-viewport-catalog';
 
-export const MAP_VIEWPORT_ZOOM_MIN = 0.5;
+/** Zoom bem baixo para caber mapas 4K/5k² no viewport do lab. */
+export const MAP_VIEWPORT_ZOOM_MIN = 0.05;
 export const MAP_VIEWPORT_ZOOM_MAX = 2;
-export const MAP_VIEWPORT_ZOOM_PRESETS = [0.5, 0.75, 1, 1.25, 1.5] as const;
+export const MAP_VIEWPORT_ZOOM_PRESETS = [0.1, 0.25, 0.35, 0.5, 0.75, 1, 1.25, 1.5] as const;
 export const MAP_VIEWPORT_SCALE_PRESETS = [0.75, 1, 1.25, 2, 3.1, 4.75, 5.75] as const;
 
 export type MapFilterMode = 'official' | 'nearest' | 'linear';
@@ -77,6 +78,11 @@ export interface MapViewportLabState {
   diagnostics: MapViewportDiagnostics | null;
   /** Lab ativo (aba Mapas aberta / sessão). */
   active: boolean;
+  /**
+   * Na próxima frame do MapViewportLabSystem: contain + centralizar.
+   * Assim a aba Mapas abre mostrando o mapa inteiro, não o follow no avatar.
+   */
+  pendingFit: boolean;
 }
 
 const defaultDiagnostics = (): MapViewportDiagnostics => ({
@@ -146,6 +152,7 @@ function emptyState(): MapViewportLabState {
     slotB: null,
     diagnostics: null,
     active: false,
+    pendingFit: false,
   };
 }
 
@@ -158,10 +165,18 @@ function getStore(): WritableStore<MapViewportLabState> {
     g[STORE_KEY] = createStore(emptyState());
     return g[STORE_KEY]!;
   }
-  // HMR: store antigo sem lateralFloorY — remonta baseline.
+  // HMR: store antigo sem lateralFloorY / pendingFit — remonta baseline.
   const snap = g[STORE_KEY]!.getSnapshot() as Partial<MapViewportLabState>;
-  if (typeof snap.lateralFloorY !== 'number' || typeof snap.committedLateralFloorY !== 'number') {
-    g[STORE_KEY] = createStore({ ...emptyState(), active: snap.active === true });
+  if (
+    typeof snap.lateralFloorY !== 'number' ||
+    typeof snap.committedLateralFloorY !== 'number' ||
+    typeof snap.pendingFit !== 'boolean'
+  ) {
+    g[STORE_KEY] = createStore({
+      ...emptyState(),
+      active: snap.active === true,
+      pendingFit: snap.active === true,
+    });
   }
   return g[STORE_KEY]!;
 }
@@ -199,11 +214,16 @@ export const mapViewportLabStore = {
   getSnapshot: () => getStore().getSnapshot(),
 
   setActive(active: boolean): void {
-    patch({ active });
+    patch(
+      active
+        ? { active: true, panMode: true, pendingFit: true }
+        : { active: false, pendingFit: false },
+    );
   },
 
   selectCatalog(catalogId: string): void {
     loadOfficialFor(catalogId);
+    patch({ panMode: true, pendingFit: true });
   },
 
   setCameraZoom(zoom: number): void {
@@ -251,6 +271,32 @@ export const mapViewportLabStore = {
     });
   },
 
+  /**
+   * Contain: zoom para caber o mundo no viewport (com margem leve).
+   * Preferir worldW/H reais da GameScene quando disponíveis.
+   */
+  fitEntireMap(viewW: number, viewH: number, worldW?: number, worldH?: number): void {
+    const entry = getMapViewportCatalogEntry(getStore().getSnapshot().catalogId);
+    const w = worldW && worldW > 0 ? worldW : entry?.worldWidth ?? 0;
+    const h = worldH && worldH > 0 ? worldH : entry?.worldHeight ?? 0;
+    if (viewW < 1 || viewH < 1 || w < 1 || h < 1) {
+      patch({ pendingFit: false });
+      return;
+    }
+    const contain = Math.min(viewW / w, viewH / h) * 0.98;
+    patch({
+      cameraZoom: clampZoom(contain),
+      camX: w / 2,
+      camY: h / 2,
+      panMode: true,
+      pendingFit: false,
+    });
+  },
+
+  clearPendingFit(): void {
+    patch({ pendingFit: false });
+  },
+
   resetTest(): void {
     const s = getStore().getSnapshot();
     loadOfficialFor(s.catalogId);
@@ -264,7 +310,8 @@ export const mapViewportLabStore = {
       showWorldBounds: false,
       showCameraBounds: false,
       showViewportBounds: false,
-      panMode: false,
+      panMode: true,
+      pendingFit: true,
     });
   },
 
@@ -396,6 +443,7 @@ export const mapViewportLabStore = {
     roundPixelsOverride: boolean | null;
     simWidth: number | null;
     simHeight: number | null;
+    pendingFit: boolean;
   } | null {
     const s = getStore().getSnapshot();
     if (!s.active) return null;
@@ -420,6 +468,7 @@ export const mapViewportLabStore = {
       roundPixelsOverride: s.roundPixelsOverride,
       simWidth: s.simWidth,
       simHeight: s.simHeight,
+      pendingFit: s.pendingFit,
     };
   },
 };

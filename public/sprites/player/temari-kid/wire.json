@@ -1,0 +1,188 @@
+{
+  "id": "temari-kid",
+  "name": "Temari (Kid)",
+  "lookType": 9108,
+  "contentHeight": 59,
+  "idle": {
+    "image": "/sprites/player/temari-kid/idle.png",
+    "frameWidth": 53,
+    "frameHeight": 63,
+    "frameCount": 6,
+    "contentHeight": 59,
+    "scale": 1,
+    "originX": 0.32075471698113206,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/temari-kid/walk.png",
+    "frameWidth": 52,
+    "frameHeight": 63,
+    "frameCount": 8,
+    "contentHeight": 59,
+    "scale": 1,
+    "originX": 0.5171328671328671,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/temari-kid/combo1.png",
+      "frameWidth": 54,
+      "frameHeight": 66,
+      "frameCount": 4,
+      "contentHeight": 59,
+      "scale": 1,
+      "originX": 0.3148148148148148,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/temari-kid/combo2.png",
+      "frameWidth": 59,
+      "frameHeight": 68,
+      "frameCount": 5,
+      "contentHeight": 59,
+      "scale": 1,
+      "originX": 0.423728813559322,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/temari-kid/combo3.png",
+      "frameWidth": 74,
+      "frameHeight": 64,
+      "frameCount": 7,
+      "contentHeight": 59,
+      "scale": 1,
+      "originX": 0.36486486486486486,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/temari-kid/hurt.png",
+    "frameWidth": 47,
+    "frameHeight": 55,
+    "frameCount": 1,
+    "contentHeight": 59,
+    "scale": 1,
+    "originX": 0.3829787234042553,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/temari-kid/death.png",
+    "frameWidth": 36,
+    "frameHeight": 68,
+    "frameCount": 1,
+    "contentHeight": 59,
+    "scale": 1,
+    "originX": 0.5277777777777778,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-temari-kid-1",
+      "skillName": "Spin Attack",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/temari-kid/special1.png",
+        "frameWidth": 100,
+        "frameHeight": 92,
+        "frameCount": 11,
+        "contentHeight": 59,
+        "scale": 1,
+        "originX": 0.55,
+        "durationMs": 967,
+        "hitDelayMs": 167,
+        "frameRate": 11,
+        "skillId": "skill-temari-kid-1",
+        "skillName": "Spin Attack",
+        "actionId": 240
+      },
+      "fx": null,
+      "index": 0
+    },
+    {
+      "skillId": "skill-temari-kid-2",
+      "skillName": "Wind attack",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/temari-kid/special2.png",
+        "frameWidth": 53,
+        "frameHeight": 63,
+        "frameCount": 6,
+        "contentHeight": 59,
+        "scale": 1,
+        "originX": 0.32075471698113206,
+        "durationMs": 933,
+        "hitDelayMs": 417,
+        "frameRate": 15,
+        "skillId": "skill-temari-kid-2",
+        "skillName": "Wind attack",
+        "actionId": 1000
+      },
+      "fx": {
+        "image": "/sprites/player/temari-kid/special2-fx.png",
+        "frameWidth": 54,
+        "frameHeight": 37,
+        "frameCount": 7,
+        "contentHeight": 29,
+        "scale": 1,
+        "originX": 0.4074074074074074,
+        "frameRate": 9,
+        "durationMs": 817
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-temari-kid-3",
+      "skillName": "Charge",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/temari-kid/special3.png",
+        "frameWidth": 80,
+        "frameHeight": 66,
+        "frameCount": 6,
+        "contentHeight": 59,
+        "scale": 1,
+        "originX": 0.5125,
+        "durationMs": 483,
+        "hitDelayMs": 217,
+        "frameRate": 12,
+        "skillId": "skill-temari-kid-3",
+        "skillName": "Charge",
+        "actionId": 1010
+      },
+      "fx": {
+        "image": "/sprites/player/temari-kid/special3-fx.png",
+        "frameWidth": 59,
+        "frameHeight": 68,
+        "frameCount": 4,
+        "contentHeight": 63,
+        "scale": 1,
+        "originX": 0.6949152542372882,
+        "frameRate": 12,
+        "durationMs": 333
+      },
+      "index": 2
+    },
+    {
+      "skillId": "skill-temari-kid-4",
+      "skillName": "Kuchiyose no jutsu",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/temari-kid/special4.png",
+        "frameWidth": 53,
+        "frameHeight": 63,
+        "frameCount": 6,
+        "contentHeight": 59,
+        "scale": 1,
+        "originX": 0.32075471698113206,
+        "durationMs": 2000,
+        "hitDelayMs": 900,
+        "frameRate": 12,
+        "skillId": "skill-temari-kid-4",
+        "skillName": "Kuchiyose no jutsu",
+        "actionId": 1050
+      },
+      "fx": null,
+      "index": 3
+    }
+  ]
+}

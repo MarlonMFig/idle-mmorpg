@@ -6,11 +6,16 @@ import {
   SKILL_PERSISTENT_ANCHORS,
   SKILL_PERSISTENT_ANCHOR_LABELS,
   defaultHits,
-  parseSkillExecution,
-  resolveExecutionType,
+  executionWithTypes,
+  formatExecutionTypesLabel,
+  hasExecutionType,
+  resolveExecutionTypes,
   type SkillExecutionType,
   type SkillMultiHitDef,
 } from '@/data/skill-execution-def';
+import { getVfxDefinition } from '@/data/vfx/registry';
+import { isSequenceVfx, vfxFrameUrls } from '@/data/vfx/types';
+import { clampLoopRange } from '@/lib/frame-loop';
 import { characterLabStore } from '@/stores/character-lab-store';
 import { useStore } from '@/hooks/use-store';
 import { ValueRow } from '@/ui/dev/character-lab-value-row';
@@ -23,23 +28,46 @@ export function CharacterLabExecutionEditor() {
   const execution = useStore(characterLabStore, (s) => s.execution);
   const originals = useStore(characterLabStore, (s) => s.skillOriginals);
   const areaImpactFxPerTarget = useStore(characterLabStore, (s) => s.areaImpactFxPerTarget);
-  const type = resolveExecutionType(execution);
-  const origType = resolveExecutionType(originals.execution);
+  const poseSheet = useStore(characterLabStore, (s) => s.poseSheet);
+  const vfxId = useStore(characterLabStore, (s) => s.vfxId);
+  const vfxLoopStartFrame = useStore(characterLabStore, (s) => s.vfxLoopStartFrame);
+  const vfxLoopEndFrame = useStore(characterLabStore, (s) => s.vfxLoopEndFrame);
+  const vfxLoopMode = useStore(characterLabStore, (s) => s.vfxLoopMode);
 
-  const setType = (next: SkillExecutionType) => {
-    characterLabStore.setFlag(
-      'execution',
-      parseSkillExecution({
-        type: next,
-        hits: next === 'multi-hit' ? (execution.hits?.length ? execution.hits : defaultHits()) : undefined,
-        beamDuration: execution.beamDuration ?? 2000,
-        tickInterval: execution.tickInterval ?? (next === 'persistent' ? 1000 : 250),
-        trackTarget: execution.trackTarget === true,
-        radius: execution.radius ?? 80,
-        duration: execution.duration ?? 5000,
-        persistentAnchor: execution.persistentAnchor ?? 'target',
-      }),
-    );
+  const selected = resolveExecutionTypes(execution);
+  const hasMulti = hasExecutionType(execution, 'multi-hit');
+  const hasBeam = hasExecutionType(execution, 'beam');
+  const hasArea = hasExecutionType(execution, 'area');
+  const hasPersistent = hasExecutionType(execution, 'persistent');
+
+  const poseFrames = Math.max(1, poseSheet?.frames?.length || poseSheet?.frameCount || 1);
+  const poseLoopRange = clampLoopRange(
+    poseFrames,
+    poseSheet?.loopStartFrame ?? 1,
+    poseSheet?.loopEndFrame ?? poseFrames,
+  );
+
+  const vfxDef = getVfxDefinition(vfxId);
+  const vfxFrames = vfxDef
+    ? Math.max(1, isSequenceVfx(vfxDef) ? vfxFrameUrls(vfxDef).length || vfxDef.frameCount : vfxDef.frameCount)
+    : 1;
+  const vfxLoopRange = clampLoopRange(vfxFrames, vfxLoopStartFrame, vfxLoopEndFrame);
+
+  const toggleType = (id: SkillExecutionType) => {
+    let next: SkillExecutionType[];
+    if (id === 'single-hit') {
+      next = ['single-hit'];
+    } else if (selected.includes(id)) {
+      next = selected.filter((t) => t !== id);
+      if (next.length === 0) next = ['single-hit'];
+    } else {
+      next = [...selected.filter((t) => t !== 'single-hit'), id];
+    }
+    const enablingPersistent = id === 'persistent' && !selected.includes('persistent');
+    characterLabStore.setFlag('execution', executionWithTypes(execution, next));
+    if (enablingPersistent) {
+      ensurePersistentFrameLoops(poseFrames, vfxFrames);
+    }
   };
 
   const setHits = (hits: SkillMultiHitDef[]) => {
@@ -49,23 +77,25 @@ export function CharacterLabExecutionEditor() {
   return (
     <section className="character-lab__section">
       <h3>Tipo de execução</h3>
+      <p className="character-lab__hint">Selecione um ou mais. Área combina com os demais.</p>
       <div className="character-lab__chips">
         {SKILL_EXECUTION_TYPES.map((id) => (
           <button
             key={id}
             type="button"
-            className={type === id ? 'is-active' : undefined}
-            onClick={() => setType(id)}
+            className={selected.includes(id) ? 'is-active' : undefined}
+            onClick={() => toggleType(id)}
           >
             {SKILL_EXECUTION_TYPE_LABELS[id]}
           </button>
         ))}
       </div>
-      {type !== origType ? (
-        <p className="character-lab__hint">Original: {SKILL_EXECUTION_TYPE_LABELS[origType]}</p>
+      <p className="character-lab__hint">Ativo: {formatExecutionTypesLabel(execution)}</p>
+      {formatExecutionTypesLabel(execution) !== formatExecutionTypesLabel(originals.execution) ? (
+        <p className="character-lab__hint">Original: {formatExecutionTypesLabel(originals.execution)}</p>
       ) : null}
 
-      {type === 'multi-hit' ? (
+      {hasMulti ? (
         <MultiHitEditor
           hits={execution.hits?.length ? execution.hits : defaultHits()}
           original={originals.execution.hits ?? []}
@@ -73,7 +103,7 @@ export function CharacterLabExecutionEditor() {
         />
       ) : null}
 
-      {type === 'beam' ? (
+      {hasBeam ? (
         <>
           <ValueRow
             label="Beam Duration"
@@ -84,15 +114,17 @@ export function CharacterLabExecutionEditor() {
             suffix=" ms"
             onChange={(value) => characterLabStore.patchExecution({ beamDuration: Math.max(1, Math.round(value)) })}
           />
-          <ValueRow
-            label="Tick Interval"
-            original={originals.execution.tickInterval ?? 250}
-            value={execution.tickInterval ?? 250}
-            presets={TICK_PRESETS}
-            step={10}
-            suffix=" ms"
-            onChange={(value) => characterLabStore.patchExecution({ tickInterval: Math.max(50, Math.round(value)) })}
-          />
+          {!hasPersistent ? (
+            <ValueRow
+              label="Tick Interval"
+              original={originals.execution.tickInterval ?? 250}
+              value={execution.tickInterval ?? 250}
+              presets={TICK_PRESETS}
+              step={10}
+              suffix=" ms"
+              onChange={(value) => characterLabStore.patchExecution({ tickInterval: Math.max(50, Math.round(value)) })}
+            />
+          ) : null}
           <label className={`character-lab__toggle${execution.trackTarget ? ' is-on' : ''}`}>
             <input
               type="checkbox"
@@ -104,7 +136,7 @@ export function CharacterLabExecutionEditor() {
         </>
       ) : null}
 
-      {type === 'area' ? (
+      {hasArea ? (
         <>
           <ValueRow
             label="Radius"
@@ -136,7 +168,7 @@ export function CharacterLabExecutionEditor() {
         </>
       ) : null}
 
-      {type === 'persistent' ? (
+      {hasPersistent ? (
         <>
           <ValueRow
             label="Duration"
@@ -145,7 +177,11 @@ export function CharacterLabExecutionEditor() {
             presets={DURATION_PRESETS}
             step={50}
             suffix=" ms"
-            onChange={(value) => characterLabStore.patchExecution({ duration: Math.max(1, Math.round(value)) })}
+            onChange={(value) => {
+              const duration = Math.max(1, Math.round(value));
+              characterLabStore.patchExecution({ duration });
+              characterLabStore.setFlag('vfxLoopDurationMs', duration);
+            }}
           />
           <ValueRow
             label="Tick Interval"
@@ -169,10 +205,120 @@ export function CharacterLabExecutionEditor() {
               </button>
             ))}
           </div>
+
+          <h4>Frames do loop (Persistent)</h4>
+          <p className="character-lab__hint">
+            First pass toca todos os frames; depois repete só o intervalo abaixo até a duração.
+          </p>
+
+          <ValueRow
+            label="Pose Loop Start"
+            original={originals.poseSheet?.loopStartFrame ?? 1}
+            value={poseLoopRange.startFrame}
+            presets={[1, Math.ceil(poseFrames / 2), poseFrames].filter((v, i, arr) => arr.indexOf(v) === i)}
+            step={1}
+            suffix={` / ${poseFrames}`}
+            disabled={!poseSheet}
+            onChange={(value) => {
+              const range = clampLoopRange(poseFrames, value, poseLoopRange.endFrame);
+              characterLabStore.patchPoseSheet({
+                loopMode: 'persistent-range',
+                loop: true,
+                loopStartFrame: range.startFrame,
+                loopEndFrame: range.endFrame,
+              });
+            }}
+          />
+          <ValueRow
+            label="Pose Loop End"
+            original={originals.poseSheet?.loopEndFrame ?? poseFrames}
+            value={poseLoopRange.endFrame}
+            presets={[1, Math.ceil(poseFrames / 2), poseFrames].filter((v, i, arr) => arr.indexOf(v) === i)}
+            step={1}
+            suffix={` / ${poseFrames}`}
+            disabled={!poseSheet}
+            onChange={(value) => {
+              const range = clampLoopRange(poseFrames, poseLoopRange.startFrame, value);
+              characterLabStore.patchPoseSheet({
+                loopMode: 'persistent-range',
+                loop: true,
+                loopStartFrame: range.startFrame,
+                loopEndFrame: range.endFrame,
+              });
+            }}
+          />
+          {poseSheet?.loopMode !== 'persistent-range' && poseSheet ? (
+            <p className="character-lab__hint">Pose loopMode atual: {poseSheet.loopMode ?? 'none'}</p>
+          ) : null}
+
+          <ValueRow
+            label="VFX Loop Start"
+            original={originals.vfxLoopStartFrame}
+            value={vfxLoopRange.startFrame}
+            presets={[1, Math.ceil(vfxFrames / 2), vfxFrames].filter((v, i, arr) => arr.indexOf(v) === i)}
+            step={1}
+            suffix={` / ${vfxFrames}`}
+            disabled={!vfxDef}
+            onChange={(value) => {
+              const range = clampLoopRange(vfxFrames, value, vfxLoopRange.endFrame);
+              characterLabStore.setFlag('vfxLoopMode', 'persistent-range');
+              characterLabStore.setVisual('vfxLoopStartFrame', range.startFrame);
+              characterLabStore.setVisual('vfxLoopEndFrame', range.endFrame);
+            }}
+          />
+          <ValueRow
+            label="VFX Loop End"
+            original={originals.vfxLoopEndFrame}
+            value={vfxLoopRange.endFrame}
+            presets={[1, Math.ceil(vfxFrames / 2), vfxFrames].filter((v, i, arr) => arr.indexOf(v) === i)}
+            step={1}
+            suffix={` / ${vfxFrames}`}
+            disabled={!vfxDef}
+            onChange={(value) => {
+              const range = clampLoopRange(vfxFrames, vfxLoopRange.startFrame, value);
+              characterLabStore.setFlag('vfxLoopMode', 'persistent-range');
+              characterLabStore.setVisual('vfxLoopStartFrame', range.startFrame);
+              characterLabStore.setVisual('vfxLoopEndFrame', range.endFrame);
+            }}
+          />
+          {!vfxDef ? (
+            <p className="character-lab__hint">Associe um VFX Efeito para escolher frames do loop.</p>
+          ) : vfxLoopMode !== 'persistent-range' ? (
+            <p className="character-lab__hint">VFX loopMode atual: {vfxLoopMode}</p>
+          ) : null}
         </>
       ) : null}
     </section>
   );
+}
+
+function ensurePersistentFrameLoops(poseFrames: number, vfxFrames: number): void {
+  const state = characterLabStore.getSnapshot();
+  if (state.poseSheet) {
+    const range = clampLoopRange(
+      poseFrames,
+      state.poseSheet.loopStartFrame ?? 1,
+      state.poseSheet.loopEndFrame ?? poseFrames,
+    );
+    characterLabStore.patchPoseSheet({
+      loopMode: 'persistent-range',
+      loop: true,
+      loopStartFrame: range.startFrame,
+      loopEndFrame: range.endFrame,
+    });
+  }
+  const vfxRange = clampLoopRange(
+    vfxFrames,
+    state.vfxLoopStartFrame || 1,
+    state.vfxLoopEndFrame || vfxFrames,
+  );
+  characterLabStore.setFlag('vfxLoopMode', 'persistent-range');
+  characterLabStore.setVisual('vfxLoopStartFrame', vfxRange.startFrame);
+  characterLabStore.setVisual('vfxLoopEndFrame', vfxRange.endFrame);
+  if (state.execution.duration && state.execution.duration > 0) {
+    characterLabStore.setFlag('vfxLoopDurationMs', state.execution.duration);
+  }
+  characterLabStore.setFlag('vfxLoopUntilSkillEnd', true);
 }
 
 function MultiHitEditor({

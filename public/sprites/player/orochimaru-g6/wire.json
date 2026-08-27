@@ -1,0 +1,188 @@
+{
+  "id": "orochimaru-g6",
+  "name": "Orochimaru (G6)",
+  "lookType": 9121,
+  "contentHeight": 68,
+  "idle": {
+    "image": "/sprites/player/orochimaru-g6/idle.png",
+    "frameWidth": 43,
+    "frameHeight": 72,
+    "frameCount": 4,
+    "contentHeight": 68,
+    "scale": 1,
+    "originX": 0.3953488372093023,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/orochimaru-g6/walk.png",
+    "frameWidth": 81,
+    "frameHeight": 73,
+    "frameCount": 6,
+    "contentHeight": 68,
+    "scale": 1,
+    "originX": 0.5171889838556506,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/orochimaru-g6/combo1.png",
+      "frameWidth": 83,
+      "frameHeight": 84,
+      "frameCount": 3,
+      "contentHeight": 68,
+      "scale": 1,
+      "originX": 0.30120481927710846,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/orochimaru-g6/combo2.png",
+      "frameWidth": 80,
+      "frameHeight": 79,
+      "frameCount": 4,
+      "contentHeight": 68,
+      "scale": 1,
+      "originX": 0.2,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/orochimaru-g6/combo3.png",
+      "frameWidth": 70,
+      "frameHeight": 77,
+      "frameCount": 4,
+      "contentHeight": 68,
+      "scale": 1,
+      "originX": 0.21428571428571427,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/orochimaru-g6/hurt.png",
+    "frameWidth": 51,
+    "frameHeight": 78,
+    "frameCount": 3,
+    "contentHeight": 68,
+    "scale": 1,
+    "originX": 0.47058823529411764,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/orochimaru-g6/death.png",
+    "frameWidth": 59,
+    "frameHeight": 65,
+    "frameCount": 3,
+    "contentHeight": 68,
+    "scale": 1,
+    "originX": 0.4576271186440678,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-orochimaru-g6-1",
+      "skillName": "Sanju Rashoumon",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/orochimaru-g6/special1.png",
+        "frameWidth": 41,
+        "frameHeight": 83,
+        "frameCount": 2,
+        "contentHeight": 68,
+        "scale": 1,
+        "originX": 0.6341463414634146,
+        "durationMs": 667,
+        "hitDelayMs": 300,
+        "frameRate": 8,
+        "skillId": "skill-orochimaru-g6-1",
+        "skillName": "Sanju Rashoumon",
+        "actionId": 1100
+      },
+      "fx": null,
+      "index": 0
+    },
+    {
+      "skillId": "skill-orochimaru-g6-2",
+      "skillName": "Rashoumon Rojo",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/orochimaru-g6/special2.png",
+        "frameWidth": 43,
+        "frameHeight": 72,
+        "frameCount": 4,
+        "contentHeight": 68,
+        "scale": 1,
+        "originX": 0.3953488372093023,
+        "durationMs": 280,
+        "hitDelayMs": 167,
+        "frameRate": 18,
+        "skillId": "skill-orochimaru-g6-2",
+        "skillName": "Rashoumon Rojo",
+        "actionId": 1150
+      },
+      "fx": {
+        "image": "/sprites/player/orochimaru-g6/special2-fx.png",
+        "frameWidth": 169,
+        "frameHeight": 222,
+        "frameCount": 9,
+        "contentHeight": 215,
+        "scale": 1,
+        "originX": 0.5009368836291913,
+        "frameRate": 8,
+        "durationMs": 2333
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-orochimaru-g6-3",
+      "skillName": "Poison Snake - Start",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/orochimaru-g6/special3.png",
+        "frameWidth": 80,
+        "frameHeight": 79,
+        "frameCount": 4,
+        "contentHeight": 68,
+        "scale": 1,
+        "originX": 0.2,
+        "durationMs": 1200,
+        "hitDelayMs": 533,
+        "frameRate": 8,
+        "skillId": "skill-orochimaru-g6-3",
+        "skillName": "Poison Snake - Start",
+        "actionId": 1200
+      },
+      "fx": null,
+      "index": 2
+    },
+    {
+      "skillId": "skill-orochimaru-g6-4",
+      "skillName": "Combo 3 - 1",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/orochimaru-g6/special4.png",
+        "frameWidth": 71,
+        "frameHeight": 79,
+        "frameCount": 9,
+        "contentHeight": 68,
+        "scale": 1,
+        "originX": 0.43661971830985913,
+        "durationMs": 500,
+        "hitDelayMs": 133,
+        "frameRate": 18,
+        "skillId": "skill-orochimaru-g6-4",
+        "skillName": "Combo 3 - 1",
+        "actionId": 400
+      },
+      "fx": {
+        "image": "/sprites/player/orochimaru-g6/special4-fx.png",
+        "frameWidth": 100,
+        "frameHeight": 26,
+        "frameCount": 4,
+        "contentHeight": 14,
+        "scale": 1,
+        "originX": -0.3,
+        "frameRate": 16,
+        "durationMs": 280
+      },
+      "index": 3
+    }
+  ]
+}

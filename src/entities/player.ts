@@ -12,6 +12,7 @@ import {
   loadSpriteSheets,
   packDeathAnimKey,
   packHurtAnimKey,
+  sheetTextureSliceOk,
   type CharacterPack,
   type CharacterSkillAnimDef,
   type SpriteSheetDef,
@@ -104,6 +105,9 @@ export class Player {
   private labScaleY = 1;
   private labPoseScaleX = 1;
   private labPoseScaleY = 1;
+  /** Escala local da folha atual (`SpriteSheetDef.scaleX/Y`). */
+  private sheetScaleX = 1;
+  private sheetScaleY = 1;
   private labOffsetX = 0;
   private labOffsetY = 0;
   private labVfxScale = 1;
@@ -710,7 +714,7 @@ export class Player {
     this.applyBaseScale();
     this.applySheetOrigin(this.pack.idle ?? this.pack.walk);
     if (this.sprite.anims.currentAnim?.key !== animKey) {
-      this.sprite.anims.play(animKey, true);
+      this.safePlayAnim(animKey);
     }
     this.refreshBodyOffset();
   }
@@ -723,13 +727,34 @@ export class Player {
     this.applyBaseScale();
     this.applySheetOrigin(this.pack.walk);
     if (this.sprite.anims.currentAnim?.key !== animKey) {
-      this.sprite.anims.play(animKey, true);
+      this.safePlayAnim(animKey);
     }
     this.refreshBodyOffset();
   }
 
+  /** Evita TypeError do Phaser quando a anim não existe ou tem frames vazios. */
+  private safePlayAnim(animKey: string): void {
+    if (!this.scene.anims.exists(animKey)) {
+      Player.ensureAnimations(this.scene, this.pack);
+    }
+    const anim = this.scene.anims.get(animKey);
+    if (!anim?.frames?.length) {
+      const sheet = this.pack.idle ?? this.pack.walk;
+      // Nunca mostrar `__BASE` (folha inteira = N clones colados).
+      if (sheetTextureSliceOk(this.scene, sheet)) {
+        this.sprite.anims.stop();
+        this.sprite.setTexture(sheet.key, 0);
+      }
+      return;
+    }
+    this.sprite.anims.play(animKey, true);
+  }
+
   private applyBaseScale(): void {
-    this.sprite.setScale(this.scaleX * this.labScaleX * this.labPoseScaleX, this.scaleY * this.labScaleY * this.labPoseScaleY);
+    this.sprite.setScale(
+      this.scaleX * this.labScaleX * this.labPoseScaleX * this.sheetScaleX,
+      this.scaleY * this.labScaleY * this.labPoseScaleY * this.sheetScaleY,
+    );
   }
 
   /** Hot-apply de `layoutScale` / worldScale (Map Viewport Lab). Não muda colisão do TMX. */
@@ -750,10 +775,13 @@ export class Player {
   /**
    * Alinhamento visual da sprite (origin). Não altera worldX/worldY.
    * Ordem: sheet offset (pose/skill) + lab body offset + character global alignment.
+   * Também aplica `scaleX`/`scaleY` locais da folha.
    */
   private applySheetOrigin(sheet: SpriteSheetDef): void {
     if (this.pack.outfit) return;
     this.originSheet = sheet;
+    this.sheetScaleX = sheet.scaleX ?? 1;
+    this.sheetScaleY = sheet.scaleY ?? 1;
     const alignment = this.resolveActiveAlignment();
     const origin = characterLateralOrigin(this.pack, {
       ...sheet,
@@ -761,6 +789,15 @@ export class Player {
       offsetY: (sheet.offsetY ?? 0) + this.labOffsetY + alignment.y,
     });
     this.sprite.setOrigin(origin.x, origin.y);
+    this.applyBaseScale();
+  }
+
+  /** Reaplica escala da folha atual (Lab editou `scaleX/Y` da animação). */
+  refreshSheetScale(): void {
+    const sheet = this.originSheet ?? this.pack.idle ?? this.pack.walk;
+    this.sheetScaleX = sheet.scaleX ?? 1;
+    this.sheetScaleY = sheet.scaleY ?? 1;
+    this.applyBaseScale();
   }
 
   /**
@@ -883,71 +920,39 @@ export class Player {
           });
         }
       }
-    } else if (!scene.anims.exists(legacyAnimKey(pack, 'idle'))) {
-      if (pack.idle && scene.textures.exists(pack.idle.key)) {
-        scene.anims.create({
-          key: legacyAnimKey(pack, 'idle'),
-          frames: scene.anims.generateFrameNumbers(pack.idle.key, {
-            start: 0,
-            end: pack.idle.frameCount - 1,
-          }),
-          // Idle um pouco mais vivo (ref. pixel-art fighting / idle MMO).
-          frameRate: pack.idle.frameRate ?? 8,
-          repeat: -1,
-        });
+    } else {
+      // Idle/walk: recria se a folha mudou de tamanho (HMR) ou se a anim
+      // antiga ficou com frames vazios → TypeError em anims.play (...duration).
+      const idleSheet = pack.idle;
+      const idleKey = legacyAnimKey(pack, 'idle');
+      if (idleSheet && scene.textures.exists(idleSheet.key)) {
+        ensureLoopAnimFromSheet(scene, idleKey, idleSheet, idleSheet.frameRate ?? 8);
       } else if (scene.textures.exists(pack.walk.key)) {
+        if (scene.anims.exists(idleKey)) scene.anims.remove(idleKey);
         scene.anims.create({
-          key: legacyAnimKey(pack, 'idle'),
+          key: idleKey,
           frames: [{ key: pack.walk.key, frame: 0 }],
           frameRate: 1,
           repeat: -1,
         });
       }
-    }
-
-    if (
-      !pack.outfit &&
-      !scene.anims.exists(legacyAnimKey(pack, 'walk')) &&
-      scene.textures.exists(pack.walk.key)
-    ) {
-      scene.anims.create({
-        key: legacyAnimKey(pack, 'walk'),
-        frames: scene.anims.generateFrameNumbers(pack.walk.key, {
-          start: 0,
-          end: pack.walk.frameCount - 1,
-        }),
-        frameRate: pack.walk.frameRate ?? 12,
-        repeat: -1,
-      });
+      if (scene.textures.exists(pack.walk.key)) {
+        ensureLoopAnimFromSheet(
+          scene,
+          legacyAnimKey(pack, 'walk'),
+          pack.walk,
+          pack.walk.frameRate ?? 12,
+        );
+      }
     }
 
     if (!pack.outfit) {
       for (const sheet of packAttackSheets(pack)) {
         const animKey = chainAttackAnimKey(pack, sheet);
-        if (!scene.textures.exists(sheet.key) || scene.anims.exists(animKey)) continue;
-        scene.anims.create({
-          key: animKey,
-          frames: scene.anims.generateFrameNumbers(sheet.key, {
-            start: 0,
-            end: sheet.frameCount - 1,
-          }),
-          frameRate: sheet.frameRate ?? 12,
-          repeat: 0,
-        });
-        if (
-          sheet.fx &&
-          scene.textures.exists(sheet.fx.key) &&
-          !scene.anims.exists(`fx-${sheet.fx.key}`)
-        ) {
-          scene.anims.create({
-            key: `fx-${sheet.fx.key}`,
-            frames: scene.anims.generateFrameNumbers(sheet.fx.key, {
-              start: 0,
-              end: sheet.fx.frameCount - 1,
-            }),
-            frameRate: 14,
-            repeat: 0,
-          });
+        if (!scene.textures.exists(sheet.key)) continue;
+        ensureOnceAnimFromSheet(scene, animKey, sheet, sheet.frameRate ?? 12);
+        if (sheet.fx && scene.textures.exists(sheet.fx.key)) {
+          ensureOnceAnimFromSheet(scene, `fx-${sheet.fx.key}`, sheet.fx, 14);
         }
       }
     }
@@ -1069,6 +1074,85 @@ type BaseAnim = 'idle' | 'walk' | 'attack';
 
 function legacyAnimKey(pack: CharacterPack, anim: BaseAnim): string {
   return `${pack.id}-${anim}`;
+}
+
+/** Quadros úteis na textura (Phaser inclui `__BASE` em `frameTotal`). */
+function textureSpriteFrameCount(scene: Phaser.Scene, key: string): number {
+  if (!scene.textures.exists(key)) return 0;
+  return Math.max(0, scene.textures.get(key).frameTotal - 1);
+}
+
+function buildSheetFrames(
+  scene: Phaser.Scene,
+  sheet: SpriteSheetDef,
+): Phaser.Types.Animations.AnimationFrame[] {
+  const available = textureSpriteFrameCount(scene, sheet.key);
+  if (available <= 0) return [];
+  const end = Math.min(Math.max(1, sheet.frameCount), available) - 1;
+  const frames = scene.anims.generateFrameNumbers(sheet.key, { start: 0, end });
+  const tex = scene.textures.get(sheet.key);
+  return frames.filter((f) => tex.has(f.frame as string | number));
+}
+
+function ensureLoopAnimFromSheet(
+  scene: Phaser.Scene,
+  animKey: string,
+  sheet: SpriteSheetDef,
+  frameRate: number,
+): void {
+  if (!sheetTextureSliceOk(scene, sheet)) {
+    if (scene.anims.exists(animKey)) scene.anims.remove(animKey);
+    return;
+  }
+  const frames = buildSheetFrames(scene, sheet);
+  if (!frames.length) {
+    if (scene.anims.exists(animKey)) scene.anims.remove(animKey);
+    return;
+  }
+  if (scene.anims.exists(animKey)) {
+    const existing = scene.anims.get(animKey);
+    if (existing && animFramesHealthy(existing, sheet.key, frames.length)) {
+      return;
+    }
+    scene.anims.remove(animKey);
+  }
+  scene.anims.create({ key: animKey, frames, frameRate, repeat: -1 });
+}
+
+function ensureOnceAnimFromSheet(
+  scene: Phaser.Scene,
+  animKey: string,
+  sheet: SpriteSheetDef,
+  frameRate: number,
+): void {
+  if (!sheetTextureSliceOk(scene, sheet)) {
+    if (scene.anims.exists(animKey)) scene.anims.remove(animKey);
+    return;
+  }
+  const frames = buildSheetFrames(scene, sheet);
+  if (!frames.length) {
+    if (scene.anims.exists(animKey)) scene.anims.remove(animKey);
+    return;
+  }
+  if (scene.anims.exists(animKey)) {
+    const existing = scene.anims.get(animKey);
+    if (existing && animFramesHealthy(existing, sheet.key, frames.length)) {
+      return;
+    }
+    scene.anims.remove(animKey);
+  }
+  scene.anims.create({ key: animKey, frames, frameRate, repeat: 0 });
+}
+
+/** Anims criadas com frames undefined (folha redimensionada) quebram o play. */
+function animFramesHealthy(
+  anim: Phaser.Animations.Animation,
+  textureKey: string,
+  expectedCount: number,
+): boolean {
+  if (!anim.frames || anim.frames.length !== expectedCount) return false;
+  if (anim.frames[0]?.textureKey !== textureKey) return false;
+  return anim.frames.every((f) => f != null && f.duration != null && f.frame != null);
 }
 
 function packAttackSheets(pack: CharacterPack): readonly SpriteSheetDef[] {

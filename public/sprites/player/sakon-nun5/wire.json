@@ -1,0 +1,188 @@
+{
+  "id": "sakon-nun5",
+  "name": "Sakon e Ukon",
+  "lookType": 9111,
+  "contentHeight": 53,
+  "idle": {
+    "image": "/sprites/player/sakon-nun5/idle.png",
+    "frameWidth": 48,
+    "frameHeight": 57,
+    "frameCount": 18,
+    "contentHeight": 53,
+    "scale": 1,
+    "originX": 0.4791666666666667,
+    "frameRate": 8
+  },
+  "walk": {
+    "image": "/sprites/player/sakon-nun5/walk.png",
+    "frameWidth": 37,
+    "frameHeight": 57,
+    "frameCount": 6,
+    "contentHeight": 53,
+    "scale": 1,
+    "originX": 0.5208845208845209,
+    "frameRate": 12
+  },
+  "combo": [
+    {
+      "image": "/sprites/player/sakon-nun5/combo1.png",
+      "frameWidth": 65,
+      "frameHeight": 52,
+      "frameCount": 5,
+      "contentHeight": 53,
+      "scale": 1,
+      "originX": 0.36923076923076925,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/sakon-nun5/combo2.png",
+      "frameWidth": 52,
+      "frameHeight": 56,
+      "frameCount": 5,
+      "contentHeight": 53,
+      "scale": 1,
+      "originX": 0.46153846153846156,
+      "frameRate": 12
+    },
+    {
+      "image": "/sprites/player/sakon-nun5/combo3.png",
+      "frameWidth": 75,
+      "frameHeight": 51,
+      "frameCount": 4,
+      "contentHeight": 53,
+      "scale": 1,
+      "originX": 0.32,
+      "frameRate": 12
+    }
+  ],
+  "hurt": {
+    "image": "/sprites/player/sakon-nun5/hurt.png",
+    "frameWidth": 41,
+    "frameHeight": 51,
+    "frameCount": 3,
+    "contentHeight": 53,
+    "scale": 1,
+    "originX": 0.4878048780487805,
+    "frameRate": 10
+  },
+  "death": {
+    "image": "/sprites/player/sakon-nun5/death.png",
+    "frameWidth": 38,
+    "frameHeight": 41,
+    "frameCount": 1,
+    "contentHeight": 53,
+    "scale": 1,
+    "originX": 0.47368421052631576,
+    "frameRate": 8
+  },
+  "skills": [
+    {
+      "skillId": "skill-sakon-nun5-1",
+      "skillName": "Y combo 3 CS",
+      "file": "special1",
+      "entry": {
+        "image": "/sprites/player/sakon-nun5/special1.png",
+        "frameWidth": 83,
+        "frameHeight": 55,
+        "frameCount": 8,
+        "contentHeight": 53,
+        "scale": 1,
+        "originX": 0.3253012048192771,
+        "durationMs": 667,
+        "hitDelayMs": 333,
+        "frameRate": 12,
+        "skillId": "skill-sakon-nun5-1",
+        "skillName": "Y combo 3 CS",
+        "actionId": 252
+      },
+      "fx": null,
+      "index": 0
+    },
+    {
+      "skillId": "skill-sakon-nun5-2",
+      "skillName": "Sakon Helper",
+      "file": "special2",
+      "entry": {
+        "image": "/sprites/player/sakon-nun5/special2.png",
+        "frameWidth": 51,
+        "frameHeight": 59,
+        "frameCount": 10,
+        "contentHeight": 53,
+        "scale": 1,
+        "originX": 0.47058823529411764,
+        "durationMs": 1200,
+        "hitDelayMs": 533,
+        "frameRate": 8,
+        "skillId": "skill-sakon-nun5-2",
+        "skillName": "Sakon Helper",
+        "actionId": 1000
+      },
+      "fx": {
+        "image": "/sprites/player/sakon-nun5/special2-fx.png",
+        "frameWidth": 67,
+        "frameHeight": 53,
+        "frameCount": 6,
+        "contentHeight": 49,
+        "scale": 1,
+        "originX": 0.3582089552238806,
+        "frameRate": 14,
+        "durationMs": 417
+      },
+      "index": 1
+    },
+    {
+      "skillId": "skill-sakon-nun5-3",
+      "skillName": "X+Up Attack (after reciving damage)",
+      "file": "special3",
+      "entry": {
+        "image": "/sprites/player/sakon-nun5/special3.png",
+        "frameWidth": 48,
+        "frameHeight": 57,
+        "frameCount": 18,
+        "contentHeight": 53,
+        "scale": 1,
+        "originX": 0.4791666666666667,
+        "durationMs": 750,
+        "hitDelayMs": 83,
+        "frameRate": 12,
+        "skillId": "skill-sakon-nun5-3",
+        "skillName": "X+Up Attack (after reciving damage)",
+        "actionId": 1250
+      },
+      "fx": null,
+      "index": 2
+    },
+    {
+      "skillId": "skill-sakon-nun5-4",
+      "skillName": "Special  (Rashomon)  CS",
+      "file": "special4",
+      "entry": {
+        "image": "/sprites/player/sakon-nun5/special4.png",
+        "frameWidth": 48,
+        "frameHeight": 57,
+        "frameCount": 18,
+        "contentHeight": 53,
+        "scale": 1,
+        "originX": 0.4791666666666667,
+        "durationMs": 4900,
+        "hitDelayMs": 2200,
+        "frameRate": 8,
+        "skillId": "skill-sakon-nun5-4",
+        "skillName": "Special  (Rashomon)  CS",
+        "actionId": 3000
+      },
+      "fx": {
+        "image": "/sprites/player/sakon-nun5/special4-fx.png",
+        "frameWidth": 216,
+        "frameHeight": 117,
+        "frameCount": 15,
+        "contentHeight": 104,
+        "scale": 1,
+        "originX": 0.4962250712250712,
+        "frameRate": 16,
+        "durationMs": 950
+      },
+      "index": 3
+    }
+  ]
+}

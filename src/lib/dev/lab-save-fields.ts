@@ -1,6 +1,6 @@
 import type { CharacterSkillAnimDef, SkillVfxTargetMode } from '@/data/character-packs';
 import { SKILL_VFX_TARGET_MODES } from '@/data/skill-vfx-targeting';
-import { cloneExecutionDef, executionsEqual, parseSkillExecution, resolveExecutionType, SKILL_EXECUTION_TYPE_LABELS, type SkillExecutionDef } from '@/data/skill-execution-def';
+import { cloneExecutionDef, executionsEqual, formatExecutionTypesLabel, parseSkillExecution, resolveExecutionTypes, type SkillExecutionDef } from '@/data/skill-execution-def';
 import {
   cloneSkillAi,
   defaultSkillAi,
@@ -27,11 +27,13 @@ import {
   poseSheetsEqual,
   type LabPoseSheet,
 } from '@/lib/dev/lab-pose-sheet';
+import type { SheetScale } from '@/lib/dev/lab-sheet-scale';
 import { canonicalizeLoopMode, loopModeFromLegacy, type FrameLoopMode } from '@/lib/frame-loop';
 import {
   normalizeSpriteAlignment,
   type SpriteAlignmentConfig,
 } from '@/lib/sprite-alignment';
+import type { CharacterAnimSlot } from '@/types/character-definition';
 
 export const LAB_SAVEABLE_NUMBER_FIELDS = [
   'scaleX',
@@ -82,10 +84,23 @@ export type LabSaveChanges = Partial<Record<LabSaveableNumberField, number>> & {
   vfxFlipY?: boolean;
   /** Duplica VFX de impacto pack-fx em cada alvo de área. */
   areaImpactFxPerTarget?: boolean;
+  /** Escala local por folha (idle/walk/combo/…). Absoluta no SpriteSheetDef. */
+  sheetScales?: Partial<Record<CharacterAnimSlot, SheetScale>>;
 };
 
 /** Campos de sprite/animação do personagem — o único payload válido em `character-config` sem skillId. */
 const LAB_SPRITE_SAVE_FIELDS = ['scaleX', 'scaleY', 'offsetX', 'offsetY', 'frameRate'] as const;
+
+const SHEET_SCALE_SLOT_LABELS: Partial<Record<CharacterAnimSlot, string>> = {
+  idle: 'Idle',
+  walk: 'Walk',
+  attack: 'Attack',
+  combo1: 'Combo 1',
+  combo2: 'Combo 2',
+  combo3: 'Combo 3',
+  hurt: 'Hurt',
+  death: 'Death',
+};
 
 export function spriteOnlyLabChanges(changes: LabSaveChanges): LabSaveChanges {
   const next: LabSaveChanges = {};
@@ -93,11 +108,31 @@ export function spriteOnlyLabChanges(changes: LabSaveChanges): LabSaveChanges {
     const value = changes[field];
     if (value != null) next[field] = value;
   }
+  if (changes.sheetScales && Object.keys(changes.sheetScales).length > 0) {
+    next.sheetScales = changes.sheetScales;
+  }
   return next;
 }
 
 export function hasLabSpriteChanges(changes: LabSaveChanges): boolean {
   return Object.keys(spriteOnlyLabChanges(changes)).length > 0;
+}
+
+export function dirtySheetScales(
+  drafts: Partial<Record<CharacterAnimSlot, SheetScale>> | undefined,
+  originals: Partial<Record<CharacterAnimSlot, SheetScale>> | undefined,
+): Partial<Record<CharacterAnimSlot, SheetScale>> {
+  const out: Partial<Record<CharacterAnimSlot, SheetScale>> = {};
+  if (!drafts) return out;
+  for (const slot of Object.keys(drafts) as CharacterAnimSlot[]) {
+    const d = drafts[slot];
+    if (!d) continue;
+    const o = originals?.[slot] ?? { scaleX: 1, scaleY: 1 };
+    if (Math.abs(d.scaleX - o.scaleX) > 0.0001 || Math.abs(d.scaleY - o.scaleY) > 0.0001) {
+      out[slot] = { scaleX: d.scaleX, scaleY: d.scaleY };
+    }
+  }
+  return out;
 }
 
 export const DEFAULT_TRAVEL_SPEED_PX = 600;
@@ -150,7 +185,7 @@ export interface LabSaveDiffLine {
   label: string;
   from: string;
   to: string;
-  field: LabSaveableField | 'areaImpactFxPerTarget';
+  field: LabSaveableField | 'areaImpactFxPerTarget' | 'sheetScales';
   value:
     | number
     | boolean
@@ -160,7 +195,8 @@ export interface LabSaveDiffLine {
     | SkillExecutionDef
     | SkillStatusApplication[]
     | DamageElement
-    | SkillAiConfig;
+    | SkillAiConfig
+    | Partial<Record<CharacterAnimSlot, SheetScale>>;
 }
 
 function fmt(value: number, digits: number): string {
@@ -195,8 +231,12 @@ export function readLabSkillOriginals(
     travelSpeed: targeting?.travelSpeed ?? DEFAULT_TRAVEL_SPEED_PX,
     vfxId: anim?.vfxId ?? null,
     vfxScale: anim?.fxScale ?? 1,
-    vfxOffsetX: anim?.vfxId ? (anim.vfxOffsetX ?? anim.fx?.offsetX ?? 0) : (anim?.fx?.offsetX ?? 0),
-    vfxOffsetY: anim?.vfxId ? (anim.vfxOffsetY ?? anim.fx?.offsetY ?? 0) : (anim?.fx?.offsetY ?? 0),
+    vfxOffsetX: anim?.vfxId
+      ? (anim.vfxOffsetX ?? anim.fx?.offsetX ?? 0)
+      : (anim?.fx?.offsetX ?? anim?.offsetX ?? 0),
+    vfxOffsetY: anim?.vfxId
+      ? (anim.vfxOffsetY ?? anim.fx?.offsetY ?? 0)
+      : (anim?.fx?.offsetY ?? anim?.offsetY ?? 0),
     vfxLoopMode: loopModeFromLegacy(getVfxDefinition(anim?.vfxId)?.loop, anim?.vfxLoopMode),
     vfxLoopStartFrame: anim?.vfxLoopStartFrame ?? 1,
     vfxLoopEndFrame: anim?.vfxLoopEndFrame ?? Math.max(1, getVfxDefinition(anim?.vfxId)?.frameCount ?? 1),
@@ -253,6 +293,8 @@ export function collectLabSaveChanges(input: {
   skillElement: DamageElement;
   skillAi: SkillAiConfig;
   areaImpactFxPerTarget: boolean;
+  sheetScaleDrafts?: Partial<Record<CharacterAnimSlot, SheetScale>>;
+  sheetScaleOriginals?: Partial<Record<CharacterAnimSlot, SheetScale>>;
 }): { header: string; lines: LabSaveDiffLine[]; changes: LabSaveChanges } {
   const lines: LabSaveDiffLine[] = [];
   const orig = input.original;
@@ -281,6 +323,22 @@ export function collectLabSaveChanges(input: {
   pushNum('Sprite', 'Offset X', 'offsetX', 0, input.offsetX, 0);
   pushNum('Sprite', 'Offset Y', 'offsetY', 0, input.offsetY, 0);
   pushNum('Animation', 'animationSpeed/frameRate', 'frameRate', 1, input.animationSpeed, 2);
+
+  const sheetScales = dirtySheetScales(input.sheetScaleDrafts, input.sheetScaleOriginals);
+  for (const slot of Object.keys(sheetScales) as CharacterAnimSlot[]) {
+    const next = sheetScales[slot];
+    if (!next) continue;
+    const prev = input.sheetScaleOriginals?.[slot] ?? { scaleX: 1, scaleY: 1 };
+    const label = SHEET_SCALE_SLOT_LABELS[slot] ?? slot;
+    lines.push({
+      group: 'Sprite',
+      label: `${label} Scale`,
+      from: `${fmt(prev.scaleX, 2)} × ${fmt(prev.scaleY, 2)}`,
+      to: `${fmt(next.scaleX, 2)} × ${fmt(next.scaleY, 2)}`,
+      field: 'sheetScales',
+      value: { [slot]: next },
+    });
+  }
 
   if (input.targetMode !== orig.targetMode) {
     lines.push({
@@ -344,8 +402,8 @@ export function collectLabSaveChanges(input: {
     lines.push({
       group: 'Skill',
       label: 'Execution Type',
-      from: SKILL_EXECUTION_TYPE_LABELS[resolveExecutionType(orig.execution)],
-      to: SKILL_EXECUTION_TYPE_LABELS[resolveExecutionType(input.execution)],
+      from: formatExecutionTypesLabel(orig.execution),
+      to: formatExecutionTypesLabel(input.execution),
       field: 'execution',
       value: input.execution,
     });
@@ -405,6 +463,11 @@ export function collectLabSaveChanges(input: {
       changes.ai = line.value as SkillAiConfig;
     } else if (line.field === 'areaImpactFxPerTarget') {
       changes.areaImpactFxPerTarget = Boolean(line.value);
+    } else if (line.field === 'sheetScales') {
+      changes.sheetScales = {
+        ...changes.sheetScales,
+        ...(line.value as Partial<Record<CharacterAnimSlot, SheetScale>>),
+      };
     } else {
       changes[line.field as LabSaveableNumberField] = line.value as number;
     }
@@ -493,7 +556,8 @@ export function applyLabChangesToSkillAnim(
   };
   if (changes.execution) {
     const parsed = parseSkillExecution(changes.execution);
-    if (resolveExecutionType(parsed) === 'single-hit') delete next.execution;
+    const types = resolveExecutionTypes(parsed);
+    if (types.length === 1 && types[0] === 'single-hit') delete next.execution;
     else next.execution = parsed;
   }
   if (changes.statusEffects) {
