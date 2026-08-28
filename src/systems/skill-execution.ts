@@ -558,6 +558,12 @@ export function scheduleOfficialSkillFx(opts: OfficialSkillFxSchedule): SkillExe
     persist: persistVfx,
     onSpawn: (sprite) => {
       runtime.trackSprite(execution.executionId, sprite);
+      if (anim?.cast?.poseAttack && anim.fx) {
+        // The pose itself is the FX; keep the normal caster body from being
+        // rendered alongside it while the effect is active.
+        player.setPoseAttackBodyVisible(false);
+        sprite.once('destroy', () => player.setPoseAttackBodyVisible(true));
+      }
     },
   };
 

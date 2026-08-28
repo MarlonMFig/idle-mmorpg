@@ -4,6 +4,7 @@ export interface CombatStatusHudIcon {
   statusId: string;
   icon: string;
   stacks: number;
+  remainingMs?: number;
 }
 
 export interface LabStatusDebugRow {

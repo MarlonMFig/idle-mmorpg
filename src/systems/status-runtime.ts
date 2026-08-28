@@ -466,6 +466,7 @@ export class StatusEffectRuntime {
         statusId: row.statusId,
         icon: row.def.icon || DEFAULT_STATUS_ICONS[row.def.type],
         stacks: row.stacks,
+        remainingMs: Math.max(0, row.expiresAt - this.now()),
       })),
     );
   }

@@ -10,6 +10,7 @@ import type { SkillAiConfig } from '@/data/skill-ai-def';
 import type { SkillExecutionDef } from '@/data/skill-execution-def';
 import type { SkillStatusApplication } from '@/data/status-effect-def';
 import type { SkillVfxTargetMode } from '@/data/skill-vfx-targeting';
+import type { SkillEffect } from '@/types/skill';
 import { SKILL_VFX_TARGET_MODES } from '@/data/skill-vfx-targeting';
 import type { WonsrDirection } from '@/data/wonsr-sprites';
 import type { SpriteAlignmentConfig } from '@/lib/sprite-alignment';
@@ -87,6 +88,12 @@ export interface SpriteSheetDef {
 }
 
 export interface CharacterSkillAnimDef extends SpriteSheetDef {
+  /** Papel da skill neste personagem; `buff` não exige inimigo nem causa dano. */
+  effect?: SkillEffect;
+  /** VFX opcional que acompanha o caster durante um Buff. */
+  buffAuraVfxId?: string;
+  /** Ativa a aura temporária no início desta skill de Buff. */
+  buffAuraEnabled?: boolean;
   /** Duração aproximada do lock de movimento (ms). */
   durationMs: number;
   /** Atraso até aplicar dano (ms). */
@@ -205,6 +212,10 @@ export interface CharacterSkillAnimDef extends SpriteSheetDef {
 export interface SkillCastVisual {
   /** Slot ou key de animação do personagem (`special1`, `idle`, …). */
   animationId?: string;
+  /** Pose selecionada é um FX independente, sem trocar a sprite corporal. */
+  poseAttack?: boolean;
+  /** A pose da skill é usada ao iniciar um Buff, sem exigir VFX. */
+  poseBuff?: boolean;
   /**
    * VFX de carga opcional (camada futura). NÃO é a animação corporal da pose.
    */
@@ -249,6 +260,15 @@ export interface CharacterReactionAnimDef extends SpriteSheetDef {
   frameRate?: number;
 }
 
+/** Aura cosmética animada que acompanha o personagem. */
+export interface CharacterAuraDef {
+  vfxId: string;
+  enabled: boolean;
+  scale: number;
+  offsetX: number;
+  offsetY: number;
+}
+
 export interface CharacterPack {
   /** Starter id ou id do personagem selado. */
   id: string;
@@ -274,6 +294,8 @@ export interface CharacterPack {
   };
   /** skillId → animação no personagem. */
   skillAnims: Record<string, CharacterSkillAnimDef>;
+  /** Overlay animado permanente (ex.: aura Saiyajin). */
+  aura?: CharacterAuraDef;
   /** Hotbar oficial: índice 0 = Slot 1 … índice 3 = Slot 4. `null` = slot vazio (não desloca os demais). */
   hotbarSkillIds: readonly (string | null)[];
   /**
@@ -630,8 +652,8 @@ const NARUTO_PACK: CharacterPack = {
 const SASUKE_WALK: SpriteSheetDef = {
   key: 'sasuke-walk',
   url: '/sprites/player/sasuke/walk.png',
-  // npm run sasuke:all — assets/naruto-source/nu/sasuke/walk
-  frameWidth: 99,
+  // npm run sasuke:walk — assets/naruto-source/nu/sasuke/walk
+  frameWidth: 125,
   frameHeight: 115,
   frameCount: 6,
   contentHeight: 111,
@@ -742,11 +764,12 @@ const SASUKE_PACK: CharacterPack = {
 const ROCK_LEE_WALK: SpriteSheetDef = {
   key: 'rock-lee-walk',
   url: '/sprites/player/rock-lee/walk.png',
-  // npm run rock-lee:all — assets/naruto-source/nu/rock-lee/walk
-  frameWidth: 76,
-  frameHeight: 134,
+  // node scripts/process-selected-walk.js rock-lee
+  frameWidth: 133,
+  frameHeight: 131,
   frameCount: 6,
   contentHeight: 127,
+  originX: 0.500000,
 };
 
 const ROCK_LEE_IDLE: SpriteSheetDef = {
@@ -810,41 +833,195 @@ const ROCK_LEE_DEATH: CharacterReactionAnimDef = {
 };
 
 const ROCK_LEE_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
-  // Omote Renge — 20f @ 14fps: f1 jump · f2–15 air · f16 ground hit
+  // Omote Renge — 19f @ 14fps: f1 jump · f2–15 air · f16 ground hit
   'skill-omote-renge': {
-    key: 'rock-lee-omote-renge',
-    url: '/sprites/player/rock-lee/omote-renge.png',
-    frameWidth: 201,
-    frameHeight: 216,
-    frameCount: 20,
+    key: 'rock-lee-sprite-00',
+    url: '/sprites/player/rock-lee/poses/sprite-00/frame-001.png',
+    frameWidth: 172,
+    frameHeight: 142,
+    frameCount: 27,
     contentHeight: 127,
-    frameRate: 14,
-    durationMs: 1429,
+    frameRate: 12,
+    durationMs: 2250,
     // Frame 16 impact: (15 / 14) * 1000
     hitDelayMs: 1071,
-    // Kick dust at jump (frame 1)
-    fxReleaseMs: 0,
-    fxAttach: 'caster',
-    fx: {
-      key: 'rock-lee-omote-renge-fx',
-      url: '/sprites/player/rock-lee/omote-renge-fx.png',
-      frameWidth: 129,
-      frameHeight: 110,
-      frameCount: 1,
-      contentHeight: 106,
+    offsetX: 0,
+    offsetY: 0,
+    frames: ['/sprites/player/rock-lee/poses/sprite-00/frame-001.png', '/sprites/player/rock-lee/poses/sprite-00/frame-002.png', '/sprites/player/rock-lee/poses/sprite-00/frame-003.png', '/sprites/player/rock-lee/poses/sprite-00/frame-004.png', '/sprites/player/rock-lee/poses/sprite-00/frame-005.png', '/sprites/player/rock-lee/poses/sprite-00/frame-006.png', '/sprites/player/rock-lee/poses/sprite-00/frame-007.png', '/sprites/player/rock-lee/poses/sprite-00/frame-008.png', '/sprites/player/rock-lee/poses/sprite-00/frame-009.png', '/sprites/player/rock-lee/poses/sprite-00/frame-010.png', '/sprites/player/rock-lee/poses/sprite-00/frame-011.png', '/sprites/player/rock-lee/poses/sprite-00/frame-012.png', '/sprites/player/rock-lee/poses/sprite-00/frame-013.png', '/sprites/player/rock-lee/poses/sprite-00/frame-014.png', '/sprites/player/rock-lee/poses/sprite-00/frame-015.png', '/sprites/player/rock-lee/poses/sprite-00/frame-016.png', '/sprites/player/rock-lee/poses/sprite-00/frame-017.png', '/sprites/player/rock-lee/poses/sprite-00/frame-018.png', '/sprites/player/rock-lee/poses/sprite-00/frame-019.png', '/sprites/player/rock-lee/poses/sprite-00/frame-020.png', '/sprites/player/rock-lee/poses/sprite-00/frame-021.png', '/sprites/player/rock-lee/poses/sprite-00/frame-022.png', '/sprites/player/rock-lee/poses/sprite-00/frame-023.png', '/sprites/player/rock-lee/poses/sprite-00/frame-024.png', '/sprites/player/rock-lee/poses/sprite-00/frame-025.png', '/sprites/player/rock-lee/poses/sprite-00/frame-026.png', '/sprites/player/rock-lee/poses/sprite-00/frame-027.png'],
+    loopMode: 'none',
+    loopUntilSkillEnd: false,
+    flipX: false,
+    flipY: false,
+    cast: {
+      scaleX: 1,
+      scaleY: 1,
+      scale: 1,
+      offsetX: 0,
+      offsetY: 0,
+      loopMode: 'none',
+      loopUntilSkillEnd: false,
+      flipX: false,
+      flipY: false,
+      poseAttack: true,
     },
-    // Ground slam dust (frame 16) — 5f strip
-    fxSecondaryReleaseMs: 1071,
-    fxSecondaryAttach: 'caster',
-    fxSecondaryFrameRate: 14,
-    fxSecondary: {
-      key: 'rock-lee-omote-renge-impact-fx',
-      url: '/sprites/player/rock-lee/omote-renge-impact-fx.png',
-      frameWidth: 237,
-      frameHeight: 195,
-      frameCount: 5,
-      contentHeight: 191,
+    fxScale: 1,
+    castDelayMs: 0,
+    vfxLoopMode: 'none',
+    vfxLoopStartFrame: 1,
+    vfxLoopEndFrame: 1,
+    vfxLoopDurationMs: 3000,
+    vfxLoopUntilSkillEnd: false,
+    vfxFlipX: false,
+    vfxFlipY: false,
+    areaImpactFxPerTarget: false,
+    targeting: {
+      mode: 'instant-target',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: -200,
     },
+    element: 'yang',
+        ai: {
+      autoUse: true,
+      priority: 1,
+      energyCost: 40,
+    },
+  },
+  'character-lee-skill-3': {
+    key: 'rock-lee-sprite-1',
+    url: '/sprites/player/rock-lee/poses/sprite-1/frame-001.png',
+    frames: ['/sprites/player/rock-lee/poses/sprite-1/frame-001.png', '/sprites/player/rock-lee/poses/sprite-1/frame-002.png', '/sprites/player/rock-lee/poses/sprite-1/frame-003.png', '/sprites/player/rock-lee/poses/sprite-1/frame-004.png', '/sprites/player/rock-lee/poses/sprite-1/frame-005.png', '/sprites/player/rock-lee/poses/sprite-1/frame-006.png', '/sprites/player/rock-lee/poses/sprite-1/frame-007.png', '/sprites/player/rock-lee/poses/sprite-1/frame-008.png', '/sprites/player/rock-lee/poses/sprite-1/frame-009.png', '/sprites/player/rock-lee/poses/sprite-1/frame-010.png', '/sprites/player/rock-lee/poses/sprite-1/frame-011.png', '/sprites/player/rock-lee/poses/sprite-1/frame-012.png', '/sprites/player/rock-lee/poses/sprite-1/frame-013.png', '/sprites/player/rock-lee/poses/sprite-1/frame-014.png', '/sprites/player/rock-lee/poses/sprite-1/frame-015.png', '/sprites/player/rock-lee/poses/sprite-1/frame-016.png', '/sprites/player/rock-lee/poses/sprite-1/frame-017.png', '/sprites/player/rock-lee/poses/sprite-1/frame-018.png', '/sprites/player/rock-lee/poses/sprite-1/frame-019.png', '/sprites/player/rock-lee/poses/sprite-1/frame-020.png', '/sprites/player/rock-lee/poses/sprite-1/frame-021.png', '/sprites/player/rock-lee/poses/sprite-1/frame-022.png', '/sprites/player/rock-lee/poses/sprite-1/frame-023.png', '/sprites/player/rock-lee/poses/sprite-1/frame-024.png', '/sprites/player/rock-lee/poses/sprite-1/frame-025.png', '/sprites/player/rock-lee/poses/sprite-1/frame-026.png', '/sprites/player/rock-lee/poses/sprite-1/frame-027.png', '/sprites/player/rock-lee/poses/sprite-1/frame-028.png', '/sprites/player/rock-lee/poses/sprite-1/frame-029.png', '/sprites/player/rock-lee/poses/sprite-1/frame-030.png', '/sprites/player/rock-lee/poses/sprite-1/frame-031.png', '/sprites/player/rock-lee/poses/sprite-1/frame-032.png', '/sprites/player/rock-lee/poses/sprite-1/frame-033.png', '/sprites/player/rock-lee/poses/sprite-1/frame-034.png', '/sprites/player/rock-lee/poses/sprite-1/frame-035.png', '/sprites/player/rock-lee/poses/sprite-1/frame-036.png', '/sprites/player/rock-lee/poses/sprite-1/frame-037.png', '/sprites/player/rock-lee/poses/sprite-1/frame-038.png', '/sprites/player/rock-lee/poses/sprite-1/frame-039.png', '/sprites/player/rock-lee/poses/sprite-1/frame-040.png', '/sprites/player/rock-lee/poses/sprite-1/frame-041.png', '/sprites/player/rock-lee/poses/sprite-1/frame-042.png', '/sprites/player/rock-lee/poses/sprite-1/frame-043.png', '/sprites/player/rock-lee/poses/sprite-1/frame-044.png', '/sprites/player/rock-lee/poses/sprite-1/frame-045.png', '/sprites/player/rock-lee/poses/sprite-1/frame-046.png', '/sprites/player/rock-lee/poses/sprite-1/frame-047.png', '/sprites/player/rock-lee/poses/sprite-1/frame-048.png', '/sprites/player/rock-lee/poses/sprite-1/frame-049.png', '/sprites/player/rock-lee/poses/sprite-1/frame-050.png', '/sprites/player/rock-lee/poses/sprite-1/frame-051.png', '/sprites/player/rock-lee/poses/sprite-1/frame-052.png', '/sprites/player/rock-lee/poses/sprite-1/frame-053.png', '/sprites/player/rock-lee/poses/sprite-1/frame-054.png', '/sprites/player/rock-lee/poses/sprite-1/frame-055.png', '/sprites/player/rock-lee/poses/sprite-1/frame-056.png', '/sprites/player/rock-lee/poses/sprite-1/frame-057.png', '/sprites/player/rock-lee/poses/sprite-1/frame-058.png', '/sprites/player/rock-lee/poses/sprite-1/frame-059.png', '/sprites/player/rock-lee/poses/sprite-1/frame-060.png', '/sprites/player/rock-lee/poses/sprite-1/frame-061.png', '/sprites/player/rock-lee/poses/sprite-1/frame-062.png', '/sprites/player/rock-lee/poses/sprite-1/frame-063.png', '/sprites/player/rock-lee/poses/sprite-1/frame-064.png', '/sprites/player/rock-lee/poses/sprite-1/frame-065.png'],
+    frameWidth: 140,
+    frameHeight: 141,
+    frameCount: 65,
+    frameRate: 15,
+    offsetX: 0,
+    offsetY: 0,
+    durationMs: 4333,
+    hitDelayMs: 280,
+    fxScale: 1,
+    vfxOffsetX: 0,
+    vfxOffsetY: 0,
+    vfxLoopMode: 'none',
+    vfxLoopStartFrame: 1,
+    vfxLoopEndFrame: 1,
+    vfxLoopDurationMs: 3000,
+    areaImpactFxPerTarget: false,
+    loopMode: 'none',
+    castDelayMs: 0,
+    targeting: {
+      mode: 'instant-target',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: -175,
+    },
+    execution: {
+      type: 'multi-hit',
+      types: ['multi-hit', 'area'],
+      hits: [
+        { delay: 1000, damageMultiplier: 0.25 },
+        { delay: 2000, damageMultiplier: 0.25 },
+        { delay: 3000, damageMultiplier: 0.25 },
+        { delay: 4000, damageMultiplier: 0.25 },
+      ],
+      radius: 300,
+    },
+    cast: {
+      poseAttack: true,
+      scaleX: 1,
+      scaleY: 1,
+      scale: 1,
+      offsetX: 0,
+      offsetY: 0,
+      loopMode: 'none',
+      loopUntilSkillEnd: false,
+      flipX: false,
+      flipY: false,
+    },
+    loopUntilSkillEnd: false,
+    flipX: false,
+    flipY: false,
+    vfxLoopUntilSkillEnd: false,
+    vfxFlipX: false,
+    vfxFlipY: false,
+    element: 'yang',
+        ai: {
+      autoUse: true,
+      priority: 2,
+      energyCost: 40,
+    },
+  },
+  'character-lee-skill-4': {
+    key: 'rock-lee-buff-1',
+    url: '/sprites/player/rock-lee/poses/buff-1/frame-001.png',
+    frames: ['/sprites/player/rock-lee/poses/buff-1/frame-001.png', '/sprites/player/rock-lee/poses/buff-1/frame-002.png', '/sprites/player/rock-lee/poses/buff-1/frame-003.png', '/sprites/player/rock-lee/poses/buff-1/frame-004.png', '/sprites/player/rock-lee/poses/buff-1/frame-005.png', '/sprites/player/rock-lee/poses/buff-1/frame-006.png', '/sprites/player/rock-lee/poses/buff-1/frame-007.png', '/sprites/player/rock-lee/poses/buff-1/frame-008.png', '/sprites/player/rock-lee/poses/buff-1/frame-009.png'],
+    frameWidth: 95,
+    frameHeight: 76,
+    frameCount: 9,
+    frameRate: 12,
+    offsetX: 0,
+    offsetY: 0,
+    durationMs: 750,
+    hitDelayMs: 280,
+    fxScale: 1,
+    vfxOffsetX: 0,
+    vfxOffsetY: 0,
+    vfxLoopMode: 'none',
+    vfxLoopStartFrame: 1,
+    vfxLoopEndFrame: 1,
+    vfxLoopDurationMs: 3000,
+    areaImpactFxPerTarget: false,
+    loopMode: 'none',
+    castDelayMs: 0,
+    targeting: {
+      mode: 'caster',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
+    },
+    cast: {
+      scaleX: 2,
+      scaleY: 2,
+      scale: 2,
+      offsetX: 0,
+      offsetY: 0,
+      loopMode: 'none',
+      loopUntilSkillEnd: false,
+      flipX: false,
+      flipY: false,
+    },
+    loopUntilSkillEnd: false,
+    flipX: false,
+    flipY: false,
+    vfxLoopUntilSkillEnd: false,
+    vfxFlipX: false,
+    vfxFlipY: false,
+
+    element: 'neutral',
+        ai: {
+      autoUse: true,
+      priority: 3,
+      energyCost: 40,
+    },
+    effect: 'buff',
+
+
+        statusEffects: [
+      {
+        statusId: 'attack-up',
+        chance: 1,
+        target: 'self',
+        application: 'on-start',
+        applyMode: 'once-per-skill',
+        duration: 10000,
+      },
+    ],
   },
 };
 
@@ -857,7 +1034,12 @@ const ROCK_LEE_PACK: CharacterPack = {
   skillAnims: ROCK_LEE_JUTSU_ANIMS,
   hurt: ROCK_LEE_HURT,
   death: ROCK_LEE_DEATH,
-  hotbarSkillIds: ['skill-omote-renge', 'character-lee-skill-3', 'character-lee-skill-4'],
+  hotbarSkillIds: [
+    'skill-omote-renge',
+    'character-lee-skill-3',
+    'character-lee-skill-4',
+    null,
+  ],
 };
 
 /**
@@ -1185,6 +1367,16 @@ const SHIKAMARU_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
       energyCost: 40,
     },
     areaImpactFxPerTarget: true,
+        statusEffects: [
+      {
+        statusId: 'stun',
+        chance: 1,
+        target: 'target',
+        application: 'on-hit',
+        applyMode: 'once-per-skill',
+        duration: 2000,
+      },
+    ],
   },
 };
 
@@ -1372,10 +1564,12 @@ const GAARA_IDLE: SpriteSheetDef = {
 const GAARA_WALK: SpriteSheetDef = {
   key: 'gaara-walk',
   url: '/sprites/player/gaara/walk.png',
-  frameWidth: 64,
-  frameHeight: 125,
+  // node scripts/process-selected-walk.js gaara
+  frameWidth: 114,
+  frameHeight: 117,
   frameCount: 6,
   contentHeight: 120,
+  originX: 0.500000,
 };
 
 const GAARA_COMBO_1: SpriteSheetDef = {
@@ -1829,8 +2023,8 @@ const HINATA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
     frameHeight: 85,
     frameCount: 27,
     contentHeight: 54,
-    frameRate: 24,
-    durationMs: 1125,
+    frameRate: 18,
+    durationMs: 1500,
     // Frame 22 @ 12fps — palm impact after smear; handstand f26–27 is follow-up
     hitDelayMs: 1750,
     originX: 0.5,
@@ -1869,6 +2063,7 @@ const HINATA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
       loopUntilSkillEnd: true,
       flipX: false,
       flipY: false,
+      poseAttack: true,
     },
     fxScale: 2,
     castDelayMs: 0,
@@ -1885,7 +2080,7 @@ const HINATA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
       spawnOffsetX: 0,
       spawnOffsetY: 0,
       targetOffsetX: 0,
-      targetOffsetY: 0,
+      targetOffsetY: -73,
     },
     element: 'yang',
         ai: {
@@ -1894,10 +2089,75 @@ const HINATA_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
       energyCost: 40,
     },
         execution: {
-      type: 'persistent',
-      duration: 1000,
-      tickInterval: 1000,
-      persistentAnchor: 'target',
+      type: 'multi-hit',
+      types: ['multi-hit', 'area'],
+      hits: [
+        { delay: 150, damageMultiplier: 0.25 },
+        { delay: 300, damageMultiplier: 0.25 },
+        { delay: 450, damageMultiplier: 0.25 },
+        { delay: 800, damageMultiplier: 0.25 },
+      ],
+      radius: 600,
+    },
+    areaImpactFxPerTarget: false,
+  },
+  'hinata-hakke-kusho': {
+    key: 'hinata-sprite-1',
+    url: '/sprites/player/hinata/poses/sprite-1/frame-001.png',
+    frames: ['/sprites/player/hinata/poses/sprite-1/frame-001.png', '/sprites/player/hinata/poses/sprite-1/frame-002.png', '/sprites/player/hinata/poses/sprite-1/frame-003.png', '/sprites/player/hinata/poses/sprite-1/frame-004.png', '/sprites/player/hinata/poses/sprite-1/frame-005.png', '/sprites/player/hinata/poses/sprite-1/frame-006.png', '/sprites/player/hinata/poses/sprite-1/frame-007.png', '/sprites/player/hinata/poses/sprite-1/frame-008.png'],
+    frameWidth: 47,
+    frameHeight: 60,
+    frameCount: 8,
+    frameRate: 10,
+    offsetX: 0,
+    offsetY: 0,
+    durationMs: 800,
+    hitDelayMs: 280,
+    fxScale: 1,
+    vfxOffsetX: 620,
+    vfxOffsetY: 100,
+    vfxLoopMode: 'none',
+    vfxLoopStartFrame: 1,
+    vfxLoopEndFrame: 1,
+    vfxLoopDurationMs: 3000,
+    areaImpactFxPerTarget: false,
+    loopMode: 'none',
+    castDelayMs: 500,
+    targeting: {
+      mode: 'caster',
+      travelSpeed: 600,
+      spawnOffsetX: 0,
+      spawnOffsetY: 0,
+      targetOffsetX: 0,
+      targetOffsetY: 0,
+    },
+    cast: {
+      scaleX: 0.9,
+      scaleY: 0.9,
+      scale: 0.9,
+      offsetX: 0,
+      offsetY: 0,
+      loopMode: 'none',
+      loopUntilSkillEnd: false,
+      flipX: false,
+      flipY: false,
+    },
+    loopUntilSkillEnd: false,
+    flipX: false,
+    flipY: false,
+    vfxLoopUntilSkillEnd: false,
+    vfxFlipX: false,
+    vfxFlipY: false,
+    vfxId: 'dragon-blue',
+    element: 'neutral',
+        ai: {
+      autoUse: true,
+      priority: 2,
+      energyCost: 40,
+    },
+        execution: {
+      type: 'area',
+      radius: 500,
     },
   },
 };
@@ -1913,7 +2173,7 @@ const HINATA_PACK: CharacterPack = {
   skillAnims: HINATA_JUTSU_ANIMS,
   hotbarSkillIds: [
     'skill-hakke-shouhou',
-    null,
+    'hinata-hakke-kusho',
     null,
     null,
   ],
@@ -2561,11 +2821,12 @@ const UCHIHA_ITACHI_IDLE: SpriteSheetDef = {
 const UCHIHA_ITACHI_WALK: SpriteSheetDef = {
   key: 'itachi-walk',
   url: '/sprites/player/itachi/walk.png',
-  // npm run itachi:walk — 6f side walk; uniform global scale (max contentH → 48)
-  frameWidth: 67,
-  frameHeight: 140,
+  // node scripts/process-selected-walk.js itachi
+  frameWidth: 160,
+  frameHeight: 130,
   frameCount: 6,
   contentHeight: 136,
+  originX: 0.500000,
 };
 
 const UCHIHA_ITACHI_COMBO_1: SpriteSheetDef = {
@@ -3602,11 +3863,12 @@ const JIRAIYA_IDLE: SpriteSheetDef = {
 const JIRAIYA_WALK: SpriteSheetDef = {
   key: 'jiraiya-walk',
   url: '/sprites/player/jiraiya/walk.png',
-  // npm run jiraiya:walk — 6f side walk; alpha-only; nearest max→48; feet+torso lock
-  frameWidth: 133,
-  frameHeight: 229,
+  // node scripts/process-selected-walk.js jiraiya
+  frameWidth: 215,
+  frameHeight: 232,
   frameCount: 6,
   contentHeight: 225,
+  originX: 0.500000,
 };
 
 const JIRAIYA_COMBO_1: SpriteSheetDef = {
@@ -3824,10 +4086,12 @@ export const KABUTO_CURATED_LOOK_TYPE = 9014;
 const KABUTO_WALK: SpriteSheetDef = {
   key: 'kabuto-walk',
   url: '/sprites/player/kabuto/walk.png',
-  frameWidth: 78,
-  frameHeight: 128,
-  frameCount: 5,
+  // node scripts/process-selected-walk.js kabuto
+  frameWidth: 159,
+  frameHeight: 125,
+  frameCount: 6,
   contentHeight: 124,
+  originX: 0.500000,
 };
 
 const KABUTO_IDLE: SpriteSheetDef = {
@@ -4423,10 +4687,12 @@ export const KISAME_CURATED_LOOK_TYPE = 9021;
 const KISAME_WALK: SpriteSheetDef = {
   key: 'kisame-walk',
   url: '/sprites/player/kisame/walk.png',
-  frameWidth: 59,
-  frameHeight: 114,
-  frameCount: 6,
+  // node scripts/process-selected-walk.js kisame
+  frameWidth: 139,
+  frameHeight: 106,
+  frameCount: 5,
   contentHeight: 110,
+  originX: 0.500000,
 };
 
 const KISAME_IDLE: SpriteSheetDef = {

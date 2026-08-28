@@ -4852,56 +4852,6 @@
       ]
     },
     {
-      "id": "wonsr-hunt-069",
-      "name": "Mapa de Uchiha Sasuke (Kid CS2)",
-      "requiredLevel": 130,
-      "mapKey": "huntDistritoUchiha",
-      "description": "Caça automática de Uchiha Sasuke (Kid CS2) para níveis 130+.",
-      "targets": [
-        {
-          "id": "curated-character-sasuke-kid-cs2",
-          "sourceId": "curated-character-sasuke-kid-cs2",
-          "name": "Uchiha Sasuke (Kid CS2)",
-          "category": "personagem",
-          "source": "curated/sasuke-kid-cs2",
-          "lookType": 9117,
-          "hasSprite": false,
-          "requiredLevel": 130,
-          "level": 130,
-          "hp": 2749,
-          "xp": 465,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-070",
-      "name": "Mapa de Uchiha Sasuke (Kid)",
-      "requiredLevel": 130,
-      "mapKey": "huntDistritoUchiha",
-      "description": "Caça automática de Uchiha Sasuke (Kid) para níveis 130+.",
-      "targets": [
-        {
-          "id": "curated-character-sasuke-kid",
-          "sourceId": "curated-character-sasuke-kid",
-          "name": "Uchiha Sasuke (Kid)",
-          "category": "personagem",
-          "source": "curated/sasuke-kid",
-          "lookType": 9118,
-          "hasSprite": false,
-          "requiredLevel": 130,
-          "level": 130,
-          "hp": 2749,
-          "xp": 465,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
       "id": "wonsr-hunt-071",
       "name": "Mapa de Yamato",
       "requiredLevel": 140,

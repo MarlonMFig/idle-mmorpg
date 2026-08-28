@@ -16,20 +16,22 @@
     "note": "4-frame idle; alpha-only (no black flood/peel); red hair+sand preserved"
   },
   "gaara-walk": {
+    "key": "gaara-walk",
     "image": "/sprites/player/gaara/walk.png",
-    "frameWidth": 64,
-    "frameHeight": 125,
+    "frameWidth": 114,
+    "frameHeight": 117,
     "frameCount": 6,
     "contentHeight": 120,
-    "scale": 1.0256410256410255,
+    "scale": 1.5,
+    "originX": 0.5,
     "frameRate": 10,
-    "source": "assets/naruto-source/nu/gaara/walk/frame_001..006.png",
+    "source": "assets/naruto-source/nu/gaara/walk (walk replacement from sprite walk gaara classic.zip)",
     "residualGreen": 0,
     "residualExteriorBlack": 0,
-    "pureBlack": 9009,
-    "red": 7841,
-    "sand": 3508,
-    "note": "6-frame side walk RIGHT; alpha-only (no black flood/peel)"
+    "pureBlack": 13133,
+    "footSpread": 0,
+    "packMode": "feet+bodyLockY",
+    "note": "alpha-only, nearest-neighbor scale, planted feet and locked torso height"
   },
   "gaara-combo1": {
     "image": "/sprites/player/gaara/combo1.png",
@@ -80,20 +82,22 @@
     "note": "finisher / recovery (5f); alpha-only pack"
   },
   "gaara-run": {
+    "key": "gaara-run",
     "image": "/sprites/player/gaara/run.png",
-    "frameWidth": 64,
-    "frameHeight": 125,
+    "frameWidth": 114,
+    "frameHeight": 117,
     "frameCount": 6,
     "contentHeight": 120,
-    "scale": 1.0256410256410255,
+    "scale": 1.5,
+    "originX": 0.5,
     "frameRate": 10,
-    "source": "assets/naruto-source/nu/gaara/walk/frame_001..006.png",
+    "source": "assets/naruto-source/nu/gaara/walk (walk replacement from sprite walk gaara classic.zip)",
     "residualGreen": 0,
     "residualExteriorBlack": 0,
-    "pureBlack": 9009,
-    "red": 7841,
-    "sand": 3508,
-    "note": "6-frame side walk RIGHT; alpha-only (no black flood/peel)"
+    "pureBlack": 13133,
+    "footSpread": 0,
+    "packMode": "feet+bodyLockY",
+    "note": "alpha-only, nearest-neighbor scale, planted feet and locked torso height"
   },
   "gaara-combo": {
     "image": "/sprites/player/gaara/combo.png",

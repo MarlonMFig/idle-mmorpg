@@ -1,28 +1,21 @@
 {
   "itachi-walk": {
+    "key": "itachi-walk",
     "image": "/sprites/player/itachi/walk.png",
-    "frameWidth": 67,
-    "frameHeight": 140,
+    "frameWidth": 160,
+    "frameHeight": 130,
     "frameCount": 6,
     "contentHeight": 136,
-    "scale": 1,
-    "maxContentH": 136,
+    "scale": 1.088,
+    "originX": 0.5,
     "frameRate": 10,
-    "source": "assets/naruto-source/nu/itachi/walk/frame_001..006.png",
+    "source": "assets/naruto-source/nu/itachi/walk (walk replacement from sprite walk itachi.zip)",
     "residualGreen": 0,
     "residualExteriorBlack": 0,
-    "pureBlack": 11046,
-    "contentHeights": [
-      133,
-      134,
-      134,
-      133,
-      136,
-      136
-    ],
-    "bodyHeightVariance": 3,
-    "direction": "right",
-    "note": "6-frame walk; alpha-only; uniform global scale (max contentH → 48); black hair preserved"
+    "pureBlack": 14464,
+    "footSpread": 0,
+    "packMode": "feet+bodyLockY",
+    "note": "alpha-only, nearest-neighbor scale, planted feet and locked torso height"
   },
   "itachi-idle": {
     "image": "/sprites/player/itachi/idle.png",

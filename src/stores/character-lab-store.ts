@@ -1,5 +1,6 @@
 import { isDevMode, setDevTestCatalogLookType, setDevLabSessionActive, resetDangerousDevOverrides } from '@/config/devConfig';
 import { combatEnergyStore } from '@/stores/combat-energy-store';
+import type { CharacterAuraDef } from '@/data/character-packs';
 import type { LabExecutionDebug } from '@/data/skill-execution-def';
 import type { SkillVfxTargetMode } from '@/data/character-packs';
 import { CharacterRegistry } from '@/data/characters';
@@ -49,8 +50,13 @@ import type { LineageId } from '@/types/character-meta';
 import type { LineageSpecializationSlot } from '@/types/lineage';
 import {
   cloneLabPoseSheet,
+  inferPoseOptionId,
+  isPoseCheckboxExcluded,
   labDraftHasVisual,
   labPoseHasContent,
+  listCharacterPoseOptions,
+  poseOptionIdToCastAnimationId,
+  poseSheetFromAnim,
   type LabPoseSheet,
 } from '@/lib/dev/lab-pose-sheet';
 import {
@@ -82,7 +88,7 @@ export function clampLabEnemyCount(value: number): number {
 
 export type LabEnemyHpMode = 'normal' | 'x2' | 'x5' | 'x10' | 'infinite';
 export type LabDistancePreset = 'very-close' | 'close' | 'normal' | 'far' | 'very-far';
-export type LabTab = 'geral' | 'skills' | 'sprite' | 'vfx' | 'mapas' | 'debug';
+export type LabTab = 'geral' | 'skills' | 'sprite' | 'vfx' | 'aura' | 'mapas' | 'debug';
 
 export interface LabEnemyAffinityOverride {
   resistances: ElementResistanceMap;
@@ -113,6 +119,7 @@ export type LabCommand =
   | { kind: 'reset' }
   | { kind: 'restore-visuals' }
   | { kind: 'clear-fx' }
+  | { kind: 'preview-aura'; aura: CharacterAuraDef | null }
   | { kind: 'sync-runtime' };
 
 export interface LabEvent {
@@ -237,6 +244,16 @@ export interface CharacterLabState {
   castDelayMs: number;
   /** Animação de pose (`special1`, `idle`, …). Opcional. */
   castAnimationId: string | null;
+  /** Quando ativo, a pose selecionada é reproduzida como VFX independente. */
+  poseAttack: boolean;
+  /** Quando ativo, a pose selecionada é usada ao iniciar a skill de Buff. */
+  poseBuff: boolean;
+  /** VFX opcional da aura temporária desta skill de Buff. */
+  buffAuraVfxId: string | null;
+  /** Ativa a aura temporária ao usar a skill de Buff. */
+  buffAuraEnabled: boolean;
+  /** Opção selecionada no dropdown de poses. */
+  poseOptionId: string | null;
   /** Folha corporal da pose (spritesheet ou sequência). Pertence ao personagem. */
   poseSheet: LabPoseSheet | null;
   execution: SkillExecutionDef;
@@ -327,12 +344,17 @@ const DEFAULT_SKILL_ORIGINALS: LabSkillOriginals = {
   targetOffsetX: 0,
   targetOffsetY: 0,
   poseVfxId: null,
+  poseAttack: false,
+  poseBuff: false,
+  buffAuraVfxId: null,
+  buffAuraEnabled: false,
   poseScale: 1,
   poseOffsetX: 0,
   poseOffsetY: 0,
   castDelayMs: 0,
   castAnimationId: null,
   poseSheet: null,
+  poseOptionId: null,
   execution: cloneExecutionDef({ type: 'single-hit' }),
   statusEffects: [],
   skillElement: DEFAULT_SKILL_ELEMENT,
@@ -395,6 +417,11 @@ const emptyState = (): CharacterLabState => ({
   poseOffsetY: 0,
   castDelayMs: 0,
   castAnimationId: null,
+  poseAttack: false,
+  poseBuff: false,
+  buffAuraVfxId: null,
+  buffAuraEnabled: false,
+  poseOptionId: null,
   poseSheet: null,
   execution: cloneExecutionDef({ type: 'single-hit' }),
   statusEffects: [],
@@ -595,7 +622,7 @@ function asLabSkillSlot(value: unknown): LabSkillSlot | undefined {
 }
 
 function asLabTab(value: unknown): LabTab | undefined {
-  return value === 'geral' || value === 'skills' || value === 'sprite' || value === 'vfx' || value === 'mapas' || value === 'debug'
+  return value === 'geral' || value === 'skills' || value === 'sprite' || value === 'vfx' || value === 'aura' || value === 'mapas' || value === 'debug'
     ? value
     : undefined;
 }
@@ -620,12 +647,17 @@ function skillFieldsFrom(originals: LabSkillOriginals) {
     targetOffsetY: originals.targetOffsetY,
     vfxId: originals.vfxId ?? null,
     poseVfxId: originals.poseVfxId ?? null,
+    poseAttack: originals.poseAttack,
+    poseBuff: originals.poseBuff,
+    buffAuraVfxId: originals.buffAuraVfxId,
+    buffAuraEnabled: originals.buffAuraEnabled,
     poseScale: originals.poseScale,
     poseOffsetX: originals.poseOffsetX,
     poseOffsetY: originals.poseOffsetY,
     castDelayMs: originals.castDelayMs,
     castAnimationId: originals.castAnimationId ?? null,
     poseSheet: cloneLabPoseSheet(originals.poseSheet),
+    poseOptionId: originals.poseOptionId ?? null,
     execution: cloneExecutionDef(originals.execution),
     statusEffects: cloneSkillStatusEffects(originals.statusEffects),
     skillElement: originals.skillElement,
@@ -655,12 +687,17 @@ function cloneSkillOriginals(originals: LabSkillOriginals): LabSkillOriginals {
     targetOffsetX: originals.targetOffsetX,
     targetOffsetY: originals.targetOffsetY,
     poseVfxId: originals.poseVfxId ?? null,
+    poseAttack: originals.poseAttack,
+    poseBuff: originals.poseBuff,
+    buffAuraVfxId: originals.buffAuraVfxId,
+    buffAuraEnabled: originals.buffAuraEnabled,
     poseScale: originals.poseScale,
     poseOffsetX: originals.poseOffsetX,
     poseOffsetY: originals.poseOffsetY,
     castDelayMs: originals.castDelayMs,
     castAnimationId: originals.castAnimationId ?? null,
     poseSheet: cloneLabPoseSheet(originals.poseSheet),
+    poseOptionId: originals.poseOptionId ?? null,
     execution: cloneExecutionDef(originals.execution),
     statusEffects: cloneSkillStatusEffects(originals.statusEffects),
     skillElement: originals.skillElement,
@@ -696,15 +733,23 @@ function loadSkillFromPack(playerId: string | null, skillId: string | null): Lab
   const def = CharacterRegistry.get(playerId);
   const skill = getSkill(skillId);
   const slot = resolveOfficialSlot(playerId, skillId, undefined).slot;
-  return cloneSkillOriginals(
-    readLabSkillOriginals(
-      def?.pack.skillAnims[skillId],
-      skill?.statusEffects,
-      skill?.element,
-      skill?.ai,
-      slot,
-    ),
+  const anim = def?.pack.skillAnims[skillId];
+  const originals = readLabSkillOriginals(
+    anim,
+    skill?.statusEffects,
+    skill?.element,
+    skill?.ai,
+    slot,
   );
+  const poseOptionId = inferPoseOptionId(skillId, anim);
+  const poseOption = poseOptionId && def?.pack
+    ? listCharacterPoseOptions(def.pack).find((option) => option.id === poseOptionId)
+    : undefined;
+  return cloneSkillOriginals({
+    ...originals,
+    poseOptionId,
+    poseSheet: cloneLabPoseSheet(poseOption ? poseSheetFromAnim(poseOption.sheet) : originals.poseSheet),
+  });
 }
 
 function resolveOfficialSlot(
@@ -999,13 +1044,64 @@ export const characterLabStore = {
     patch({ vfxId: id });
   },
 
+  setBuffAuraVfxId(id: string | null): void {
+    patch({ buffAuraVfxId: id });
+  },
+
+  setBuffAuraEnabled(enabled: boolean): void {
+    patch({ buffAuraEnabled: Boolean(enabled) });
+  },
+
   setPoseSheet(sheet: LabPoseSheet | null): void {
+    const state = store.getSnapshot();
     const next = cloneLabPoseSheet(sheet);
     patch({
       poseSheet: next,
+      poseOptionId: null,
+      // Imported sheets are custom poses, not pack-body references. Preserve
+      // an already enabled Pose Attack so replacing its asset stays usable.
+      poseAttack: Boolean(next && state.poseAttack),
+      castAnimationId: null,
       poseScale: next?.scaleY ?? 1,
       poseOffsetX: next?.offsetX ?? 0,
       poseOffsetY: next?.offsetY ?? 0,
+    });
+  },
+
+  selectPoseOption(id: string): void {
+    const state = store.getSnapshot();
+    const pack = state.playerId ? CharacterRegistry.get(state.playerId)?.pack : undefined;
+    const option = pack ? listCharacterPoseOptions(pack).find((entry) => entry.id === id) : undefined;
+    const next = option ? poseSheetFromAnim(option.sheet) : null;
+    const excluded = isPoseCheckboxExcluded(id);
+    patch({
+      poseSheet: next,
+      poseOptionId: option?.id ?? null,
+      poseAttack: false,
+      castAnimationId: excluded ? poseOptionIdToCastAnimationId(option?.id) : null,
+      poseScale: next?.scaleY ?? 1,
+      poseOffsetX: next?.offsetX ?? 0,
+      poseOffsetY: next?.offsetY ?? 0,
+    });
+  },
+
+  setPoseAttack(enabled: boolean): void {
+    const state = store.getSnapshot();
+    // `poseOptionId === null` identifies an imported/custom pose and is valid.
+    const allowed = Boolean(state.poseSheet && !isPoseCheckboxExcluded(state.poseOptionId));
+    const poseAttack = allowed && enabled;
+    patch({
+      poseAttack,
+      ...(poseAttack ? { poseBuff: false } : {}),
+      castAnimationId: poseAttack ? null : poseOptionIdToCastAnimationId(state.poseOptionId),
+    });
+  },
+
+  setPoseBuff(enabled: boolean): void {
+    const poseBuff = Boolean(enabled);
+    patch({
+      poseBuff,
+      ...(poseBuff ? { poseAttack: false } : {}),
     });
   },
 
@@ -1025,7 +1121,13 @@ export const characterLabStore = {
       offsetX: 0,
       offsetY: 0,
     };
-    this.setPoseSheet({ ...base, ...partial, frames: partial.frames ?? base.frames });
+    const next = cloneLabPoseSheet({ ...base, ...partial, frames: partial.frames ?? base.frames });
+    patch({
+      poseSheet: next,
+      poseScale: next?.scaleY ?? 1,
+      poseOffsetX: next?.offsetX ?? 0,
+      poseOffsetY: next?.offsetY ?? 0,
+    });
   },
 
   hasDraftVisual(): boolean {
@@ -1113,7 +1215,12 @@ export const characterLabStore = {
         poseOffsetY: state.poseOffsetY,
         castDelayMs: state.castDelayMs,
         castAnimationId: state.castAnimationId,
+        poseAttack: state.poseAttack,
+        poseBuff: state.poseBuff,
+        buffAuraVfxId: state.buffAuraVfxId,
+        buffAuraEnabled: state.buffAuraEnabled,
         poseSheet: state.poseSheet,
+        poseOptionId: state.poseOptionId,
         execution: state.execution,
         statusEffects: state.statusEffects,
         skillElement: state.skillElement,
@@ -1398,6 +1505,10 @@ export const characterLabStore = {
     patch({ command: { kind: 'play-effect' } });
   },
 
+  previewAura(aura: CharacterAuraDef | null): void {
+    patch({ command: { kind: 'preview-aura', aura } });
+  },
+
   playCompleteSkill(): void {
     patch({ command: { kind: 'play-complete' } });
   },
@@ -1446,6 +1557,10 @@ export const characterLabStore = {
       poseOffsetY: scope === 'logic' ? prev.poseOffsetY : state.poseOffsetY,
       castDelayMs: scope === 'visual' ? prev.castDelayMs : state.castDelayMs,
       castAnimationId: scope === 'logic' ? prev.castAnimationId : state.castAnimationId,
+      poseAttack: scope === 'logic' ? prev.poseAttack : state.poseAttack,
+      poseBuff: scope === 'logic' ? prev.poseBuff : state.poseBuff,
+      buffAuraVfxId: scope === 'visual' ? prev.buffAuraVfxId : state.buffAuraVfxId,
+      buffAuraEnabled: scope === 'visual' ? prev.buffAuraEnabled : state.buffAuraEnabled,
       poseSheet: cloneLabPoseSheet(
         scope === 'logic' &&
           state.poseSheet &&
@@ -1456,6 +1571,7 @@ export const characterLabStore = {
             ? prev.poseSheet
             : state.poseSheet,
       ),
+      poseOptionId: scope === 'logic' ? prev.poseOptionId : state.poseOptionId,
       execution: cloneExecutionDef(scope === 'visual' ? prev.execution : state.execution),
       statusEffects: cloneSkillStatusEffects(scope === 'visual' ? prev.statusEffects : state.statusEffects),
       skillElement: scope === 'visual' ? prev.skillElement : state.skillElement,

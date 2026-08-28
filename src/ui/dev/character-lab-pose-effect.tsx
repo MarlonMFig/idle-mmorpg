@@ -8,9 +8,9 @@ import { TARGET_MODE_LABELS, TRAVEL_SPEED_PRESETS } from '@/lib/dev/lab-save-fie
 import {
   labDraftHasVisual,
   labPoseHasContent,
+  isPoseCheckboxExcluded,
   listCharacterPoseOptions,
   poseDurationMs,
-  poseSheetFromAnim,
   type LabPoseSheet,
 } from '@/lib/dev/lab-pose-sheet';
 import { CAST_DELAY_PRESETS_MS } from '@/lib/dev/lab-save-fields';
@@ -31,6 +31,18 @@ const TARGET_MODES: { id: SkillVfxTargetMode; label: string }[] = [
   { id: 'travel-to-target', label: TARGET_MODE_LABELS['travel-to-target'] },
   { id: 'instant-target', label: TARGET_MODE_LABELS['instant-target'] },
 ];
+
+function automaticImportedPoseScale(pack: CharacterPack | null, frameHeight: number): number {
+  if (!pack || frameHeight <= 0) return 1;
+  const referenceHeight =
+    pack.idle?.contentHeight ??
+    pack.walk?.contentHeight ??
+    pack.idle?.frameHeight ??
+    pack.walk?.frameHeight ??
+    0;
+  if (referenceHeight <= 0) return 1;
+  return Math.max(0.05, Math.min(4, Number((referenceHeight / frameHeight).toFixed(3))));
+}
 
 export function CharacterLabPoseEffect({
   playerId,
@@ -85,6 +97,9 @@ export function CharacterLabPoseEffect({
   const targetOffsetY = useStore(characterLabStore, (s) => s.targetOffsetY);
   const castDelayMs = useStore(characterLabStore, (s) => s.castDelayMs);
   const loopSkill = useStore(characterLabStore, (s) => s.loopSkill);
+  const poseAttack = useStore(characterLabStore, (s) => s.poseAttack);
+  const poseBuff = useStore(characterLabStore, (s) => s.poseBuff);
+  const poseOptionId = useStore(characterLabStore, (s) => s.poseOptionId);
 
   const [previewPlaying, setPreviewPlaying] = useState(true);
   const [previewSpeed, setPreviewSpeed] = useState(1);
@@ -94,19 +109,25 @@ export function CharacterLabPoseEffect({
   const framesRef = useRef<HTMLInputElement | null>(null);
 
   const poseOptions = useMemo(() => (pack ? listCharacterPoseOptions(pack) : []), [pack]);
-  const selectedPoseId = poseOptions.find(
+  const inferredPoseId = poseOptions.find(
     (option) =>
       poseSheet &&
       option.sheet.key === poseSheet.key &&
       (option.sheet.url === poseSheet.url ||
         (option.sheet.frames?.join('|') ?? '') === (poseSheet.frames?.join('|') ?? '')),
   )?.id ?? '';
+  const selectedPoseId = poseOptionId ?? inferredPoseId;
   const isDraft = !lastSkillId;
   const hasVisual = labDraftHasVisual(poseSheet, vfxId);
   const canSave = Boolean(playerId) && (isDraft ? hasVisual : skillOverrideDirty || skillLogicDirty);
   const poseDuration = poseDurationMs(poseSheet);
   const poseFrames = Math.max(1, poseSheet?.frames?.length || poseSheet?.frameCount || 1);
   const needsEnemy = targetMode === 'travel-to-target' || targetMode === 'instant-target';
+  const hasPose = labPoseHasContent(poseSheet);
+  const poseAttackAvailable = hasPose && !isPoseCheckboxExcluded(selectedPoseId || null);
+  const poseAttackLocked = poseAttackAvailable && !poseAttack && !poseBuff && !vfxId;
+  const importedPose = hasPose && !poseOptionId;
+  const poseScaleLocked = poseAttackLocked && !importedPose;
 
   const importPose = async (files: FileList | null) => {
     if (!playerId || !files || files.length < 1) return;
@@ -136,6 +157,7 @@ export function CharacterLabPoseEffect({
       }
       const sequence = json.frames && json.frames.length > 0;
       const frameCount = sequence ? json.frames!.length : Math.max(1, json.suggestedFrameCount ?? 1);
+      const automaticScale = automaticImportedPoseScale(pack, json.image.height);
       const next: LabPoseSheet = {
         key: json.key,
         url: json.url,
@@ -145,8 +167,8 @@ export function CharacterLabPoseEffect({
         frameCount,
         frameRate: json.frameRate ?? 12,
         loop: false,
-        scaleX: 1,
-        scaleY: 1,
+        scaleX: automaticScale,
+        scaleY: automaticScale,
         offsetX: 0,
         offsetY: 0,
       };
@@ -185,8 +207,7 @@ export function CharacterLabPoseEffect({
         <select
           value={selectedPoseId}
           onChange={(event) => {
-            const option = poseOptions.find((entry) => entry.id === event.target.value);
-            characterLabStore.setPoseSheet(option ? poseSheetFromAnim(option.sheet) : null);
+            characterLabStore.selectPoseOption(event.target.value);
             setRestartToken((n) => n + 1);
           }}
         >
@@ -198,6 +219,40 @@ export function CharacterLabPoseEffect({
           ))}
         </select>
       </label>
+      {poseAttackAvailable ? (
+        <label className={`character-lab__toggle${poseAttack ? ' is-on' : ''}`}>
+          <input
+            type="checkbox"
+            checked={poseAttack}
+            onChange={(event) => characterLabStore.setPoseAttack(event.target.checked)}
+          />
+          Pose Attack — usar esta pose como FX
+        </label>
+      ) : null}
+      <label className={`character-lab__toggle${poseBuff ? ' is-on' : ''}`}>
+        <input
+          type="checkbox"
+          checked={poseBuff}
+          disabled={!poseSheet && !poseBuff}
+          onChange={(event) => characterLabStore.setPoseBuff(event.target.checked)}
+        />
+        Pose Buff — usar esta pose ao iniciar o Buff
+      </label>
+      {poseBuff ? (
+        <p className="character-lab__hint is-ok">
+          Esta pose não exige VFX. A aura, se desejada, é selecionada separadamente na aba AURA.
+        </p>
+      ) : null}
+      {poseAttackLocked ? (
+        <p className="character-lab__hint">
+          Selecione um <strong>VFX</strong>, ou ative <strong>Pose Attack</strong>/<strong>Pose Buff</strong>,
+          para liberar Target Mode, tipo de execução e ajustes do FX.
+        </p>
+      ) : poseAttack ? (
+        <p className="character-lab__hint is-ok">
+          Esta mesma sprite será usada como FX. Nenhuma cópia será criada.
+        </p>
+      ) : null}
       <div className="character-lab__actions">
         <button type="button" disabled={!playerId || importBusy} onClick={() => gifRef.current?.click()}>
           {importBusy ? 'Importando...' : '+ Importar GIF'}
@@ -288,7 +343,7 @@ export function CharacterLabPoseEffect({
         value={poseSheet?.scaleX ?? 1}
         presets={SCALE_PRESETS}
         step={0.05}
-        disabled={!labPoseHasContent(poseSheet)}
+        disabled={poseScaleLocked || !labPoseHasContent(poseSheet)}
         onChange={(value) => characterLabStore.patchPoseSheet({ scaleX: value })}
       />
       <ValueRow
@@ -297,7 +352,7 @@ export function CharacterLabPoseEffect({
         value={poseSheet?.scaleY ?? 1}
         presets={SCALE_PRESETS}
         step={0.05}
-        disabled={!labPoseHasContent(poseSheet)}
+        disabled={poseScaleLocked || !labPoseHasContent(poseSheet)}
         onChange={(value) => characterLabStore.patchPoseSheet({ scaleY: value })}
       />
       <ValueRow
@@ -306,7 +361,7 @@ export function CharacterLabPoseEffect({
         value={poseSheet?.offsetX ?? 0}
         presets={OFFSET_PRESETS}
         step={1}
-        disabled={!labPoseHasContent(poseSheet)}
+        disabled={poseScaleLocked || !labPoseHasContent(poseSheet)}
         onChange={(value) => characterLabStore.patchPoseSheet({ offsetX: value })}
       />
       <ValueRow
@@ -315,11 +370,16 @@ export function CharacterLabPoseEffect({
         value={poseSheet?.offsetY ?? 0}
         presets={OFFSET_PRESETS}
         step={1}
-        disabled={!labPoseHasContent(poseSheet)}
+        disabled={poseScaleLocked || !labPoseHasContent(poseSheet)}
         onChange={(value) => characterLabStore.patchPoseSheet({ offsetY: value })}
       />
-      <CharacterLabJutsuFps />
-      <button type="button" className="character-lab__run-btn" onClick={() => characterLabStore.playPose()}>
+      <CharacterLabJutsuFps disabled={poseAttackLocked} />
+      <button
+        type="button"
+        className="character-lab__run-btn"
+        disabled={poseAttackLocked}
+        onClick={() => characterLabStore.playPose()}
+      >
         Executar Pose
       </button>
 
@@ -331,11 +391,12 @@ export function CharacterLabPoseEffect({
         presets={[...CAST_DELAY_PRESETS_MS]}
         step={50}
         suffix=" ms"
+        disabled={poseAttackLocked}
         onChange={(value) => characterLabStore.setFlag('castDelayMs', Math.max(0, Math.round(value)))}
       />
       <p className="character-lab__hint">Pose → Cast Delay → Effect</p>
 
-      <CharacterLabExecutionEditor />
+      <CharacterLabExecutionEditor disabled={poseAttackLocked} />
 
       <h4>USO NESTA SKILL</h4>
       <p className="character-lab__hint">Overrides visuais desta Skill. Não altera a VfxDefinition global.</p>
@@ -411,6 +472,7 @@ export function CharacterLabPoseEffect({
             key={entry.id}
             type="button"
             className={targetMode === entry.id ? 'is-active' : undefined}
+            disabled={poseAttackLocked}
             onClick={() => characterLabStore.setFlag('targetMode', entry.id)}
           >
             {entry.label}
@@ -428,6 +490,7 @@ export function CharacterLabPoseEffect({
           presets={[...TRAVEL_SPEED_PRESETS]}
           step={50}
           suffix=" px/s"
+          disabled={poseAttackLocked}
           onChange={(value) => characterLabStore.setFlag('travelSpeed', Math.max(0, value))}
         />
       ) : null}
@@ -437,6 +500,7 @@ export function CharacterLabPoseEffect({
         value={vfxScale}
         presets={SCALE_PRESETS}
         step={0.05}
+        disabled={poseAttackLocked}
         onChange={(value) => characterLabStore.setVisual('vfxScale', value)}
       />
       <ValueRow
@@ -445,6 +509,7 @@ export function CharacterLabPoseEffect({
         value={vfxOffsetX}
         presets={OFFSET_PRESETS}
         step={1}
+        disabled={poseAttackLocked}
         onChange={(value) => characterLabStore.setVisual('vfxOffsetX', value)}
       />
       <ValueRow
@@ -453,6 +518,7 @@ export function CharacterLabPoseEffect({
         value={vfxOffsetY}
         presets={OFFSET_PRESETS}
         step={1}
+        disabled={poseAttackLocked}
         onChange={(value) => characterLabStore.setVisual('vfxOffsetY', value)}
       />
       {targetMode !== 'caster' ? (
@@ -463,6 +529,7 @@ export function CharacterLabPoseEffect({
           value={spawnOffsetX}
           presets={OFFSET_PRESETS}
           step={1}
+          disabled={poseAttackLocked}
           onChange={(value) => characterLabStore.setFlag('spawnOffsetX', value)}
         />
         <ValueRow
@@ -471,6 +538,7 @@ export function CharacterLabPoseEffect({
           value={spawnOffsetY}
           presets={OFFSET_PRESETS}
           step={1}
+          disabled={poseAttackLocked}
           onChange={(value) => characterLabStore.setFlag('spawnOffsetY', value)}
         />
         <ValueRow
@@ -479,6 +547,7 @@ export function CharacterLabPoseEffect({
           value={targetOffsetX}
           presets={OFFSET_PRESETS}
           step={1}
+          disabled={poseAttackLocked}
           onChange={(value) => characterLabStore.setFlag('targetOffsetX', value)}
         />
         <ValueRow
@@ -487,14 +556,25 @@ export function CharacterLabPoseEffect({
           value={targetOffsetY}
           presets={OFFSET_PRESETS}
           step={1}
+          disabled={poseAttackLocked}
           onChange={(value) => characterLabStore.setFlag('targetOffsetY', value)}
         />
         </>
       ) : null}
-      <button type="button" className="character-lab__run-btn" onClick={() => characterLabStore.playEffect()}>
+      <button
+        type="button"
+        className="character-lab__run-btn"
+        disabled={poseAttackLocked}
+        onClick={() => characterLabStore.playEffect()}
+      >
         Executar Efeito
       </button>
-      <button type="button" className="character-lab__run-btn" onClick={() => characterLabStore.playCompleteSkill()}>
+      <button
+        type="button"
+        className="character-lab__run-btn"
+        disabled={poseAttackLocked}
+        onClick={() => characterLabStore.playCompleteSkill()}
+      >
         Executar Skill Completa
       </button>
       <label className={`character-lab__toggle${loopSkill ? ' is-on' : ''}`}>

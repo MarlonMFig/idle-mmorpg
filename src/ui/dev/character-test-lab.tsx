@@ -32,7 +32,7 @@ import {
 } from '@/lib/dev/lab-skill-slots';
 import { CharacterLabStatusLibrary } from '@/ui/dev/character-lab-status-library';
 import { CharacterLabSkillLogic } from '@/ui/dev/character-lab-skill-logic';
-import { labPoseHasContent } from '@/lib/dev/lab-pose-sheet';
+import { isPackBodyPoseOptionId, labPoseHasContent } from '@/lib/dev/lab-pose-sheet';
 import { ValueRow } from '@/ui/dev/character-lab-value-row';
 import { CharacterLabDamageDebug, CharacterLabResistPanel } from '@/ui/dev/character-lab-resist';
 import { formatCombatAiDecision } from '@/systems/combat-decision';
@@ -63,6 +63,7 @@ import { CharacterLabQualityTester } from '@/ui/dev/character-lab-quality-tester
 import { CharacterLabXpAnalyzer } from '@/ui/dev/character-lab-xp-analyzer';
 import { CharacterLabSkillsTab } from '@/ui/dev/character-lab-skills-tab';
 import { CharacterLabPoseEffect } from '@/ui/dev/character-lab-pose-effect';
+import { CharacterLabAura } from '@/ui/dev/character-lab-aura';
 import { CharacterLabSpriteAlignment } from '@/ui/dev/character-lab-sprite-alignment';
 import { CharacterLabMapViewport } from '@/ui/dev/character-lab-map-viewport';
 import { CharacterLabHubEffects } from '@/ui/dev/character-lab-hub-effects';
@@ -124,6 +125,7 @@ const TABS = [
   { id: 'skills', label: 'SKILLS' },
   { id: 'sprite', label: 'SPRITE' },
   { id: 'vfx', label: 'VFX' },
+  { id: 'aura', label: 'AURA / BUFF' },
   { id: 'mapas', label: 'MAPAS' },
   { id: 'debug', label: 'DEBUG' },
 ] as const;
@@ -220,6 +222,10 @@ function CharacterTestLabBody() {
   const poseOffsetY = useStore(characterLabStore, (s) => s.poseOffsetY);
   const castDelayMs = useStore(characterLabStore, (s) => s.castDelayMs);
   const castAnimationId = useStore(characterLabStore, (s) => s.castAnimationId);
+  const poseAttack = useStore(characterLabStore, (s) => s.poseAttack);
+  const poseBuff = useStore(characterLabStore, (s) => s.poseBuff);
+  const buffAuraVfxId = useStore(characterLabStore, (s) => s.buffAuraVfxId);
+  const buffAuraEnabled = useStore(characterLabStore, (s) => s.buffAuraEnabled);
   const execution = useStore(characterLabStore, (s) => s.execution);
   const statusEffects = useStore(characterLabStore, (s) => s.statusEffects);
   const skillElement = useStore(characterLabStore, (s) => s.skillElement);
@@ -317,6 +323,10 @@ function CharacterTestLabBody() {
     poseOffsetY,
     castDelayMs,
     castAnimationId,
+    poseAttack,
+    poseBuff,
+    buffAuraVfxId,
+    buffAuraEnabled,
     execution,
     statusEffects,
     skillElement,
@@ -580,7 +590,9 @@ function CharacterTestLabBody() {
         orig.poseSheet &&
         snap.poseSheet.frameRate !== orig.poseSheet.frameRate
           ? { ...orig.poseSheet, frameRate: snap.poseSheet.frameRate }
-          : visual.poseSheet;
+          : visual.poseOptionId && isPackBodyPoseOptionId(visual.poseOptionId) && !visual.poseAttack
+            ? null
+            : visual.poseSheet;
       const payload = JSON.stringify({
           action: 'save-visual',
           characterId: playerId,
@@ -609,6 +621,11 @@ function CharacterTestLabBody() {
           targetOffsetX: visual.targetOffsetX,
           targetOffsetY: visual.targetOffsetY,
           castDelayMs: logic.castDelayMs,
+          castAnimationId: visual.castAnimationId,
+          poseAttack: visual.poseAttack,
+          poseBuff: visual.poseBuff,
+          buffAuraVfxId: visual.buffAuraVfxId,
+          buffAuraEnabled: visual.buffAuraEnabled,
           execution: logic.execution,
           statusEffects: logic.statusEffects,
           element: logic.skillElement,
@@ -1558,6 +1575,23 @@ function CharacterTestLabBody() {
             <CharacterLabMapViewport />
             <CharacterLabHubEffects />
           </>
+        ) : null}
+
+        {tab === 'aura' ? (
+          <CharacterLabAura
+            playerId={playerId}
+            pack={playerDef?.pack ?? null}
+            skillId={lastSkillId}
+            skillName={skillName}
+            catalogVersion={wonsrVfxGen}
+            onSaved={(message) => {
+              setSaveOk(message);
+              window.setTimeout(() => setSaveOk(null), 1800);
+            }}
+            onError={(message) => setSaveError(message)}
+            onGoSkills={() => characterLabStore.setFlag('tab', 'skills')}
+            onSaveSkill={() => persistLabChanges('skill')}
+          />
         ) : null}
 
         {tab === 'debug' ? (

@@ -11,15 +11,22 @@
     "source": "assets/naruto-source/nu/rock-lee/idle"
   },
   "rock-lee-walk": {
+    "key": "rock-lee-walk",
     "image": "/sprites/player/rock-lee/walk.png",
-    "frameWidth": 76,
-    "frameHeight": 134,
+    "frameWidth": 133,
+    "frameHeight": 131,
     "frameCount": 6,
     "contentHeight": 127,
-    "scale": 1,
+    "scale": 2.4901960784313726,
+    "originX": 0.5,
+    "frameRate": 10,
+    "source": "assets/naruto-source/nu/rock-lee/walk (walk replacement from supplied six PNG frames)",
     "residualGreen": 0,
-    "pureBlack": 10197,
-    "source": "assets/naruto-source/nu/rock-lee/walk"
+    "residualExteriorBlack": 0,
+    "pureBlack": 13180,
+    "footSpread": 0,
+    "packMode": "feet+fullFrame",
+    "note": "alpha-only, nearest-neighbor scale, preserved supplied frame canvas and planted feet"
   },
   "rock-lee-attack": {
     "image": "/sprites/player/rock-lee/attack.png",
@@ -70,31 +77,27 @@
   },
   "rock-lee-omote-renge": {
     "image": "/sprites/player/rock-lee/omote-renge.png",
-    "frameWidth": 201,
-    "frameHeight": 216,
-    "frameCount": 20,
+    "frameWidth": 160,
+    "frameHeight": 131,
+    "frameCount": 19,
     "contentHeight": 127,
-    "scale": 1,
     "frameRate": 14,
-    "durationMs": 1429,
+    "durationMs": 1357,
     "hitDelayMs": 1071,
-    "residualGreen": 0,
-    "pureBlack": 32425,
-    "source": "assets/naruto-source/nu/rock-lee/jutsu frames 1–20 (JUTSU COMPLETO)"
+    "source": "assets/naruto-source/nu/rock-lee/omote-renge-new/frames",
+    "residualGreen": 0
   },
   "skill-omote-renge": {
     "image": "/sprites/player/rock-lee/omote-renge.png",
-    "frameWidth": 201,
-    "frameHeight": 216,
-    "frameCount": 20,
+    "frameWidth": 160,
+    "frameHeight": 131,
+    "frameCount": 19,
     "contentHeight": 127,
-    "scale": 1,
     "frameRate": 14,
-    "durationMs": 1429,
+    "durationMs": 1357,
     "hitDelayMs": 1071,
-    "residualGreen": 0,
-    "pureBlack": 32425,
-    "source": "assets/naruto-source/nu/rock-lee/jutsu frames 1–20 (JUTSU COMPLETO)"
+    "source": "assets/naruto-source/nu/rock-lee/omote-renge-new/frames",
+    "residualGreen": 0
   },
   "rock-lee-hurt": {
     "image": "/sprites/player/rock-lee/hurt.png",

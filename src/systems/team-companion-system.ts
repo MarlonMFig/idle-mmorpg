@@ -13,7 +13,7 @@ import { isSkillCooldownIgnored, scaleOutgoingDamage } from '@/config/devConfig'
 import { SKILL_DEFAULT_RANGE } from '@/constants/skill';
 import { BASIC_ATTACK_ELEMENT, resolveSkillElement, type DamageElement } from '@/data/damage-elements';
 import { resolveAwakeningRuntime } from '@/lib/awakening-runtime';
-import { resolveEffectiveSkill } from '@/lib/resolve-effective-skill';
+import { resolveEffectiveSkill, resolveSkillWithAnim } from '@/lib/resolve-effective-skill';
 import { Decimal, d, hpRatio } from '@/lib/decimal';
 import type { Enemy } from '@/entities/enemy';
 import type { Player } from '@/entities/player';
@@ -38,10 +38,15 @@ import {
   type SkillRotationCursor,
 } from '@/systems/combat-decision';
 import type { LootManager } from '@/systems/loot-manager';
-import { computeSkillFxAim, shouldSpawnAreaImpactFxPerTarget, spawnAreaImpactFxForTargets } from '@/systems/pack-fx';
+import {
+  computeSkillFxAim,
+  poseAttackAnimAsFx,
+  shouldSpawnAreaImpactFxPerTarget,
+  spawnAreaImpactFxForTargets,
+} from '@/systems/pack-fx';
 import { SkillVfx } from '@/systems/skill-vfx';
 import { scheduleOfficialSkillFx, SkillExecutionRuntime, type SkillExecution, type SkillImpact } from '@/systems/skill-execution';
-import { tryApplySkillStatuses } from '@/systems/skill-status-apply';
+import { resolveBuffDurationMs, tryApplySkillStatuses } from '@/systems/skill-status-apply';
 import { applyDirectDamage, getStatusRuntime } from '@/systems/status-runtime';
 import type { TargetClaims } from '@/systems/target-claims';
 import type { SkillDefinition } from '@/types/skill';
@@ -225,12 +230,13 @@ export class TeamCompanionSystem {
     const ids = companion.player.pack.hotbarSkillIds ?? [];
     const slots: CombatAiSlotInput[] = ([1, 2, 3, 4] as const).map((slot) => {
       const skillId = ids[slot - 1] ?? null;
-      const skill = skillId
+      const baseSkill = skillId
         ? resolveEffectiveSkill(
             skillId,
             resolveAwakeningRuntime({ characterId: companion.player.pack.id, instanceId: companion.id }),
-          ) ?? null
+          )
         : null;
+      const skill = baseSkill ? resolveSkillWithAnim(baseSkill, companion.player.getSkillAnim(skillId!)) : null;
       if (!skill || skill.effect === 'heal' || level < (skill.requiredLevel ?? 1)) {
         return { slot, skillId, skill: skill && skill.effect === 'heal' ? skill : null, animAi: undefined };
       }
@@ -305,10 +311,11 @@ export class TeamCompanionSystem {
     const enemyManager = this.options.enemyManager;
     const lootManager = this.options.lootManager;
     if (!enemyManager || !lootManager || companion.player.isBusy()) return false;
-    const skill = resolveEffectiveSkill(
+    const baseSkill = resolveEffectiveSkill(
       skillId,
       resolveAwakeningRuntime({ characterId: companion.player.pack.id, instanceId: companion.id }),
     );
+    const skill = baseSkill ? resolveSkillWithAnim(baseSkill, companion.player.getSkillAnim(skillId)) : null;
     if (!skill || skill.effect === 'heal') return false;
     if (
       !isSkillCooldownIgnored() &&
@@ -317,15 +324,18 @@ export class TeamCompanionSystem {
       return false;
     }
     const range = (skill.range ?? SKILL_DEFAULT_RANGE) * companion.player.worldScale;
-    const target = findUnclaimedEnemy(
-      enemyManager,
-      companion.player.x,
-      companion.player.y,
-      range,
-      this.options.claims ?? null,
-      companion.id,
-    );
-    if (!target) return false;
+    const target =
+      skill.effect === 'buff'
+        ? null
+        : findUnclaimedEnemy(
+            enemyManager,
+            companion.player.x,
+            companion.player.y,
+            range,
+            this.options.claims ?? null,
+            companion.id,
+          );
+    if (!target && skill.effect !== 'buff') return false;
 
     const energy = this.energyFor(companion.id);
     const cost = resolveSkillEnergyCost({
@@ -334,12 +344,15 @@ export class TeamCompanionSystem {
     });
     if (!energy.spend(cost)) return false;
 
-    this.options.claims?.claim(companion.id, target.id);
+    if (target) this.options.claims?.claim(companion.id, target.id);
     this.skillReadyAt.set(`${companion.id}:${skill.id}`, time + skill.cooldownMs);
     this.lastJutsuAt.set(companion.id, time);
     this.lastAttackAt.set(companion.id, time);
-    this.cast(companion, skill, target, (impact, execution) =>
-      this.applySkillDamage(companion, skill, target, impact, execution),
+    this.cast(
+      companion,
+      skill,
+      target,
+      target ? (impact, execution) => this.applySkillDamage(companion, skill, target, impact, execution) : () => undefined,
     );
     return true;
   }
@@ -348,19 +361,20 @@ export class TeamCompanionSystem {
   private cast(
     companion: TeamCompanion,
     skill: SkillDefinition,
-    target: Enemy,
+    target: Enemy | null,
     onHit: (impact: SkillImpact, execution: SkillExecution) => void,
   ): void {
     const player = companion.player;
     const fromX = player.x;
     const fromY = player.y;
-    const toX = target.sprite.x;
-    const toY = target.sprite.y;
-    const targetId = target.id;
+    const toX = target?.sprite.x ?? player.x;
+    const toY = target?.sprite.y ?? player.y;
+    const targetId = target?.id ?? null;
     const unitId = `companion:${companion.id}`;
     player.faceToward(toX, toY);
 
-    const anim = player.getSkillAnim(skill.id);
+    const rawAnim = player.getSkillAnim(skill.id);
+    const anim = poseAttackAnimAsFx(rawAnim);
     const duration = skill.animation.durationMs ?? 280;
     const hitDelay = (anim ? player.playSkillAnim(skill.id) : null) ?? anim?.hitDelayMs ?? duration;
 
@@ -378,16 +392,21 @@ export class TeamCompanionSystem {
         hitDelayMs: hitDelay,
         isCasterDead: () => player.isDead(),
         isOriginalTargetDead: () => {
+          if (!targetId) return false;
           const enemy = this.options.enemyManager?.get(targetId);
           return !enemy || !enemy.isAlive;
         },
         getTargetPos: () => {
-          const enemy = this.options.enemyManager?.get(targetId);
+          if (!targetId) return { x: player.x, y: player.y };
+          const enemy = targetId ? this.options.enemyManager?.get(targetId) : null;
           if (!enemy) return null;
           return { x: enemy.sprite.x, y: enemy.sprite.y };
         },
         onHit,
         onStatusMoment: (moment, execution) => {
+          if (moment === 'on-start' && skill.effect === 'buff' && rawAnim?.buffAuraEnabled) {
+            player.activateBuffAura(rawAnim, resolveBuffDurationMs(rawAnim, skill));
+          }
           tryApplySkillStatuses({
             scene: this.scene,
             skill,
@@ -397,7 +416,7 @@ export class TeamCompanionSystem {
             rolledKeys: execution.statusRolled,
             casterId: unitId,
             primaryTargetId: targetId,
-            hitTargets: [target],
+            hitTargets: target ? [target] : [],
             hitIndex: 0,
           });
         },

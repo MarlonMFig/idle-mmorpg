@@ -28,10 +28,15 @@ function estimateHpMax(member: SealedCharacter, level: number): number {
 function entryIcons(statusIcons: CombatStatusHudIcon[]) {
   return statusIcons.map((entry) => (
     <span
+      className={`active-team__status-icon active-team__status-icon--${entry.statusId}`}
       key={entry.statusId}
-      title={`${entry.statusId}${entry.stacks > 1 ? ` x${entry.stacks}` : ''}`}
+      title={`${entry.statusId}${entry.stacks > 1 ? ` x${entry.stacks}` : ''}${
+        entry.remainingMs != null ? ` · ${Math.ceil(entry.remainingMs / 1000)}s` : ''
+      }`}
+      aria-label={`${entry.statusId} ativo`}
     >
       {entry.icon}
+      {entry.statusId === 'attack-up' ? <small>ATK</small> : null}
       {entry.stacks > 1 ? entry.stacks : ''}
     </span>
   ));

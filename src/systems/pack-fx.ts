@@ -2,7 +2,11 @@ import * as Phaser from 'phaser';
 import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
 import { RENDER_LAYER, vfxDepthForLayer } from '@/constants/render-layers';
 import { PACK_FX_MID_BODY_FACTOR, packFxDisplayScale, packFxFitScale } from '@/lib/pack-fx-scale';
-import type { CharacterSkillAnimDef } from '@/data/character-packs';
+import {
+  sequenceFrameKey,
+  type CharacterSkillAnimDef,
+  type SpriteSheetDef,
+} from '@/data/character-packs';
 import { getVfxDefinition } from '@/data/vfx/registry';
 import type { VfxRenderLayer } from '@/data/vfx/types';
 import type { Player } from '@/entities/player';
@@ -74,6 +78,51 @@ export function computeSkillFxAim(
     startY: start.centerY,
     targetX: dest?.centerX ?? caster.x + 80 * caster.worldScale,
     targetY: dest?.centerY ?? caster.y,
+  };
+}
+
+/**
+ * Reusa a folha principal da skill como FX quando `Pose Attack` está ativo.
+ * A pose continua sendo uma única fonte visual, mas passa pelo mesmo pipeline
+ * de targeting das demais skills.
+ */
+export function poseAttackAnimAsFx(
+  anim: CharacterSkillAnimDef | undefined,
+): CharacterSkillAnimDef | undefined {
+  if (!anim?.cast?.poseAttack) return anim;
+  const fx: SpriteSheetDef = {
+    key: anim.key,
+    url: anim.url,
+    frames: anim.frames,
+    frameWidth: anim.frameWidth,
+    frameHeight: anim.frameHeight,
+    frameCount: anim.frames?.length || anim.frameCount,
+    // Match the Lab pose preview: the imported/body pose is rendered using
+    // its own frame size, not the old skill animation's body metrics.
+    contentHeight: anim.frameHeight,
+    frameRate: anim.frameRate,
+    loop: anim.loop,
+    loopMode: anim.loopMode,
+    loopStartFrame: anim.loopStartFrame,
+    loopEndFrame: anim.loopEndFrame,
+    loopDurationMs: anim.loopDurationMs,
+    loopUntilSkillEnd: anim.loopUntilSkillEnd,
+    flipX: anim.flipX,
+    flipY: anim.flipY,
+    originX: 0.5,
+    originY: 1,
+    offsetX: anim.cast?.offsetX ?? anim.offsetX ?? 0,
+    offsetY: anim.cast?.offsetY ?? anim.offsetY ?? 0,
+  };
+  return {
+    ...anim,
+    fx,
+    // Pose Attack uses the pose's cast scale, not the old skill VFX scale.
+    fxScale: anim.cast?.scaleY ?? anim.cast?.scale ?? anim.fxScale ?? 1,
+    fxGround: true,
+    fxIndependentScale: true,
+    fxSecondary: undefined,
+    vfxId: undefined,
   };
 }
 
@@ -173,6 +222,37 @@ function ensureSpriteAnim(
   if (scene.anims.exists(key)) {
     const existing = scene.anims.get(key);
     if (existing && existing.frames.length > 0) return true;
+    scene.anims.remove(key);
+  }
+  scene.anims.create({ key, frames, frameRate, repeat });
+  return true;
+}
+
+/** Cria uma animação Phaser a partir de frames carregados como texturas avulsas. */
+function ensureTextureSequenceAnim(
+  scene: Phaser.Scene,
+  key: string,
+  textureKeys: readonly string[],
+  frameRate: number,
+  repeat: number,
+): boolean {
+  const frames = textureKeys
+    .filter((textureKey) => scene.textures.exists(textureKey))
+    .map((textureKey) => ({ key: textureKey }));
+  if (!frames.length) {
+    if (scene.anims.exists(key)) scene.anims.remove(key);
+    return false;
+  }
+  if (scene.anims.exists(key)) {
+    const existing = scene.anims.get(key);
+    if (
+      existing &&
+      existing.frames.length === frames.length &&
+      existing.frameRate === frameRate &&
+      existing.repeat === repeat
+    ) {
+      return true;
+    }
     scene.anims.remove(key);
   }
   scene.anims.create({ key, frames, frameRate, repeat });
@@ -524,7 +604,11 @@ function playTravelFx(
   const fxDef = anim.fx;
   if (!fxDef) return;
   const textureKey = fxDef.key;
-  if (!scene.textures.exists(textureKey)) {
+  const textureKeys = fxDef.frames?.length
+    ? fxDef.frames.map((_, index) => sequenceFrameKey(textureKey, index))
+    : [textureKey];
+  const renderTextureKey = textureKeys.find((key) => scene.textures.exists(key));
+  if (!renderTextureKey) {
     logVfxLifecycle('spawn failed', {
       reason: 'asset 404',
       key: textureKey,
@@ -545,12 +629,12 @@ function playTravelFx(
 
   const bodyH = anim.contentHeight ?? 0;
   const fxH = fxDef.contentHeight ?? fxDef.frameHeight;
-  const tex = scene.textures.get(textureKey);
-  const frame = tex.get(0);
+  const tex = scene.textures.get(renderTextureKey);
+  const frame = fxDef.frames?.length ? tex.get() : tex.get(0);
   const fxW = frame && typeof frame.width === 'number' ? frame.width : 0;
   const scaleMult = anim.fxScale && anim.fxScale > 0 ? anim.fxScale : 1;
 
-  const fx = trackLabSprite(scene.add.sprite(startX, startY, textureKey, 0));
+  const fx = trackLabSprite(scene.add.sprite(startX, startY, renderTextureKey));
   fx.setOrigin(facingLeft ? 1 - originX : originX, 0.5);
   fx.setFlipX(facingLeft);
   applyFxDepth(fx, endY, anim.vfxId);
@@ -572,13 +656,21 @@ function playTravelFx(
 
   const travelKey = `fx-${textureKey}-lab-travel`;
   const snapKey = `fx-${textureKey}-lab-snap`;
-  const sheetFrames = tex.getFrameNames().filter((name) => name !== '__BASE').length;
+  const sheetFrames = fxDef.frames?.length
+    ? textureKeys.filter((key) => scene.textures.exists(key)).length
+    : Math.max(0, (scene.textures.get(textureKey)?.frameTotal ?? 1) - 1);
   const playFrames =
     anim.vfxId && fxDef.frameCount > 0 ? Math.min(fxDef.frameCount, sheetFrames) : sheetFrames;
   const fps = fxDef.frameRate && fxDef.frameRate > 0 ? fxDef.frameRate : 12;
   if (playFrames > 1) {
-    ensureSpriteAnim(scene, travelKey, textureKey, 0, playFrames - 1, fps, -1);
-    ensureSpriteAnim(scene, snapKey, textureKey, 0, playFrames - 1, fps, 0);
+    const playableKeys = textureKeys.filter((key) => scene.textures.exists(key)).slice(0, playFrames);
+    if (fxDef.frames?.length) {
+      ensureTextureSequenceAnim(scene, travelKey, playableKeys, fps, -1);
+      ensureTextureSequenceAnim(scene, snapKey, playableKeys, fps, 0);
+    } else {
+      ensureSpriteAnim(scene, travelKey, textureKey, 0, playFrames - 1, fps, -1);
+      ensureSpriteAnim(scene, snapKey, textureKey, 0, playFrames - 1, fps, 0);
+    }
   }
 
   const fadeOut = () => {
@@ -937,7 +1029,12 @@ export function scheduleSkillFx(
   } else if (anim.vfxId && !anim.fx) {
     logVfxLifecycle('spawn failed', { reason: 'frame definition invalid', vfxId: anim.vfxId });
   }
-  if (labSession && (mode === 'travel-to-target' || mode === 'instant-target' || characterLabStore.getSnapshot().loopSkill)) {
+  if (
+    labSession &&
+    (Boolean(anim.fx) &&
+      (mode === 'travel-to-target' || mode === 'instant-target') ||
+      characterLabStore.getSnapshot().loopSkill)
+  ) {
     clearLabForcedFx();
   }
 

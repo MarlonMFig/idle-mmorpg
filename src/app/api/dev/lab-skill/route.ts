@@ -172,6 +172,14 @@ export async function POST(request: Request) {
         ...(body.vfxLoopUntilSkillEnd != null ? { vfxLoopUntilSkillEnd: Boolean(body.vfxLoopUntilSkillEnd) } : {}),
         ...(body.vfxFlipX != null ? { vfxFlipX: Boolean(body.vfxFlipX) } : {}),
         ...(body.vfxFlipY != null ? { vfxFlipY: Boolean(body.vfxFlipY) } : {}),
+        ...(body.poseAttack != null ? { poseAttack: Boolean(body.poseAttack) } : {}),
+        ...(body.poseBuff != null ? { poseBuff: Boolean(body.poseBuff) } : {}),
+        ...(body.buffAuraVfxId !== undefined
+          ? { buffAuraVfxId: body.buffAuraVfxId }
+          : {}),
+        ...(body.buffAuraEnabled != null
+          ? { buffAuraEnabled: Boolean(body.buffAuraEnabled) }
+          : {}),
         ...(body.areaImpactFxPerTarget != null
           ? { areaImpactFxPerTarget: Boolean(body.areaImpactFxPerTarget) }
           : {}),

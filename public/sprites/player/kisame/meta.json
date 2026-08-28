@@ -1,13 +1,21 @@
 {
   "kisame-walk": {
+    "key": "kisame-walk",
     "image": "/sprites/player/kisame/walk.png",
-    "frameWidth": 59,
-    "frameHeight": 114,
-    "frameCount": 6,
+    "frameWidth": 139,
+    "frameHeight": 106,
+    "frameCount": 5,
     "contentHeight": 110,
-    "scale": 1,
+    "scale": 0.7586206896551724,
+    "originX": 0.5,
+    "frameRate": 10,
+    "source": "assets/naruto-source/nu/kisame/walk (walk replacement from sprite walk kisame.zip)",
     "residualGreen": 0,
-    "pureBlack": 6713
+    "residualExteriorBlack": 0,
+    "pureBlack": 9248,
+    "footSpread": 0,
+    "packMode": "feet+bodyLockY",
+    "note": "alpha-only, nearest-neighbor scale, planted feet and locked torso height"
   },
   "kisame-idle": {
     "image": "/sprites/player/kisame/idle.png",

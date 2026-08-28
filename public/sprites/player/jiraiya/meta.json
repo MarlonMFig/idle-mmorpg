@@ -1,34 +1,21 @@
 {
   "jiraiya-walk": {
+    "key": "jiraiya-walk",
     "image": "/sprites/player/jiraiya/walk.png",
-    "frameWidth": 133,
-    "frameHeight": 229,
+    "frameWidth": 215,
+    "frameHeight": 232,
     "frameCount": 6,
     "contentHeight": 225,
-    "scale": 1,
-    "maxContentH": 225,
+    "scale": 1.3636363636363635,
+    "originX": 0.5,
     "frameRate": 10,
-    "source": "assets/naruto-source/nu/jiraiya/walk/frame_001..006.png",
+    "source": "assets/naruto-source/nu/jiraiya/walk (walk replacement from sprite walk jiraya.zip)",
     "residualGreen": 0,
     "residualExteriorBlack": 0,
-    "pureBlack": 26028,
-    "whiteHair": 16047,
-    "contentHeights": [
-      225,
-      225,
-      216,
-      219,
-      225,
-      225
-    ],
-    "bodyLock": {
-      "destBodyCx": 67,
-      "destFeetY": 226,
-      "bodyCxStd": 0.258,
-      "bodyCxRange": 0.734,
-      "feetYDelta": 0
-    },
-    "note": "6-frame walk; alpha-only; body-lock torso+feet; nearest maxContentH→48; white hair preserved"
+    "pureBlack": 32601,
+    "footSpread": 0,
+    "packMode": "feet+bodyLockY",
+    "note": "alpha-only, nearest-neighbor scale, planted feet and locked torso height"
   },
   "jiraiya-idle": {
     "image": "/sprites/player/jiraiya/idle.png",

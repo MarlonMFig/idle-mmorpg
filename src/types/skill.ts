@@ -5,6 +5,7 @@ import type { SkillStatusApplication } from '@/data/status-effect-def';
 
 /** Elementos de jutsu / habilidade. Ausente = `neutral` (legado). */
 export type SkillElement = DamageElement;
+export type SkillEffect = 'damage' | 'heal' | 'buff';
 
 /**
  * Tipo de animação visual no Phaser.
@@ -48,7 +49,7 @@ export interface SkillDefinition {
   /** Ausente = `neutral`. Não inferir pelo VFX. */
   element?: SkillElement;
   /** Efeito principal. Ausente mantém o comportamento legado de dano. */
-  effect?: 'damage' | 'heal';
+  effect?: SkillEffect;
   /** Nível do jogador necessário para usar a habilidade. */
   requiredLevel?: number;
   /** Cooldown em milissegundos. */

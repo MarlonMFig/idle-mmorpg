@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import type { CharacterAuraDef } from '@/data/character-packs';
 import type { SkillVfxTargetMode } from '@/data/skill-vfx-targeting';
 import { SKILL_VFX_TARGET_MODES } from '@/data/skill-vfx-targeting';
 import {
@@ -13,6 +14,7 @@ import {
   type SkillStatusApplication,
 } from '@/data/status-effect-def';
 import { isDamageElement } from '@/data/damage-elements';
+import type { SkillEffect } from '@/types/skill';
 import { formatSkillAiLiteral, parseSkillAi } from '@/data/skill-ai-def';
 import {
   assertWritableSourcePath,
@@ -80,6 +82,54 @@ export function readSpriteAlignmentFromSource(
     hub: hub ? { x: Number(hub[1]), y: Number(hub[2]) } : undefined,
     hunt: hunt ? { x: Number(hunt[1]), y: Number(hunt[2]) } : undefined,
   });
+}
+
+/** Persiste a configuração de aura no bloco do CharacterPack. */
+export function patchCharacterAura(
+  characterId: string,
+  aura: CharacterAuraDef | null,
+  options?: LabPatchOptions,
+): LabPatchResult {
+  const loaded = loadCharacterSource(characterId, options?.source);
+  const pack = packObjectRange(loaded.source, loaded.characterId);
+  if (!pack) throw new Error(`Bloco do pack não encontrado: ${loaded.characterId}`);
+
+  let packBlock = loaded.source.slice(pack.start, pack.end + 1);
+  const existing = firstPropAssignment(packBlock, 'aura');
+  if (!aura) {
+    if (existing) {
+      const lineStart = packBlock.lastIndexOf('\n', existing.start) + 1;
+      let removeEnd = existing.end + 1;
+      if (packBlock[removeEnd] === ',') removeEnd += 1;
+      if (packBlock[removeEnd] === '\r') removeEnd += 1;
+      if (packBlock[removeEnd] === '\n') removeEnd += 1;
+      packBlock = packBlock.slice(0, lineStart) + packBlock.slice(removeEnd);
+    }
+  } else {
+    const indent = skillKeyIndent(packBlock);
+    const innerIndent = `${indent}  `;
+    const literal = [
+      '{',
+      `${innerIndent}vfxId: ${JSON.stringify(aura.vfxId)},`,
+      `${innerIndent}enabled: ${aura.enabled ? 'true' : 'false'},`,
+      `${innerIndent}scale: ${formatNum(aura.scale)},`,
+      `${innerIndent}offsetX: ${formatNum(aura.offsetX)},`,
+      `${innerIndent}offsetY: ${formatNum(aura.offsetY)},`,
+      `${indent}}`,
+    ].join('\n');
+    packBlock = existing
+      ? `${packBlock.slice(0, existing.start)}${literal}${packBlock.slice(existing.end + 1)}`
+      : insertBeforeLastBrace(packBlock, `aura: ${literal},`);
+  }
+
+  const source = patchRange(loaded.source, pack.start, pack.end, packBlock);
+  persistSource(loaded.hit.absPath, source, options?.persist);
+  return {
+    relativePath: loaded.hit.relativePath,
+    applied: { aura: aura ? 1 : 0 },
+    source,
+    absPath: loaded.hit.absPath,
+  };
 }
 
 function persistSource(absPath: string, source: string, persist?: boolean): void {
@@ -438,6 +488,8 @@ function upsertCast(
   fields: Partial<{
     vfxId: string | null;
     animationId: string | null;
+    poseAttack?: boolean;
+    poseBuff?: boolean;
     scale: number;
     scaleX: number;
     scaleY: number;
@@ -475,6 +527,14 @@ function upsertCast(
       if (fields.animationId) next = setStringProp(next, 'animationId', fields.animationId);
       else next = removeProp(next, 'animationId');
     }
+    if (fields.poseAttack !== undefined) {
+      if (fields.poseAttack) next = setBooleanProp(next, 'poseAttack', true);
+      else next = removeProp(next, 'poseAttack');
+    }
+    if (fields.poseBuff !== undefined) {
+      if (fields.poseBuff) next = setBooleanProp(next, 'poseBuff', true);
+      else next = removeProp(next, 'poseBuff');
+    }
     if (fields.scale != null) next = setNumericProp(next, 'scale', fields.scale);
     if (fields.scaleX != null) next = setNumericProp(next, 'scaleX', fields.scaleX);
     if (fields.scaleY != null) next = setNumericProp(next, 'scaleY', fields.scaleY);
@@ -496,7 +556,7 @@ function upsertCast(
 
   if (existing) {
     const inner = applyFields(skillBlock.slice(existing.start, existing.end + 1));
-    const emptied = !/\b(?:vfxId|animationId|scaleX?|scaleY|offsetX|offsetY|loop)\s*:/.test(inner);
+    const emptied = !/\b(?:vfxId|animationId|poseAttack|poseBuff|scaleX?|scaleY|offsetX|offsetY|loop)\s*:/.test(inner);
     if (emptied) {
       return skillBlock.slice(0, match!.index) + skillBlock.slice(existing.end + 1).replace(/^,?\s*/, '');
     }
@@ -506,6 +566,8 @@ function upsertCast(
   const lines = ['cast: {'];
   if (fields.vfxId) lines.push(`${innerIndent}vfxId: '${fields.vfxId}',`);
   if (fields.animationId) lines.push(`${innerIndent}animationId: '${fields.animationId}',`);
+  if (fields.poseAttack) lines.push(`${innerIndent}poseAttack: true,`);
+  if (fields.poseBuff) lines.push(`${innerIndent}poseBuff: true,`);
   if (fields.scaleX != null) lines.push(`${innerIndent}scaleX: ${formatNum(fields.scaleX)},`);
   if (fields.scaleY != null) lines.push(`${innerIndent}scaleY: ${formatNum(fields.scaleY)},`);
   if (fields.scale != null) lines.push(`${innerIndent}scale: ${formatNum(fields.scale)},`);
@@ -711,6 +773,8 @@ function formatSkillAnimLiteral(
     };
     execution?: SkillExecutionDef;
     statusEffects?: SkillStatusApplication[];
+    buffAuraVfxId?: string;
+    buffAuraEnabled?: boolean;
     cast?: {
       scaleX?: number;
       scaleY?: number;
@@ -719,6 +783,8 @@ function formatSkillAnimLiteral(
       offsetY?: number;
       loop?: boolean;
       animationId?: string;
+      poseAttack?: boolean;
+      poseBuff?: boolean;
     };
   },
   indent: string,
@@ -750,6 +816,8 @@ function formatSkillAnimLiteral(
   lines.push(`${inner}durationMs: ${anim.durationMs},`);
   lines.push(`${inner}hitDelayMs: ${anim.hitDelayMs},`);
   if (anim.vfxId) lines.push(`${inner}vfxId: '${anim.vfxId}',`);
+  if (anim.buffAuraVfxId) lines.push(`${inner}buffAuraVfxId: '${anim.buffAuraVfxId}',`);
+  if (anim.buffAuraEnabled) lines.push(`${inner}buffAuraEnabled: true,`);
   if (anim.fxScale != null) lines.push(`${inner}fxScale: ${formatNum(anim.fxScale)},`);
   if (anim.vfxOffsetX != null) lines.push(`${inner}vfxOffsetX: ${formatNum(anim.vfxOffsetX)},`);
   if (anim.vfxOffsetY != null) lines.push(`${inner}vfxOffsetY: ${formatNum(anim.vfxOffsetY)},`);
@@ -809,10 +877,14 @@ function formatSkillAnimLiteral(
       cast.offsetX != null ||
       cast.offsetY != null ||
       cast.loop ||
-      cast.animationId)
+      cast.animationId ||
+      cast.poseAttack ||
+      cast.poseBuff)
   ) {
     lines.push(`${inner}cast: {`);
     if (cast.animationId) lines.push(`${nested}animationId: '${cast.animationId}',`);
+    if (cast.poseAttack) lines.push(`${nested}poseAttack: true,`);
+    if (cast.poseBuff) lines.push(`${nested}poseBuff: true,`);
     if (cast.scaleX != null) lines.push(`${nested}scaleX: ${formatNum(cast.scaleX)},`);
     if (cast.scaleY != null) lines.push(`${nested}scaleY: ${formatNum(cast.scaleY)},`);
     if (cast.scale != null) lines.push(`${nested}scale: ${formatNum(cast.scale)},`);
@@ -1009,6 +1081,29 @@ function sanitizeChanges(raw: Record<string, unknown>): LabSaveChanges {
       out.castAnimationId = value;
       continue;
     }
+    if (key === 'poseAttack') {
+      out.poseAttack = Boolean(value);
+      continue;
+    }
+    if (key === 'poseBuff') {
+      out.poseBuff = Boolean(value);
+      continue;
+    }
+    if (key === 'buffAuraVfxId') {
+      if (value === null || value === '') {
+        out.buffAuraVfxId = null;
+        continue;
+      }
+      if (typeof value !== 'string' || !/^[a-z][a-z0-9-]{1,62}$/.test(value)) {
+        throw new Error(`buffAuraVfxId inválido: ${String(value)}`);
+      }
+      out.buffAuraVfxId = value;
+      continue;
+    }
+    if (key === 'buffAuraEnabled') {
+      out.buffAuraEnabled = Boolean(value);
+      continue;
+    }
     if (key === 'vfxLoopMode') {
       if (!isFrameLoopMode(value)) throw new Error(`vfxLoopMode inválido: ${String(value)}`);
       out.vfxLoopMode = canonicalizeLoopMode(value) ?? 'none';
@@ -1035,6 +1130,13 @@ function sanitizeChanges(raw: Record<string, unknown>): LabSaveChanges {
     if (key === 'element') {
       if (!isDamageElement(value)) throw new Error(`unknown element: ${String(value)}`);
       out.element = value;
+      continue;
+    }
+    if (key === 'skillEffect') {
+      if (value !== 'damage' && value !== 'heal' && value !== 'buff') {
+        throw new Error(`skillEffect inválido: ${String(value)}`);
+      }
+      out.skillEffect = value as SkillEffect;
       continue;
     }
     if (key === 'ai') {
@@ -1272,9 +1374,14 @@ export function patchCharacterSource(input: LabSourcePatch, options?: LabPatchOp
     changes.poseOffsetX != null ||
     changes.poseOffsetY != null ||
     changes.castAnimationId !== undefined ||
+    changes.poseAttack !== undefined ||
+    changes.poseBuff !== undefined ||
     changes.castDelayMs != null ||
     changes.execution != null ||
     changes.statusEffects != null ||
+    changes.skillEffect != null ||
+    changes.buffAuraVfxId !== undefined ||
+    changes.buffAuraEnabled !== undefined ||
     changes.vfxLoopMode != null ||
     changes.vfxLoopStartFrame != null ||
     changes.vfxLoopEndFrame != null ||
@@ -1351,6 +1458,16 @@ export function patchCharacterSource(input: LabSourcePatch, options?: LabPatchOp
         applied.vfxId = 'nenhum';
       }
     }
+    if (changes.buffAuraVfxId !== undefined) {
+      if (changes.buffAuraVfxId) skillBlock = setStringProp(skillBlock, 'buffAuraVfxId', changes.buffAuraVfxId);
+      else skillBlock = removeProp(skillBlock, 'buffAuraVfxId');
+      applied.buffAuraVfxId = changes.buffAuraVfxId ?? 'nenhuma';
+    }
+    if (changes.buffAuraEnabled !== undefined) {
+      if (changes.buffAuraEnabled) skillBlock = setBooleanProp(skillBlock, 'buffAuraEnabled', true);
+      else skillBlock = removeProp(skillBlock, 'buffAuraEnabled');
+      applied.buffAuraEnabled = changes.buffAuraEnabled ? 'ligado' : 'desligado';
+    }
 
     const catalogSkill =
       changes.vfxId !== null && (Boolean(changes.vfxId) || /\bvfxId\s*:/.test(skillBlock));
@@ -1375,6 +1492,8 @@ export function patchCharacterSource(input: LabSourcePatch, options?: LabPatchOp
     const wantsCast =
       changes.poseVfxId !== undefined ||
       changes.castAnimationId !== undefined ||
+      changes.poseAttack !== undefined ||
+      changes.poseBuff !== undefined ||
       changes.poseScale != null ||
       changes.poseOffsetX != null ||
       changes.poseOffsetY != null;
@@ -1382,6 +1501,8 @@ export function patchCharacterSource(input: LabSourcePatch, options?: LabPatchOp
       skillBlock = upsertCast(skillBlock, {
         vfxId: changes.poseVfxId,
         animationId: changes.castAnimationId,
+        poseAttack: changes.poseAttack,
+        poseBuff: changes.poseBuff,
         scale: changes.poseScale,
         offsetX: changes.poseOffsetX,
         offsetY: changes.poseOffsetY,
@@ -1400,6 +1521,10 @@ export function patchCharacterSource(input: LabSourcePatch, options?: LabPatchOp
     if (changes.statusEffects) {
       skillBlock = upsertStatusEffects(skillBlock, changes.statusEffects);
       applied.statusEffects = changes.statusEffects.map((entry) => entry.statusId).join(',') || 'nenhum';
+    }
+    if (changes.skillEffect) {
+      skillBlock = setStringProp(skillBlock, 'effect', changes.skillEffect);
+      applied.skillEffect = changes.skillEffect;
     }
     if (changes.element) {
       skillBlock = setStringProp(skillBlock, 'element', changes.element);

@@ -708,13 +708,16 @@
   },
   "sasuke-walk": {
     "image": "/sprites/player/sasuke/walk.png",
-    "frameWidth": 99,
+    "frameWidth": 125,
     "frameHeight": 115,
     "frameCount": 6,
     "contentHeight": 111,
-    "scale": 1.1443298969072164,
+    "scale": 1.009090909090909,
+    "originX": 0.5,
     "residualGreen": 0,
-    "pureBlack": 11830
+    "pureBlack": 12696,
+    "source": "assets/naruto-source/nu/sasuke/walk (sprite walk sasuke.zip)",
+    "frameRate": 10
   },
   "sasuke-idle": {
     "image": "/sprites/player/sasuke/idle.png",

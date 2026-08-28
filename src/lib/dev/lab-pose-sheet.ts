@@ -138,6 +138,34 @@ export interface CharacterPoseOption {
   sheet: SpriteSheetDef;
 }
 
+export const PACK_BODY_POSE_OPTION_IDS = ['idle', 'walk', 'attack', 'combo1', 'combo2', 'combo3'] as const;
+
+export function isPackBodyPoseOptionId(id: string): boolean {
+  return (PACK_BODY_POSE_OPTION_IDS as readonly string[]).includes(id);
+}
+
+/** Poses corporais padrão não são convertidas em FX pelo Lab. */
+export const POSE_CHECKBOX_EXCLUDED_IDS = ['idle', 'walk', 'attack', 'combo1', 'combo2', 'combo3'] as const;
+
+export function isPoseCheckboxExcluded(id: string | null | undefined): boolean {
+  return id != null && (POSE_CHECKBOX_EXCLUDED_IDS as readonly string[]).includes(id);
+}
+
+/** Só poses corporais usam `cast.animationId`; Pose Attack fica sem cast corporal. */
+export function poseOptionIdToCastAnimationId(id: string | null | undefined): string | null {
+  return id && isPackBodyPoseOptionId(id) ? id : null;
+}
+
+export function inferPoseOptionId(
+  skillId: string | null | undefined,
+  anim: CharacterSkillAnimDef | undefined,
+): string | null {
+  if (!anim || !labPoseHasContent(poseSheetFromAnim(anim))) return null;
+  const castId = anim.cast?.animationId;
+  if (castId && isPackBodyPoseOptionId(castId)) return castId;
+  return skillId ? `skill:${skillId}` : null;
+}
+
 export function listCharacterPoseOptions(pack: CharacterPack): CharacterPoseOption[] {
   const options: CharacterPoseOption[] = [];
   const push = (id: string, label: string, sheet: SpriteSheetDef | undefined) => {
@@ -154,6 +182,14 @@ export function listCharacterPoseOptions(pack: CharacterPack): CharacterPoseOpti
     push(`skill:${skillId}`, getSkill(skillId)?.name ?? skillId, anim);
   }
   return options;
+}
+
+export function getCharacterPoseSheet(
+  pack: CharacterPack,
+  optionId: string | null | undefined,
+): SpriteSheetDef | null {
+  if (!optionId) return null;
+  return listCharacterPoseOptions(pack).find((option) => option.id === optionId)?.sheet ?? null;
 }
 
 export function applyPoseSheetToAnim(

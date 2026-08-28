@@ -388,4 +388,16 @@ export const LAB_VISUAL_SKILLS: SkillDefinition[] = [
     description: "Skill de teste visual (DEV Lab).",
     developmentStatus: 'visual-test',
   },
+  {
+    id: 'hinata-hakke-kusho',
+    name: "Hakke Kusho",
+    element: 'neutral',
+    cooldownMs: 1000,
+    damage: 0,
+    icon: '/sprites/skills/neutral.svg',
+    animation: { kind: 'character', durationMs: 600, scale: 1 },
+    range: 80,
+    description: "Skill de teste visual (DEV Lab).",
+    developmentStatus: 'visual-test',
+  },
 ];

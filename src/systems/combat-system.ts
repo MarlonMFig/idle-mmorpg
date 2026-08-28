@@ -17,7 +17,7 @@ import { SKILL_DEFAULT_RANGE } from '@/constants/skill';
 import { resolveSkillEnergyCost } from '@/data/skill-ai-def';
 import { BASIC_ATTACK_ELEMENT, resolveSkillElement, type DamageElement } from '@/data/damage-elements';
 import { resolveAwakeningRuntime } from '@/lib/awakening-runtime';
-import { resolveEffectiveSkill } from '@/lib/resolve-effective-skill';
+import { resolveEffectiveSkill, resolveSkillWithAnim } from '@/lib/resolve-effective-skill';
 import type { Player } from '@/entities/player';
 import type { Enemy } from '@/entities/enemy';
 import { STAR_3_SPECIAL_DAMAGE_BONUS } from '@/constants/character-progression';
@@ -42,7 +42,14 @@ import {
 import type { EnemyManager } from '@/systems/enemy-manager';
 import { findNearestAliveEnemy, findUnclaimedEnemy } from '@/systems/find-nearest-enemy';
 import type { LootManager } from '@/systems/loot-manager';
-import { computeSkillFxAim, playPackFx, shouldSpawnAreaImpactFxPerTarget, spawnAreaImpactFxForTargets, type SkillFxAim } from '@/systems/pack-fx';
+import {
+  computeSkillFxAim,
+  playPackFx,
+  poseAttackAnimAsFx,
+  shouldSpawnAreaImpactFxPerTarget,
+  spawnAreaImpactFxForTargets,
+  type SkillFxAim,
+} from '@/systems/pack-fx';
 import { playPlayerPulse } from '@/systems/player-feedback';
 import { SkillVfx } from '@/systems/skill-vfx';
 import {
@@ -51,7 +58,7 @@ import {
   type SkillExecution,
   type SkillImpact,
 } from '@/systems/skill-execution';
-import { tryApplySkillStatuses } from '@/systems/skill-status-apply';
+import { resolveBuffDurationMs, tryApplySkillStatuses } from '@/systems/skill-status-apply';
 import {
   createSkillRotationCursor,
   decideNextAction,
@@ -115,13 +122,14 @@ export class CombatSystem {
   }
 
   private effectiveSkill(skillId: string) {
-    return resolveEffectiveSkill(
+    const skill = resolveEffectiveSkill(
       skillId,
       resolveAwakeningRuntime({
         characterId: this.player.pack.id,
         instanceId: this.player.instanceId,
       }),
     );
+    return skill ? resolveSkillWithAnim(skill, this.player.getSkillAnim(skillId)) : skill;
   }
 
   /** Test Lab: executa a skill real (animação + VFX + hitDelay) no alvo. */
@@ -152,6 +160,13 @@ export class CombatSystem {
           appliedAtMs: Math.round(this.scene.time.now - startedAt),
         });
       }, null);
+      return true;
+    }
+
+    if (skill.effect === 'buff') {
+      this.lastActionAt = this.scene.time.now;
+      this.lastJutsuAt = this.scene.time.now;
+      this.cast(skill, this.player.x, this.player.y, () => undefined, null);
       return true;
     }
 
@@ -522,6 +537,14 @@ export class CombatSystem {
       return true;
     }
 
+    if (skill.effect === 'buff') {
+      if (!combatEnergyStore.spend(this.skillEnergyCost(skill))) return false;
+      this.lastActionAt = time;
+      this.lastJutsuAt = time;
+      this.cast(skill, this.player.x, this.player.y, () => undefined, null);
+      return true;
+    }
+
     const range = (skill.range ?? SKILL_DEFAULT_RANGE) * this.player.worldScale;
     const target = findNearestAliveEnemy(this.enemyManager, this.player.x, this.player.y, range);
     if (!target) return false;
@@ -549,7 +572,8 @@ export class CombatSystem {
 
     const fromX = this.player.x;
     const fromY = this.player.y;
-    const skillAnim = this.player.getSkillAnim(skill.id);
+    const rawSkillAnim = this.player.getSkillAnim(skill.id);
+    const skillAnim = poseAttackAnimAsFx(rawSkillAnim);
     const duration = skill.animation.durationMs ?? 280;
     const aim = this.pendingFxAim;
     this.pendingFxAim = null;
@@ -586,6 +610,9 @@ export class CombatSystem {
         },
         onHit,
         onStatusMoment: (moment, execution) => {
+          if (moment === 'on-start' && skill.effect === 'buff' && rawSkillAnim?.buffAuraEnabled) {
+            this.player.activateBuffAura(rawSkillAnim, resolveBuffDurationMs(rawSkillAnim, skill));
+          }
           this.applyStatuses(skill, skillAnim, moment, execution, primary, primary ? [primary] : [], 0);
         },
       });

@@ -183,6 +183,9 @@ export function HubTopMenu() {
     (s) =>
       `${s.daily.cycleId}:${s.weekly.cycleId}:${Object.keys(s.daily.missions).length}:${s.journey.currentId}`,
   );
+  useEffect(() => {
+    missionsStore.ensureCycles();
+  }, [missionTick]);
   const missionBadge = missionTick ? missionsStore.claimableCount() : 0;
   const dailyTick = useStore(
     dailyLoginStore,

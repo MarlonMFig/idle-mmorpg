@@ -34,6 +34,7 @@ import {
   type SpriteAlignmentConfig,
 } from '@/lib/sprite-alignment';
 import type { CharacterAnimSlot } from '@/types/character-definition';
+import type { SkillEffect } from '@/types/skill';
 
 export const LAB_SAVEABLE_NUMBER_FIELDS = [
   'scaleX',
@@ -57,9 +58,26 @@ export const LAB_SAVEABLE_NUMBER_FIELDS = [
   'castDelayMs',
 ] as const;
 
-export const LAB_SAVEABLE_STRING_FIELDS = ['targetMode', 'vfxId', 'poseVfxId', 'castAnimationId', 'element'] as const;
+export const LAB_SAVEABLE_STRING_FIELDS = [
+  'targetMode',
+  'vfxId',
+  'poseVfxId',
+  'castAnimationId',
+  'element',
+  'skillEffect',
+  'buffAuraVfxId',
+] as const;
 
-export const LAB_SAVEABLE_FIELDS = [...LAB_SAVEABLE_NUMBER_FIELDS, ...LAB_SAVEABLE_STRING_FIELDS, 'execution', 'statusEffects', 'ai'] as const;
+export const LAB_SAVEABLE_FIELDS = [
+  ...LAB_SAVEABLE_NUMBER_FIELDS,
+  ...LAB_SAVEABLE_STRING_FIELDS,
+  'poseAttack',
+  'poseBuff',
+  'buffAuraEnabled',
+  'execution',
+  'statusEffects',
+  'ai',
+] as const;
 
 export type LabSaveableNumberField = (typeof LAB_SAVEABLE_NUMBER_FIELDS)[number];
 export type LabSaveableField = (typeof LAB_SAVEABLE_FIELDS)[number];
@@ -69,9 +87,14 @@ export type LabSaveChanges = Partial<Record<LabSaveableNumberField, number>> & {
   vfxId?: string | null;
   poseVfxId?: string | null;
   castAnimationId?: string | null;
+  poseAttack?: boolean;
+  poseBuff?: boolean;
   execution?: SkillExecutionDef;
   statusEffects?: SkillStatusApplication[];
   element?: DamageElement;
+  skillEffect?: SkillEffect;
+  buffAuraVfxId?: string | null;
+  buffAuraEnabled?: boolean;
   ai?: SkillAiConfig;
   /** Alignment global Hub/Hunt — valores absolutos no Character Pack. */
   spriteAlignment?: SpriteAlignmentConfig;
@@ -167,12 +190,17 @@ export interface LabSkillOriginals {
   targetOffsetX: number;
   targetOffsetY: number;
   poseVfxId: string | null;
+  poseAttack: boolean;
+  poseBuff: boolean;
+  buffAuraVfxId: string | null;
+  buffAuraEnabled: boolean;
   poseScale: number;
   poseOffsetX: number;
   poseOffsetY: number;
   castDelayMs: number;
   castAnimationId: string | null;
   poseSheet: LabPoseSheet | null;
+  poseOptionId: string | null;
   execution: SkillExecutionDef;
   statusEffects: SkillStatusApplication[];
   skillElement: DamageElement;
@@ -249,12 +277,17 @@ export function readLabSkillOriginals(
     targetOffsetX: targeting?.targetOffsetX ?? 0,
     targetOffsetY: targeting?.targetOffsetY ?? 0,
     poseVfxId: anim?.cast?.vfxId ?? null,
+    poseAttack: Boolean(anim?.cast?.poseAttack),
+    poseBuff: Boolean(anim?.cast?.poseBuff),
+    buffAuraVfxId: anim?.buffAuraVfxId ?? null,
+    buffAuraEnabled: Boolean(anim?.buffAuraEnabled),
     poseScale: anim?.cast?.scaleX ?? anim?.cast?.scaleY ?? anim?.cast?.scale ?? 1,
     poseOffsetX: anim?.offsetX ?? anim?.cast?.offsetX ?? 0,
     poseOffsetY: anim?.offsetY ?? anim?.cast?.offsetY ?? 0,
     castDelayMs: anim?.castDelayMs ?? 0,
     castAnimationId: anim?.cast?.animationId ?? null,
     poseSheet: cloneLabPoseSheet(poseSheetFromAnim(anim)),
+    poseOptionId: null,
     execution: cloneExecutionDef(anim?.execution),
     statusEffects: cloneSkillStatusEffects(anim?.statusEffects ?? skillStatusEffects),
     skillElement: resolveSkillElement({ element: skillElement }, anim),
@@ -287,6 +320,10 @@ export function collectLabSaveChanges(input: {
   poseOffsetY: number;
   castDelayMs: number;
   castAnimationId: string | null;
+  poseAttack: boolean;
+  poseBuff: boolean;
+  buffAuraVfxId: string | null;
+  buffAuraEnabled: boolean;
   original: LabSkillOriginals;
   execution: SkillExecutionDef;
   statusEffects: SkillStatusApplication[];
@@ -380,6 +417,46 @@ export function collectLabSaveChanges(input: {
       value: input.castAnimationId,
     });
   }
+  if (input.poseAttack !== orig.poseAttack) {
+    lines.push({
+      group: 'VFX',
+      label: 'Pose Attack',
+      from: orig.poseAttack ? 'ligado' : 'desligado',
+      to: input.poseAttack ? 'ligado' : 'desligado',
+      field: 'poseAttack',
+      value: input.poseAttack,
+    });
+  }
+  if (input.poseBuff !== orig.poseBuff) {
+    lines.push({
+      group: 'VFX',
+      label: 'Pose Buff',
+      from: orig.poseBuff ? 'ligado' : 'desligado',
+      to: input.poseBuff ? 'ligado' : 'desligado',
+      field: 'poseBuff',
+      value: input.poseBuff,
+    });
+  }
+  if ((input.buffAuraVfxId ?? null) !== (orig.buffAuraVfxId ?? null)) {
+    lines.push({
+      group: 'VFX',
+      label: 'Aura do Buff',
+      from: orig.buffAuraVfxId ?? 'nenhuma',
+      to: input.buffAuraVfxId ?? 'nenhuma',
+      field: 'buffAuraVfxId',
+      value: input.buffAuraVfxId,
+    });
+  }
+  if (Boolean(input.buffAuraEnabled) !== Boolean(orig.buffAuraEnabled)) {
+    lines.push({
+      group: 'VFX',
+      label: 'Ativar aura ao usar a Skill',
+      from: orig.buffAuraEnabled ? 'ligado' : 'desligado',
+      to: input.buffAuraEnabled ? 'ligado' : 'desligado',
+      field: 'buffAuraEnabled',
+      value: input.buffAuraEnabled,
+    });
+  }
   pushNum('VFX', 'Travel Speed', 'travelSpeed', orig.travelSpeed, input.travelSpeed, 0);
   pushNum('VFX', 'Effect Scale', 'vfxScale', orig.vfxScale, input.vfxScale, 2);
   pushNum('VFX', 'Effect Offset X', 'vfxOffsetX', orig.vfxOffsetX, input.vfxOffsetX, 0);
@@ -453,6 +530,14 @@ export function collectLabSaveChanges(input: {
       changes.poseVfxId = (line.value as string | null) ?? null;
     } else if (line.field === 'castAnimationId') {
       changes.castAnimationId = (line.value as string | null) ?? null;
+    } else if (line.field === 'poseAttack') {
+      changes.poseAttack = Boolean(line.value);
+    } else if (line.field === 'poseBuff') {
+      changes.poseBuff = Boolean(line.value);
+    } else if (line.field === 'buffAuraVfxId') {
+      changes.buffAuraVfxId = (line.value as string | null) ?? null;
+    } else if (line.field === 'buffAuraEnabled') {
+      changes.buffAuraEnabled = Boolean(line.value);
     } else if (line.field === 'execution') {
       changes.execution = line.value as SkillExecutionDef;
     } else if (line.field === 'statusEffects') {
@@ -529,6 +614,10 @@ export function skillVisualDirty(
     test.poseOffsetX !== original.poseOffsetX ||
     test.poseOffsetY !== original.poseOffsetY ||
     (test.castAnimationId ?? null) !== (original.castAnimationId ?? null) ||
+    Boolean(test.poseAttack) !== Boolean(original.poseAttack) ||
+    Boolean(test.poseBuff) !== Boolean(original.poseBuff) ||
+    (test.buffAuraVfxId ?? null) !== (original.buffAuraVfxId ?? null) ||
+    Boolean(test.buffAuraEnabled) !== Boolean(original.buffAuraEnabled) ||
     !poseSheetsEqual(test.poseSheet ?? null, original.poseSheet ?? null)
   );
 }
@@ -573,6 +662,14 @@ export function applyLabChangesToSkillAnim(
     if (changes.vfxId) next.vfxId = changes.vfxId;
     else delete next.vfxId;
   }
+  if (changes.buffAuraVfxId !== undefined) {
+    if (changes.buffAuraVfxId) next.buffAuraVfxId = changes.buffAuraVfxId;
+    else delete next.buffAuraVfxId;
+  }
+  if (changes.buffAuraEnabled !== undefined) {
+    if (changes.buffAuraEnabled) next.buffAuraEnabled = true;
+    else delete next.buffAuraEnabled;
+  }
   if (changes.vfxScale != null) next.fxScale = changes.vfxScale;
   if (changes.vfxOffsetX != null) next.vfxOffsetX = changes.vfxOffsetX;
   if (changes.vfxOffsetY != null) next.vfxOffsetY = changes.vfxOffsetY;
@@ -589,6 +686,52 @@ export function applyLabChangesToSkillAnim(
   if (changes.hitDelayMs != null) next.hitDelayMs = changes.hitDelayMs;
   if (changes.fxReleaseMs != null) next.fxReleaseMs = changes.fxReleaseMs;
   if (changes.castDelayMs != null) next.castDelayMs = changes.castDelayMs;
+  if (changes.poseAttack !== undefined) {
+    const cast = { ...(next.cast ?? {}) };
+    if (changes.poseAttack) cast.poseAttack = true;
+    else delete cast.poseAttack;
+    if (changes.poseAttack) delete cast.poseBuff;
+    if (
+      cast.vfxId ||
+      cast.animationId ||
+      cast.poseAttack ||
+      cast.poseBuff ||
+      cast.scale != null ||
+      cast.scaleX != null ||
+      cast.scaleY != null ||
+      cast.offsetX != null ||
+      cast.offsetY != null
+    ) {
+      next.cast = cast;
+    } else {
+      delete next.cast;
+    }
+  }
+
+  if (changes.poseBuff !== undefined) {
+    const cast = { ...(next.cast ?? {}) };
+    if (changes.poseBuff) {
+      cast.poseBuff = true;
+      delete cast.poseAttack;
+    } else {
+      delete cast.poseBuff;
+    }
+    if (
+      cast.vfxId ||
+      cast.animationId ||
+      cast.poseAttack ||
+      cast.poseBuff ||
+      cast.scale != null ||
+      cast.scaleX != null ||
+      cast.scaleY != null ||
+      cast.offsetX != null ||
+      cast.offsetY != null
+    ) {
+      next.cast = cast;
+    } else {
+      delete next.cast;
+    }
+  }
 
   const wantsCast =
     changes.poseVfxId !== undefined ||

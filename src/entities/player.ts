@@ -13,11 +13,16 @@ import {
   packDeathAnimKey,
   packHurtAnimKey,
   sheetTextureSliceOk,
+  type CharacterAuraDef,
   type CharacterPack,
   type CharacterSkillAnimDef,
   type SpriteSheetDef,
 } from '@/data/character-packs';
 import { applySharedVfxToAnim, type SkillVfxOverlay } from '@/data/vfx/apply-skill-vfx';
+import { getVfxDefinition, sharedVfxTextureKey } from '@/data/vfx/registry';
+import { ensureSharedVfxTexture } from '@/data/vfx/load-shared-vfx';
+import { ensureWonsrVfxCatalog, isWonsrVfxId } from '@/data/vfx/wonsr-catalog';
+import { vfxDepthForLayer } from '@/constants/render-layers';
 import { resolveAwakeningRuntime } from '@/lib/awakening-runtime';
 import { resolveEffectiveSkillAnim } from '@/lib/resolve-effective-skill';
 import { getEffectiveCombatStats, PLAYER_STATUS_UNIT_ID } from '@/systems/combat-stats';
@@ -25,6 +30,8 @@ import { cloneSkillStatusEffects } from '@/data/status-effect-def';
 import { characterLabStore, isCharacterLabSession } from '@/stores/character-lab-store';
 import { skillActionLockMs } from '@/lib/combat-visual-timing';
 import {
+  applyPoseSheetToAnim,
+  getCharacterPoseSheet,
   poseDurationMs,
   poseSheetToSpriteDef,
   skillAnimHasPose,
@@ -108,6 +115,10 @@ export class Player {
   /** Escala local da folha atual (`SpriteSheetDef.scaleX/Y`). */
   private sheetScaleX = 1;
   private sheetScaleY = 1;
+  /** Fallback de restauração para a pose 256px da Skill 2 da Hinata. */
+  private hinataSkill2ScaleResetTimer: Phaser.Time.TimerEvent | null = null;
+  /** Mantém a escala da Skill 2 fixa durante toda a animação. */
+  private hinataSkill2ScaleGuardActive = false;
   private labOffsetX = 0;
   private labOffsetY = 0;
   private labVfxScale = 1;
@@ -117,6 +128,15 @@ export class Player {
   private readonly alignmentContext: SpriteAlignmentContext;
   /** Última folha usada no origin (idle/walk/skill). */
   private originSheet: SpriteSheetDef | null = null;
+  private auraSprite: Phaser.GameObjects.Sprite | null = null;
+  private auraVfxId: string | null = null;
+  private auraLoadToken = 0;
+  /** `undefined` = pack, `null` = preview disabled, value = preview config. */
+  private auraOverride: CharacterAuraDef | null | undefined;
+  private buffAuraSprite: Phaser.GameObjects.Sprite | null = null;
+  private buffAuraTimer: Phaser.Time.TimerEvent | null = null;
+  private buffAuraLoadToken = 0;
+  private buffAuraConfig: { scale: number; offsetX: number; offsetY: number } | null = null;
 
   constructor(
     private readonly scene: Phaser.Scene,
@@ -197,16 +217,170 @@ export class Player {
         this.finishSkillHold();
       },
     );
+    this.sprite.on(Phaser.Animations.Events.ANIMATION_UPDATE, () => {
+      if (this.hinataSkill2ScaleGuardActive) this.applyBaseScale();
+    });
 
     this.applyFacingFlip();
     this.playIdle();
+    void this.syncAura();
     this.syncPresentation();
+  }
+
+  private currentAura(): CharacterAuraDef | null {
+    return this.auraOverride !== undefined ? this.auraOverride : this.pack.aura ?? null;
+  }
+
+  private removeAuraSprite(): void {
+    this.auraSprite?.destroy();
+    this.auraSprite = null;
+    this.auraVfxId = null;
+  }
+
+  private async syncAura(): Promise<void> {
+    const token = ++this.auraLoadToken;
+    const aura = this.currentAura();
+    if (!aura?.enabled || !aura.vfxId) {
+      this.removeAuraSprite();
+      return;
+    }
+
+    let def = getVfxDefinition(aura.vfxId);
+    if (!def && isWonsrVfxId(aura.vfxId)) {
+      try {
+        await ensureWonsrVfxCatalog();
+      } catch {
+        return;
+      }
+      def = getVfxDefinition(aura.vfxId);
+    }
+    if (!def) return;
+
+    try {
+      await ensureSharedVfxTexture(this.scene, def);
+    } catch {
+      return;
+    }
+    if (token !== this.auraLoadToken || !this.sprite.active) return;
+
+    const textureKey = sharedVfxTextureKey(def.id);
+    if (this.auraVfxId !== def.id) {
+      this.removeAuraSprite();
+      this.auraSprite = this.scene.add.sprite(this.x, this.y, textureKey, 0);
+      this.auraVfxId = def.id;
+    }
+    const animKey = `character-aura-${def.id}`;
+    if (!this.scene.anims.exists(animKey)) {
+      const frames = this.scene.anims.generateFrameNumbers(textureKey, {
+        start: 0,
+        end: Math.max(0, def.frameCount - 1),
+      });
+      if (frames.length > 0) {
+        this.scene.anims.create({
+          key: animKey,
+          frames,
+          frameRate: def.frameRate || 12,
+          repeat: -1,
+        });
+      }
+    }
+    if (this.auraSprite && this.scene.anims.exists(animKey) && !this.auraSprite.anims.isPlaying) {
+      this.auraSprite.play(animKey);
+    }
+    this.syncAuraPresentation();
+  }
+
+  private syncAuraPresentation(): void {
+    const sprite = this.auraSprite;
+    const aura = this.currentAura();
+    if (!sprite || !aura?.enabled || !aura.vfxId) return;
+    const def = getVfxDefinition(aura.vfxId);
+    if (!def) return;
+    sprite.setPosition(
+      this.x + aura.offsetX * this.worldScale,
+      this.y + aura.offsetY * this.worldScale,
+    );
+    sprite.setOrigin(0.5, 1);
+    sprite.setScale((aura.scale > 0 ? aura.scale : def.defaultScale) * this.worldScale);
+    sprite.setDepth(vfxDepthForLayer(def.renderLayer, this.sprite.y));
+  }
+
+  private removeBuffAura(): void {
+    this.buffAuraLoadToken += 1;
+    this.buffAuraTimer?.remove(false);
+    this.buffAuraTimer = null;
+    this.buffAuraSprite?.destroy();
+    this.buffAuraSprite = null;
+    this.buffAuraConfig = null;
+  }
+
+  private syncBuffAuraPresentation(): void {
+    const sprite = this.buffAuraSprite;
+    const config = this.buffAuraConfig;
+    if (!sprite || !config) return;
+    sprite.setPosition(
+      this.x + config.offsetX * this.worldScale,
+      this.y + config.offsetY * this.worldScale,
+    );
+    sprite.setOrigin(0.5, 1);
+    sprite.setScale(config.scale * this.worldScale);
+    sprite.setDepth(this.sprite.depth + 1);
+  }
+
+  /**
+   * Ativa o VFX da skill como aura temporária do caster.
+   * A duração vem do Status Effect aplicado pela skill de Buff.
+   */
+  activateBuffAura(anim: CharacterSkillAnimDef | undefined, durationMs: number): void {
+    this.removeBuffAura();
+    if (!anim?.buffAuraEnabled || !anim.buffAuraVfxId || durationMs <= 0) return;
+    const def = getVfxDefinition(anim.buffAuraVfxId);
+    if (!def) return;
+    const token = this.buffAuraLoadToken;
+    this.buffAuraConfig = {
+      scale: def.defaultScale || 1,
+      offsetX: def.defaultOffsetX ?? 0,
+      offsetY: def.defaultOffsetY ?? 0,
+    };
+    void ensureSharedVfxTexture(this.scene, def)
+      .then(() => {
+      if (token !== this.buffAuraLoadToken || !this.scene.sys.isActive()) return;
+      const textureKey = sharedVfxTextureKey(def.id);
+      if (!this.scene.textures.exists(textureKey)) return;
+      const animKey = `buff-aura-${def.id}`;
+      if (!this.scene.anims.exists(animKey)) {
+        const frames = this.scene.anims.generateFrameNumbers(textureKey, {
+          start: 0,
+          end: Math.max(0, def.frameCount - 1),
+        });
+        if (frames.length > 0) {
+          this.scene.anims.create({
+            key: animKey,
+            frames,
+            frameRate: def.frameRate || 12,
+            repeat: -1,
+          });
+        }
+      }
+      if (!this.scene.anims.exists(animKey)) return;
+      const sprite = this.scene.add.sprite(this.x, this.y, textureKey, 0);
+      this.buffAuraSprite = sprite;
+      sprite.play(animKey);
+      this.syncBuffAuraPresentation();
+      this.buffAuraTimer = this.scene.time.delayedCall(durationMs, () => this.removeBuffAura());
+      })
+      .catch(() => {
+        // Asset inválido ou cena encerrada: não mantém uma aura parcialmente carregada.
+        if (token === this.buffAuraLoadToken) this.removeBuffAura();
+      });
   }
 
   /** Depth por Y + nameplate no topo do sprite. */
   syncPresentation(): void {
     const depth = worldDepthForY(this.sprite.y, 12);
     this.sprite.setDepth(depth);
+    this.syncAuraPresentation();
+    this.syncBuffAuraPresentation();
     if (!this.nameLabel) return;
     this.nameLabel.setPosition(
       Math.round(this.sprite.x),
@@ -217,6 +391,10 @@ export class Player {
 
   /** Remove sprite e nameplate (aliados trocam de mapa junto com a cena). */
   destroy(): void {
+    this.auraLoadToken += 1;
+    this.removeBuffAura();
+    this.auraSprite?.destroy();
+    this.auraSprite = null;
     this.nameLabel?.destroy();
     this.sprite.destroy();
   }
@@ -359,6 +537,10 @@ export class Player {
     const def = this.pack.skillAnims[skillId];
     if (!def || this.isBusy()) return null;
 
+    this.hinataSkill2ScaleResetTimer?.remove(false);
+    this.hinataSkill2ScaleResetTimer = null;
+    this.hinataSkill2ScaleGuardActive = false;
+
     const hasPose = skillAnimHasPose(def);
     const lockMs = skillActionLockMs(def);
     this.anim = 'idle';
@@ -366,6 +548,17 @@ export class Player {
     this.sprite.setVelocity(0, 0);
     this.sprite.clearTint();
     this.sprite.setFlipX(directionFacesLeft(this.facing));
+
+    // Pose Attack is rendered by the skill FX pipeline. Keep the caster in
+    // idle so the imported pose is not rendered a second time as its body.
+    if (def.cast?.poseAttack && hasPose) {
+      this.labPoseScaleX = 1;
+      this.labPoseScaleY = 1;
+      this.applyBaseScale();
+      this.playIdle();
+      this.refreshBodyOffset();
+      return def.hitDelayMs;
+    }
 
     if (!hasPose) {
       this.labPoseScaleX = 1;
@@ -415,8 +608,18 @@ export class Player {
     this.labPoseScaleY = def.cast?.scaleY ?? def.cast?.scale ?? 1;
     this.applyBaseScale();
     this.applySheetOrigin(def);
+    const isHinataSkill2 = this.pack.id === 'hinata' && skillId === 'hinata-hakke-kusho';
+    if (isHinataSkill2) {
+      this.hinataSkill2ScaleGuardActive = true;
+    }
     this.sprite.anims.play(animKey, true);
     this.refreshBodyOffset();
+    if (isHinataSkill2) {
+      this.hinataSkill2ScaleResetTimer = this.scene.time.delayedCall(lockMs + 64, () => {
+        this.hinataSkill2ScaleResetTimer = null;
+        if (!this.dead && this.busyUntil <= this.scene.time.now) this.finishSkillHold();
+      });
+    }
     return def.hitDelayMs;
   }
 
@@ -425,6 +628,9 @@ export class Player {
    */
   replacePack(pack: CharacterPack): void {
     this.pack = pack;
+    this.auraOverride = undefined;
+    this.removeBuffAura();
+    void this.syncAura();
     if (!this.pack.outfit && this.sprite?.active) {
       this.applySheetOrigin(this.pack.idle ?? this.pack.walk);
     }
@@ -438,12 +644,45 @@ export class Player {
       instanceId: this.instanceId,
     });
     const awakened = resolveEffectiveSkillAnim(def, skillId, awakeningCtx) ?? def;
-    if (!isCharacterLabSession()) return awakened;
+    if (!isCharacterLabSession()) {
+      const poseOptionId = awakened.cast?.animationId;
+      const poseSheet =
+        awakened.cast?.poseAttack && poseOptionId
+          ? getCharacterPoseSheet(this.pack, poseOptionId)
+          : null;
+      if (!poseSheet) return awakened;
+
+      const poseAnim = applyPoseSheetToAnim(awakened, {
+        ...poseSheet,
+        frames: poseSheet.frames ? [...poseSheet.frames] : undefined,
+        loopMode: canonicalizeLoopMode(poseSheet.loopMode) ?? undefined,
+        scaleX: awakened.cast?.scaleX ?? awakened.cast?.scale ?? 1,
+        scaleY: awakened.cast?.scaleY ?? awakened.cast?.scale ?? 1,
+        offsetX: awakened.cast?.offsetX ?? poseSheet.offsetX ?? 0,
+        offsetY: awakened.cast?.offsetY ?? poseSheet.offsetY ?? 0,
+        frameRate: poseSheet.frameRate ?? 12,
+        frameCount: poseSheet.frameCount ?? 1,
+        loop: poseSheet.loop ?? false,
+      });
+      return {
+        ...poseAnim,
+        // Keep official skill timing/targeting and the saved Pose Attack
+        // controls while replacing only the rendered sheet.
+        offsetX: awakened.cast?.offsetX ?? poseAnim.offsetX,
+        offsetY: awakened.cast?.offsetY ?? poseAnim.offsetY,
+        targeting: awakened.targeting ? { ...awakened.targeting } : awakened.targeting,
+        cast: { ...(poseAnim.cast ?? {}), ...(awakened.cast ?? {}) },
+      };
+    }
     const lab = characterLabStore.getSnapshot();
     if (!characterLabStore.skillOverrideDirty()) return awakened;
     const injectTargeting = lab.skillOriginals.hasOfficialTargetMode || characterLabStore.hasUnsavedSkillChanges();
+    // Pose Attack is rendered once by CharacterLabSystem.playPose() as an
+    // independent FX. Do not inject the same sheet into the skill animation:
+    // that would make the pose available through both render paths.
+    const baseAnim = awakened;
     const overlayed = applySharedVfxToAnim(
-      { ...awakened, fx: awakened.fx ? { ...awakened.fx } : awakened.fx },
+      { ...baseAnim, fx: baseAnim.fx ? { ...baseAnim.fx } : baseAnim.fx },
       lab.vfxId,
       labSkillVfxOverlay(lab, awakened),
     );
@@ -454,6 +693,8 @@ export class Player {
       statusEffects: cloneSkillStatusEffects(lab.statusEffects),
       element: lab.skillElement,
       ai: lab.skillAi,
+      buffAuraVfxId: lab.buffAuraVfxId ?? undefined,
+      buffAuraEnabled: lab.buffAuraEnabled,
       targeting: injectTargeting
         ? {
             mode: lab.targetMode,
@@ -565,10 +806,23 @@ export class Player {
     this.labPoseScaleX = 1;
     this.labPoseScaleY = 1;
     this.clearDeath();
+    this.setPoseAttackBodyVisible(true);
     this.busyUntil = 0;
     this.sprite.setVelocity(0, 0);
     this.anim = 'idle';
     this.playIdle();
+  }
+
+  /** Oculta o corpo durante um Pose Attack usado como FX independente. */
+  setPoseAttackBodyVisible(visible: boolean): void {
+    this.sprite.setVisible(visible);
+    this.nameLabel?.setVisible(visible);
+  }
+
+  /** Preview DEV da aura; o próximo `replacePack` volta a usar o pack salvo. */
+  setAuraPreview(aura: CharacterAuraDef | null): void {
+    this.auraOverride = aura;
+    void this.syncAura();
   }
 
   async playLabPoseSheet(sheet: LabPoseSheet): Promise<boolean> {
@@ -675,6 +929,9 @@ export class Player {
 
   private finishSkillHold(): void {
     if (this.dead) return;
+    this.hinataSkill2ScaleResetTimer?.remove(false);
+    this.hinataSkill2ScaleResetTimer = null;
+    this.hinataSkill2ScaleGuardActive = false;
     this.busyUntil = 0;
     this.labPoseScaleX = 1;
     this.labPoseScaleY = 1;

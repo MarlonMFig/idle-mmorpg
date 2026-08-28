@@ -8,8 +8,13 @@ import { CharacterRegistry } from '@/data/characters';
 import { applySharedVfxToAnim } from '@/data/vfx/apply-skill-vfx';
 import { Player } from '@/entities/player';
 import type { Enemy } from '@/entities/enemy';
+import {
+  isPackBodyPoseOptionId,
+  labPoseHasContent,
+  poseSheetToSpriteDef,
+} from '@/lib/dev/lab-pose-sheet';
+import { scheduleLabPoseFx } from '@/lib/dev/lab-pose-fx';
 import { DEFAULT_TRAVEL_SPEED_PX } from '@/lib/dev/lab-save-fields';
-import { labPoseHasContent, poseSheetToSpriteDef } from '@/lib/dev/lab-pose-sheet';
 import { getWonsrRenderedMap } from '@/data/wonsr-rendered-maps';
 import type { MapKey } from '@/maps/map-registry';
 import {
@@ -34,7 +39,7 @@ import type { CombatSystem } from '@/systems/combat-system';
 import type { EnemyManager } from '@/systems/enemy-manager';
 import { clearLabForcedFx, computeSkillFxAim, scheduleSkillFx, shouldSpawnAreaImpactFxPerTarget, spawnAreaImpactFxForTargets } from '@/systems/pack-fx';
 import { scheduleOfficialSkillFx, SkillExecutionRuntime } from '@/systems/skill-execution';
-import { tryApplySkillStatuses } from '@/systems/skill-status-apply';
+import { resolveBuffDurationMs, tryApplySkillStatuses } from '@/systems/skill-status-apply';
 import { applyDirectDamage, clearStatusRuntime, getStatusRuntime } from '@/systems/status-runtime';
 import { PLAYER_STATUS_UNIT_ID } from '@/systems/combat-stats';
 
@@ -255,6 +260,11 @@ export class CharacterLabSystem {
   }
 
   private castSkill(skillId: string): void {
+    const lab = characterLabStore.getSnapshot();
+    if (lab.poseAttack && labPoseHasContent(lab.poseSheet)) {
+      void this.playComplete();
+      return;
+    }
     const ok = this.combat?.castLabSkill(skillId, this.dummy()) ?? false;
     if (!ok) this.player.playSkillAnim(skillId);
   }
@@ -262,8 +272,39 @@ export class CharacterLabSystem {
   private async playPose(): Promise<void> {
     const lab = characterLabStore.getSnapshot();
     this.player.resetLabPose();
+    if (lab.poseOptionId && !lab.poseAttack && isPackBodyPoseOptionId(lab.poseOptionId)) {
+      this.player.playLabSlot(lab.poseOptionId as import('@/types/character-definition').CharacterAnimSlot);
+      characterLabStore.pushEvent(`${lab.poseOptionId} started (referência pack)`);
+      return;
+    }
     if (!labPoseHasContent(lab.poseSheet) || !lab.poseSheet) {
       characterLabStore.pushEvent('nenhuma animação pose');
+      return;
+    }
+    if (lab.poseAttack) {
+      const needsTarget = lab.targetMode === 'travel-to-target' || lab.targetMode === 'instant-target';
+      if (needsTarget && !this.dummy()) {
+        characterLabStore.pushEvent('Selecione um inimigo para testar este Target Mode.');
+        return;
+      }
+      const { from, to, aim } = this.labFxPoints();
+      const ok = await scheduleLabPoseFx({
+        scene: this.scene,
+        player: this.player,
+        pose: lab.poseSheet,
+        targetMode: lab.targetMode,
+        travelSpeed: lab.travelSpeed,
+        spawnOffsetX: lab.spawnOffsetX,
+        spawnOffsetY: lab.spawnOffsetY,
+        targetOffsetX: lab.targetOffsetX,
+        targetOffsetY: lab.targetOffsetY,
+        from,
+        to,
+        aim,
+      });
+      characterLabStore.pushEvent(
+        ok ? `pose fx (${lab.targetMode})` : 'falha ao carregar pose fx',
+      );
       return;
     }
     const ok = await this.player.playLabPoseSheet(lab.poseSheet);
@@ -296,7 +337,16 @@ export class CharacterLabSystem {
   private async playComplete(): Promise<void> {
     const lab = characterLabStore.getSnapshot();
     await this.playPose();
-    const anim = this.effectAnimFromLab() ?? (lab.lastSkillId ? this.player.getSkillAnim(lab.lastSkillId) : undefined);
+    const baseAnim =
+      (lab.lastSkillId ? this.player.getSkillAnim(lab.lastSkillId) : undefined) ??
+      this.effectAnimFromLab() ??
+      undefined;
+    // With Pose Attack enabled, the selected pose is the skill's only visual
+    // effect. Do not let an older/regular VFX path replace or duplicate it.
+    const anim =
+      lab.poseAttack && baseAnim
+        ? { ...baseAnim, fx: undefined, fxSecondary: undefined, vfxId: undefined }
+        : baseAnim;
     const skill = lab.lastSkillId ? resolveEffectiveSkill(lab.lastSkillId) : undefined;
     if (!anim && !skill) {
       characterLabStore.pushEvent(`skill complete · delay ${Math.max(0, Math.round(lab.castDelayMs))}ms`);
@@ -304,6 +354,7 @@ export class CharacterLabSystem {
     }
     const dummy = this.dummy();
     const { from, to, aim } = this.labFxPoints();
+    const hitDelay = anim && 'hitDelayMs' in anim ? (anim.hitDelayMs ?? 280) : 280;
     const stub = {
       ...(skill ?? {
         id: lab.lastSkillId ?? 'lab-preview',
@@ -314,6 +365,7 @@ export class CharacterLabSystem {
         animation: { kind: 'character' as const, durationMs: 600, scale: 1 },
       }),
       element: lab.skillElement,
+      ...(anim?.effect ? { effect: anim.effect } : {}),
     };
     if (lab.vfxId) void this.ensureCatalogTexture(lab.vfxId);
     scheduleOfficialSkillFx({
@@ -326,7 +378,7 @@ export class CharacterLabSystem {
       to,
       aim,
       targetId: dummy?.id ?? null,
-      hitDelayMs: anim && 'hitDelayMs' in anim ? (anim.hitDelayMs ?? 280) : 280,
+      hitDelayMs: hitDelay,
       isCasterDead: () => this.player.isDead(),
       isOriginalTargetDead: () => Boolean(dummy) && !dummy!.isAlive,
       getTargetPos: () => (dummy ? { x: dummy.sprite.x, y: dummy.sprite.y } : { x: to.x, y: to.y }),
@@ -349,24 +401,26 @@ export class CharacterLabSystem {
         } else if (primary?.isAlive) {
           hit.push(primary);
         }
-        const rawDamage = Math.max(1, Math.floor((stub.damage || 40) * impact.multiplier));
-        for (const enemy of hit) {
-          if (!enemy.isAlive || impact.multiplier <= 0) continue;
-          applyDirectDamage({
-            runtime: getStatusRuntime(this.scene),
-            targetId: enemy.id,
-            rawAmount: rawDamage,
-            sourceId: PLAYER_STATUS_UNIT_ID,
-            enemy,
-            element: resolveSkillElement(stub, anim),
-            onKill: () => undefined,
-          });
-        }
-        if (
-          anim &&
-          shouldSpawnAreaImpactFxPerTarget(anim, impact.kind, hit.length, radius)
-        ) {
-          spawnAreaImpactFxForTargets(this.scene, this.player, anim, hit, primary?.id);
+        if (stub.effect !== 'buff') {
+          const rawDamage = Math.max(1, Math.floor((stub.damage || 40) * impact.multiplier));
+          for (const enemy of hit) {
+            if (!enemy.isAlive || impact.multiplier <= 0) continue;
+            applyDirectDamage({
+              runtime: getStatusRuntime(this.scene),
+              targetId: enemy.id,
+              rawAmount: rawDamage,
+              sourceId: PLAYER_STATUS_UNIT_ID,
+              enemy,
+              element: resolveSkillElement(stub, anim),
+              onKill: () => undefined,
+            });
+          }
+          if (
+            anim &&
+            shouldSpawnAreaImpactFxPerTarget(anim, impact.kind, hit.length, radius)
+          ) {
+            spawnAreaImpactFxForTargets(this.scene, this.player, anim, hit, primary?.id);
+          }
         }
         tryApplySkillStatuses({
           scene: this.scene,
@@ -384,6 +438,9 @@ export class CharacterLabSystem {
       onStatusMoment: (moment, execution) => {
         const primary = this.dummy();
         const dummies = this.labDummies();
+        if (moment === 'on-start' && stub.effect === 'buff' && anim?.buffAuraEnabled) {
+          this.player.activateBuffAura(anim, resolveBuffDurationMs(anim, stub));
+        }
         tryApplySkillStatuses({
           scene: this.scene,
           skill: stub,
@@ -485,6 +542,10 @@ export class CharacterLabSystem {
     }
     if (command.kind === 'clear-fx') {
       clearLabForcedFx();
+      return;
+    }
+    if (command.kind === 'preview-aura') {
+      this.player.setAuraPreview(command.aura);
       return;
     }
     if (command.kind === 'sync-runtime') {

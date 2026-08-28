@@ -21,6 +21,21 @@ export function resolveSkillStatusEffects(
   return skill.statusEffects ?? [];
 }
 
+/** Duração do maior Status Self de um Buff; usada pela aura temporária. */
+export function resolveBuffDurationMs(
+  anim: CharacterSkillAnimDef | undefined,
+  skill: SkillDefinition,
+): number {
+  const entries = resolveSkillStatusEffects(anim, skill);
+  let duration = 0;
+  for (const entry of entries) {
+    if (entry.target !== 'self') continue;
+    const base = getStatusDefinition(entry.statusId);
+    duration = Math.max(duration, entry.duration ?? base?.duration ?? 0);
+  }
+  return duration;
+}
+
 export function tryApplySkillStatuses(opts: {
   scene: Phaser.Scene;
   skill: SkillDefinition;

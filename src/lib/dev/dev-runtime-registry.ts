@@ -1,4 +1,4 @@
-import type { CharacterPack, CharacterSkillAnimDef } from '@/data/character-packs';
+import type { CharacterAuraDef, CharacterPack, CharacterSkillAnimDef } from '@/data/character-packs';
 import type { StatusEffectDefinition } from '@/data/status-effect-def';
 import type { SharedVfxDefinition } from '@/data/vfx/types';
 import type { MapKey } from '@/maps/map-registry';
@@ -28,6 +28,7 @@ interface DevDataRuntime {
   status: Record<string, StatusEffectDefinition>;
   statusRemoved: Record<string, true>;
   spriteAlignments: Record<string, SpriteAlignmentConfig>;
+  auras: Record<string, CharacterAuraDef | null>;
   mapConfigs: Record<string, DevMapConfigOverlay>;
 }
 
@@ -44,6 +45,7 @@ function emptyRuntime(): DevDataRuntime {
     status: {},
     statusRemoved: {},
     spriteAlignments: {},
+    auras: {},
     mapConfigs: {},
   };
 }
@@ -62,6 +64,7 @@ function hydrateRuntime(raw: Partial<DevDataRuntime> | undefined): DevDataRuntim
   if (raw.spriteAlignments && typeof raw.spriteAlignments === 'object') {
     next.spriteAlignments = raw.spriteAlignments;
   }
+  if (raw.auras && typeof raw.auras === 'object') next.auras = raw.auras;
   if (raw.mapConfigs && typeof raw.mapConfigs === 'object') next.mapConfigs = raw.mapConfigs;
   return next;
 }
@@ -102,6 +105,8 @@ export function applyDevPackOverlay(pack: CharacterPack): CharacterPack {
   const patches = runtime.skillAnims[pack.id];
   const hotbar = runtime.hotbars[pack.id];
   const alignment = runtime.spriteAlignments[pack.id];
+  const hasAura = Object.prototype.hasOwnProperty.call(runtime.auras, pack.id);
+  const aura = hasAura ? runtime.auras[pack.id] ?? undefined : pack.aura;
   const nextAnims = patches && Object.keys(patches).length > 0 ? { ...pack.skillAnims, ...patches } : pack.skillAnims;
   const nextHotbar = hotbar ?? pack.hotbarSkillIds;
   const nextAlignment = alignment
@@ -114,6 +119,7 @@ export function applyDevPackOverlay(pack: CharacterPack): CharacterPack {
     nextAnims === pack.skillAnims &&
     nextHotbar === pack.hotbarSkillIds &&
     nextAlignment === pack.spriteAlignment
+    && aura === pack.aura
   ) {
     return pack;
   }
@@ -122,6 +128,7 @@ export function applyDevPackOverlay(pack: CharacterPack): CharacterPack {
     skillAnims: nextAnims,
     hotbarSkillIds: nextHotbar,
     ...(nextAlignment ? { spriteAlignment: nextAlignment } : {}),
+    aura,
   };
 }
 
@@ -136,6 +143,14 @@ export function upsertDevSpriteAlignment(
 /** Remove overlay de alignment (volta ao valor do fonte). */
 export function clearDevSpriteAlignment(characterId: string): number {
   delete getRuntime().spriteAlignments[characterId];
+  return bump();
+}
+
+export function upsertDevCharacterAura(
+  characterId: string,
+  aura: CharacterAuraDef | null,
+): number {
+  getRuntime().auras[characterId] = aura;
   return bump();
 }
 

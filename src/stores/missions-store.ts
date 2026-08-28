@@ -323,7 +323,6 @@ export const missionsStore = {
   },
 
   claimableCount(): number {
-    this.ensureCycles();
     const state = store.getSnapshot();
     let count = 0;
     for (const id of state.daily.selectedIds) {

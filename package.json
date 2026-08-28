@@ -38,6 +38,7 @@
     "sasuke:idle-gif": "node scripts/process-sasuke-idle-gif.js",
     "sasuke:idle-sheet": "node scripts/process-sasuke-idle-sheet.js",
     "sasuke:walk-sheet": "node scripts/process-sasuke-walk-sheet.js",
+    "sasuke:walk": "node scripts/process-sasuke-walk.js",
     "sasuke:chidori": "node scripts/process-sasuke-chidori.js",
     "sasuke:combo": "node scripts/process-sasuke-combo.js",
     "sasuke:skill2": "node scripts/process-sasuke-skill2.js",

@@ -82,6 +82,14 @@ export function resolveEffectiveSkill(
   return next;
 }
 
+/** Aplica overrides de papel definidos no pack (ex.: skill de buff). */
+export function resolveSkillWithAnim(
+  skill: SkillDefinition,
+  anim: CharacterSkillAnimDef | undefined,
+): SkillDefinition {
+  return anim?.effect ? { ...skill, effect: anim.effect } : skill;
+}
+
 /**
  * Anim/VFX efetivos: pack base + override de Despertar.
  */

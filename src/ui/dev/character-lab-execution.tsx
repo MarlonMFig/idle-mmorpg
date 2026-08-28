@@ -24,7 +24,7 @@ const DURATION_PRESETS = [500, 1000, 1500, 2000, 3000, 5000];
 const TICK_PRESETS = [50, 100, 250, 500, 1000];
 const RADIUS_PRESETS = [40, 80, 120, 150, 200];
 
-export function CharacterLabExecutionEditor() {
+export function CharacterLabExecutionEditor({ disabled = false }: { disabled?: boolean }) {
   const execution = useStore(characterLabStore, (s) => s.execution);
   const originals = useStore(characterLabStore, (s) => s.skillOriginals);
   const areaImpactFxPerTarget = useStore(characterLabStore, (s) => s.areaImpactFxPerTarget);
@@ -75,7 +75,11 @@ export function CharacterLabExecutionEditor() {
   };
 
   return (
-    <section className="character-lab__section">
+    <fieldset
+      disabled={disabled}
+      style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}
+    >
+      <section className="character-lab__section">
       <h3>Tipo de execução</h3>
       <p className="character-lab__hint">Selecione um ou mais. Área combina com os demais.</p>
       <div className="character-lab__chips">
@@ -288,7 +292,8 @@ export function CharacterLabExecutionEditor() {
           ) : null}
         </>
       ) : null}
-    </section>
+      </section>
+    </fieldset>
   );
 }
 
