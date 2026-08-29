@@ -56,6 +56,7 @@ export class CharacterLabSystem {
   private dummyLoadGen = 0;
   private lastLoopAt = 0;
   private lastOpen = false;
+  private lastRuntimePlayerId: string | null = null;
   private lastLoadedVfxId: string | null = null;
   private dummyLoadInFlight = false;
   private lastVisKey = '';
@@ -105,6 +106,10 @@ export class CharacterLabSystem {
     this.combat = this.combat ?? this.ensureCombat();
     this.scene.time.timeScale = lab.gameSpeed;
     this.enemyManager.setHuntPaused(true);
+    if (lab.playerId !== this.lastRuntimePlayerId) {
+      this.lastRuntimePlayerId = lab.playerId;
+      if (lab.playerId) this.syncRuntimePack();
+    }
     const visKey = [
       lab.scaleX,
       lab.scaleY,
@@ -207,6 +212,7 @@ export class CharacterLabSystem {
     this.dummyHpMode = null;
     this.dummyLoadInFlight = false;
     this.lastVisKey = '';
+    this.lastRuntimePlayerId = null;
     this.lastLoadedVfxId = null;
     this.overlay.setVisible(false);
     this.gfx.clear();

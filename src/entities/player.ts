@@ -115,10 +115,12 @@ export class Player {
   /** Escala local da folha atual (`SpriteSheetDef.scaleX/Y`). */
   private sheetScaleX = 1;
   private sheetScaleY = 1;
-  /** Fallback de restauração para a pose 256px da Skill 2 da Hinata. */
-  private hinataSkill2ScaleResetTimer: Phaser.Time.TimerEvent | null = null;
-  /** Mantém a escala da Skill 2 fixa durante toda a animação. */
-  private hinataSkill2ScaleGuardActive = false;
+  /** Fallback de restauração para skills com poses de canvas ampliado. */
+  private skillScaleResetTimer: Phaser.Time.TimerEvent | null = null;
+  /** Mantém a escala da pose fixa durante toda a animação. */
+  private skillScaleGuardActive = false;
+  /** Restaura a pose temporária do Shikamaru no fim do preview do Lab. */
+  private shikamaruLabPoseResetTimer: Phaser.Time.TimerEvent | null = null;
   private labOffsetX = 0;
   private labOffsetY = 0;
   private labVfxScale = 1;
@@ -218,7 +220,7 @@ export class Player {
       },
     );
     this.sprite.on(Phaser.Animations.Events.ANIMATION_UPDATE, () => {
-      if (this.hinataSkill2ScaleGuardActive) this.applyBaseScale();
+      if (this.skillScaleGuardActive) this.applyBaseScale();
     });
 
     this.applyFacingFlip();
@@ -537,9 +539,9 @@ export class Player {
     const def = this.pack.skillAnims[skillId];
     if (!def || this.isBusy()) return null;
 
-    this.hinataSkill2ScaleResetTimer?.remove(false);
-    this.hinataSkill2ScaleResetTimer = null;
-    this.hinataSkill2ScaleGuardActive = false;
+    this.skillScaleResetTimer?.remove(false);
+    this.skillScaleResetTimer = null;
+    this.skillScaleGuardActive = false;
 
     const hasPose = skillAnimHasPose(def);
     const lockMs = skillActionLockMs(def);
@@ -608,15 +610,15 @@ export class Player {
     this.labPoseScaleY = def.cast?.scaleY ?? def.cast?.scale ?? 1;
     this.applyBaseScale();
     this.applySheetOrigin(def);
-    const isHinataSkill2 = this.pack.id === 'hinata' && skillId === 'hinata-hakke-kusho';
-    if (isHinataSkill2) {
-      this.hinataSkill2ScaleGuardActive = true;
+    const usesFixedSkillScale = this.usesFixedSkillScale(skillId);
+    if (usesFixedSkillScale) {
+      this.skillScaleGuardActive = true;
     }
     this.sprite.anims.play(animKey, true);
     this.refreshBodyOffset();
-    if (isHinataSkill2) {
-      this.hinataSkill2ScaleResetTimer = this.scene.time.delayedCall(lockMs + 64, () => {
-        this.hinataSkill2ScaleResetTimer = null;
+    if (usesFixedSkillScale) {
+      this.skillScaleResetTimer = this.scene.time.delayedCall(lockMs + 64, () => {
+        this.skillScaleResetTimer = null;
         if (!this.dead && this.busyUntil <= this.scene.time.now) this.finishSkillHold();
       });
     }
@@ -803,6 +805,8 @@ export class Player {
   }
 
   resetLabPose(): void {
+    this.shikamaruLabPoseResetTimer?.remove(false);
+    this.shikamaruLabPoseResetTimer = null;
     this.labPoseScaleX = 1;
     this.labPoseScaleY = 1;
     this.clearDeath();
@@ -849,6 +853,12 @@ export class Player {
     this.applySheetOrigin(def);
     this.sprite.anims.play(animKey, true);
     this.refreshBodyOffset();
+    if (this.pack.id === 'shikamaru') {
+      this.shikamaruLabPoseResetTimer = this.scene.time.delayedCall(durationMs + 32, () => {
+        this.shikamaruLabPoseResetTimer = null;
+        if (!this.dead) this.resetLabPose();
+      });
+    }
     return true;
   }
 
@@ -929,13 +939,12 @@ export class Player {
 
   private finishSkillHold(): void {
     if (this.dead) return;
-    this.hinataSkill2ScaleResetTimer?.remove(false);
-    this.hinataSkill2ScaleResetTimer = null;
-    this.hinataSkill2ScaleGuardActive = false;
+    this.skillScaleResetTimer?.remove(false);
+    this.skillScaleResetTimer = null;
+    this.skillScaleGuardActive = false;
     this.busyUntil = 0;
     this.labPoseScaleX = 1;
     this.labPoseScaleY = 1;
-    this.applyBaseScale();
     this.anim = 'idle';
     this.sprite.clearTint();
     this.applySheetOrigin(this.pack.idle ?? this.pack.walk);
@@ -968,7 +977,6 @@ export class Player {
       return;
     }
     const animKey = legacyAnimKey(this.pack, 'idle');
-    this.applyBaseScale();
     this.applySheetOrigin(this.pack.idle ?? this.pack.walk);
     if (this.sprite.anims.currentAnim?.key !== animKey) {
       this.safePlayAnim(animKey);
@@ -981,7 +989,6 @@ export class Player {
     const animKey = this.pack.outfit
       ? outfitAnimKey(this.pack, 'walk', this.outfitDirection())
       : legacyAnimKey(this.pack, 'walk');
-    this.applyBaseScale();
     this.applySheetOrigin(this.pack.walk);
     if (this.sprite.anims.currentAnim?.key !== animKey) {
       this.safePlayAnim(animKey);
@@ -1011,6 +1018,14 @@ export class Player {
     this.sprite.setScale(
       this.scaleX * this.labScaleX * this.labPoseScaleX * this.sheetScaleX,
       this.scaleY * this.labScaleY * this.labPoseScaleY * this.sheetScaleY,
+    );
+  }
+
+  private usesFixedSkillScale(skillId: string): boolean {
+    return (
+      (this.pack.id === 'hinata' && skillId === 'hinata-hakke-kusho') ||
+      (this.pack.id === 'shikamaru' &&
+        (skillId === 'shikamaru-jutsu-3' || skillId === 'shikamaru-jutsu-4'))
     );
   }
 

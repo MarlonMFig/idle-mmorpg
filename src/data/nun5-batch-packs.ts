@@ -2087,10 +2087,6 @@ const SHINOG6_PACK: CharacterPack = {
       },
       vfxOffsetX: 0,
       vfxOffsetY: 0,
-            execution: {
-        type: 'area',
-        radius: 400,
-      },
     }
   },
   hotbarSkillIds: [
