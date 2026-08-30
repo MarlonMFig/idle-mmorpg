@@ -30,6 +30,23 @@ export class WsNetTransport implements NetTransport {
     const socket = new WebSocket(url.toString());
     this.socket = socket;
 
+    const onMessage = (event: MessageEvent) => {
+      if (typeof event.data !== 'string') return;
+      try {
+        const message = JSON.parse(event.data) as NetMessage;
+        for (const handler of this.messageHandlers) handler(message);
+      } catch {
+        // ignore malformed
+      }
+    };
+    const onClose = () => {
+      if (this.socket !== socket) return;
+      this.connected = false;
+      this.emitStatus(false);
+    };
+    socket.addEventListener('message', onMessage);
+    socket.addEventListener('close', onClose);
+
     await new Promise<void>((resolve, reject) => {
       const onOpen = () => {
         cleanup();
@@ -47,22 +64,6 @@ export class WsNetTransport implements NetTransport {
       };
       socket.addEventListener('open', onOpen);
       socket.addEventListener('error', onError);
-    });
-
-    socket.addEventListener('message', (event) => {
-      if (typeof event.data !== 'string') return;
-      try {
-        const message = JSON.parse(event.data) as NetMessage;
-        for (const handler of this.messageHandlers) handler(message);
-      } catch {
-        // ignore
-      }
-    });
-
-    socket.addEventListener('close', () => {
-      if (this.socket !== socket) return;
-      this.connected = false;
-      this.emitStatus(false);
     });
   }
 

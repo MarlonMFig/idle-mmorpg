@@ -57,6 +57,7 @@ export class CharacterLabSystem {
   private lastLoopAt = 0;
   private lastOpen = false;
   private lastRuntimePlayerId: string | null = null;
+  private runtimePackLoadGen = 0;
   private lastLoadedVfxId: string | null = null;
   private dummyLoadInFlight = false;
   private lastVisKey = '';
@@ -108,7 +109,7 @@ export class CharacterLabSystem {
     this.enemyManager.setHuntPaused(true);
     if (lab.playerId !== this.lastRuntimePlayerId) {
       this.lastRuntimePlayerId = lab.playerId;
-      if (lab.playerId) this.syncRuntimePack();
+      if (lab.playerId) void this.syncRuntimePack();
     }
     const visKey = [
       lab.scaleX,
@@ -211,6 +212,7 @@ export class CharacterLabSystem {
     this.dummyKey = null;
     this.dummyHpMode = null;
     this.dummyLoadInFlight = false;
+    this.runtimePackLoadGen += 1;
     this.lastVisKey = '';
     this.lastRuntimePlayerId = null;
     this.lastLoadedVfxId = null;
@@ -573,14 +575,31 @@ export class CharacterLabSystem {
     }
   }
 
-  private syncRuntimePack(): void {
+  private async syncRuntimePack(): Promise<void> {
     const lab = characterLabStore.getSnapshot();
-    if (lab.playerId) {
-      const def = CharacterRegistry.get(lab.playerId);
-      if (def) this.player.replacePack(def.pack);
-    }
+    const loadGen = ++this.runtimePackLoadGen;
     // Destrói sprites/tweens do lab antes de dropar a textura (evita glTexture null).
     clearLabForcedFx();
+    if (lab.playerId) {
+      const def = CharacterRegistry.get(lab.playerId);
+      if (def) {
+        try {
+          await loadCharacterPack(this.scene, def.pack);
+        } catch (error) {
+          console.warn('[CharacterLab] falha ao carregar pack do jogador', error);
+          return;
+        }
+        if (
+          loadGen !== this.runtimePackLoadGen ||
+          characterLabStore.getSnapshot().playerId !== lab.playerId
+        ) {
+          return;
+        }
+        Player.ensureAnimations(this.scene, def.pack);
+        this.player.replacePack(def.pack);
+        this.player.resetLabPose();
+      }
+    }
     const ids = [lab.vfxId, lab.editingVfxId].filter((id): id is string => Boolean(id));
     for (const id of ids) {
       invalidateSharedVfxTexture(this.scene, id);
