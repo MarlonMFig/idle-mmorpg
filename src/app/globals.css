@@ -12292,6 +12292,8 @@ img.guild-win__crest-icon {
   z-index: 82;
   display: grid;
   place-items: center;
+  padding: 1rem;
+  pointer-events: auto;
   background: rgba(0, 0, 0, 0.5);
 }
 .boss-panel {
@@ -13078,4 +13080,208 @@ img.guild-win__crest-icon {
 .inv-mgr__top,
 .team-mgr__top {
   background: linear-gradient(180deg, rgba(212, 180, 90, 0.12), transparent);
+}
+
+/* Resultado de Boss — modal acionável acima do HUD inerte */
+.boss-result {
+  position: relative;
+  width: min(36rem, calc(100vw - 2rem));
+  max-height: min(42rem, calc(100dvh - 2rem));
+  overflow: hidden auto;
+  padding: 0;
+  border-color: rgba(255, 220, 130, 0.7);
+  background:
+    radial-gradient(circle at 50% -20%, rgba(255, 220, 130, 0.2), transparent 45%),
+    linear-gradient(160deg, rgba(35, 47, 70, 0.98), rgba(21, 28, 47, 0.98));
+  color: #f7f4ea;
+}
+
+.boss-result__header {
+  position: relative;
+  padding: clamp(1.2rem, 4vw, 1.8rem) clamp(1.2rem, 5vw, 2rem) 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent);
+}
+
+.boss-result--victory .boss-result__header {
+  background:
+    radial-gradient(circle at 50% 0, rgba(74, 222, 128, 0.16), transparent 55%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent);
+}
+
+.boss-result__eyebrow {
+  margin: 0 0 0.45rem;
+  color: #f5d98b;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.boss-result .boss-panel__title {
+  margin: 0;
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  letter-spacing: 0.08em;
+}
+
+.boss-result--victory .boss-panel__title {
+  color: #86efac;
+}
+
+.boss-result__subtitle {
+  margin: 0.45rem 0 0;
+  color: rgba(247, 244, 234, 0.72);
+  font-size: 0.86rem;
+}
+
+.boss-result__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+  padding: 1rem clamp(1.2rem, 5vw, 2rem);
+}
+
+.boss-result__stat {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.7rem;
+  background: rgba(5, 12, 28, 0.24);
+}
+
+.boss-result__stat span,
+.boss-result__section-heading span {
+  color: rgba(247, 244, 234, 0.66);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.boss-result__stat strong {
+  color: #fff1b8;
+  font-size: 1.05rem;
+}
+
+.boss-result__rewards {
+  margin: 0 clamp(1.2rem, 5vw, 2rem) 0.5rem;
+  padding: 0.9rem;
+  border: 1px solid rgba(255, 220, 130, 0.28);
+  border-radius: 0.8rem;
+  background: rgba(8, 15, 31, 0.28);
+}
+
+.boss-result__section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+
+.boss-result__section-heading h3 {
+  margin: 0;
+  color: #fff1b8;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.boss-result__reward-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.65rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.82rem;
+}
+
+.boss-result__reward-row > span {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.boss-result__reward-row small {
+  color: rgba(247, 244, 234, 0.72);
+  font-size: 0.75rem;
+}
+
+.boss-result__claim,
+.boss-result__back {
+  flex: 0 0 auto;
+  margin: 0;
+  border-radius: 0.55rem;
+  padding: 0.48rem 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.boss-result__claim {
+  border: 1px solid rgba(134, 239, 172, 0.45);
+  background: rgba(34, 197, 94, 0.18);
+  color: #bbf7d0;
+}
+
+.boss-result__claim:hover,
+.boss-result__claim:focus-visible {
+  background: rgba(34, 197, 94, 0.32);
+}
+
+.boss-result__claim:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.boss-result__actions {
+  justify-content: flex-end;
+  padding: 1rem clamp(1.2rem, 5vw, 2rem) 1.2rem;
+}
+
+.boss-result__actions button {
+  min-width: 7rem;
+}
+
+.boss-result__back {
+  border: 1px solid rgba(255, 220, 130, 0.55);
+  background: rgba(212, 180, 90, 0.2);
+  color: #fff1b8;
+}
+
+.boss-result__back:hover,
+.boss-result__back:focus-visible {
+  background: rgba(212, 180, 90, 0.34);
+}
+
+.boss-result__error,
+.boss-result__empty,
+.boss-result__collected {
+  margin: 0.8rem clamp(1.2rem, 5vw, 2rem) 0;
+  font-size: 0.8rem;
+}
+
+.boss-result__error {
+  color: #fecaca;
+}
+
+.boss-result__empty,
+.boss-result__collected {
+  color: #bbf7d0;
+}
+
+@media (max-width: 480px) {
+  .boss-result__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .boss-result__reward-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .boss-result__claim {
+    width: 100%;
+  }
 }
