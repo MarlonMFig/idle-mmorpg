@@ -32,7 +32,7 @@ export async function signUpWithEmail(
     return { error: 'As senhas não coincidem.' };
   }
 
-  const { data, error } = await auth.signUp.email({
+  const { error } = await auth.signUp.email({
     email,
     name,
     password,
@@ -42,8 +42,5 @@ export async function signUpWithEmail(
     return { error: error.message || 'Não foi possível criar a conta.' };
   }
 
-  if (data?.user && data.user.emailVerified === false) {
-    redirect(`/auth/verify-email?email=${encodeURIComponent(email)}`);
-  }
   redirect('/');
 }
