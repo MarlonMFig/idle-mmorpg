@@ -2,8 +2,13 @@ import { GUILD_CREATE_MIN_LEVEL, GUILD_CREATE_COST } from '@/constants/guild';
 import { emitSystemMessage } from '@/lib/system-log';
 import { getGuildProvider, getGuildProviderId } from '@/lib/guild-provider';
 import { resolveSocialProviderMode } from '@/config/social-backend';
-import { ensureGuestAuth, loadGuestAuth } from '@/lib/guest-auth';
-import { isValidGuildName, isValidGuildTag, normalizeGuildName, normalizeGuildTag } from '@/lib/guild-xp';
+import { getAuthPlayerId } from '@/lib/auth/player-identity';
+import {
+  isValidGuildName,
+  isValidGuildTag,
+  normalizeGuildName,
+  normalizeGuildTag,
+} from '@/lib/guild-xp';
 import { createStore } from '@/stores/create-store';
 import { vitalsStore } from '@/stores/vitals-store';
 import type { Guild, GuildJoinMode, GuildMemberRole, GuildUiTabId } from '@/types/guild';
@@ -149,7 +154,7 @@ export const guildStore = {
   }): void {
     bindProvider();
     const mode = resolveSocialProviderMode();
-    const guest = loadGuestAuth();
+    const authPlayerId = getAuthPlayerId();
 
     let playerId =
       typeof partial.playerId === 'string' && partial.playerId.trim()
@@ -157,7 +162,7 @@ export const guildStore = {
         : null;
 
     if (mode === 'backend') {
-      if (guest?.playerId) playerId = guest.playerId;
+      if (authPlayerId) playerId = authPlayerId;
       else if (!playerId) playerId = newPlayerId();
     } else if (!playerId) {
       playerId = newPlayerId();
@@ -250,8 +255,7 @@ export const guildStore = {
 
     let playerId: string | null = null;
     if (resolveSocialProviderMode() === 'backend') {
-      const guest = loadGuestAuth();
-      if (guest?.playerId) playerId = guest.playerId;
+      playerId = getAuthPlayerId();
     }
     if (!playerId) playerId = newPlayerId();
 
@@ -270,10 +274,6 @@ export const guildStore = {
 
   setOpen(isOpen: boolean): void {
     bindProvider();
-    if (isOpen && resolveSocialProviderMode() === 'backend') {
-      const nick = store.getSnapshot().nickname?.trim() || 'Jogador';
-      void ensureGuestAuth(nick);
-    }
     void syncGuildIdFromProvider();
     void refreshMyGuildCache();
     store.setState({

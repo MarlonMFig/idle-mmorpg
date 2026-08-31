@@ -35,6 +35,7 @@ import { bindAchievementListeners } from '@/lib/achievement-listeners';
 import { bindMissionListeners } from '@/lib/mission-listeners';
 import { achievementsStore } from '@/stores/achievements-store';
 import { dailyLoginStore } from '@/stores/daily-login-store';
+import { LogoutButton } from '@/components/auth/logout-button';
 
 export interface GameHudProps {
   player: HudPlayerInfo;
@@ -92,6 +93,7 @@ export function GameHud({ player }: GameHudProps) {
   return (
     <div className={`game-hud game-hud--${mode}`} aria-label="Interface do jogo">
       <HubTopMenu />
+      <LogoutButton />
 
       <div className="game-hud__team game-hud__team--strip">
         <TeamCombatStrip nickname={player.nickname} />

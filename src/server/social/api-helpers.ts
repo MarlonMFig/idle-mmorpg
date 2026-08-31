@@ -1,5 +1,6 @@
 import { getSocialDb } from '@/server/db/client';
-import { authenticatePlayer, readAuthHeaders } from '@/server/social/auth';
+import { auth } from '@/lib/auth/server';
+import { getOrCreateAuthPlayer } from '@/server/social/auth-player';
 import { socialErrorResponse, SocialError } from '@/server/social/errors';
 import { assertRateLimit } from '@/server/social/rate-limit';
 import { hasDatabaseUrl } from '@/server/db/client';
@@ -36,10 +37,13 @@ export async function withSocialApi(
     let nickname: string | null = null;
 
     if (opts.auth !== false) {
-      const headers = readAuthHeaders(req);
-      const auth = await authenticatePlayer(db, headers.playerId, headers.token);
-      playerId = auth.playerId;
-      nickname = auth.nickname;
+      const { data: session } = await auth.getSession();
+      if (!session?.user) {
+        throw new SocialError('UNAUTHORIZED', 'Autenticação necessária.', 401);
+      }
+      const player = await getOrCreateAuthPlayer(db, session.user);
+      playerId = player.playerId;
+      nickname = player.nickname;
       if (opts.rateKey) {
         assertRateLimit(`${opts.rateKey}:player:${playerId}`, {
           limit: opts.rateLimit ?? 60,

@@ -1,5 +1,4 @@
 import { socialFetch, SocialApiError } from '@/lib/social-api-client';
-import { loadGuestAuth } from '@/lib/guest-auth';
 import type {
   RankingBoardResult,
   RankingPlayerProfile,
@@ -31,11 +30,6 @@ export class BackendRankingProvider implements RankingProvider {
   }
 
   async submitScore(profile: RankingPlayerProfile): Promise<void> {
-    const auth = loadGuestAuth();
-    if (auth && profile.playerId !== auth.playerId) {
-      // Alinha snapshot ao guest id oficial
-      profile = { ...profile, playerId: auth.playerId };
-    }
     await socialFetch('/api/social/ranking', {
       method: 'POST',
       body: JSON.stringify({ profile }),

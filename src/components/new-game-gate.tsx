@@ -23,19 +23,25 @@ import { systemLogStore } from '@/lib/system-log';
 import {
   applyPersistedSession,
   loadPersistedSession,
+  setSessionOwner,
   trackSession,
-  wipeAllLocalPlayerAccounts,
 } from '@/lib/session-persist';
+import { setAuthPlayerIdentity } from '@/lib/auth/player-identity';
 import type { PlayerCreation } from '@/types/player-creation';
 import { HuntSelector } from '@/ui/hunts';
 
-export function NewGameGate() {
+interface NewGameGateProps {
+  authUserId: string;
+}
+
+export function NewGameGate({ authUserId }: NewGameGateProps) {
   const [playerCreation, setPlayerCreation] = useState<PlayerCreation | null>(null);
   const [bootstrapped, setBootstrapped] = useState(false);
 
   // Restore last session from localStorage (`idle-mmorpg:session-v1`) on first paint.
   useEffect(() => {
-    wipeAllLocalPlayerAccounts();
+    setSessionOwner(authUserId);
+    setAuthPlayerIdentity(authUserId);
     const saved = loadPersistedSession();
     if (saved) {
       try {
@@ -45,7 +51,7 @@ export function NewGameGate() {
       }
     }
     setBootstrapped(true);
-  }, []);
+  }, [authUserId]);
 
   function handleCreatePlayer(player: PlayerCreation): void {
     locationStore.reset();

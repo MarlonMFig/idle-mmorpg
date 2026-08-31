@@ -1,16 +1,9 @@
-import { dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { FlatCompat } from '@eslint/eslintrc';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+import nextConfig from 'eslint-config-next/core-web-vitals';
+import prettierConfig from 'eslint-config-prettier/flat';
 
 const eslintConfig = [
-  ...compat.extends('next/core-web-vitals', 'next/typescript', 'prettier'),
+  ...nextConfig,
+  prettierConfig,
   {
     ignores: [
       'node_modules/**',
@@ -19,7 +12,20 @@ const eslintConfig = [
       'build/**',
       'next-env.d.ts',
       'apps/**',
+      '.tmp/**',
+      '.tmp-*/**',
+      'scripts/**',
     ],
+  },
+  {
+    // Keep the existing project lint contract while upgrading Next/React.
+    rules: {
+      'react-hooks/set-state-in-effect': 'off',
+      'react-hooks/purity': 'off',
+      'react-hooks/immutability': 'off',
+      'react-hooks/refs': 'off',
+      'react-hooks/preserve-manual-memoization': 'off',
+    },
   },
 ];
 

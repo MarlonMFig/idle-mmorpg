@@ -8,8 +8,7 @@
   );
   --ui-glass-border: 1.5px solid #d4b45a;
   --ui-glass-shadow:
-    0 8px 22px rgba(0, 0, 0, 0.22),
-    0 0 0 1px rgba(255, 228, 160, 0.35),
+    0 8px 22px rgba(0, 0, 0, 0.22), 0 0 0 1px rgba(255, 228, 160, 0.35),
     inset 0 1px 0 rgba(255, 255, 255, 0.35);
   --ui-glass-color: #f7f4ea;
   --ink: #1a1510;
@@ -60,9 +59,7 @@ input {
   place-items: center;
   padding: clamp(1rem, 3vw, 2.5rem);
   color: #e8eef8;
-  background:
-    radial-gradient(circle at 50% 40%, #1e293b 0%, #020617 70%),
-    #020617;
+  background: radial-gradient(circle at 50% 40%, #1e293b 0%, #020617 70%), #020617;
   overflow: hidden;
 }
 
@@ -91,6 +88,137 @@ input {
   background: radial-gradient(circle, rgba(56, 189, 248, 0.18), transparent 68%);
   filter: blur(40px);
   opacity: 0.7;
+}
+
+.auth-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  color: #e8eef8;
+  background: radial-gradient(circle at 50% 35%, #1e293b 0%, #020617 72%), #020617;
+}
+
+.auth-card {
+  width: min(100%, 28rem);
+  padding: clamp(1.5rem, 4vw, 2.25rem);
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 1.5rem;
+  background: rgba(2, 6, 23, 0.9);
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.7),
+    0 0 45px rgba(56, 189, 248, 0.1);
+}
+
+.auth-eyebrow {
+  margin: 0 0 0.5rem;
+  color: #67e8f9;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.auth-title {
+  margin: 0;
+  color: #f8fafc;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.6rem, 5vw, 2.15rem);
+}
+
+.auth-subtitle {
+  margin: 0.55rem 0 1.5rem;
+  color: #94a3b8;
+  line-height: 1.4;
+}
+
+.auth-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.auth-field {
+  display: grid;
+  gap: 0.4rem;
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.auth-field input {
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 0.65rem;
+  padding: 0.7rem 0.8rem;
+  color: #f8fafc;
+  background: rgba(15, 23, 42, 0.85);
+  outline: none;
+}
+
+.auth-field input:focus {
+  border-color: #22d3ee;
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.14);
+}
+
+.auth-error {
+  margin: 0;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: 0.6rem;
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.3);
+  font-size: 0.9rem;
+}
+
+.auth-submit {
+  margin-top: 0.25rem;
+  border: 0;
+  border-radius: 0.65rem;
+  padding: 0.75rem 1rem;
+  color: #082f49;
+  background: linear-gradient(135deg, #67e8f9, #38bdf8);
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.auth-submit:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.auth-switch {
+  margin: 1.35rem 0 0;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.auth-switch a {
+  color: #67e8f9;
+  font-weight: 700;
+}
+
+.auth-logout {
+  position: fixed;
+  top: 0.75rem;
+  right: 0.9rem;
+  z-index: 20;
+}
+
+.auth-logout button {
+  border: 1px solid rgba(148, 163, 184, 0.28);
+  border-radius: 0.5rem;
+  padding: 0.35rem 0.65rem;
+  color: #cbd5e1;
+  background: rgba(2, 6, 23, 0.72);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.auth-logout button:hover {
+  border-color: rgba(103, 232, 249, 0.65);
+  color: #67e8f9;
 }
 
 .new-game {
@@ -741,7 +869,13 @@ input {
   border-radius: 50%;
   background:
     radial-gradient(circle at 50% 42%, #fff 0 32%, transparent 33%),
-    conic-gradient(from 200deg, #e8eef4 0 25%, transparent 25% 50%, #e8eef4 50% 75%, transparent 75% 100%);
+    conic-gradient(
+      from 200deg,
+      #e8eef4 0 25%,
+      transparent 25% 50%,
+      #e8eef4 50% 75%,
+      transparent 75% 100%
+    );
   border: 1.5px solid rgba(220, 230, 240, 0.75);
   opacity: 0.85;
 }
@@ -1231,11 +1365,7 @@ input {
   padding: 0.35rem 0.55rem 0.4rem;
   border: 1.5px solid #d4b45a;
   border-radius: 0.85rem;
-  background: linear-gradient(
-    180deg,
-    rgba(168, 184, 210, 0.72) 0%,
-    rgba(118, 136, 168, 0.68) 100%
-  );
+  background: linear-gradient(180deg, rgba(168, 184, 210, 0.72) 0%, rgba(118, 136, 168, 0.68) 100%);
   box-shadow:
     0 8px 22px rgba(0, 0, 0, 0.22),
     0 0 0 1px rgba(255, 228, 160, 0.35),
@@ -3833,11 +3963,7 @@ input {
   overflow: hidden;
   border: 1.5px solid #d4b45a;
   border-radius: 1.35rem;
-  background: linear-gradient(
-    180deg,
-    rgba(168, 184, 210, 0.72) 0%,
-    rgba(118, 136, 168, 0.68) 100%
-  );
+  background: linear-gradient(180deg, rgba(168, 184, 210, 0.72) 0%, rgba(118, 136, 168, 0.68) 100%);
   box-shadow:
     0 8px 22px rgba(0, 0, 0, 0.22),
     0 0 0 1px rgba(255, 228, 160, 0.35),
@@ -4409,7 +4535,9 @@ input {
   inset: 0.35rem 40%;
   border-radius: 999px;
   background: rgba(148, 163, 184, 0.35);
-  transition: background 120ms ease, inset 120ms ease;
+  transition:
+    background 120ms ease,
+    inset 120ms ease;
 }
 
 .team-mgr__split:hover::before,
@@ -5004,7 +5132,11 @@ body.team-mgr-resizing * {
 .team-mgr__thumb-halo {
   position: absolute;
   inset: -20%;
-  background: radial-gradient(circle, color-mix(in srgb, var(--q) 35%, transparent), transparent 70%);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--q) 35%, transparent),
+    transparent 70%
+  );
   pointer-events: none;
 }
 
@@ -5507,7 +5639,11 @@ body.team-mgr-resizing * {
   border-radius: 1rem;
   border: 2px solid color-mix(in srgb, var(--item-rarity) 55%, transparent);
   background:
-    radial-gradient(circle, color-mix(in srgb, var(--item-rarity) 22%, transparent), transparent 70%),
+    radial-gradient(
+      circle,
+      color-mix(in srgb, var(--item-rarity) 22%, transparent),
+      transparent 70%
+    ),
     rgba(0, 0, 0, 0.55);
   color: var(--item-rarity);
   font-size: 1.1rem;
@@ -10057,9 +10193,7 @@ img.guild-win__crest-icon {
   padding: 0.8rem;
   border: 1px solid #2e3a31;
   border-radius: 0.65rem;
-  background:
-    radial-gradient(circle at 10% 50%, rgba(229, 169, 60, 0.1), transparent 35%),
-    #0b100d;
+  background: radial-gradient(circle at 10% 50%, rgba(229, 169, 60, 0.1), transparent 35%), #0b100d;
 }
 
 .guild-win__identity-preview {
@@ -10592,8 +10726,7 @@ img.guild-win__crest-icon {
 /* —— Centro de Cura Ninja —— */
 .hud-modal-layer--medic {
   background:
-    radial-gradient(circle at 50% 40%, rgba(16, 90, 68, 0.22), transparent 45%),
-    rgba(3, 8, 7, 0.76);
+    radial-gradient(circle at 50% 40%, rgba(16, 90, 68, 0.22), transparent 45%), rgba(3, 8, 7, 0.76);
 }
 
 .hud-medic {
@@ -10900,8 +11033,7 @@ img.guild-win__crest-icon {
 .hud-forge .hud-panel__head {
   border-bottom-color: rgba(249, 115, 22, 0.28);
   background:
-    linear-gradient(90deg, rgba(154, 52, 18, 0.42), transparent 62%),
-    rgba(255, 255, 255, 0.015);
+    linear-gradient(90deg, rgba(154, 52, 18, 0.42), transparent 62%), rgba(255, 255, 255, 0.015);
 }
 
 .hud-forge .hud-panel__title {
@@ -10947,8 +11079,7 @@ img.guild-win__crest-icon {
   flex-direction: column;
   border-right: 1px solid rgba(249, 115, 22, 0.16);
   background:
-    radial-gradient(circle at 50% 0%, rgba(194, 65, 12, 0.12), transparent 52%),
-    rgba(0, 0, 0, 0.16);
+    radial-gradient(circle at 50% 0%, rgba(194, 65, 12, 0.12), transparent 52%), rgba(0, 0, 0, 0.16);
 }
 
 .char-forge__section-head {
@@ -11032,8 +11163,7 @@ img.guild-win__crest-icon {
 .char-forge__roster-item.is-selected {
   border-color: #f97316;
   background:
-    linear-gradient(90deg, rgba(234, 88, 12, 0.2), transparent 75%),
-    rgba(41, 17, 8, 0.72);
+    linear-gradient(90deg, rgba(234, 88, 12, 0.2), transparent 75%), rgba(41, 17, 8, 0.72);
   box-shadow:
     inset 3px 0 0 #f97316,
     0 0 14px rgba(234, 88, 12, 0.1);
@@ -11097,8 +11227,7 @@ img.guild-win__crest-icon {
   gap: 0.8rem;
   padding: 0.85rem;
   background:
-    radial-gradient(circle at 50% 16%, rgba(234, 88, 12, 0.11), transparent 36%),
-    rgba(0, 0, 0, 0.1);
+    radial-gradient(circle at 50% 16%, rgba(234, 88, 12, 0.11), transparent 36%), rgba(0, 0, 0, 0.1);
 }
 
 .char-forge__hero {
@@ -12398,23 +12527,102 @@ img.guild-win__crest-icon {
 }
 
 /* Guild Item 28 */
-.guild-win--v28 { max-width: 720px; }
-.guild-win__lobby-actions { display: flex; gap: 0.75rem; padding: 1rem; flex-wrap: wrap; }
-.guild-win__link-back { background: transparent; border: 0; color: #c9b896; cursor: pointer; margin-bottom: 0.5rem; }
-.guild-win__join-mode { border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.6rem; display: grid; gap: 0.35rem; }
-.guild-win__sort { display: flex; flex-wrap: wrap; gap: 0.35rem; align-items: center; margin-bottom: 0.6rem; }
-.guild-win__sort button { font-size: 0.75rem; padding: 0.2rem 0.45rem; cursor: pointer; }
-.guild-win__sort button.is-active { outline: 1px solid #f0d070; }
-.guild-win__member-main { display: flex; gap: 0.5rem; align-items: baseline; flex-wrap: wrap; }
-.guild-win__member-actions { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.25rem; }
-.guild-win__member-actions button { font-size: 0.72rem; cursor: pointer; }
-.guild-win__row-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; }
-.guild-win__activity { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.25rem; font-size: 0.8rem; opacity: 0.9; }
-.guild-win__activity span { opacity: 0.65; margin-right: 0.35rem; }
-.guild-win__apps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
-.guild-win__pager { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; padding: 0.5rem 0; }
-.guild-win__overview .guild-win__desc { white-space: pre-wrap; opacity: 0.9; }
-.guild-win__edit-block { margin: 0.75rem 0; display: grid; gap: 0.4rem; }
+.guild-win--v28 {
+  max-width: 720px;
+}
+.guild-win__lobby-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem;
+  flex-wrap: wrap;
+}
+.guild-win__link-back {
+  background: transparent;
+  border: 0;
+  color: #c9b896;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+.guild-win__join-mode {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.6rem;
+  display: grid;
+  gap: 0.35rem;
+}
+.guild-win__sort {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  margin-bottom: 0.6rem;
+}
+.guild-win__sort button {
+  font-size: 0.75rem;
+  padding: 0.2rem 0.45rem;
+  cursor: pointer;
+}
+.guild-win__sort button.is-active {
+  outline: 1px solid #f0d070;
+}
+.guild-win__member-main {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.guild-win__member-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.25rem;
+}
+.guild-win__member-actions button {
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+.guild-win__row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+}
+.guild-win__activity {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+.guild-win__activity span {
+  opacity: 0.65;
+  margin-right: 0.35rem;
+}
+.guild-win__apps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+.guild-win__pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+.guild-win__overview .guild-win__desc {
+  white-space: pre-wrap;
+  opacity: 0.9;
+}
+.guild-win__edit-block {
+  margin: 0.75rem 0;
+  display: grid;
+  gap: 0.4rem;
+}
 /* ── Shared Mgr Window (Equipe / Inventário shell for hub menus) ── */
 .mgr-window-overlay {
   pointer-events: auto;

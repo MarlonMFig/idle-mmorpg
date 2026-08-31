@@ -21,8 +21,9 @@ export const players = pgTable(
   {
     id: text('id').primaryKey(),
     nickname: text('nickname').notNull(),
-    tokenHash: text('token_hash').notNull(),
-    /** Reserva para vincular Guest → auth real (OAuth). */
+    /** Legado de Guest Account; contas Neon Auth usam linkedAuthSubject. */
+    tokenHash: text('token_hash'),
+    /** Identidade gerenciada pelo provedor de autenticação. */
     linkedAuthProvider: text('linked_auth_provider'),
     linkedAuthSubject: text('linked_auth_subject'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
@@ -54,7 +55,10 @@ export const rankingSnapshots = pgTable(
     specializationLevel: integer('specialization_level').notNull().default(0),
     lineageOnlineKills: integer('lineage_online_kills').notNull().default(0),
     equippedTitleId: text('equipped_title_id'),
-    bossBest: jsonb('boss_best').$type<Record<string, { bestTimeMs: number | null; bestDamage: number; victory: boolean }>>().notNull().default({}),
+    bossBest: jsonb('boss_best')
+      .$type<Record<string, { bestTimeMs: number | null; bestDamage: number; victory: boolean }>>()
+      .notNull()
+      .default({}),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
@@ -296,7 +300,12 @@ export const worldBossParticipants = pgTable(
   },
   (t) => [
     primaryKey({ columns: [t.cycleRowId, t.playerId] }),
-    index('world_boss_rank_idx').on(t.cycleRowId, t.totalDamage, t.bestAttemptDamage, t.scoreUpdatedAt),
+    index('world_boss_rank_idx').on(
+      t.cycleRowId,
+      t.totalDamage,
+      t.bestAttemptDamage,
+      t.scoreUpdatedAt,
+    ),
   ],
 );
 

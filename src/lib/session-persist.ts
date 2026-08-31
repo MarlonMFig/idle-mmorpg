@@ -38,7 +38,10 @@ import type { SealedCharacter } from '@/types/team';
 import type { PersistedTeamPresets } from '@/types/team-preset';
 import { isLineageId, normalizeSealedCharacter } from '@/utils/character-identity';
 import { parsePersistedTeamPresets } from '@/lib/team-preset';
-import { migrateLegacyPlayerLineageId, normalizePlayerLineageProgress } from '@/lib/lineage-progress';
+import {
+  migrateLegacyPlayerLineageId,
+  normalizePlayerLineageProgress,
+} from '@/lib/lineage-progress';
 import { parsePersistedInventory, type PersistedInventory } from '@/lib/inventory-persist';
 import { rewardIdempotency } from '@/lib/reward-service';
 import { setSessionSaveFlusher } from '@/lib/session-save-flush';
@@ -75,29 +78,22 @@ export {
 
 /** localStorage key oficial — manter id estável; version interna migra schema. */
 export const SESSION_STORAGE_KEY = OFFICIAL_SESSION_STORAGE_KEY;
-
-const ACCOUNT_WIPE_MARK = 'idle-mmorpg:accounts-cleared-20260822';
+const ACCOUNT_SESSION_PREFIX = `${SESSION_STORAGE_KEY}:user:`;
+let sessionOwnerKey: string | null = null;
 
 /**
- * Apaga saves de conta neste browser (sessão, guest, guild local, VIP…).
- * Roda uma vez por marca; depois o jogo volta a persistir normal.
+ * Define o dono do save antes do hydrate. O save legado é migrado uma única vez
+ * para a conta autenticada, sem apagar o conteúdo.
  */
-export function wipeAllLocalPlayerAccounts(): void {
-  if (typeof window === 'undefined') return;
-  try {
-    if (window.localStorage.getItem(ACCOUNT_WIPE_MARK) === '1') return;
-    const keys: string[] = [];
-    for (let i = 0; i < window.localStorage.length; i += 1) {
-      const key = window.localStorage.key(i);
-      if (key && key.startsWith('idle-mmorpg:') && key !== ACCOUNT_WIPE_MARK) {
-        keys.push(key);
-      }
-    }
-    for (const key of keys) window.localStorage.removeItem(key);
-    window.localStorage.setItem(ACCOUNT_WIPE_MARK, '1');
-  } catch {
-    /* ignore quota / private mode */
-  }
+export function setSessionOwner(authUserId: string): void {
+  const normalized = authUserId.trim();
+  sessionOwnerKey = normalized
+    ? `${ACCOUNT_SESSION_PREFIX}${encodeURIComponent(normalized)}`
+    : null;
+}
+
+function getSessionStorageKey(): string {
+  return sessionOwnerKey ?? SESSION_STORAGE_KEY;
 }
 
 /**
@@ -401,18 +397,15 @@ export function parsePersistedSession(raw: unknown): PersistedSession | null {
     guild: {
       playerId,
       guildId,
-      guildCoins:
-        typeof guildRaw?.guildCoins === 'number' ? guildRaw.guildCoins : undefined,
+      guildCoins: typeof guildRaw?.guildCoins === 'number' ? guildRaw.guildCoins : undefined,
       lastCheckInDay:
         typeof guildRaw?.lastCheckInDay === 'string' || guildRaw?.lastCheckInDay === null
           ? (guildRaw.lastCheckInDay as string | null)
           : undefined,
       claimedMissions,
       missionProgress,
-      bossDamage:
-        typeof guildRaw?.bossDamage === 'number' ? guildRaw.bossDamage : undefined,
-      bossAttacks:
-        typeof guildRaw?.bossAttacks === 'number' ? guildRaw.bossAttacks : undefined,
+      bossDamage: typeof guildRaw?.bossDamage === 'number' ? guildRaw.bossDamage : undefined,
+      bossAttacks: typeof guildRaw?.bossAttacks === 'number' ? guildRaw.bossAttacks : undefined,
     },
     gems,
     achievements,
@@ -437,7 +430,19 @@ export function parsePersistedSession(raw: unknown): PersistedSession | null {
 export function loadPersistedSession(): PersistedSession | null {
   if (typeof window === 'undefined') return null;
   try {
-    const raw = window.localStorage.getItem(SESSION_STORAGE_KEY);
+    const storageKey = getSessionStorageKey();
+    let raw = window.localStorage.getItem(storageKey);
+    if (!raw && sessionOwnerKey) {
+      const legacyRaw = window.localStorage.getItem(SESSION_STORAGE_KEY);
+      if (legacyRaw) {
+        const legacySession = parsePersistedSession(JSON.parse(legacyRaw) as unknown);
+        if (legacySession) {
+          window.localStorage.setItem(storageKey, legacyRaw);
+          window.localStorage.removeItem(SESSION_STORAGE_KEY);
+          raw = legacyRaw;
+        }
+      }
+    }
     if (!raw) return null;
     return parsePersistedSession(JSON.parse(raw) as unknown);
   } catch {
@@ -491,7 +496,7 @@ export function clearPersistedSession(): void {
   stopAutoSave();
   if (typeof window === 'undefined') return;
   try {
-    window.localStorage.removeItem(SESSION_STORAGE_KEY);
+    window.localStorage.removeItem(getSessionStorageKey());
   } catch {
     // ignore
   }
@@ -574,13 +579,9 @@ export function applyAchievementLegacyMigration(): void {
   }
   gemStore.clearLegacyAchievementClaims();
   if (merged.unmappedLegacyIds.length > 0 && typeof console !== 'undefined') {
-    console.warn(
-      '[AchievementMigration] IDs legados sem equivalente:',
-      merged.unmappedLegacyIds,
-    );
+    console.warn('[AchievementMigration] IDs legados sem equivalente:', merged.unmappedLegacyIds);
   }
 }
-
 
 function snapshotGuild(): PersistedGuild {
   const { playerId, guildId, progress } = guildStore.getSnapshot();
@@ -648,10 +649,7 @@ function buildSessionPayload(player: PlayerCreation): PersistedSession {
     shopPurchases: shopStore.getPersistedPurchases(),
     inventory: isolating && frozenInv ? frozenInv : inventoryStore.getPersistedInventory(),
     rewardTransactions: rewardIdempotency.list(),
-    teamPresets:
-      isolating && frozenPresets
-        ? frozenPresets
-        : teamPresetStore.getPersisted(),
+    teamPresets: isolating && frozenPresets ? frozenPresets : teamPresetStore.getPersisted(),
   };
 }
 
@@ -668,7 +666,7 @@ export function savePersistedSession(): void {
 
   // Official key: sempre estado congelado quando isolando (não contamina).
   const officialPayload = buildSessionPayload(trackedPlayer);
-  writeSessionJson(SESSION_STORAGE_KEY, officialPayload);
+  writeSessionJson(getSessionStorageKey(), officialPayload);
 
   // Dev key: playground ao vivo (opcional) quando Lab/isolamento ativo.
   if (isIsolatingOfficial()) {

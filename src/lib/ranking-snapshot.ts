@@ -9,7 +9,7 @@ import { teamStore } from '@/stores/team-store';
 import { vitalsStore } from '@/stores/vitals-store';
 import { getActiveLineageProgress } from '@/lib/lineage-progress';
 import { resolveSocialProviderMode } from '@/config/social-backend';
-import { loadGuestAuth } from '@/lib/guest-auth';
+import { getAuthPlayerId } from '@/lib/auth/player-identity';
 import { decimalToUnsafeNumber } from '@/lib/decimal';
 import {
   computeCollectionRarityScore,
@@ -28,13 +28,11 @@ export function buildMyRankingProfile(nicknameFallback = 'Jogador'): RankingPlay
   guildStore.ensurePlayerId();
   let playerId = guildStore.getSnapshot().playerId ?? 'local-player';
   if (resolveSocialProviderMode() === 'backend') {
-    const guest = loadGuestAuth();
-    if (guest?.playerId) playerId = guest.playerId;
+    const authPlayerId = getAuthPlayerId();
+    if (authPlayerId) playerId = authPlayerId;
   }
   const nickname =
-    guildStore.getSnapshot().nickname?.trim() ||
-    nicknameFallback.trim() ||
-    'Jogador';
+    guildStore.getSnapshot().nickname?.trim() || nicknameFallback.trim() || 'Jogador';
 
   const vitals = vitalsStore.getSnapshot();
   const collection = teamStore.getSnapshot().collection;
