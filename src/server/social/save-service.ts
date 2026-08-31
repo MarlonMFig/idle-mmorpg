@@ -14,6 +14,13 @@ export interface CloudSavePayload {
   [key: string]: unknown;
 }
 
+function objectField(payload: CloudSavePayload, key: string): Record<string, unknown> | null {
+  const value = payload[key];
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
 export function isCloudSavePayload(value: unknown): value is CloudSavePayload {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
   const payload = value as Record<string, unknown>;
@@ -53,13 +60,39 @@ export async function upsertPlayerSave(
   db: SocialDb,
   playerId: string,
   payload: CloudSavePayload,
-): Promise<Date> {
+): Promise<{ updatedAt: Date; payload: CloudSavePayload }> {
+  const currentRows = await db
+    .select({ payload: playerSaves.payload })
+    .from(playerSaves)
+    .where(eq(playerSaves.playerId, playerId))
+    .for('update')
+    .limit(1);
+  const current = currentRows[0]?.payload;
+  const nextPayload =
+    current && isCloudSavePayload(current)
+      ? {
+          ...payload,
+          // Economic and progression counters are server-owned. Client saves may
+          // still update location/UI metadata, but cannot mint currency, items,
+          // XP, or reset reward idempotency.
+          vitals: {
+            ...(objectField(payload, 'vitals') ?? {}),
+            ...(objectField(current, 'vitals') ?? {}),
+          },
+          inventory: current['inventory'],
+          gems: current['gems'],
+          rewardTransactions: current['rewardTransactions'],
+        }
+      : payload;
   const updatedAt = new Date();
-  await db.insert(playerSaves).values({ playerId, payload, updatedAt }).onConflictDoUpdate({
-    target: playerSaves.playerId,
-    set: { payload, updatedAt },
-  });
-  return updatedAt;
+  await db
+    .insert(playerSaves)
+    .values({ playerId, payload: nextPayload, updatedAt })
+    .onConflictDoUpdate({
+      target: playerSaves.playerId,
+      set: { payload: nextPayload, updatedAt },
+    });
+  return { updatedAt, payload: nextPayload };
 }
 
 /**

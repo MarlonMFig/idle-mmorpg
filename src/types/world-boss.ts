@@ -5,16 +5,12 @@
  */
 
 import type { BossReward } from '@/types/boss';
+import type { CloudSavePayload } from '@/server/social/save-service';
 
 export type WorldBossStatus = 'UPCOMING' | 'ACTIVE' | 'DEFEATED' | 'EXPIRED';
 
 export type WorldBossAttemptEndReason =
-  | 'timeout'
-  | 'player-death'
-  | 'abandon'
-  | 'boss-defeated'
-  | 'shared-defeated'
-  | 'disconnect';
+  'timeout' | 'player-death' | 'abandon' | 'boss-defeated' | 'shared-defeated' | 'disconnect';
 
 export type WorldBossAttemptResetType = 'daily' | 'weekly';
 export type WorldBossCycleType = 'weekly';
@@ -126,11 +122,7 @@ export interface WorldBossProvider {
   readonly id: string;
   getState(): Promise<WorldBossCycleState | null>;
   ensureCycle(playerLevel?: number): Promise<WorldBossCycleState>;
-  startAttempt(input: {
-    playerId: string;
-    nickname: string;
-    playerLevel: number;
-  }): Promise<{
+  startAttempt(input: { playerId: string; nickname: string; playerLevel: number }): Promise<{
     ok: boolean;
     reason?: string;
     attemptId?: string;
@@ -145,12 +137,19 @@ export interface WorldBossProvider {
     endReason: WorldBossAttemptEndReason;
   }): Promise<WorldBossSubmitResult>;
   getRanking(playerId: string): Promise<WorldBossRankingSnapshot>;
-  claimReward(input: {
-    playerId: string;
-    claimId: string;
-  }): Promise<{ ok: boolean; reason?: string; rewards?: BossReward[] }>;
+  claimReward(input: { playerId: string; claimId: string }): Promise<{
+    ok: boolean;
+    reason?: string;
+    rewards?: BossReward[];
+    serverApplied?: boolean;
+    save?: CloudSavePayload;
+  }>;
   /** DEV */
-  applyExternalDamage?(damage: number, actorId?: string, nickname?: string): Promise<WorldBossSubmitResult>;
+  applyExternalDamage?(
+    damage: number,
+    actorId?: string,
+    nickname?: string,
+  ): Promise<WorldBossSubmitResult>;
   setSharedHp?(hp: number): Promise<void>;
   forceDefeat?(opts?: { grantEntitlements?: boolean }): Promise<void>;
   resetCycle?(): Promise<void>;

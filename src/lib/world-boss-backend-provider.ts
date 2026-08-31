@@ -1,5 +1,6 @@
 import { socialFetch, SocialApiError } from '@/lib/social-api-client';
 import type { BossReward } from '@/types/boss';
+import type { CloudSavePayload } from '@/server/social/save-service';
 import type {
   WorldBossAttemptEndReason,
   WorldBossCycleState,
@@ -16,9 +17,7 @@ export class BackendWorldBossProvider implements WorldBossProvider {
   readonly pollIntervalMs = POLL_HINT_MS;
 
   async getState(): Promise<WorldBossCycleState | null> {
-    const data = await socialFetch<{ state: WorldBossCycleState | null }>(
-      '/api/social/world-boss',
-    );
+    const data = await socialFetch<{ state: WorldBossCycleState | null }>('/api/social/world-boss');
     return data.state;
   }
 
@@ -30,11 +29,7 @@ export class BackendWorldBossProvider implements WorldBossProvider {
     return data.state;
   }
 
-  async startAttempt(input: {
-    playerId: string;
-    nickname: string;
-    playerLevel: number;
-  }): Promise<{
+  async startAttempt(input: { playerId: string; nickname: string; playerLevel: number }): Promise<{
     ok: boolean;
     reason?: string;
     attemptId?: string;
@@ -100,10 +95,13 @@ export class BackendWorldBossProvider implements WorldBossProvider {
     return data.ranking ?? { top: [], myRank: null, totalParticipants: 0 };
   }
 
-  async claimReward(input: {
-    playerId: string;
-    claimId: string;
-  }): Promise<{ ok: boolean; reason?: string; rewards?: BossReward[] }> {
+  async claimReward(input: { playerId: string; claimId: string }): Promise<{
+    ok: boolean;
+    reason?: string;
+    rewards?: BossReward[];
+    serverApplied?: boolean;
+    save?: CloudSavePayload;
+  }> {
     try {
       return await socialFetch('/api/social/world-boss', {
         method: 'POST',

@@ -3,7 +3,7 @@
  * Run: npx --yes tsx scripts/test-inventory-persist.ts
  */
 import { SHOP_CURRENCY_ITEM_ID } from '../src/constants/sealing';
-import { HP_POTION_ITEM_ID, REVIVE_ITEM_ID } from '../src/data/helper-items';
+import { HELPER_SHOP_PRICES, HP_POTION_ITEM_ID, REVIVE_ITEM_ID } from '../src/data/helper-items';
 import { economyService } from '../src/lib/economy-service';
 import {
   parsePersistedInventory,
@@ -47,9 +47,18 @@ function counts(): Record<string, number> {
 
 function main(): void {
   // —— Sanitização ——
-  assert('unknown item ignored', sanitizeInventorySlot({ itemId: 'item-nope', quantity: 5 }) === null);
-  assert('negative qty ignored', sanitizeInventorySlot({ itemId: HP_POTION_ITEM_ID, quantity: -3 }) === null);
-  assert('zero qty ignored', sanitizeInventorySlot({ itemId: HP_POTION_ITEM_ID, quantity: 0 }) === null);
+  assert(
+    'unknown item ignored',
+    sanitizeInventorySlot({ itemId: 'item-nope', quantity: 5 }) === null,
+  );
+  assert(
+    'negative qty ignored',
+    sanitizeInventorySlot({ itemId: HP_POTION_ITEM_ID, quantity: -3 }) === null,
+  );
+  assert(
+    'zero qty ignored',
+    sanitizeInventorySlot({ itemId: HP_POTION_ITEM_ID, quantity: 0 }) === null,
+  );
   assert(
     'fraction floored',
     sanitizeInventorySlot({ itemId: HP_POTION_ITEM_ID, quantity: 4.9 })?.quantity === 4,
@@ -61,7 +70,10 @@ function main(): void {
   inventoryStore.reset();
   const starterCopper = inventoryStore.countItem(SHOP_CURRENCY_ITEM_ID);
   inventoryStore.hydrate(null);
-  assert('null hydrate = starter reset', inventoryStore.countItem(SHOP_CURRENCY_ITEM_ID) === starterCopper);
+  assert(
+    'null hydrate = starter reset',
+    inventoryStore.countItem(SHOP_CURRENCY_ITEM_ID) === starterCopper,
+  );
 
   // —— 25 Copper reload ——
   inventoryStore.reset();
@@ -70,11 +82,11 @@ function main(): void {
   economyService.grantCurrency('copper', 10_000, 'dev');
   assert('copper 10000', economyService.getBalance('copper') === 10_000);
   assert('buy 50 packs blocked or ok with funds', shopStore.buy('offer-hp-potion', 50) === true);
-  // 50 * 40 = 2000
-  assert('copper 8000 after buy', economyService.getBalance('copper') === 8_000);
+  const expectedAfterBuy = 10_000 - 50 * HELPER_SHOP_PRICES[HP_POTION_ITEM_ID];
+  assert('copper after buy', economyService.getBalance('copper') === expectedAfterBuy);
   assert('50 potions', inventoryStore.countItem(HP_POTION_ITEM_ID) === 50);
   roundTrip();
-  assert('copper after reload 8000', economyService.getBalance('copper') === 8_000);
+  assert('copper after reload', economyService.getBalance('copper') === expectedAfterBuy);
   assert('potions after reload 50', inventoryStore.countItem(HP_POTION_ITEM_ID) === 50);
 
   // —— 26 Loot-like add ——
@@ -102,7 +114,10 @@ function main(): void {
   assert('1 bandagem left', inventoryStore.countItem('item-anime-naruto-bandagem') === 1);
   roundTrip();
   assert('sell state after reload copper', economyService.getBalance('copper') === afterSell);
-  assert('sell state after reload item', inventoryStore.countItem('item-anime-naruto-bandagem') === 1);
+  assert(
+    'sell state after reload item',
+    inventoryStore.countItem('item-anime-naruto-bandagem') === 1,
+  );
 
   // —— Snapshot coerente (race mitigation: single snapshot) ——
   const snapA = inventoryStore.getPersistedInventory();
@@ -147,8 +162,14 @@ function main(): void {
   assert('tx copper', economyService.getBalance('copper') === expectedTx.copper);
   assert('tx potions', inventoryStore.countItem(HP_POTION_ITEM_ID) === expectedTx.potions);
   assert('tx revive', inventoryStore.countItem(REVIVE_ITEM_ID) === expectedTx.revive);
-  assert('tx bandagem', inventoryStore.countItem('item-anime-naruto-bandagem') === expectedTx.bandagem);
-  assert('tx shuriken', inventoryStore.countItem('item-anime-naruto-shuriken') === expectedTx.shuriken);
+  assert(
+    'tx bandagem',
+    inventoryStore.countItem('item-anime-naruto-bandagem') === expectedTx.bandagem,
+  );
+  assert(
+    'tx shuriken',
+    inventoryStore.countItem('item-anime-naruto-shuriken') === expectedTx.shuriken,
+  );
 
   // —— Idempotent migration (no dupe copper) ——
   const copperOnce = economyService.getBalance('copper');
@@ -173,7 +194,9 @@ function main(): void {
   assert('anime coins untouched by inventory RT', gemStore.getSnapshot().balance === 12);
 
   console.log('\nAll inventory persist tests passed.');
-  console.log('Note: Awakening/Forge/Daily/Mission/Boss/Helper persistence = same slot hydrate path.');
+  console.log(
+    'Note: Awakening/Forge/Daily/Mission/Boss/Helper persistence = same slot hydrate path.',
+  );
 }
 
 main();

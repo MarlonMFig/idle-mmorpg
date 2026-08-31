@@ -4,21 +4,12 @@
  */
 
 import type { BossRankingMode, BossReward } from '@/types/boss';
+import type { CloudSavePayload } from '@/server/social/save-service';
 
-export type GuildBossStatus =
-  | 'LOCKED'
-  | 'AVAILABLE'
-  | 'ACTIVE'
-  | 'DEFEATED'
-  | 'EXPIRED';
+export type GuildBossStatus = 'LOCKED' | 'AVAILABLE' | 'ACTIVE' | 'DEFEATED' | 'EXPIRED';
 
 export type GuildBossAttemptEndReason =
-  | 'timeout'
-  | 'player-death'
-  | 'abandon'
-  | 'boss-defeated'
-  | 'shared-defeated'
-  | 'disconnect';
+  'timeout' | 'player-death' | 'abandon' | 'boss-defeated' | 'shared-defeated' | 'disconnect';
 
 export type GuildBossAttemptResetType = 'daily' | 'weekly';
 export type GuildBossActivationMode = 'auto' | 'leaderStart';
@@ -124,11 +115,13 @@ export interface GuildBossProvider {
   readonly id: string;
   getBossState(guildId: string): Promise<GuildBossState | null>;
   ensureCycle(guildId: string, guildLevel: number): Promise<GuildBossState>;
-  startAttempt(input: {
-    guildId: string;
-    playerId: string;
-    nickname: string;
-  }): Promise<{ ok: boolean; reason?: string; attemptId?: string; startHp?: number; maxHp?: number }>;
+  startAttempt(input: { guildId: string; playerId: string; nickname: string }): Promise<{
+    ok: boolean;
+    reason?: string;
+    attemptId?: string;
+    startHp?: number;
+    maxHp?: number;
+  }>;
   submitAttempt(input: {
     guildId: string;
     attemptId: string;
@@ -137,13 +130,19 @@ export interface GuildBossProvider {
     endReason: GuildBossAttemptEndReason;
   }): Promise<GuildBossSubmitResult>;
   getParticipants(guildId: string): Promise<GuildBossParticipant[]>;
-  claimReward(input: {
-    guildId: string;
-    playerId: string;
-    claimId: string;
-  }): Promise<{ ok: boolean; reason?: string }>;
+  claimReward(input: { guildId: string; playerId: string; claimId: string }): Promise<{
+    ok: boolean;
+    reason?: string;
+    rewards?: BossReward[];
+    serverApplied?: boolean;
+    save?: CloudSavePayload;
+  }>;
   /** DEV / tests */
-  applyExternalDamage?(guildId: string, damage: number, actorId?: string): Promise<GuildBossSubmitResult>;
+  applyExternalDamage?(
+    guildId: string,
+    damage: number,
+    actorId?: string,
+  ): Promise<GuildBossSubmitResult>;
   setSharedHp?(guildId: string, hp: number): Promise<void>;
   forceDefeat?(guildId: string): Promise<void>;
   resetCycle?(guildId: string): Promise<void>;

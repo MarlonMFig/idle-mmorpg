@@ -44,8 +44,12 @@ export async function PUT(req: Request): Promise<Response> {
       if (JSON.stringify(payload).length > MAX_SAVE_BYTES) {
         throw new SocialError('VALIDATION', 'Save excede o limite permitido.', 413);
       }
-      const updatedAt = await upsertPlayerSave(db, playerId, payload);
-      return jsonOk({ saved: true, updatedAt: updatedAt.toISOString() });
+      const result = await upsertPlayerSave(db, playerId, payload);
+      return jsonOk({
+        saved: true,
+        updatedAt: result.updatedAt.toISOString(),
+        payload: result.payload,
+      });
     },
   );
 }

@@ -75,9 +75,14 @@ export function applyForcedHuntLevels(catalog: HuntCatalog): HuntCatalog {
       targets: hunt.targets.map((target) => ({
         ...target,
         requiredLevel: forced ?? target.requiredLevel,
+        // Force only the hunt gate/stat curve; keep the catalog enemy level
+        // intact so XP delta tests and combat metadata remain truthful.
         level: target.level,
-        hp: Math.round(target.hp * hpMul),
-        xp: target.xp,
+        hp:
+          forced == null
+            ? Math.round(target.hp * hpMul)
+            : Math.round(Number(huntEnemyHpForLevel(forced)) * hpMul),
+        xp: forced == null ? target.xp : huntEnemyXpForLevel(forced),
       })),
     })),
   };

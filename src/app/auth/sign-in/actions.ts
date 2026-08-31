@@ -3,7 +3,7 @@
 import { auth } from '@/lib/auth/server';
 import { redirect } from 'next/navigation';
 
-export type AuthActionState = { error: string } | null;
+export type AuthActionState = { error?: string; message?: string } | null;
 
 export async function signInWithEmail(
   _previousState: AuthActionState,

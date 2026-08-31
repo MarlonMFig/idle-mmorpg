@@ -21,6 +21,7 @@ import {
 import { addGuildXp, addMemberContribution } from '@/server/social/guild-service';
 import { SocialError } from '@/server/social/errors';
 import { getServerCombatDamageCap } from '@/server/social/save-service';
+import { grantServerRewards } from '@/server/social/server-reward-service';
 import {
   attemptResetCycleIdServer,
   getServerWeeklyCycleId,
@@ -937,7 +938,13 @@ export async function submitAttempt(
 export async function claimReward(
   db: SocialDb,
   input: { guildId: string; playerId: string; claimId: string },
-): Promise<{ ok: boolean; reason?: string }> {
+): Promise<{
+  ok: boolean;
+  reason?: string;
+  rewards?: BossReward[];
+  serverApplied?: boolean;
+  save?: import('@/server/social/save-service').CloudSavePayload;
+}> {
   try {
     await assertMembership(db, input.guildId, input.playerId);
   } catch {
@@ -965,6 +972,14 @@ export async function claimReward(
     const claim = claimRows[0];
     if (!claim) return { ok: false as const, reason: 'Recompensa não encontrada' };
     if (claim.claimed) return { ok: false as const, reason: 'Já coletado' };
+
+    const rewards = (claim.rewardsJson as BossReward[]) ?? [];
+    const delivery = await grantServerRewards(tx, {
+      eventId: `guild-boss:${input.claimId}`,
+      playerId: input.playerId,
+      source: 'guildBoss',
+      rewards,
+    });
 
     await tx
       .update(guildBossPendingClaims)
@@ -995,7 +1010,12 @@ export async function claimReward(
         );
     }
 
-    return { ok: true as const };
+    return {
+      ok: true as const,
+      rewards: delivery.rewards,
+      serverApplied: delivery.serverApplied,
+      save: delivery.payload,
+    };
   });
 
   if (claimed.ok) {

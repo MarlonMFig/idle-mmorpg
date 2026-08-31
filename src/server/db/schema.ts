@@ -44,6 +44,24 @@ export const playerSaves = pgTable(
   (t) => [index('player_saves_updated_idx').on(t.updatedAt)],
 );
 
+/** Eventos econômicos entregues pelo servidor — idempotência e auditoria. */
+export const serverEconomyEvents = pgTable(
+  'server_economy_events',
+  {
+    eventId: text('event_id').primaryKey(),
+    playerId: text('player_id')
+      .notNull()
+      .references(() => players.id, { onDelete: 'cascade' }),
+    source: text('source').notNull(),
+    rewardsJson: jsonb('rewards_json').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [
+    index('server_economy_events_player_idx').on(t.playerId, t.createdAt),
+    index('server_economy_events_source_idx').on(t.source, t.createdAt),
+  ],
+);
+
 export const apiRateLimits = pgTable('api_rate_limits', {
   key: text('key').primaryKey(),
   windowStartedAt: timestamp('window_started_at', { withTimezone: true }).notNull(),

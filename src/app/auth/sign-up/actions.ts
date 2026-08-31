@@ -3,7 +3,7 @@
 import { auth } from '@/lib/auth/server';
 import { redirect } from 'next/navigation';
 
-export type AuthActionState = { error: string } | null;
+export type AuthActionState = { error?: string; message?: string } | null;
 
 function readText(formData: FormData, key: string): string {
   const value = formData.get(key);
@@ -32,7 +32,7 @@ export async function signUpWithEmail(
     return { error: 'As senhas não coincidem.' };
   }
 
-  const { error } = await auth.signUp.email({
+  const { data, error } = await auth.signUp.email({
     email,
     name,
     password,
@@ -42,5 +42,8 @@ export async function signUpWithEmail(
     return { error: error.message || 'Não foi possível criar a conta.' };
   }
 
+  if (data?.user && data.user.emailVerified === false) {
+    redirect(`/auth/verify-email?email=${encodeURIComponent(email)}`);
+  }
   redirect('/');
 }

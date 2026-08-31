@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useActionState } from 'react';
 
-export type AuthActionState = { error: string } | null;
+export type AuthActionState = { error?: string; message?: string } | null;
 type AuthAction = (previousState: AuthActionState, formData: FormData) => Promise<AuthActionState>;
 
 interface AuthFormProps {
@@ -86,11 +86,17 @@ export function AuthForm({ mode, action }: AuthFormProps) {
               {state.error}
             </p>
           ) : null}
+          {state?.message ? <p className="auth-success">{state.message}</p> : null}
 
           <button className="auth-submit" type="submit" disabled={isPending}>
             {isPending ? 'Aguarde…' : isSignUp ? 'Criar conta' : 'Entrar'}
           </button>
         </form>
+        {!isSignUp ? (
+          <p className="auth-switch">
+            <Link href="/auth/forgot-password">Esqueci minha senha</Link>
+          </p>
+        ) : null}
 
         <p className="auth-switch">
           {isSignUp ? 'Já possui uma conta?' : 'Ainda não possui uma conta?'}{' '}

@@ -14,6 +14,7 @@ const MIGRATIONS = [
   '0005_player_saves.sql',
   '0006_guild_online_kill_limits.sql',
   '0007_api_rate_limits.sql',
+  '0008_server_economy_events.sql',
 ] as const;
 
 async function main(): Promise<void> {

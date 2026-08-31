@@ -1,6 +1,7 @@
 import { getWorldBossDefinition, WORLD_BOSS_DEFINITION } from '@/constants/world-boss';
 import { getBossDefinition } from '@/data/bosses/boss-registry';
 import { grantBossRewards } from '@/lib/boss-rewards';
+import { applyPersistedSession } from '@/lib/session-persist';
 import { makeBossInstanceId, resolveBossPhase } from '@/lib/boss-runtime';
 import { getWorldBossProvider } from '@/lib/world-boss-provider';
 import { createStore } from '@/stores/create-store';
@@ -212,7 +213,9 @@ export const worldBossStore = {
   async claim(claimId: string): Promise<{ ok: boolean; reason?: string }> {
     const playerId = guildStore.ensurePlayerId();
     const result = await provider().claimReward({ playerId, claimId });
-    if (result.ok && result.rewards?.length) {
+    if (result.ok && result.serverApplied && result.save) {
+      applyPersistedSession(result.save as unknown as Parameters<typeof applyPersistedSession>[0]);
+    } else if (result.ok && result.rewards?.length) {
       const grant = grantBossRewards(result.rewards, {
         claimId,
         source: 'worldBoss',
@@ -287,11 +290,7 @@ export const worldBossStore = {
   },
 
   async devSimulateOtherPlayer(damage: number): Promise<void> {
-    await provider().applyExternalDamage?.(
-      damage,
-      `other-${Date.now()}`,
-      'Other Player',
-    );
+    await provider().applyExternalDamage?.(damage, `other-${Date.now()}`, 'Other Player');
     bump();
     void this.refresh();
     void this.refreshRanking();
@@ -334,7 +333,10 @@ export const worldBossStore = {
     void this.refresh();
   },
 
-  async devSimulateConcurrent(a: number, b: number): Promise<{
+  async devSimulateConcurrent(
+    a: number,
+    b: number,
+  ): Promise<{
     totalAccepted: number;
     finalHp: number;
   }> {

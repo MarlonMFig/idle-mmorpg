@@ -172,6 +172,7 @@
     "mp:dev": "node server/mp/index.mjs",
     "mp:start": "node server/mp/index.mjs",
     "social:test": "npx --yes tsx scripts/test-social-backend.ts",
+    "test:http-real": "npx --yes tsx scripts/test-http-real.ts",
     "test:combat-energy": "npx --yes tsx scripts/test-combat-energy.ts",
     "test:medic": "npx --yes tsx scripts/test-medic-system.ts",
     "test:team-presets": "npx --yes tsx scripts/test-team-presets.ts",

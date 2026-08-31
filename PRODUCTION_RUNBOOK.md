@@ -9,11 +9,16 @@
    `DATABASE_URL_UNPOOLED` before promoting the application.
 4. Configure Neon Auth trusted origins for localhost and every production
    domain that serves the app.
-5. If a password or connection string was exposed, rotate it in Neon and
+5. Require email verification for production accounts:
+   `neon neon-auth config email-password update --enabled
+--require-email-verification --send-verification-email-on-sign-up
+--email-verification-method otp`.
+6. If a password or connection string was exposed, rotate it in Neon and
    replace the Vercel variables.
 
-The migrations are ordered through `0007_api_rate_limits.sql`. They create
-cloud saves, server-side guild kill budgets, and shared API rate limits.
+The migrations are ordered through `0008_server_economy_events.sql`. They create
+cloud saves, server-side guild kill budgets, shared API rate limits, and an
+append-only ledger for server-delivered economy events.
 
 ## Vercel
 

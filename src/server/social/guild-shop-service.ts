@@ -14,6 +14,7 @@ import {
   guildShopTransactions,
   guilds,
   playerSaves,
+  serverEconomyEvents,
 } from '@/server/db/schema';
 import { SocialError } from '@/server/social/errors';
 import { findGuildIdByPlayer } from '@/server/social/guild-service';
@@ -314,6 +315,15 @@ export async function authorizePurchase(
         cycleId,
         price: offer.price,
         quantity: offer.quantityPerPurchase,
+      });
+      await tx.insert(serverEconomyEvents).values({
+        eventId: `guild-shop:${transactionId}`,
+        playerId,
+        source: 'guildShop',
+        rewardsJson: {
+          copperDelta: -offer.price,
+          items: [{ itemId: offer.itemId, quantity: offer.quantityPerPurchase }],
+        },
       });
 
       await tx

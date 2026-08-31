@@ -69,7 +69,7 @@ const DEV_DEBUG_DEFAULT: DevDebugOverlays = {
 /** Safe defaults — sem multiplicadores invisíveis. */
 export const DEV_FLAGS_SAFE: Readonly<DevFlags> = Object.freeze({
   enabled: false,
-  forceHuntLevel: 1,
+  forceHuntLevel: null,
   enemyHpMultiplier: 1,
   xpMultiplier: 1,
   playerInvincible: false,
@@ -78,8 +78,8 @@ export const DEV_FLAGS_SAFE: Readonly<DevFlags> = Object.freeze({
   damageMultiplier: 1,
   gameSpeed: 1,
   testCatalogLookType: null,
-  isolateOfficialSave: false,
-  forceAllSkillsLevel1: true,
+  isolateOfficialSave: true,
+  forceAllSkillsLevel1: false,
   debug: { ...DEV_DEBUG_DEFAULT },
 });
 
@@ -157,7 +157,7 @@ export function assertDevEnvironment(action = 'dev action'): void {
 /** Reseta flags perigosas para safe (não remove enabled do ambiente). */
 export function resetDangerousDevOverrides(): void {
   const envEnabled = isDevEnvironment();
-  DEV_FLAGS.forceHuntLevel = 1;
+  DEV_FLAGS.forceHuntLevel = null;
   DEV_FLAGS.enemyHpMultiplier = 1;
   DEV_FLAGS.xpMultiplier = 1;
   DEV_FLAGS.playerInvincible = false;
@@ -165,9 +165,9 @@ export function resetDangerousDevOverrides(): void {
   DEV_FLAGS.ignoreSkillCooldown = false;
   DEV_FLAGS.damageMultiplier = 1;
   DEV_FLAGS.gameSpeed = 1;
-  DEV_FLAGS.forceAllSkillsLevel1 = true;
+  DEV_FLAGS.forceAllSkillsLevel1 = false;
   DEV_FLAGS.testCatalogLookType = null;
-  DEV_FLAGS.isolateOfficialSave = false;
+  DEV_FLAGS.isolateOfficialSave = true;
   DEV_FLAGS.debug = { ...DEV_DEBUG_DEFAULT };
   runtimeLookType = null;
   DEV_FLAGS.enabled = envEnabled;
@@ -186,7 +186,8 @@ export function listActiveDevOverrides(): string[] {
   if (DEV_FLAGS.ignoreSkillCooldown) rows.push('Ignore Cooldown');
   if (DEV_FLAGS.damageMultiplier !== 1) rows.push(`Damage ×${DEV_FLAGS.damageMultiplier}`);
   if (DEV_FLAGS.gameSpeed !== 1) rows.push(`Game Speed ×${DEV_FLAGS.gameSpeed}`);
-  if (getDevTestCatalogLookType() != null) rows.push(`Test Catalog Look ${getDevTestCatalogLookType()}`);
+  if (getDevTestCatalogLookType() != null)
+    rows.push(`Test Catalog Look ${getDevTestCatalogLookType()}`);
   if (DEV_FLAGS.isolateOfficialSave) rows.push('Isolate Official Save');
   return rows;
 }
@@ -230,8 +231,7 @@ export function isInfiniteChakra(): boolean {
 
 export function isSkillCooldownIgnored(): boolean {
   return (
-    isDevGameplayOverrideActive() &&
-    (DEV_FLAGS.ignoreSkillCooldown || DEV_FLAGS.infiniteChakra)
+    isDevGameplayOverrideActive() && (DEV_FLAGS.ignoreSkillCooldown || DEV_FLAGS.infiniteChakra)
   );
 }
 

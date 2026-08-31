@@ -13,6 +13,7 @@ import { resolveLoot } from '../src/systems/loot-engine';
 import { inventoryStore } from '../src/stores/inventory-store';
 import { computePlayerAttributes } from '../src/utils/attributes';
 import { BASE_ATTRIBUTES } from '../src/constants/attributes';
+import { qualityStatMidpoint } from '../src/constants/character-quality-stats';
 
 function assert(name: string, cond: boolean): void {
   if (!cond) throw new Error(`FAIL ${name}`);
@@ -40,7 +41,10 @@ function main(): void {
   assert('leaf-band preservado (quest)', getItem('item-leaf-band') != null);
   assert('lucky-charm preservado (loot)', getItem('item-lucky-charm') != null);
   assert('awakening material preservado', getItem('item-awakening-material') != null);
-  assert('sem categoria equipment', !listItemDefinitions().some((i) => i.category === ('equipment' as never)));
+  assert(
+    'sem categoria equipment',
+    !listItemDefinitions().some((i) => i.category === ('equipment' as never)),
+  );
   assert('registry válido', validateItemRegistry().length === 0);
 
   // —— Starter ——
@@ -68,9 +72,16 @@ function main(): void {
 
   // —— Stats: sem camada equipment; base intacta ——
   const attrs = computePlayerAttributes({ level: 1, stars: 0 });
+  const defaultQualityMultiplier = qualityStatMidpoint('D');
   assert('attrs sem equipment', !('equipment' in attrs));
-  assert('atk = base', attrs.totals.strength === BASE_ATTRIBUTES.strength);
-  assert('def = base', attrs.totals.defense === BASE_ATTRIBUTES.defense);
+  assert(
+    'atk = base quality',
+    attrs.totals.strength === Math.floor(BASE_ATTRIBUTES.strength * defaultQualityMultiplier),
+  );
+  assert(
+    'def = base quality',
+    attrs.totals.defense === Math.floor(BASE_ATTRIBUTES.defense * defaultQualityMultiplier),
+  );
 
   const powerA = computeProvisionalAccountPower({
     playerLevel: 10,
@@ -88,9 +99,9 @@ function main(): void {
     totalMastery: 20,
     uniqueCharacters: 3,
     onlineKills: 100,
-    activeStrength: BASE_ATTRIBUTES.strength,
-    activeDefense: BASE_ATTRIBUTES.defense,
-    activeSpeed: BASE_ATTRIBUTES.speed,
+    activeStrength: attrs.totals.strength,
+    activeDefense: attrs.totals.defense,
+    activeSpeed: attrs.totals.speed,
     activeAwakening: 0,
     lineageRank: 1,
   });
@@ -102,7 +113,10 @@ function main(): void {
 
   for (const offer of SHOP_OFFERS) {
     assert(`shop offer ${offer.id} no registry`, getItem(offer.itemId) != null);
-    assert(`shop offer ${offer.id} não é gear removido`, !(REMOVED_EQUIP_ITEMS as readonly string[]).includes(offer.itemId));
+    assert(
+      `shop offer ${offer.id} não é gear removido`,
+      !(REMOVED_EQUIP_ITEMS as readonly string[]).includes(offer.itemId),
+    );
   }
 
   // —— Loot tables: todos itemIds existem; 1000 rolls ——

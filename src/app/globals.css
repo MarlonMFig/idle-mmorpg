@@ -170,6 +170,16 @@ input {
   font-size: 0.9rem;
 }
 
+.auth-success {
+  margin: 0;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  border-radius: 0.6rem;
+  color: #bbf7d0;
+  background: rgba(20, 83, 45, 0.3);
+  font-size: 0.9rem;
+}
+
 .auth-submit {
   margin-top: 0.25rem;
   border: 0;

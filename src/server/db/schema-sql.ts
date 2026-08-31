@@ -17,6 +17,17 @@ CREATE TABLE IF NOT EXISTS player_saves (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS player_saves_updated_idx ON player_saves (updated_at);
+CREATE TABLE IF NOT EXISTS server_economy_events (
+  event_id text PRIMARY KEY,
+  player_id text NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+  source text NOT NULL,
+  rewards_json jsonb NOT NULL,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS server_economy_events_player_idx
+  ON server_economy_events (player_id, created_at);
+CREATE INDEX IF NOT EXISTS server_economy_events_source_idx
+  ON server_economy_events (source, created_at);
 CREATE TABLE IF NOT EXISTS api_rate_limits (
   key text PRIMARY KEY,
   window_started_at timestamptz NOT NULL,

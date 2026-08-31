@@ -1,5 +1,7 @@
 import { getGuildBossDefinition } from '@/constants/guild-boss';
 import { getBossDefinition } from '@/data/bosses/boss-registry';
+import { grantBossRewards } from '@/lib/boss-rewards';
+import { applyPersistedSession } from '@/lib/session-persist';
 import { resolveBossPhase } from '@/lib/boss-runtime';
 import { getGuildBossProvider } from '@/lib/guild-boss-provider';
 import { makeBossInstanceId } from '@/lib/boss-runtime';
@@ -56,7 +58,10 @@ export const guildBossStore = {
     void ui.getSnapshot().tick;
     const guildId = guildStore.getSnapshot().guildId;
     if (!guildId) return null;
-    return (provider() as { peekState?: (id: string) => GuildBossState | null }).peekState?.(guildId) ?? null;
+    return (
+      (provider() as { peekState?: (id: string) => GuildBossState | null }).peekState?.(guildId) ??
+      null
+    );
   },
 
   async refresh(): Promise<GuildBossState | null> {
@@ -179,6 +184,15 @@ export const guildBossStore = {
     const playerId = guildStore.getSnapshot().playerId;
     if (!guildId || !playerId) return { ok: false, reason: 'Sem Guild.' };
     const result = await provider().claimReward({ guildId, playerId, claimId });
+    if (result.ok && result.serverApplied && result.save) {
+      applyPersistedSession(result.save as unknown as Parameters<typeof applyPersistedSession>[0]);
+    } else if (result.ok && result.rewards?.length) {
+      const grant = grantBossRewards(result.rewards, {
+        claimId,
+        source: 'guildBoss',
+      });
+      if (!grant.ok) return { ok: false, reason: grant.reason };
+    }
     bump();
     return result;
   },
@@ -220,7 +234,10 @@ export const guildBossStore = {
   async devSetHpPercent(pct: number): Promise<void> {
     const state = await this.refresh();
     if (!state) return;
-    await provider().setSharedHp?.(state.guildId, Math.floor(state.maxHp * Math.max(0, Math.min(1, pct))));
+    await provider().setSharedHp?.(
+      state.guildId,
+      Math.floor(state.maxHp * Math.max(0, Math.min(1, pct))),
+    );
     bump();
   },
 
@@ -245,7 +262,10 @@ export const guildBossStore = {
     bump();
   },
 
-  async devSimulateConcurrent(a: number, b: number): Promise<{
+  async devSimulateConcurrent(
+    a: number,
+    b: number,
+  ): Promise<{
     totalAccepted: number;
     finalHp: number;
   }> {

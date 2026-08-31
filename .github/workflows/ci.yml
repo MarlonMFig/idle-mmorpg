@@ -33,3 +33,37 @@ jobs:
       - run: npm ci
       - run: npm run db:migrate:social
       - run: npm run social:test
+
+  http-real:
+    if: ${{ secrets.DATABASE_URL != '' && secrets.DATABASE_URL_UNPOOLED != '' && secrets.NEON_AUTH_BASE_URL != '' && secrets.NEON_AUTH_COOKIE_SECRET != '' && secrets.HTTP_TEST_EMAIL != '' && secrets.HTTP_TEST_PASSWORD != '' }}
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+      NEON_AUTH_BASE_URL: ${{ secrets.NEON_AUTH_BASE_URL }}
+      NEON_AUTH_COOKIE_SECRET: ${{ secrets.NEON_AUTH_COOKIE_SECRET }}
+      NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
+      HTTP_TEST_BASE_URL: http://127.0.0.1:3000
+      HTTP_TEST_EMAIL: ${{ secrets.HTTP_TEST_EMAIL }}
+      HTTP_TEST_PASSWORD: ${{ secrets.HTTP_TEST_PASSWORD }}
+      NODE_ENV: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run db:migrate:social
+      - run: npm run build
+      - name: Start application
+        run: |
+          npm start > /tmp/idle-mmorpg-next.log 2>&1 &
+          echo $! > /tmp/idle-mmorpg-next.pid
+          for i in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:3000/auth/sign-in > /dev/null; then exit 0; fi
+            sleep 2
+          done
+          cat /tmp/idle-mmorpg-next.log
+          exit 1
+      - run: npm run test:http-real

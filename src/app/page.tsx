@@ -9,6 +9,9 @@ export default async function Home() {
   if (!session?.user) {
     redirect('/auth/sign-in');
   }
+  if (session.user.emailVerified === false) {
+    redirect(`/auth/verify-email?email=${encodeURIComponent(session.user.email)}`);
+  }
 
   return <NewGameGate authUserId={session.user.id} />;
 }

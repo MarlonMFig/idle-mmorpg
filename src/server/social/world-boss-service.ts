@@ -19,6 +19,7 @@ import {
 } from '@/server/db/schema';
 import { SocialError } from '@/server/social/errors';
 import { getServerCombatDamageCap } from '@/server/social/save-service';
+import { grantServerRewards } from '@/server/social/server-reward-service';
 import {
   attemptResetCycleIdServer,
   getServerNextWeeklyResetMs,
@@ -953,6 +954,14 @@ export async function claimReward(
     if (!claim) return { ok: false as const, reason: 'Recompensa não encontrada' };
     if (claim.claimed) return { ok: false as const, reason: 'Já coletado' };
 
+    const rewards = (claim.rewardsJson as BossReward[]) ?? [];
+    const delivery = await grantServerRewards(tx, {
+      eventId: `world-boss:${input.claimId}`,
+      playerId: input.playerId,
+      source: 'worldBoss',
+      rewards,
+    });
+
     await tx
       .update(worldBossPendingClaims)
       .set({ claimed: true })
@@ -982,8 +991,12 @@ export async function claimReward(
         );
     }
 
-    const rewards = (claim.rewardsJson as BossReward[]) ?? [];
-    return { ok: true as const, rewards };
+    return {
+      ok: true as const,
+      rewards: delivery.rewards,
+      serverApplied: delivery.serverApplied,
+      save: delivery.payload,
+    };
   });
 
   if (claimed.ok) {

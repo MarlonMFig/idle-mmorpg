@@ -1,4 +1,6 @@
 import { socialFetch, SocialApiError } from '@/lib/social-api-client';
+import type { BossReward } from '@/types/boss';
+import type { CloudSavePayload } from '@/server/social/save-service';
 import type {
   GuildBossAttemptEndReason,
   GuildBossParticipant,
@@ -29,11 +31,13 @@ export class BackendGuildBossProvider implements GuildBossProvider {
     return data.state;
   }
 
-  async startAttempt(input: {
-    guildId: string;
-    playerId: string;
-    nickname: string;
-  }): Promise<{ ok: boolean; reason?: string; attemptId?: string; startHp?: number; maxHp?: number }> {
+  async startAttempt(input: { guildId: string; playerId: string; nickname: string }): Promise<{
+    ok: boolean;
+    reason?: string;
+    attemptId?: string;
+    startHp?: number;
+    maxHp?: number;
+  }> {
     try {
       return await socialFetch('/api/social/guild-boss', {
         method: 'POST',
@@ -81,18 +85,23 @@ export class BackendGuildBossProvider implements GuildBossProvider {
   }
 
   async getParticipants(guildId: string): Promise<GuildBossParticipant[]> {
-    const data = await socialFetch<{ participants: GuildBossParticipant[] }>('/api/social/guild-boss', {
-      method: 'POST',
-      body: JSON.stringify({ action: 'participants', guildId }),
-    });
+    const data = await socialFetch<{ participants: GuildBossParticipant[] }>(
+      '/api/social/guild-boss',
+      {
+        method: 'POST',
+        body: JSON.stringify({ action: 'participants', guildId }),
+      },
+    );
     return data.participants ?? [];
   }
 
-  async claimReward(input: {
-    guildId: string;
-    playerId: string;
-    claimId: string;
-  }): Promise<{ ok: boolean; reason?: string }> {
+  async claimReward(input: { guildId: string; playerId: string; claimId: string }): Promise<{
+    ok: boolean;
+    reason?: string;
+    rewards?: BossReward[];
+    serverApplied?: boolean;
+    save?: CloudSavePayload;
+  }> {
     try {
       return await socialFetch('/api/social/guild-boss', {
         method: 'POST',
@@ -112,7 +121,11 @@ export class BackendGuildBossProvider implements GuildBossProvider {
 export class UnavailableGuildBossProvider implements GuildBossProvider {
   readonly id = 'unavailable';
   private fail(): never {
-    throw new SocialApiError('UNAVAILABLE', 'Guild Boss indisponível (backend não configurado).', 503);
+    throw new SocialApiError(
+      'UNAVAILABLE',
+      'Guild Boss indisponível (backend não configurado).',
+      503,
+    );
   }
   async getBossState(): Promise<GuildBossState | null> {
     this.fail();

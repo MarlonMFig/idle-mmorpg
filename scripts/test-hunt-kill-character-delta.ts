@@ -6,7 +6,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { BALANCE } from '../src/anime-idle/balance';
 import { difficultyMultiplier } from '../src/anime-idle/formulas';
-import { getForceHuntLevel } from '../src/config/devConfig';
+import {
+  DEV_FLAGS,
+  getForceHuntLevel,
+  resetDevLabSessionState,
+  setDevLabSessionActive,
+} from '../src/config/devConfig';
 import { applyForcedHuntLevels } from '../src/constants/combat';
 import { DEFAULT_VITALS } from '../src/constants/hud';
 import { grantHuntKillXp } from '../src/lib/grant-player-xp';
@@ -87,13 +92,20 @@ function expectedHunterXp(memberLevel: number, enemyHp = FIRST_HUNT_HP) {
   });
   const first = amounts[0]!;
   const expected = expectedHunterXp(4);
-  assert('kill grant segue Δ do caçador (não 4)', first.granted.eq(expected), `got ${first.granted}`);
+  assert(
+    'kill grant segue Δ do caçador (não 4)',
+    first.granted.eq(expected),
+    `got ${first.granted}`,
+  );
   assert('conta recebe o mesmo valor', first.accountGain.eq(expected));
   assert('personagem recebe o mesmo valor', first.charXp.eq(expected));
   assert(
     'conta 4 / 96 / 500 idênticos',
     amounts.every(
-      (row) => row.granted.eq(first.granted) && row.accountGain.eq(first.accountGain) && row.charXp.eq(first.charXp),
+      (row) =>
+        row.granted.eq(first.granted) &&
+        row.accountGain.eq(first.accountGain) &&
+        row.charXp.eq(first.charXp),
     ),
     amounts.map((row) => String(row.granted)).join(','),
   );
@@ -108,7 +120,11 @@ function expectedHunterXp(memberLevel: number, enemyHp = FIRST_HUNT_HP) {
   grantHuntKillXp(FIRST_HUNT_HP, FIRST_HUNT_ENEMY_LEVEL);
   const hunterAfter = teamStore.getCharacterInstance(ids[0]!)!;
   const benchAfter = ids.slice(1).map((id) => teamStore.getCharacterInstance(id)!);
-  assert('caçador Nv.4 recebe o XP cheio (sem share)', hunterXp.eq(expectedHunterXp(4)), `got ${hunterXp}`);
+  assert(
+    'caçador Nv.4 recebe o XP cheio (sem share)',
+    hunterXp.eq(expectedHunterXp(4)),
+    `got ${hunterXp}`,
+  );
   assert(
     'caçador aplica o XP',
     hunterAfter.level === predictedHunter.level && hunterAfter.xp.eq(predictedHunter.xp),
@@ -116,7 +132,9 @@ function expectedHunterXp(memberLevel: number, enemyHp = FIRST_HUNT_HP) {
   );
   assert(
     'reserva não ganha XP da hunt',
-    benchAfter.every((member, i) => member.xp.eq(benchXpBefore[i]!) && member.level === 60 + i * 30),
+    benchAfter.every(
+      (member, i) => member.xp.eq(benchXpBefore[i]!) && member.level === 60 + i * 30,
+    ),
     benchAfter.map((m) => `${m.level}/${m.xp}`).join(', '),
   );
 }
@@ -139,8 +157,10 @@ function expectedHunterXp(memberLevel: number, enemyHp = FIRST_HUNT_HP) {
   );
   assert(
     'os outros da formação não ganham XP',
-    after[0]!.xp.eq(before[0]!.xp) && after[0]!.level === before[0]!.level &&
-      after[2]!.xp.eq(before[2]!.xp) && after[2]!.level === before[2]!.level,
+    after[0]!.xp.eq(before[0]!.xp) &&
+      after[0]!.level === before[0]!.level &&
+      after[2]!.xp.eq(before[2]!.xp) &&
+      after[2]!.level === before[2]!.level,
     after.map((m) => `${m.level}/${m.xp}`).join(', '),
   );
 }
@@ -160,6 +180,8 @@ function expectedHunterXp(memberLevel: number, enemyHp = FIRST_HUNT_HP) {
   const catalog = JSON.parse(fs.readFileSync(file, 'utf8')) as HuntCatalog;
   const high = catalog.hunts.find((hunt) => (hunt.targets[0]?.level ?? 0) >= 20);
   assert('catálogo tem hunt inimigo ≥20', Boolean(high));
+  setDevLabSessionActive(true);
+  DEV_FLAGS.forceHuntLevel = 1;
   const forced = applyForcedHuntLevels(catalog);
   const forcedHigh = forced.hunts.find((hunt) => hunt.id === high!.id)!;
   const charLevel = 4;
@@ -176,6 +198,7 @@ function expectedHunterXp(memberLevel: number, enemyHp = FIRST_HUNT_HP) {
     delta > 0 && difficultyMultiplier(delta) > 1,
     `Δ=${delta}`,
   );
+  resetDevLabSessionState();
 }
 
 console.log('PASS test-hunt-kill-character-delta');

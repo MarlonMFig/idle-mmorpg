@@ -25,7 +25,11 @@ import {
 } from '../src/config/devConfig';
 import { isDevWriteAllowed } from '../src/lib/dev/dev-write-guard';
 import { applyForcedHuntLevels, huntEnemyStatsForLevel } from '../src/constants/combat';
-import { OFFLINE_LIMITS, computeEffectiveOfflineDuration, MS_PER_OFFLINE_HOUR } from '../src/constants/offline';
+import {
+  OFFLINE_LIMITS,
+  computeEffectiveOfflineDuration,
+  MS_PER_OFFLINE_HOUR,
+} from '../src/constants/offline';
 import type { HuntCatalog } from '../src/types/hunt';
 import type { MapKey } from '../src/maps/map-registry';
 
@@ -96,7 +100,10 @@ function main(): void {
     assert('safe force skills off outside lab', shouldForceAllSkillsLevel1() === false);
     assert('no gameplay override outside lab', isDevGameplayOverrideActive() === false);
     assert('isolate default true in flags', DEV_FLAGS.isolateOfficialSave === true);
-    assert('safe defaults match', DEV_FLAGS_SAFE.xpMultiplier === 1 && DEV_FLAGS_SAFE.enemyHpMultiplier === 1);
+    assert(
+      'safe defaults match',
+      DEV_FLAGS_SAFE.xpMultiplier === 1 && DEV_FLAGS_SAFE.enemyHpMultiplier === 1,
+    );
 
     assert('official key', OFFICIAL_SESSION_STORAGE_KEY === 'idle-mmorpg:session-v1');
     assert('dev session key', DEV_SESSION_STORAGE_KEY === 'idle-mmorpg:session-dev-v1');
@@ -117,12 +124,18 @@ function main(): void {
       assert('lab force hunt 1', getForceHuntLevel() === 1);
       assert('lab force skills', shouldForceAllSkillsLevel1() === true);
       const listed = listActiveDevOverrides();
-      assert('overrides listed', listed.some((r) => r.includes('XP')) && listed.some((r) => r.includes('HP')));
+      assert(
+        'overrides listed',
+        listed.some((r) => r.includes('XP')) && listed.some((r) => r.includes('HP')),
+      );
 
       const catalog = sampleCatalog();
       const forced = applyForcedHuntLevels(catalog);
       const stats = huntEnemyStatsForLevel(1);
-      assert('forced hunt level applied in lab', forced.hunts[0]!.targets[0]!.level === 1);
+      assert(
+        'forced hunt gate applied in lab',
+        forced.hunts[0]!.requiredLevel === 1 && forced.hunts[0]!.targets[0]!.requiredLevel === 1,
+      );
       assert(
         'forced hp uses multiplier',
         forced.hunts[0]!.targets[0]!.hp === Math.round(Number(stats.hp) * 2),
@@ -145,8 +158,14 @@ function main(): void {
 
     const f2p = computeEffectiveOfflineDuration(10 * MS_PER_OFFLINE_HOUR, false);
     const vip = computeEffectiveOfflineDuration(10 * MS_PER_OFFLINE_HOUR, true);
-    assert('offline 4h', f2p.effectiveOfflineDuration === OFFLINE_LIMITS.nonVipHours * MS_PER_OFFLINE_HOUR);
-    assert('offline 8h', vip.effectiveOfflineDuration === OFFLINE_LIMITS.vipHours * MS_PER_OFFLINE_HOUR);
+    assert(
+      'offline 4h',
+      f2p.effectiveOfflineDuration === OFFLINE_LIMITS.nonVipHours * MS_PER_OFFLINE_HOUR,
+    );
+    assert(
+      'offline 8h',
+      vip.effectiveOfflineDuration === OFFLINE_LIMITS.vipHours * MS_PER_OFFLINE_HOUR,
+    );
 
     const writeOk = isDevWriteAllowed();
     assert('write guard boolean', typeof writeOk === 'boolean');
