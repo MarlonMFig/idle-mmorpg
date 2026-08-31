@@ -1,8 +1,6 @@
-import type {
-  NetConnectOptions,
-  NetMessage,
-} from '@/types/net';
+import type { NetConnectOptions, NetMessage } from '@/types/net';
 import type { NetMessageHandler, NetStatusHandler, NetTransport } from '@/services/net/transport';
+import { getMultiplayerAuthToken } from '@/services/net/multiplayer-auth';
 
 /**
  * Transporte WebSocket nativo — URL base via NEXT_PUBLIC_MULTIPLAYER_WS_URL
@@ -22,10 +20,10 @@ export class WsNetTransport implements NetTransport {
   async connect(options: NetConnectOptions): Promise<void> {
     this.disconnect();
 
+    const token = await getMultiplayerAuthToken();
     const url = new URL(this.baseUrl);
     url.searchParams.set('mapKey', options.mapKey || 'default');
-    url.searchParams.set('playerId', options.playerId);
-    url.searchParams.set('nickname', options.nickname);
+    url.searchParams.set('token', token);
 
     const socket = new WebSocket(url.toString());
     this.socket = socket;

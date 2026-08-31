@@ -1,7 +1,7 @@
 /**
  * Item 45 — Guild Shop backend (Postgres / Drizzle).
- * Entitlement only: membership + guild level + purchase limits.
- * Copper spend + inventory grant remain client-side after authorize.
+ * The transaction debits copper and adds the item to the authenticated cloud
+ * save. The client mirrors that result for immediate UI feedback.
  * Limits keyed by playerId + offerId + cycleId (NOT guildId).
  */
 
@@ -13,6 +13,7 @@ import {
   guildShopPurchases,
   guildShopTransactions,
   guilds,
+  playerSaves,
 } from '@/server/db/schema';
 import { SocialError } from '@/server/social/errors';
 import { findGuildIdByPlayer } from '@/server/social/guild-service';
@@ -237,6 +238,75 @@ export async function authorizePurchase(
         throw new SocialError('FORBIDDEN', 'Limite de compra atingido.', 403);
       }
 
+      if (offer.currency !== 'copper') {
+        throw new SocialError('VALIDATION', 'Moeda da oferta não suportada.', 400);
+      }
+      const saveRows = await tx
+        .select()
+        .from(playerSaves)
+        .where(eq(playerSaves.playerId, playerId))
+        .for('update')
+        .limit(1);
+      const save = saveRows[0];
+      if (!save || !save.payload || typeof save.payload !== 'object') {
+        if (process.env.NODE_ENV === 'production') {
+          throw new SocialError('CONFLICT', 'Save em nuvem obrigatório para comprar.', 409);
+        }
+      } else {
+        const payload = save.payload as Record<string, unknown>;
+        const inventory =
+          payload.inventory && typeof payload.inventory === 'object'
+            ? (payload.inventory as Record<string, unknown>)
+            : {};
+        const rawSlots = Array.isArray(inventory.slots) ? inventory.slots : [];
+        const slots = rawSlots
+          .filter((slot) => slot === null || (typeof slot === 'object' && slot !== null))
+          .map((slot) => {
+            if (!slot) return null;
+            const row = slot as Record<string, unknown>;
+            return {
+              itemId: typeof row.itemId === 'string' ? row.itemId : '',
+              quantity:
+                typeof row.quantity === 'number' && Number.isFinite(row.quantity)
+                  ? Math.max(0, Math.floor(row.quantity))
+                  : 0,
+            };
+          });
+        let copper = 0;
+        for (const slot of slots) {
+          if (slot?.itemId === 'item-copper-coin') copper += slot.quantity;
+        }
+        if (copper < offer.price) {
+          throw new SocialError('FORBIDDEN', 'Copper insuficiente.', 403);
+        }
+
+        let remainingPrice = offer.price;
+        for (const slot of slots) {
+          if (slot?.itemId !== 'item-copper-coin' || remainingPrice <= 0) continue;
+          const removed = Math.min(slot.quantity, remainingPrice);
+          slot.quantity -= removed;
+          remainingPrice -= removed;
+        }
+        const nextSlots = slots.map((slot) => (slot && slot.quantity > 0 ? slot : null));
+        const existingItem = nextSlots.find((slot) => slot?.itemId === offer.itemId);
+        if (existingItem) {
+          existingItem.quantity += offer.quantityPerPurchase;
+        } else {
+          nextSlots.push({ itemId: offer.itemId, quantity: offer.quantityPerPurchase });
+        }
+        const updatedAt = new Date();
+        await tx
+          .update(playerSaves)
+          .set({
+            payload: {
+              ...payload,
+              inventory: { ...inventory, slots: nextSlots },
+            },
+            updatedAt,
+          })
+          .where(eq(playerSaves.playerId, playerId));
+      }
+
       await tx.insert(guildShopTransactions).values({
         transactionId,
         playerId,
@@ -289,7 +359,7 @@ export async function authorizePurchase(
     throw err;
   }
 
-  return { ok: true, alreadyProcessed: false, ...fields };
+  return { ok: true, alreadyProcessed: false, serverApplied: true, ...fields };
 }
 
 /** DEV — zera limites do player (todas as ofertas ou uma). */

@@ -16,3 +16,20 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npm run test:critical
+
+  social-real:
+    if: ${{ secrets.DATABASE_URL != '' && secrets.DATABASE_URL_UNPOOLED != '' }}
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      DATABASE_URL_UNPOOLED: ${{ secrets.DATABASE_URL_UNPOOLED }}
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run db:migrate:social
+      - run: npm run social:test

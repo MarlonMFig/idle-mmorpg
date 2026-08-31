@@ -80,6 +80,7 @@ export {
 export const SESSION_STORAGE_KEY = OFFICIAL_SESSION_STORAGE_KEY;
 const ACCOUNT_SESSION_PREFIX = `${SESSION_STORAGE_KEY}:user:`;
 let sessionOwnerKey: string | null = null;
+let cloudSaveTimer: ReturnType<typeof setTimeout> | null = null;
 
 /**
  * Define o dono do save antes do hydrate. O save legado é migrado uma única vez
@@ -103,6 +104,7 @@ function getSessionStorageKey(): string {
 const SESSION_VERSION = 13 as const;
 const LEGACY_SESSION_VERSIONS = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
 const SAVE_DEBOUNCE_MS = 250;
+const CLOUD_SAVE_DEBOUNCE_MS = 1_500;
 
 const STARTER_IDS = new Set<string>(STARTERS.map((entry) => entry.id));
 const MAP_KEY_SET = new Set<string>(Object.values(MAP_KEYS));
@@ -162,6 +164,7 @@ export interface PersistedAchievements {
 
 export interface PersistedSession {
   version: typeof SESSION_VERSION;
+  savedAt?: number;
   player: PlayerCreation;
   location: PersistedLocation;
   team: PersistedTeam;
@@ -385,6 +388,8 @@ export function parsePersistedSession(raw: unknown): PersistedSession | null {
 
   return {
     version: SESSION_VERSION,
+    savedAt:
+      typeof data.savedAt === 'number' && Number.isFinite(data.savedAt) ? data.savedAt : undefined,
     player: {
       nickname,
       villageId: playerRaw.villageId as PlayerCreation['villageId'],
@@ -661,17 +666,72 @@ function writeSessionJson(key: string, session: PersistedSession): void {
   }
 }
 
+async function uploadCloudSave(payload: PersistedSession): Promise<void> {
+  try {
+    const response = await fetch('/api/social/save', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ payload }),
+    });
+    if (!response.ok && response.status !== 401) {
+      console.warn('[CloudSave] upload falhou:', response.status);
+    }
+  } catch {
+    // Local persistence remains the fallback when the network is unavailable.
+  }
+}
+
+function scheduleCloudSave(payload: PersistedSession): void {
+  if (typeof window === 'undefined') return;
+  if (cloudSaveTimer) clearTimeout(cloudSaveTimer);
+  cloudSaveTimer = setTimeout(() => {
+    cloudSaveTimer = null;
+    void uploadCloudSave(payload);
+  }, CLOUD_SAVE_DEBOUNCE_MS);
+}
+
+export async function hydrateSessionFromCloud(): Promise<PersistedSession | null> {
+  if (typeof window === 'undefined') return null;
+  try {
+    const response = await fetch('/api/social/save', {
+      credentials: 'include',
+      cache: 'no-store',
+    });
+    if (!response.ok) return null;
+    const body = (await response.json()) as {
+      save?: { payload?: unknown; updatedAt?: string } | null;
+    };
+    if (!body.save?.payload) return null;
+    const remote = parsePersistedSession(body.save.payload);
+    if (!remote) return null;
+
+    const local = loadPersistedSession();
+    const remoteUpdatedAt = Date.parse(body.save.updatedAt ?? '');
+    const localUpdatedAt = local?.savedAt ?? 0;
+    if (local && Number.isFinite(remoteUpdatedAt) && localUpdatedAt >= remoteUpdatedAt) {
+      scheduleCloudSave(local);
+      return null;
+    }
+    return remote;
+  } catch {
+    return null;
+  }
+}
+
 export function savePersistedSession(): void {
   if (typeof window === 'undefined' || !trackedPlayer) return;
 
   // Official key: sempre estado congelado quando isolando (não contamina).
-  const officialPayload = buildSessionPayload(trackedPlayer);
+  const officialPayload = { ...buildSessionPayload(trackedPlayer), savedAt: Date.now() };
   writeSessionJson(getSessionStorageKey(), officialPayload);
+  scheduleCloudSave(officialPayload);
 
   // Dev key: playground ao vivo (opcional) quando Lab/isolamento ativo.
   if (isIsolatingOfficial()) {
     const live: PersistedSession = {
       version: SESSION_VERSION,
+      savedAt: Date.now(),
       player: { ...trackedPlayer },
       location: snapshotLocation(),
       team: snapshotTeam(),

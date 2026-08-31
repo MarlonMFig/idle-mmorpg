@@ -32,6 +32,24 @@ export const players = pgTable(
   (t) => [uniqueIndex('players_linked_auth_uidx').on(t.linkedAuthProvider, t.linkedAuthSubject)],
 );
 
+export const playerSaves = pgTable(
+  'player_saves',
+  {
+    playerId: text('player_id')
+      .primaryKey()
+      .references(() => players.id, { onDelete: 'cascade' }),
+    payload: jsonb('payload').notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('player_saves_updated_idx').on(t.updatedAt)],
+);
+
+export const apiRateLimits = pgTable('api_rate_limits', {
+  key: text('key').primaryKey(),
+  windowStartedAt: timestamp('window_started_at', { withTimezone: true }).notNull(),
+  requestCount: integer('request_count').notNull().default(0),
+});
+
 /** Snapshot social para Ranking — rank NÃO é persistido. */
 export const rankingSnapshots = pgTable(
   'ranking_snapshots',
@@ -119,6 +137,19 @@ export const guildMembers = pgTable(
     uniqueIndex('guild_members_player_uidx').on(t.playerId),
     index('guild_members_guild_idx').on(t.guildId),
   ],
+);
+
+export const guildOnlineKillLimits = pgTable(
+  'guild_online_kill_limits',
+  {
+    playerId: text('player_id')
+      .primaryKey()
+      .references(() => players.id, { onDelete: 'cascade' }),
+    cycleId: text('cycle_id').notNull(),
+    grantedCount: integer('granted_count').notNull().default(0),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index('guild_online_kill_limits_cycle_idx').on(t.cycleId)],
 );
 
 export const guildApplications = pgTable(

@@ -4,16 +4,7 @@
  */
 
 import { randomUUID } from 'node:crypto';
-import {
-  and,
-  asc,
-  count,
-  desc,
-  eq,
-  ilike,
-  or,
-  sql,
-} from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, or, sql } from 'drizzle-orm';
 import {
   GUILD_ACTIVITY_LIMIT,
   GUILD_CONTRIBUTION_PER_ONLINE_KILL,
@@ -42,11 +33,13 @@ import {
   guildActivities,
   guildApplications,
   guildMembers,
+  guildOnlineKillLimits,
   guilds,
   players,
   type GuildRow,
 } from '@/server/db/schema';
 import { SocialError } from '@/server/social/errors';
+import { getServerDailyCycleId } from '@/server/social/server-time';
 import type {
   CreateGuildInput,
   Guild,
@@ -150,7 +143,11 @@ async function pushActivity(
 }
 
 async function assertPlayerExists(db: DbOrTx, playerId: string): Promise<void> {
-  const rows = await db.select({ id: players.id }).from(players).where(eq(players.id, playerId)).limit(1);
+  const rows = await db
+    .select({ id: players.id })
+    .from(players)
+    .where(eq(players.id, playerId))
+    .limit(1);
   if (!rows[0]) {
     throw new SocialError('NOT_FOUND', 'Jogador não encontrado.', 404);
   }
@@ -331,16 +328,17 @@ export async function createGuild(
   return guild;
 }
 
-export async function searchGuilds(db: SocialDb, query: GuildSearchQuery): Promise<GuildSearchResult> {
+export async function searchGuilds(
+  db: SocialDb,
+  query: GuildSearchQuery,
+): Promise<GuildSearchResult> {
   const q = (query.query ?? '').trim();
   const page = Math.max(0, query.page ?? 0);
   const pageSize = Math.min(50, Math.max(1, query.pageSize ?? 20));
   const offset = page * pageSize;
 
   const where =
-    q.length > 0
-      ? or(ilike(guilds.name, `%${q}%`), ilike(guilds.tag, `%${q}%`))
-      : undefined;
+    q.length > 0 ? or(ilike(guilds.name, `%${q}%`), ilike(guilds.tag, `%${q}%`)) : undefined;
 
   const [totalRow] = await db.select({ value: count() }).from(guilds).where(where);
   const total = Number(totalRow?.value ?? 0);
@@ -489,7 +487,8 @@ export async function leaveGuild(db: SocialDb, guildId: string, playerId: string
     if (!member) throw new SocialError('NOT_MEMBER', 'Você não é membro.', 403);
 
     const leave = canLeaveGuild(member, guild.memberCount);
-    if (!leave.ok) throw new SocialError('PERMISSION_DENIED', leave.reason ?? 'Sem permissão.', 403);
+    if (!leave.ok)
+      throw new SocialError('PERMISSION_DENIED', leave.reason ?? 'Sem permissão.', 403);
 
     await tx
       .delete(guildMembers)
@@ -515,7 +514,11 @@ export async function leaveGuild(db: SocialDb, guildId: string, playerId: string
   console.info('[guild]', 'leaveGuild', { guildId, playerId });
 }
 
-export async function dissolveGuild(db: SocialDb, guildId: string, playerId: string): Promise<void> {
+export async function dissolveGuild(
+  db: SocialDb,
+  guildId: string,
+  playerId: string,
+): Promise<void> {
   await db.transaction(async (tx) => {
     const guild = await lockGuildRow(tx, guildId);
     const actor = await getMember(tx, guildId, playerId);
@@ -684,7 +687,9 @@ export async function editGuild(
         ? patch.description.trim().slice(0, GUILD_DESCRIPTION_MAX)
         : guild.description;
     const joinMode =
-      patch.joinMode === 'approval' || patch.joinMode === 'open' ? patch.joinMode : asJoinMode(guild.joinMode);
+      patch.joinMode === 'approval' || patch.joinMode === 'open'
+        ? patch.joinMode
+        : asJoinMode(guild.joinMode);
 
     try {
       await tx
@@ -715,9 +720,21 @@ export async function editGuild(
   console.info('[guild]', 'editGuild', { guildId, actorId });
 }
 
-export async function getApplications(db: SocialDb, guildId: string): Promise<GuildApplication[]> {
+export async function getApplications(
+  db: SocialDb,
+  guildId: string,
+  actorId: string,
+): Promise<GuildApplication[]> {
   const row = await loadGuildRow(db, guildId);
   if (!row) throw new SocialError('NOT_FOUND', 'Guild não encontrada.', 404);
+  const actor = await getMember(db, guildId, actorId);
+  if (!canGuildMemberPerform(actor, 'approveMember')) {
+    throw new SocialError(
+      'PERMISSION_DENIED',
+      'Apenas Líder ou Oficial pode ver solicitações.',
+      403,
+    );
+  }
   return listPendingApplications(db, guildId);
 }
 
@@ -939,6 +956,9 @@ export async function grantOnlineKillProgress(
 
   const guildXp = GUILD_XP_PER_ONLINE_KILL;
   const contribution = GUILD_CONTRIBUTION_PER_ONLINE_KILL;
+  const dailyCycleId = getServerDailyCycleId();
+  const maxDailyGrants = 1_000;
+  let granted = false;
 
   try {
     await db.transaction(async (tx) => {
@@ -952,6 +972,33 @@ export async function grantOnlineKillProgress(
         throw new SocialError('NOT_MEMBER', 'Você não é membro.', 403);
       }
 
+      const limitRows = await tx
+        .select()
+        .from(guildOnlineKillLimits)
+        .where(eq(guildOnlineKillLimits.playerId, playerId))
+        .for('update')
+        .limit(1);
+      const limit = limitRows[0];
+      if (limit?.cycleId === dailyCycleId && limit.grantedCount >= maxDailyGrants) return;
+
+      if (!limit) {
+        await tx.insert(guildOnlineKillLimits).values({
+          playerId,
+          cycleId: dailyCycleId,
+          grantedCount: 1,
+          updatedAt: new Date(),
+        });
+      } else {
+        await tx
+          .update(guildOnlineKillLimits)
+          .set({
+            cycleId: dailyCycleId,
+            grantedCount: limit.cycleId === dailyCycleId ? limit.grantedCount + 1 : 1,
+            updatedAt: new Date(),
+          })
+          .where(eq(guildOnlineKillLimits.playerId, playerId));
+      }
+
       await tx
         .update(guildMembers)
         .set({
@@ -961,6 +1008,7 @@ export async function grantOnlineKillProgress(
         .where(and(eq(guildMembers.guildId, guildId), eq(guildMembers.playerId, playerId)));
 
       await applyXpToGuildRow(tx, guildId, guild.level, guild.xp, guildXp);
+      granted = true;
     });
   } catch (err) {
     if (err instanceof SocialError && (err.code === 'NOT_FOUND' || err.code === 'NOT_MEMBER')) {
@@ -969,6 +1017,7 @@ export async function grantOnlineKillProgress(
     throw err;
   }
 
+  if (!granted) return { guildXp: 0, contribution: 0 };
   console.info('[guild]', 'grantOnlineKillProgress', { guildId, playerId, guildXp, contribution });
   return { guildXp, contribution };
 }

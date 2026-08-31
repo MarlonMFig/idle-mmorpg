@@ -22,6 +22,7 @@ import { teamPresetStore } from '@/stores/team-preset-store';
 import { systemLogStore } from '@/lib/system-log';
 import {
   applyPersistedSession,
+  hydrateSessionFromCloud,
   loadPersistedSession,
   setSessionOwner,
   trackSession,
@@ -50,7 +51,16 @@ export function NewGameGate({ authUserId }: NewGameGateProps) {
         // Corrupt / incomplete hydrate — fall through to new-game screen.
       }
     }
-    setBootstrapped(true);
+    void hydrateSessionFromCloud().then((cloudSession) => {
+      if (cloudSession) {
+        try {
+          setPlayerCreation(applyPersistedSession(cloudSession));
+        } catch {
+          // Ignore an invalid remote snapshot and keep the local state.
+        }
+      }
+      setBootstrapped(true);
+    });
   }, [authUserId]);
 
   function handleCreatePlayer(player: PlayerCreation): void {

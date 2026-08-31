@@ -1,8 +1,6 @@
 import PartySocket from 'partysocket';
-import type {
-  NetConnectOptions,
-  NetMessage,
-} from '@/types/net';
+import { getMultiplayerAuthToken } from '@/services/net/multiplayer-auth';
+import type { NetConnectOptions, NetMessage } from '@/types/net';
 import type { NetMessageHandler, NetStatusHandler, NetTransport } from '@/services/net/transport';
 
 /**
@@ -22,13 +20,13 @@ export class PartyKitTransport implements NetTransport {
   async connect(options: NetConnectOptions): Promise<void> {
     this.disconnect();
 
+    const token = await getMultiplayerAuthToken();
     const room = encodeURIComponent(options.mapKey || 'default');
     const socket = new PartySocket({
       host: this.host,
       room,
       query: {
-        playerId: options.playerId,
-        nickname: options.nickname,
+        token,
       },
     });
 

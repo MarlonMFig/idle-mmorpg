@@ -27,12 +27,20 @@ export class SocialError extends Error {
 }
 
 export function socialErrorResponse(err: unknown): Response {
+  const headers = {
+    'Cache-Control': 'no-store',
+    'X-Content-Type-Options': 'nosniff',
+    'Referrer-Policy': 'no-referrer',
+  };
   if (err instanceof SocialError) {
-    return Response.json({ ok: false, code: err.code, error: err.message }, { status: err.status });
+    return Response.json(
+      { ok: false, code: err.code, error: err.message },
+      { status: err.status, headers },
+    );
   }
   console.error('[social]', err);
   return Response.json(
     { ok: false, code: 'INTERNAL', error: 'Erro interno.' },
-    { status: 500 },
+    { status: 500, headers },
   );
 }

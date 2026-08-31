@@ -5,10 +5,7 @@
 
 import { randomUUID } from 'node:crypto';
 import { and, eq, sql } from 'drizzle-orm';
-import {
-  computeGuildBossContribution,
-  getGuildBossDefinition,
-} from '@/constants/guild-boss';
+import { computeGuildBossContribution, getGuildBossDefinition } from '@/constants/guild-boss';
 import { syncAttemptBucket } from '@/lib/boss-runtime';
 import type { SocialDb } from '@/server/db/client';
 import {
@@ -23,6 +20,7 @@ import {
 } from '@/server/db/schema';
 import { addGuildXp, addMemberContribution } from '@/server/social/guild-service';
 import { SocialError } from '@/server/social/errors';
+import { getServerCombatDamageCap } from '@/server/social/save-service';
 import {
   attemptResetCycleIdServer,
   getServerWeeklyCycleId,
@@ -247,7 +245,11 @@ function mapToState(
   };
 }
 
-async function assembleState(db: DbOrTx, cycle: CycleRow, guildLevel: number): Promise<GuildBossState> {
+async function assembleState(
+  db: DbOrTx,
+  cycle: CycleRow,
+  guildLevel: number,
+): Promise<GuildBossState> {
   const [participants, attempts, claims] = await Promise.all([
     loadParticipants(db, cycle.id),
     loadAttempts(db, cycle.id),
@@ -377,8 +379,7 @@ export async function ensureCycle(
   // Confirma guild existe.
   await loadGuildLevel(db, guildId);
 
-  const status: GuildBossStatus =
-    guildLevel < def.guildLevelRequirement ? 'LOCKED' : 'AVAILABLE';
+  const status: GuildBossStatus = guildLevel < def.guildLevelRequirement ? 'LOCKED' : 'AVAILABLE';
   const id = randomUUID();
   const now = new Date();
   const startedAt = status === 'AVAILABLE' ? now : null;
@@ -481,12 +482,7 @@ export async function startAttempt(
     };
   }
 
-  const participant = await syncParticipantAttempts(
-    db,
-    cycle.id,
-    input.playerId,
-    input.nickname,
-  );
+  const participant = await syncParticipantAttempts(db, cycle.id, input.playerId, input.nickname);
   if (participant.attemptsUsed >= def.maxAttemptsPerMember) {
     return { ok: false, reason: 'Sem tentativas restantes hoje.' };
   }
@@ -643,6 +639,23 @@ export async function submitAttempt(
   const weekly = getServerWeeklyCycleId();
   const cycle = await findCycleByWeekly(db, input.guildId, def.bossId, weekly);
   if (!cycle) return failSubmit('Estado inexistente');
+  const attemptMeta = await db
+    .select({ startedAt: guildBossAttempts.startedAt })
+    .from(guildBossAttempts)
+    .where(eq(guildBossAttempts.id, input.attemptId))
+    .limit(1);
+  const elapsedMs = attemptMeta[0]
+    ? serverNow() - (tsMs(attemptMeta[0].startedAt) ?? serverNow())
+    : 0;
+  const serverDamageCap = await getServerCombatDamageCap(
+    db,
+    input.playerId,
+    elapsedMs,
+    def.attemptDurationMs,
+  );
+  if (serverDamageCap == null && process.env.NODE_ENV === 'production') {
+    return failSubmit('Save em nuvem obrigatório para validar o dano.', cycle.currentHp);
+  }
 
   try {
     const result = await db.transaction(async (tx) => {
@@ -682,7 +695,10 @@ export async function submitAttempt(
 
       let acceptedDamage = 0;
       if (keepDamage && locked.currentHp > 0 && locked.status !== 'DEFEATED') {
-        const raw = Math.max(0, Math.floor(input.damage));
+        const raw = Math.min(
+          Math.max(0, Math.floor(input.damage)),
+          serverDamageCap ?? Number.MAX_SAFE_INTEGER,
+        );
         acceptedDamage = Math.min(raw, locked.currentHp);
       }
 

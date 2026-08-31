@@ -1,16 +1,21 @@
 import { withSocialApi, jsonOk } from '@/server/social/api-helpers';
 import * as boss from '@/server/social/guild-boss-service';
+import * as guildService from '@/server/social/guild-service';
 import { SocialError } from '@/server/social/errors';
 import type { GuildBossAttemptEndReason } from '@/types/guild-boss';
 
 /** GET /api/social/guild-boss?guildId= */
 export async function GET(req: Request): Promise<Response> {
-  return withSocialApi(req, { auth: true, rateKey: 'guild-boss-get', rateLimit: 120 }, async ({ db }) => {
-    const guildId = new URL(req.url).searchParams.get('guildId');
-    if (!guildId) throw new SocialError('VALIDATION', 'guildId obrigatório.');
-    const state = await boss.getBossState(db, guildId);
-    return jsonOk({ state });
-  });
+  return withSocialApi(
+    req,
+    { auth: true, rateKey: 'guild-boss-get', rateLimit: 120 },
+    async ({ db }) => {
+      const guildId = new URL(req.url).searchParams.get('guildId');
+      if (!guildId) throw new SocialError('VALIDATION', 'guildId obrigatório.');
+      const state = await boss.getBossState(db, guildId);
+      return jsonOk({ state });
+    },
+  );
 }
 
 /** POST /api/social/guild-boss — start / submit / claim / ensure */
@@ -29,7 +34,8 @@ export async function POST(req: Request): Promise<Response> {
 
       switch (body.action) {
         case 'ensure': {
-          const guildLevel = typeof body.guildLevel === 'number' ? body.guildLevel : 1;
+          const guild = await guildService.getGuild(db, guildId);
+          const guildLevel = guild?.level ?? 1;
           const state = await boss.ensureCycle(db, guildId, guildLevel);
           return jsonOk({ state });
         }

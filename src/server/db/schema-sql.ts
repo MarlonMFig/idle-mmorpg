@@ -3,7 +3,7 @@ export const SOCIAL_SCHEMA_SQL = `
 CREATE TABLE IF NOT EXISTS players (
   id text PRIMARY KEY,
   nickname text NOT NULL,
-  token_hash text NOT NULL,
+  token_hash text,
   linked_auth_provider text,
   linked_auth_subject text,
   created_at timestamptz NOT NULL DEFAULT now(),
@@ -11,6 +11,17 @@ CREATE TABLE IF NOT EXISTS players (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS players_linked_auth_uidx
   ON players (linked_auth_provider, linked_auth_subject);
+CREATE TABLE IF NOT EXISTS player_saves (
+  player_id text PRIMARY KEY REFERENCES players(id) ON DELETE CASCADE,
+  payload jsonb NOT NULL,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS player_saves_updated_idx ON player_saves (updated_at);
+CREATE TABLE IF NOT EXISTS api_rate_limits (
+  key text PRIMARY KEY,
+  window_started_at timestamptz NOT NULL,
+  request_count integer NOT NULL DEFAULT 0
+);
 
 CREATE TABLE IF NOT EXISTS ranking_snapshots (
   player_id text PRIMARY KEY REFERENCES players(id) ON DELETE CASCADE,
@@ -72,6 +83,15 @@ CREATE TABLE IF NOT EXISTS guild_members (
 );
 CREATE UNIQUE INDEX IF NOT EXISTS guild_members_player_uidx ON guild_members (player_id);
 CREATE INDEX IF NOT EXISTS guild_members_guild_idx ON guild_members (guild_id);
+
+CREATE TABLE IF NOT EXISTS guild_online_kill_limits (
+  player_id text PRIMARY KEY REFERENCES players(id) ON DELETE CASCADE,
+  cycle_id text NOT NULL,
+  granted_count integer NOT NULL DEFAULT 0,
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS guild_online_kill_limits_cycle_idx
+  ON guild_online_kill_limits (cycle_id);
 
 CREATE TABLE IF NOT EXISTS guild_applications (
   guild_id text NOT NULL REFERENCES guilds(id) ON DELETE CASCADE,

@@ -13,8 +13,7 @@ import { SOCIAL_SCHEMA_SQL } from '@/server/db/schema-sql';
 neonConfig.webSocketConstructor = ws;
 
 export type SocialDb =
-  | ReturnType<typeof drizzleNeon<typeof schema>>
-  | ReturnType<typeof drizzlePglite<typeof schema>>;
+  ReturnType<typeof drizzleNeon<typeof schema>> | ReturnType<typeof drizzlePglite<typeof schema>>;
 
 let cached: SocialDb | null = null;
 let pgliteInstance: PGlite | null = null;
@@ -37,10 +36,19 @@ export async function getSocialDb(opts?: { forcePglite?: boolean }): Promise<Soc
   if (cached) return cached;
 
   const isProd = process.env.NODE_ENV === 'production';
+  if (isProd && (process.env.SOCIAL_USE_DEV_DB === '1' || process.env.ISOLATE_SOCIAL_DEV === '1')) {
+    throw new Error('Flags de banco DEV não podem ser usadas em produção.');
+  }
+  if (isProd && !process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL ausente em produção — social backend indisponível.');
+  }
+
   const useDevUrl = process.env.SOCIAL_USE_DEV_DB === '1' || process.env.ISOLATE_SOCIAL_DEV === '1';
-  const url = useDevUrl
-    ? process.env.DATABASE_URL_DEV || process.env.DATABASE_URL
-    : process.env.DATABASE_URL || process.env.DATABASE_URL_DEV;
+  const url = isProd
+    ? process.env.DATABASE_URL
+    : useDevUrl
+      ? process.env.DATABASE_URL_DEV || process.env.DATABASE_URL
+      : process.env.DATABASE_URL || process.env.DATABASE_URL_DEV;
 
   if (url) {
     pool = new Pool({ connectionString: url });
@@ -76,5 +84,6 @@ export function resetSocialDbCache(): void {
 }
 
 export function hasDatabaseUrl(): boolean {
+  if (process.env.NODE_ENV === 'production') return Boolean(process.env.DATABASE_URL);
   return Boolean(process.env.DATABASE_URL || process.env.DATABASE_URL_DEV);
 }

@@ -3,6 +3,7 @@
  * Relays player presence/state and chat between browsers.
  */
 import type * as Party from 'partykit/server';
+import { jwtVerify } from 'jose';
 
 type PlayerNetState = {
   playerId: string;
@@ -33,6 +34,10 @@ type NetMessage =
 
 const CHAT_COOLDOWN_MS = 300;
 const MAX_CHAT_LEN = 120;
+const MAX_COORDINATE = 100_000;
+const MAX_MOVE_PER_SECOND = 600;
+
+type ConnectionIdentity = { playerId: string; nickname: string };
 
 function parseMessage(raw: string): NetMessage | null {
   try {
@@ -50,25 +55,61 @@ function isPlayerState(p: unknown): p is PlayerNetState {
   return (
     typeof o.playerId === 'string' &&
     typeof o.nickname === 'string' &&
+    typeof o.villageId === 'string' &&
     typeof o.mapKey === 'string' &&
     typeof o.x === 'number' &&
-    typeof o.y === 'number'
+    Number.isFinite(o.x) &&
+    typeof o.y === 'number' &&
+    Number.isFinite(o.y)
   );
 }
 
 export default class WorldRoom implements Party.Server {
   private readonly players = new Map<string, PlayerNetState>();
   private readonly connToPlayer = new Map<string, string>();
+  private readonly connIdentity = new Map<string, ConnectionIdentity>();
   private readonly lastChatAt = new Map<string, number>();
 
   constructor(readonly room: Party.Room) {}
 
-  onConnect(conn: Party.Connection, ctx: Party.ConnectionContext): void {
+  async onConnect(conn: Party.Connection, ctx: Party.ConnectionContext): Promise<void> {
     const url = new URL(ctx.request.url);
-    const playerId =
-      url.searchParams.get('playerId')?.trim() || `anon-${conn.id.slice(0, 8)}`;
+    const secret = process.env.MULTIPLAYER_AUTH_SECRET;
+    const token = url.searchParams.get('token');
+    if (!secret || !token) {
+      conn.close();
+      return;
+    }
+
+    let identity: ConnectionIdentity;
+    try {
+      const verified = await jwtVerify(token, new TextEncoder().encode(secret), {
+        algorithms: ['HS256'],
+      });
+      const playerId =
+        typeof verified.payload.playerId === 'string'
+          ? verified.payload.playerId
+          : verified.payload.sub;
+      if (!playerId || !/^p-neon-[a-zA-Z0-9_-]+$/.test(playerId)) {
+        conn.close();
+        return;
+      }
+      identity = {
+        playerId,
+        nickname:
+          typeof verified.payload.nickname === 'string'
+            ? verified.payload.nickname.trim().slice(0, 24) || 'Shinobi'
+            : 'Shinobi',
+      };
+    } catch {
+      conn.close();
+      return;
+    }
+
+    const playerId = identity.playerId;
 
     this.connToPlayer.set(conn.id, playerId);
+    this.connIdentity.set(conn.id, identity);
 
     conn.send(
       JSON.stringify({
@@ -101,33 +142,16 @@ export default class WorldRoom implements Party.Server {
       case 'player_join': {
         if (!isPlayerState(msg.player)) return;
         if (msg.player.playerId !== boundId) return;
-        const player: PlayerNetState = {
-          ...msg.player,
-          characterId:
-            typeof msg.player.characterId === 'string' && msg.player.characterId
-              ? msg.player.characterId
-              : 'naruto-classic',
-          mapKey: this.room.id,
-        };
+        const player = this.normalizeState(msg.player, sender);
         const isNew = !this.players.has(boundId);
         this.players.set(boundId, player);
-        this.broadcast(
-          { type: isNew ? 'player_join' : 'player_state', player },
-          sender.id,
-        );
+        this.broadcast({ type: isNew ? 'player_join' : 'player_state', player }, sender.id);
         break;
       }
       case 'player_state': {
         if (!isPlayerState(msg.player)) return;
         if (msg.player.playerId !== boundId) return;
-        const player: PlayerNetState = {
-          ...msg.player,
-          characterId:
-            typeof msg.player.characterId === 'string' && msg.player.characterId
-              ? msg.player.characterId
-              : 'naruto-classic',
-          mapKey: this.room.id,
-        };
+        const player = this.normalizeState(msg.player, sender);
         this.players.set(boundId, player);
         this.broadcast({ type: 'player_state', player }, sender.id);
         break;
@@ -140,8 +164,9 @@ export default class WorldRoom implements Party.Server {
         if (now - last < CHAT_COOLDOWN_MS) return;
         this.lastChatAt.set(boundId, now);
         const nickname =
+          this.connIdentity.get(sender.id)?.nickname ||
           this.players.get(boundId)?.nickname ||
-          (typeof msg.nickname === 'string' ? msg.nickname : 'Shinobi');
+          'Shinobi';
         this.broadcast({
           type: 'chat_message',
           playerId: boundId,
@@ -159,6 +184,7 @@ export default class WorldRoom implements Party.Server {
   onClose(conn: Party.Connection): void {
     const playerId = this.connToPlayer.get(conn.id);
     this.connToPlayer.delete(conn.id);
+    this.connIdentity.delete(conn.id);
     if (!playerId) return;
     // Only leave if no other connections for this player.
     for (const id of this.connToPlayer.values()) {
@@ -167,6 +193,38 @@ export default class WorldRoom implements Party.Server {
     this.players.delete(playerId);
     this.lastChatAt.delete(playerId);
     this.broadcast({ type: 'player_leave', playerId });
+  }
+
+  private normalizeState(raw: PlayerNetState, sender: Party.Connection): PlayerNetState {
+    const identity = this.connIdentity.get(sender.id);
+    const previous = identity ? this.players.get(identity.playerId) : undefined;
+    const now = Date.now();
+    let x = Math.max(-MAX_COORDINATE, Math.min(MAX_COORDINATE, raw.x));
+    let y = Math.max(-MAX_COORDINATE, Math.min(MAX_COORDINATE, raw.y));
+    if (previous) {
+      const elapsed = Math.max(0.05, (now - previous.updatedAt) / 1_000);
+      const maxDistance = MAX_MOVE_PER_SECOND * elapsed;
+      x = Math.max(previous.x - maxDistance, Math.min(previous.x + maxDistance, x));
+      y = Math.max(previous.y - maxDistance, Math.min(previous.y + maxDistance, y));
+    }
+    return {
+      playerId: identity?.playerId ?? raw.playerId,
+      nickname: identity?.nickname ?? 'Shinobi',
+      villageId: raw.villageId,
+      mapKey: this.room.id,
+      characterId: raw.characterId || 'naruto-classic',
+      x,
+      y,
+      direction:
+        raw.direction === 'up' ||
+        raw.direction === 'down' ||
+        raw.direction === 'left' ||
+        raw.direction === 'right'
+          ? raw.direction
+          : 'down',
+      anim: raw.anim === 'walk' ? 'walk' : 'idle',
+      updatedAt: now,
+    };
   }
 
   private broadcast(message: NetMessage, exceptConnId?: string): void {

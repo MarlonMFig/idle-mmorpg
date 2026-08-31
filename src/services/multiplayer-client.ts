@@ -2,23 +2,15 @@ import type { NetTransport } from '@/services/net/transport';
 import { StubNetTransport } from '@/services/net/stub-transport';
 import { PartyKitTransport } from '@/services/net/partykit-transport';
 import { WsNetTransport } from '@/services/net/ws-transport';
-import type {
-  NetConnectOptions,
-  NetMessage,
-  PlayerNetState,
-} from '@/types/net';
+import { UnavailableNetTransport } from '@/services/net/unavailable-transport';
+import type { NetConnectOptions, NetMessage, PlayerNetState } from '@/types/net';
 
 export type MultiplayerClientHandlers = {
   onWelcome?: (playerId: string) => void;
   onPlayerJoin?: (player: PlayerNetState) => void;
   onPlayerLeave?: (playerId: string) => void;
   onPlayerState?: (player: PlayerNetState) => void;
-  onChat?: (payload: {
-    playerId: string;
-    nickname: string;
-    text: string;
-    at: number;
-  }) => void;
+  onChat?: (payload: { playerId: string; nickname: string; text: string; at: number }) => void;
   onConnectionChange?: (connected: boolean) => void;
 };
 
@@ -145,7 +137,7 @@ function resolvePartyHost(): string | null {
   return host.replace(/^https?:\/\//, '').replace(/\/$/, '');
 }
 
-/** Factory — WS URL → PartyKit host → stub. */
+/** Factory — WS URL → PartyKit host → explicit unavailable state in production. */
 export function createMultiplayerClient(): MultiplayerClient {
   const wsUrl = resolveWsUrl();
   if (wsUrl) {
@@ -154,6 +146,9 @@ export function createMultiplayerClient(): MultiplayerClient {
   const host = resolvePartyHost();
   if (host) {
     return new MultiplayerClient(new PartyKitTransport(host));
+  }
+  if (process.env.NODE_ENV === 'production') {
+    return new MultiplayerClient(new UnavailableNetTransport());
   }
   return new MultiplayerClient(new StubNetTransport());
 }

@@ -56,7 +56,10 @@ function main(): void {
   assert('level cap unchanged', MAX_PLAYER_LEVEL === 9999);
   assert('XP required formula unchanged', LEVEL_RULES.xpBase === 100 && LEVEL_RULES.xpExponent === 1.65);
   assert('energy untouched', COMBAT_ENERGY.maxEnergy > 0);
-  assert('quality D range untouched', QUALITY_RANGES.D.min === 0.2 && QUALITY_RANGES.D.max === 0.4);
+  assert(
+    'quality D range official',
+    QUALITY_RANGES.D.min === 0.23 && QUALITY_RANGES.D.max === 0.38,
+  );
   assert('attack CD 380', ATTACK_CD === 380);
 
   const curveLevels = [1, 5, 10, 20, 30, 40, 50, 75, 100, 150, 200, 300, 400, 500, MAX_PLAYER_LEVEL];

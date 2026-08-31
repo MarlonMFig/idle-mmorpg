@@ -18,6 +18,9 @@ function readPublicMode(): string {
 
 export function hasSocialDatabaseConfigured(): boolean {
   if (typeof process === 'undefined') return false;
+  if (process.env.NODE_ENV === 'production') {
+    return Boolean(process.env.DATABASE_URL);
+  }
   return Boolean(process.env.DATABASE_URL || process.env.DATABASE_URL_DEV);
 }
 

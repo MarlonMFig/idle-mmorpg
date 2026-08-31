@@ -56,14 +56,13 @@ export interface GuildShopAuthorizeResult {
   quantity?: number;
   currency?: EconomyCurrencyId;
   price?: number;
+  /** A compra já foi debitada e aplicada no save em nuvem. */
+  serverApplied?: boolean;
 }
 
 export interface GuildShopProvider {
   readonly id: string;
-  listCatalog(input: {
-    playerId: string;
-    copperBalance: number;
-  }): Promise<{
+  listCatalog(input: { playerId: string; copperBalance: number }): Promise<{
     ok: boolean;
     reason?: string;
     guildId?: string | null;

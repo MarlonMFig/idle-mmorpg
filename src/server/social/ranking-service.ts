@@ -1,11 +1,8 @@
 import type { SocialDb } from '@/server/db/client';
 import { rankingSnapshots } from '@/server/db/schema';
+import { getPlayerSave } from '@/server/social/save-service';
 import { buildBoardFromProfiles } from '@/lib/ranking-sort';
-import type {
-  RankingBoardResult,
-  RankingPlayerProfile,
-  RankingQuery,
-} from '@/types/ranking';
+import type { RankingBoardResult, RankingPlayerProfile, RankingQuery } from '@/types/ranking';
 import { RANKING_TOP_LIMIT } from '@/types/ranking';
 import { LINEAGE_IDS, type LineageId } from '@/types/character-meta';
 import { SocialError } from '@/server/social/errors';
@@ -19,6 +16,121 @@ function parseLineageId(value: unknown): LineageId | null {
   return typeof value === 'string' && (LINEAGE_IDS as readonly string[]).includes(value)
     ? (value as LineageId)
     : null;
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function intFrom(value: unknown, min: number, max: number): number {
+  if (typeof value !== 'number' || !Number.isFinite(value)) return min;
+  return Math.max(min, Math.min(max, Math.floor(value)));
+}
+
+/**
+ * Rebuilds the public ranking snapshot from the authenticated player's cloud
+ * save. Values posted by the browser are deliberately ignored.
+ */
+export async function buildServerRankingProfile(
+  db: SocialDb,
+  playerId: string,
+  nickname: string,
+): Promise<RankingPlayerProfile> {
+  const saved = await getPlayerSave(db, playerId);
+  if (!saved) {
+    throw new SocialError('CONFLICT', 'Crie o save em nuvem antes de enviar o ranking.', 409);
+  }
+
+  const payload = saved.payload;
+  const vitals = asRecord(payload.vitals);
+  const team = asRecord(payload.team);
+  const account = asRecord(payload.account);
+  const lineage = asRecord(account.lineageProgress);
+  const gems = asRecord(payload.gems);
+  const achievements = asRecord(payload.achievements);
+  const bosses = asRecord(payload.bosses);
+  const collection = Array.isArray(team.collection) ? team.collection : [];
+  const uniqueIds = new Set<string>();
+  const bestByCharacter = new Map<string, { mastery: number; quality: string }>();
+  for (const raw of collection) {
+    const row = asRecord(raw);
+    const characterId = typeof row.characterId === 'string' ? row.characterId : '';
+    if (!characterId) continue;
+    const candidate = {
+      mastery: intFrom(row.masteryLevel, 0, 1_000_000),
+      quality: typeof row.quality === 'string' ? row.quality : 'D',
+    };
+    const previous = bestByCharacter.get(characterId);
+    if (!previous || candidate.mastery >= previous.mastery) {
+      bestByCharacter.set(characterId, candidate);
+    }
+    uniqueIds.add(characterId);
+  }
+
+  const qualityScore: Record<string, number> = { D: 1, C: 2, B: 4, A: 8, S: 16, SS: 32, SSS: 64 };
+  let totalMastery = 0;
+  let collectionRarityScore = 0;
+  for (const row of bestByCharacter.values()) {
+    totalMastery += row.mastery;
+    collectionRarityScore += qualityScore[row.quality] ?? 0;
+  }
+
+  const playerLevel = intFrom(vitals.level, 1, 9999);
+  const onlineKills = intFrom(gems.totalKills, 0, 1_000_000_000);
+  const lineageRank = intFrom(lineage.rank, 0, 99);
+  const specializationLevel = intFrom(lineage.specializationLevel, 0, 99);
+  const lineageOnlineKills = intFrom(lineage.onlineKills, 0, 1_000_000_000);
+  const accountPower = Math.max(
+    0,
+    Math.floor(
+      playerLevel * 120 +
+        totalMastery * 8 +
+        uniqueIds.size * 40 +
+        onlineKills * 0.05 +
+        lineageRank * 80,
+    ),
+  );
+
+  const bossBest: RankingPlayerProfile['bossBest'] = {};
+  const bestResult = asRecord(bosses.bestResult);
+  for (const [bossId, raw] of Object.entries(bestResult)) {
+    const row = asRecord(raw);
+    bossBest[bossId] = {
+      bestTimeMs:
+        typeof row.bestTimeMs === 'number' && Number.isFinite(row.bestTimeMs)
+          ? Math.max(0, Math.floor(row.bestTimeMs))
+          : null,
+      bestDamage: intFrom(row.bestDamage, 0, 1_000_000_000_000),
+      victory: row.victory === true || Boolean(asRecord(bosses.defeatedBosses)[bossId]),
+    };
+  }
+
+  return {
+    playerId,
+    nickname: nickname.trim().slice(0, 24) || 'Shinobi',
+    playerLevel,
+    levelXp: 0,
+    totalXp: playerLevel * playerLevel * 100,
+    accountPower,
+    accountPowerProvisional: true,
+    totalMastery,
+    uniqueCharacters: uniqueIds.size,
+    collectionRarityScore,
+    onlineKills,
+    lineageId: parseLineageId(lineage.lineageId),
+    lineageRank,
+    specializationId:
+      typeof lineage.selectedSpecializationId === 'string'
+        ? lineage.selectedSpecializationId
+        : null,
+    specializationLevel,
+    lineageOnlineKills,
+    equippedTitleId:
+      typeof achievements.equippedTitleId === 'string' ? achievements.equippedTitleId : null,
+    bossBest,
+  };
 }
 
 export function validateRankingProfile(
@@ -110,13 +222,10 @@ export async function upsertRankingSnapshot(
     bossBest: profile.bossBest,
     updatedAt: new Date(),
   };
-  await db
-    .insert(rankingSnapshots)
-    .values(values)
-    .onConflictDoUpdate({
-      target: rankingSnapshots.playerId,
-      set: values,
-    });
+  await db.insert(rankingSnapshots).values(values).onConflictDoUpdate({
+    target: rankingSnapshots.playerId,
+    set: values,
+  });
 }
 
 export async function listRankingProfiles(db: SocialDb): Promise<RankingPlayerProfile[]> {
@@ -153,6 +262,10 @@ export async function getPlayerRank(
   query: RankingQuery,
   playerId: string,
 ): Promise<number | null> {
-  const board = await getRankingBoard(db, { ...query, page: 0, pageSize: RANKING_TOP_LIMIT }, playerId);
+  const board = await getRankingBoard(
+    db,
+    { ...query, page: 0, pageSize: RANKING_TOP_LIMIT },
+    playerId,
+  );
   return board.myRank;
 }

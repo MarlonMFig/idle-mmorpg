@@ -3,15 +3,20 @@ import { withSocialApi, jsonOk } from '@/server/social/api-helpers';
 import { SocialError } from '@/server/social/errors';
 import * as worldBoss from '@/server/social/world-boss-service';
 import type { WorldBossAttemptEndReason } from '@/types/world-boss';
+import { getServerPlayerLevel } from '@/server/social/save-service';
 
 const MAX_SUBMITTED_DAMAGE = 1_000_000_000_000;
 
 /** GET /api/social/world-boss */
 export async function GET(req: Request): Promise<Response> {
-  return withSocialApi(req, { auth: true, rateKey: 'world-boss-get', rateLimit: 120 }, async ({ db }) => {
-    const state = await worldBoss.getState(db);
-    return jsonOk({ state });
-  });
+  return withSocialApi(
+    req,
+    { auth: true, rateKey: 'world-boss-get', rateLimit: 120 },
+    async ({ db }) => {
+      const state = await worldBoss.getState(db);
+      return jsonOk({ state });
+    },
+  );
 }
 
 /** POST /api/social/world-boss — ensure / start / submit / claim / ranking (+ DEV) */
@@ -37,10 +42,7 @@ export async function POST(req: Request): Promise<Response> {
           return jsonOk({ state });
         }
         case 'start': {
-          const playerLevel =
-            typeof body.playerLevel === 'number' && Number.isFinite(body.playerLevel)
-              ? body.playerLevel
-              : 1;
+          const playerLevel = await getServerPlayerLevel(db, playerId);
           const result = await worldBoss.startAttempt(db, {
             playerId,
             nickname,
@@ -128,12 +130,7 @@ export async function POST(req: Request): Promise<Response> {
             typeof body.actorNickname === 'string' && body.actorNickname
               ? body.actorNickname
               : actorId;
-          const result = await worldBoss.applyExternalDamage(
-            db,
-            damage,
-            actorId,
-            actorNickname,
-          );
+          const result = await worldBoss.applyExternalDamage(db, damage, actorId, actorNickname);
           return jsonOk(result);
         }
         default:

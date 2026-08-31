@@ -8,10 +8,7 @@ import { randomUUID } from 'node:crypto';
 import { and, asc, desc, eq, gt, or } from 'drizzle-orm';
 import { getWorldBossDefinition, worldBossClaimId } from '@/constants/world-boss';
 import { syncAttemptBucket } from '@/lib/boss-runtime';
-import {
-  applyAcceptedBossDamage,
-  computeAcceptedBossDamage,
-} from '@/lib/shared-boss-damage';
+import { applyAcceptedBossDamage, computeAcceptedBossDamage } from '@/lib/shared-boss-damage';
 import type { SocialDb } from '@/server/db/client';
 import {
   players,
@@ -21,6 +18,7 @@ import {
   worldBossPendingClaims,
 } from '@/server/db/schema';
 import { SocialError } from '@/server/social/errors';
+import { getServerCombatDamageCap } from '@/server/social/save-service';
 import {
   attemptResetCycleIdServer,
   getServerNextWeeklyResetMs,
@@ -597,6 +595,23 @@ export async function submitAttempt(
   const weekly = getServerWeeklyCycleId();
   const cycle = await findCycleByWeekly(db, def.bossId, weekly);
   if (!cycle) return failSubmit('Estado inexistente');
+  const attemptMeta = await db
+    .select({ startedAt: worldBossAttempts.startedAt })
+    .from(worldBossAttempts)
+    .where(eq(worldBossAttempts.id, input.attemptId))
+    .limit(1);
+  const elapsedMs = attemptMeta[0]
+    ? serverNow() - (tsMs(attemptMeta[0].startedAt) ?? serverNow())
+    : 0;
+  const serverDamageCap = await getServerCombatDamageCap(
+    db,
+    input.playerId,
+    elapsedMs,
+    def.attemptDurationMs,
+  );
+  if (serverDamageCap == null && process.env.NODE_ENV === 'production') {
+    return failSubmit('Save em nuvem obrigatório para validar o dano.', cycle.currentHp);
+  }
 
   try {
     const result = await db.transaction(async (tx) => {
@@ -628,7 +643,9 @@ export async function submitAttempt(
         return failSubmit('Tentativa inválida', locked.currentHp);
       }
 
-      const submitted = floorSubmittedDamage(input.damage);
+      const submitted = floorSubmittedDamage(
+        Math.min(input.damage, serverDamageCap ?? MAX_SUBMITTED_DAMAGE),
+      );
       let keepDamage = true;
       if (input.endReason === 'abandon' && !def.abandonKeepsDamage) {
         keepDamage = false;
