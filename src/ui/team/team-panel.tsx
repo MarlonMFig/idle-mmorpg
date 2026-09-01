@@ -55,8 +55,7 @@ function formatInt(value: number): string {
   return Math.round(Math.max(0, value)).toLocaleString('pt-BR');
 }
 
-function memberLevel(member: SealedCharacter, activeId: string | null, vitalsLevel: number): number {
-  if (member.id === activeId) return Math.max(1, vitalsLevel);
+function memberLevel(member: SealedCharacter): number {
   return Math.max(1, member.level || 1);
 }
 
@@ -223,11 +222,10 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
   const totalCp = useMemo(
     () =>
       teamMembers.reduce(
-        (sum, member) =>
-          sum + estimateCombatPower(member, memberLevel(member, activeId, vitals.level)),
+        (sum, member) => sum + estimateCombatPower(member, memberLevel(member)),
         0,
       ),
-    [teamMembers, activeId, vitals.level],
+    [teamMembers],
   );
 
   const boxMembers = useMemo(() => {
@@ -247,12 +245,11 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
       if (aIn !== bIn) return aIn - bIn;
       if (a.isFavorite !== b.isFavorite) return a.isFavorite ? -1 : 1;
       const powerDiff =
-        estimateCombatPower(b, memberLevel(b, activeId, vitals.level)) -
-        estimateCombatPower(a, memberLevel(a, activeId, vitals.level));
+        estimateCombatPower(b, memberLevel(b)) - estimateCombatPower(a, memberLevel(a));
       if (powerDiff !== 0) return powerDiff;
       return a.name.localeCompare(b.name, 'pt');
     });
-  }, [collection, query, qualityFilter, teamIds, activeId, vitals.level]);
+  }, [collection, query, qualityFilter, teamIds]);
 
   if (!isOpen) return null;
 
@@ -304,7 +301,7 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
     el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  const selectedLevel = selected ? memberLevel(selected, activeId, vitals.level) : 1;
+  const selectedLevel = selected ? memberLevel(selected) : 1;
   const selectedTotals = selected ? memberAttrs(selected, selectedLevel) : null;
   const selectedHpMax = selected
     ? selected.id === activeId
@@ -465,7 +462,7 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
 
               const isActive = member.id === activeId;
               const isSelected = selected?.id === member.id;
-              const level = memberLevel(member, activeId, vitals.level);
+              const level = memberLevel(member);
               const qColor = CHARACTER_QUALITY_COLORS[member.quality];
 
               return (
@@ -951,7 +948,7 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
                     const inTeam = teamIds.includes(member.id);
                     const isActive = member.id === activeId;
                     const isSelected = selected?.id === member.id;
-                    const level = memberLevel(member, activeId, vitals.level);
+                    const level = memberLevel(member);
                     const atk = Math.round(memberAttrs(member, level).strength);
                     const qColor = CHARACTER_QUALITY_COLORS[member.quality];
 

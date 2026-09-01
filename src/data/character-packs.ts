@@ -755,8 +755,9 @@ const SASUKE_PACK: CharacterPack = {
   hurt: SASUKE_HURT,
   death: SASUKE_DEATH,
   skillAnims: SASUKE_JUTSU_ANIMS,
-  // Altura = padrão dos packs (contentH 48). Largura esmagada ~20% (art densa).
-  displayScale: 1,
+  // Igualado ao peso visual do Shikamaru no mapa; a arte do Sasuke tem
+  // uma área útil mais densa e parecia maior mesmo após a normalização.
+  displayScale: 0.8,
   displayScaleX: 0.8,
   hotbarSkillIds: ['skill-katon-gokakyu', 'character-sasuke-skill-3', 'character-sasuke-skill-4'],
 };
@@ -1286,9 +1287,9 @@ const SHIKAMARU_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
       targetOffsetY: 0,
     },
     cast: {
-      scaleX: 0.4,
-      scaleY: 0.4,
-      scale: 0.4,
+      scaleX: 0.35,
+      scaleY: 0.35,
+      scale: 0.35,
       offsetX: 0,
       offsetY: 0,
       loopMode: 'none',
@@ -1308,6 +1309,7 @@ const SHIKAMARU_JUTSU_ANIMS: Record<string, CharacterSkillAnimDef> = {
       priority: 1,
       energyCost: 40,
     },
+    areaImpactFxPerTarget: false,
   },
   'shikamaru-jutsu-4': {
     key: 'shikamaru-frame-001',
@@ -1570,6 +1572,8 @@ const GAARA_WALK: SpriteSheetDef = {
   frameCount: 6,
   contentHeight: 120,
   originX: 0.500000,
+  scaleX: 0.8,
+  scaleY: 0.9,
 };
 
 const GAARA_COMBO_1: SpriteSheetDef = {
@@ -5527,7 +5531,8 @@ const SHINO_PACK: CharacterPack = {
     null,
     null,
   ],
-  displayScale: 1.615,
+  displayScale: 0.533,
+  displayScaleX: 0.8333,
 };
 
 /** Momo Hinamori — lookType 9028. */

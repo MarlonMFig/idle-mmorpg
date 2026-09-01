@@ -1,6 +1,6 @@
 # Naruto World Idle
 
-Idle MMORPG com Next.js 16, React, TypeScript, Tailwind, Phaser 3, Neon
+Idle MMORPG com Next.js 16, React, TypeScript, Tailwind, Phaser 3, Supabase
 Postgres/Auth e multiplayer opcional via PartyKit.
 
 ## Stack
@@ -9,8 +9,8 @@ Postgres/Auth e multiplayer opcional via PartyKit.
 - React + TypeScript
 - Tailwind CSS
 - Phaser 3
-- Neon Auth (email e senha)
-- Drizzle ORM + Neon Postgres
+- Supabase Auth (email e senha)
+- Drizzle ORM + Supabase Postgres
 - ESLint + Prettier
 
 ## Estrutura
@@ -49,16 +49,20 @@ save em nuvem e APIs sociais, configure `.env.local` a partir de `.env.example`.
 
 Configure no Vercel:
 
-- `DATABASE_URL`: conexão pooled do Neon para runtime.
-- `DATABASE_URL_UNPOOLED`: conexão direta usada apenas por migrações.
-- `NEON_AUTH_BASE_URL`, `NEON_AUTH_COOKIE_SECRET` e `NEON_AUTH_JWKS_URL`.
+- `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+- `DATABASE_URL`: conexão pooled (Transaction) do Supabase para runtime.
+- `DATABASE_URL_UNPOOLED`: conexão Session/direct usada apenas por migrações.
 - `NEXT_PUBLIC_APP_URL`: URL canônica da aplicação.
+- `NEXT_PUBLIC_SOCIAL_BACKEND=backend`.
 - `MULTIPLAYER_AUTH_SECRET`: segredo compartilhado com o worker PartyKit, se usado.
 - `NEXT_PUBLIC_PARTYKIT_HOST`: host PartyKit publicado, se usado.
 
 `DATABASE_URL_DEV`, `SOCIAL_USE_DEV_DB` e `ISOLATE_SOCIAL_DEV` são somente DEV e
-são rejeitados/ignorados em produção. Nunca copie uma senha do Neon para o
-repositório; se uma credencial foi exposta, faça rotação no Neon antes do deploy.
+são rejeitados/ignorados em produção. Nunca copie uma senha do banco para o
+repositório; se uma credencial foi exposta, faça rotação no Supabase antes do deploy.
+
+No painel Supabase, desative confirmação de email se quiser cadastro imediato, e
+adicione as Redirect URLs (`/auth/callback`) para localhost e produção.
 
 Após provisionar o banco, aplique as migrações:
 

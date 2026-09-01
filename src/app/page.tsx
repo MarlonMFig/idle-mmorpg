@@ -1,14 +1,14 @@
 import { NewGameGate } from '@/components/new-game-gate';
-import { auth } from '@/lib/auth/server';
+import { getAuthUser } from '@/lib/auth/server';
 import { redirect } from 'next/navigation';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const { data: session } = await auth.getSession();
-  if (!session?.user) {
+  const user = await getAuthUser();
+  if (!user) {
     redirect('/auth/sign-in');
   }
 
-  return <NewGameGate authUserId={session.user.id} />;
+  return <NewGameGate authUserId={user.id} />;
 }

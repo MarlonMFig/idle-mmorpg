@@ -1,10 +1,7 @@
 import 'dotenv/config';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { neonConfig, Pool } from '@neondatabase/serverless';
-import ws from 'ws';
-
-neonConfig.webSocketConstructor = ws;
+import postgres from 'postgres';
 
 const MIGRATIONS = [
   '0001_social.sql',
@@ -25,43 +22,41 @@ async function main(): Promise<void> {
     );
   }
 
-  const pool = new Pool({ connectionString: databaseUrl });
-  const client = await pool.connect();
+  const sql = postgres(databaseUrl, { max: 1, prepare: false });
 
   try {
-    await client.query('BEGIN');
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS social_schema_migrations (
-        version text PRIMARY KEY,
-        applied_at timestamptz NOT NULL DEFAULT now()
-      )
-    `);
+    await sql.begin(async (tx) => {
+      await tx`
+        CREATE TABLE IF NOT EXISTS social_schema_migrations (
+          version text PRIMARY KEY,
+          applied_at timestamptz NOT NULL DEFAULT now()
+        )
+      `;
 
-    const applied = await client.query<{ version: string }>(
-      'SELECT version FROM social_schema_migrations',
-    );
-    const appliedVersions = new Set(applied.rows.map((row) => row.version));
+      const applied = await tx<{ version: string }[]>`
+        SELECT version FROM social_schema_migrations
+      `;
+      const appliedVersions = new Set(applied.map((row) => row.version));
 
-    for (const version of MIGRATIONS) {
-      if (appliedVersions.has(version)) {
-        console.info(`[social-migrate] já aplicada: ${version}`);
-        continue;
+      for (const version of MIGRATIONS) {
+        if (appliedVersions.has(version)) {
+          console.info(`[social-migrate] já aplicada: ${version}`);
+          continue;
+        }
+
+        const migrationSql = await readFile(
+          path.resolve(process.cwd(), 'drizzle', version),
+          'utf8',
+        );
+        await tx.unsafe(migrationSql);
+        await tx`INSERT INTO social_schema_migrations (version) VALUES (${version})`;
+        console.info(`[social-migrate] aplicada: ${version}`);
       }
+    });
 
-      const sql = await readFile(path.resolve(process.cwd(), 'drizzle', version), 'utf8');
-      await client.query(sql);
-      await client.query('INSERT INTO social_schema_migrations (version) VALUES ($1)', [version]);
-      console.info(`[social-migrate] aplicada: ${version}`);
-    }
-
-    await client.query('COMMIT');
     console.info('[social-migrate] banco social atualizado com sucesso.');
-  } catch (error) {
-    await client.query('ROLLBACK').catch(() => undefined);
-    throw error;
   } finally {
-    client.release();
-    await pool.end();
+    await sql.end({ timeout: 5 });
   }
 }
 

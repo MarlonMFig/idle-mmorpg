@@ -2,7 +2,7 @@
  * Limitação documentada (Item 37+) — autoridade parcial de economia.
  *
  * Shared state autoritativo no servidor:
- * - Ranking snapshots reconstruídos do save em nuvem da sessão Neon Auth
+ * - Ranking snapshots reconstruídos do save em nuvem da sessão autenticada
  * - Guild membership / roles / XP / contribution
  * - Guild Boss HP / attempts / acceptedDamage / claim entitlement
  * - World Boss HP / attempts / acceptedDamage / claim entitlement (global)

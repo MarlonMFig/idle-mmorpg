@@ -1,6 +1,6 @@
 'use server';
 
-import { auth } from '@/lib/auth/server';
+import { createClient } from '@/lib/supabase/server';
 
 export type PasswordActionState = { error?: string; message?: string } | null;
 
@@ -19,9 +19,9 @@ export async function requestPasswordReset(
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-  const { error } = await auth.requestPasswordReset({
-    email,
-    redirectTo: `${appUrl.replace(/\/$/, '')}/auth/reset-password`,
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${appUrl.replace(/\/$/, '')}/auth/callback?next=/auth/reset-password`,
   });
   if (error) {
     return { error: error.message || 'Não foi possível enviar o email de recuperação.' };

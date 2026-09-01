@@ -1,43 +1,35 @@
 /**
- * DB client — Neon Pool (transações) ou PGlite isolado (DEV/test).
+ * DB client — Postgres (Supabase) via postgres.js, ou PGlite isolado (DEV/test).
  */
 
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle as drizzleNeon } from 'drizzle-orm/neon-serverless';
+import postgres from 'postgres';
+import { drizzle as drizzlePostgres } from 'drizzle-orm/postgres-js';
 import { drizzle as drizzlePglite } from 'drizzle-orm/pglite';
 import { PGlite } from '@electric-sql/pglite';
 import * as schema from '@/server/db/schema';
 import { SOCIAL_SCHEMA_SQL } from '@/server/db/schema-sql';
 
 export type SocialDb =
-  ReturnType<typeof drizzleNeon<typeof schema>> | ReturnType<typeof drizzlePglite<typeof schema>>;
+  | ReturnType<typeof drizzlePostgres<typeof schema>>
+  | ReturnType<typeof drizzlePglite<typeof schema>>;
 
 let cached: SocialDb | null = null;
 let pgliteInstance: PGlite | null = null;
 let migratedPglite = false;
-let pool: Pool | null = null;
-let neonWebSocketConfigured = false;
-
-async function ensureNeonWebSocket(): Promise<void> {
-  if (neonWebSocketConfigured) return;
-
-  if (typeof globalThis.WebSocket === 'function') {
-    neonConfig.webSocketConstructor = globalThis.WebSocket;
-  } else {
-    // Node runtimes without a native WebSocket need the ws fallback. Disable
-    // optional native buffer utilities because some serverless bundlers load
-    // their CommonJS export with an incompatible shape.
-    process.env.WS_NO_BUFFER_UTIL = '1';
-    const wsModule = await import('ws');
-    neonConfig.webSocketConstructor = (wsModule.default ?? wsModule) as unknown as typeof WebSocket;
-  }
-  neonWebSocketConfigured = true;
-}
+let sqlClient: ReturnType<typeof postgres> | null = null;
 
 export async function ensurePgliteMigrated(client: PGlite): Promise<void> {
   if (migratedPglite) return;
   await client.exec(SOCIAL_SCHEMA_SQL);
   migratedPglite = true;
+}
+
+function resolveDatabaseUrl(): string | undefined {
+  const isProd = process.env.NODE_ENV === 'production';
+  const useDevUrl = process.env.SOCIAL_USE_DEV_DB === '1' || process.env.ISOLATE_SOCIAL_DEV === '1';
+  if (isProd) return process.env.DATABASE_URL;
+  if (useDevUrl) return process.env.DATABASE_URL_DEV || process.env.DATABASE_URL;
+  return process.env.DATABASE_URL || process.env.DATABASE_URL_DEV;
 }
 
 export async function getSocialDb(opts?: { forcePglite?: boolean }): Promise<SocialDb> {
@@ -57,17 +49,12 @@ export async function getSocialDb(opts?: { forcePglite?: boolean }): Promise<Soc
     throw new Error('DATABASE_URL ausente em produção — social backend indisponível.');
   }
 
-  const useDevUrl = process.env.SOCIAL_USE_DEV_DB === '1' || process.env.ISOLATE_SOCIAL_DEV === '1';
-  const url = isProd
-    ? process.env.DATABASE_URL
-    : useDevUrl
-      ? process.env.DATABASE_URL_DEV || process.env.DATABASE_URL
-      : process.env.DATABASE_URL || process.env.DATABASE_URL_DEV;
+  const url = resolveDatabaseUrl();
 
   if (url) {
-    await ensureNeonWebSocket();
-    pool = new Pool({ connectionString: url });
-    cached = drizzleNeon(pool, { schema });
+    // prepare: false is required for Supabase transaction pooler (PgBouncer).
+    sqlClient = postgres(url, { prepare: false, max: 10 });
+    cached = drizzlePostgres(sqlClient, { schema });
     return cached;
   }
 
@@ -92,9 +79,9 @@ export function resetSocialDbCache(): void {
   cached = null;
   pgliteInstance = null;
   migratedPglite = false;
-  if (pool) {
-    void pool.end();
-    pool = null;
+  if (sqlClient) {
+    void sqlClient.end({ timeout: 5 });
+    sqlClient = null;
   }
 }
 

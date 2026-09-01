@@ -193,19 +193,18 @@
     "test:naruto-general-loot": "npx --yes tsx scripts/test-naruto-general-loot.ts"
   },
   "dependencies": {
-    "@neon/config": "^1.1.0",
-    "@neon/env": "^1.1.6",
-    "@neondatabase/auth": "^0.5.0-beta",
-    "@neondatabase/serverless": "^1.1.0",
+    "@supabase/ssr": "^0.12.5",
+    "@supabase/supabase-js": "^2.112.4",
     "@v0rt4c/otbm": "^0.2.0",
     "break_infinity.js": "^2.2.0",
     "drizzle-orm": "^0.45.2",
+    "jose": "^6.2.10",
     "next": "16.3.3",
     "partysocket": "1.3.0",
     "phaser": "^3.90.0",
+    "postgres": "^3.4.9",
     "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "ws": "^8.21.3"
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.5",
@@ -214,7 +213,6 @@
     "@types/node": "^20",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.5",
-    "@types/ws": "^8.18.1",
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",
     "eslint": "^9.39.5",

@@ -33,14 +33,14 @@ async function json(response: Response): Promise<Record<string, unknown>> {
   return (await response.json().catch(() => ({}))) as Record<string, unknown>;
 }
 
-const signUp = await request('/api/auth/sign-up/email', {
+const signUp = await request('/api/auth/sign-up', {
   method: 'POST',
   headers: { 'content-type': 'application/json' },
   body: JSON.stringify({ email, password, name: 'HTTP Test' }),
 });
 assert.ok([200, 400, 409, 422].includes(signUp.status), `signup HTTP ${signUp.status}`);
 
-const signIn = await request('/api/auth/sign-in/email', {
+const signIn = await request('/api/auth/sign-in', {
   method: 'POST',
   headers: { 'content-type': 'application/json' },
   body: JSON.stringify({ email, password }),

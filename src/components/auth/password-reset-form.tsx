@@ -5,10 +5,8 @@ import { useActionState } from 'react';
 import type { PasswordActionState } from '@/app/auth/reset-password/actions';
 
 export function PasswordResetForm({
-  token,
   action,
 }: {
-  token: string;
   action: (previousState: PasswordActionState, formData: FormData) => Promise<PasswordActionState>;
 }) {
   const [state, formAction, isPending] = useActionState(action, null);
@@ -21,7 +19,6 @@ export function PasswordResetForm({
         </h1>
         <p className="auth-subtitle">Escolha uma nova senha para sua conta.</p>
         <form action={formAction} className="auth-form">
-          <input type="hidden" name="token" value={token} />
           <label className="auth-field">
             <span>Nova senha</span>
             <input

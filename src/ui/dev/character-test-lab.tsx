@@ -717,6 +717,7 @@ function CharacterTestLabBody() {
         file?: string;
         error?: string;
         detail?: string;
+        applied?: Record<string, string | number>;
       }>('/api/dev/character-config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -730,6 +731,7 @@ function CharacterTestLabBody() {
         setSaveError('Erro ao salvar.\nNenhuma alteração foi aplicada.');
         return false;
       }
+      characterLabStore.applySavedPackScale(json.applied);
       characterLabStore.markVisualsSaved({ skillOnly: false });
       setSaveOk('Salvo ✓');
       window.setTimeout(() => setSaveOk(null), 1800);

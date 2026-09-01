@@ -11,12 +11,12 @@ import { MAP_KEYS, type MapKey } from '@/maps/map-registry';
  * Mapas do WONSR renderizados como PNG único.
  *
  * O TMX recortado tem milhares de GIDs únicos e o Phaser rende o tileset com
- * artefatos; então usamos a imagem pré-renderizada como visual e apenas a
- * camada `collision` do TMX para física. Mesmo padrão do hub Konoha, aqui
- * generalizado para os mapas de caça.
+ * artefatos; então usamos a imagem pré-renderizada como visual e, quando
+ * configurado, a camada `collision` do TMX para física. Mesmo padrão do hub
+ * Konoha, aqui generalizado para os mapas de caça.
  */
 export interface WonsrRenderedMap {
-  /** Key do TMX (fonte da colisão) e do próprio mapa lógico. */
+  /** Key do TMX e do próprio mapa lógico. */
   mapKey: MapKey;
   /** Texture key do PNG pré-renderizado. */
   imageKey: string;
@@ -44,6 +44,8 @@ export interface WonsrRenderedMap {
   /** Fundo em vídeo (loop). O PNG `imageKey` fica atrás até o primeiro frame. */
   videoKey?: string;
   videoUrl?: string;
+  /** Define se a camada de tiles deve participar da física do mapa. */
+  collisionMode?: 'tilemap' | 'none';
   /**
    * Mundo maior que a tela: a câmera segue o jogador em vez de enquadrar a
    * arena inteira. Só assim andar para cima revela outra parte do mapa.
@@ -146,6 +148,7 @@ function narutoTopdownHunt(
     spawn,
     enemySpawns: pickEvenSpawns(enemySpawns, NARUTO_TD_ENEMY_COUNT),
     ...WONSR_NARUTO_TOPDOWN,
+    collisionMode: mapKey.startsWith('huntTd') ? 'none' : 'tilemap',
   };
 }
 
@@ -534,7 +537,7 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
   // Aba WONSR: 8 mapas top-down Naruto 3840×2160.
   [MAP_KEYS.huntWonsrFlorestaDaMorte]: narutoTopdownHunt(
     MAP_KEYS.huntWonsrFlorestaDaMorte,
-    "wonsr-floresta-da-morte",
+    'wonsr-floresta-da-morte',
     { x: 1912, y: 1080 },
     [
       { x: 1928, y: 456 },
@@ -557,7 +560,7 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
   ),
   [MAP_KEYS.huntWonsrCampoTreinamento]: narutoTopdownHunt(
     MAP_KEYS.huntWonsrCampoTreinamento,
-    "wonsr-campo-treinamento",
+    'wonsr-campo-treinamento',
     { x: 1912, y: 1080 },
     [
       { x: 1144, y: 264 },
@@ -575,7 +578,7 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
   ),
   [MAP_KEYS.huntWonsrCavernaAkatsuki]: narutoTopdownHunt(
     MAP_KEYS.huntWonsrCavernaAkatsuki,
-    "wonsr-caverna-akatsuki",
+    'wonsr-caverna-akatsuki',
     { x: 1912, y: 1080 },
     [
       { x: 1928, y: 456 },
@@ -598,7 +601,7 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
   ),
   [MAP_KEYS.huntWonsrDesertoAreia]: narutoTopdownHunt(
     MAP_KEYS.huntWonsrDesertoAreia,
-    "wonsr-deserto-areia",
+    'wonsr-deserto-areia',
     { x: 1912, y: 1080 },
     [
       { x: 1352, y: 456 },
@@ -621,7 +624,7 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
   ),
   [MAP_KEYS.huntWonsrEsconderijoOrochimaru]: narutoTopdownHunt(
     MAP_KEYS.huntWonsrEsconderijoOrochimaru,
-    "wonsr-esconderijo-orochimaru",
+    'wonsr-esconderijo-orochimaru',
     { x: 1912, y: 1080 },
     [
       { x: 1944, y: 456 },
@@ -644,7 +647,7 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
   ),
   [MAP_KEYS.huntWonsrPaisDoFerro]: narutoTopdownHunt(
     MAP_KEYS.huntWonsrPaisDoFerro,
-    "wonsr-pais-do-ferro",
+    'wonsr-pais-do-ferro',
     { x: 1912, y: 1080 },
     [
       { x: 1928, y: 456 },
@@ -667,7 +670,7 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
   ),
   [MAP_KEYS.huntWonsrPonteDaNevoa]: narutoTopdownHunt(
     MAP_KEYS.huntWonsrPonteDaNevoa,
-    "wonsr-ponte-da-nevoa",
+    'wonsr-ponte-da-nevoa',
     { x: 1912, y: 1432 },
     [
       { x: 792, y: 1480 },
@@ -690,7 +693,7 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
   ),
   [MAP_KEYS.huntWonsrValeDasEstatuas]: narutoTopdownHunt(
     MAP_KEYS.huntWonsrValeDasEstatuas,
-    "wonsr-vale-das-estatuas",
+    'wonsr-vale-das-estatuas',
     { x: 1944, y: 1368 },
     [
       { x: 3112, y: 1256 },
@@ -714,7 +717,7 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
 
   [MAP_KEYS.huntWonsrClareiraEquipe7]: narutoTopdownHunt(
     MAP_KEYS.huntWonsrClareiraEquipe7,
-    "wonsr-clareira-equipe-7",
+    'wonsr-clareira-equipe-7',
     { x: 1912, y: 1080 },
     [
       { x: 1928, y: 456 },
@@ -737,7 +740,7 @@ export const WONSR_RENDERED_MAPS: Partial<Record<MapKey, WonsrRenderedMap>> = {
   ),
   [MAP_KEYS.huntWonsrLaboratorioOrochimaru]: narutoTopdownHunt(
     MAP_KEYS.huntWonsrLaboratorioOrochimaru,
-    "wonsr-laboratorio-orochimaru",
+    'wonsr-laboratorio-orochimaru',
     { x: 1912, y: 1080 },
     [
       { x: 1928, y: 456 },

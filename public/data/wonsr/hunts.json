@@ -1,6 +1,6 @@
 {
   "source": "curated character packs only (no WONSR vocations/monsters)",
-  "generatedAt": "2026-08-27T03:57:02.279Z",
+  "generatedAt": "2026-08-31T22:21:25.293Z",
   "progression": {
     "targetsPerHunt": 1,
     "charactersPerLevelTier": 5,
@@ -8,9 +8,9 @@
     "levelStep": 10
   },
   "counts": {
-    "hunts": 114,
-    "targets": 73,
-    "baseCharacters": 73,
+    "hunts": 183,
+    "targets": 71,
+    "baseCharacters": 71,
     "monsterVariants": 0,
     "uniqueLookTypes": 0
   },
@@ -3177,111 +3177,11 @@
       ]
     },
     {
-      "id": "wonsr-hunt-002",
-      "name": "Mapa de Rock Lee",
-      "requiredLevel": 1,
-      "mapKey": "huntArenaExameChunin",
-      "description": "Caça automática de Rock Lee para níveis 1+.",
-      "targets": [
-        {
-          "id": "wonsr-character-rock-lee",
-          "sourceId": "wonsr-character-rock-lee",
-          "name": "Rock Lee",
-          "category": "personagem",
-          "source": "curated/rock-lee",
-          "lookType": 9013,
-          "hasSprite": false,
-          "requiredLevel": 1,
-          "level": 1,
-          "hp": 63,
-          "xp": 14,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-003",
-      "name": "Mapa de Hinata Hyuga",
-      "requiredLevel": 1,
-      "mapKey": "huntCampoTreinamento",
-      "description": "Caça automática de Hinata Hyuga para níveis 1+.",
-      "targets": [
-        {
-          "id": "wonsr-character-hinata-hyuga",
-          "sourceId": "wonsr-character-hinata-hyuga",
-          "name": "Hinata Hyuga",
-          "category": "personagem",
-          "source": "curated/hinata",
-          "lookType": 9005,
-          "hasSprite": false,
-          "requiredLevel": 1,
-          "level": 1,
-          "hp": 63,
-          "xp": 14,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-004",
-      "name": "Mapa de Shikamaru Nara",
-      "requiredLevel": 1,
-      "mapKey": "huntArenaExameChunin",
-      "description": "Caça automática de Shikamaru Nara para níveis 1+.",
-      "targets": [
-        {
-          "id": "wonsr-character-shikamaru-nara",
-          "sourceId": "wonsr-character-shikamaru-nara",
-          "name": "Shikamaru Nara",
-          "category": "personagem",
-          "source": "curated/shikamaru",
-          "lookType": 1426,
-          "hasSprite": false,
-          "requiredLevel": 1,
-          "level": 1,
-          "hp": 63,
-          "xp": 14,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-005",
-      "name": "Mapa de Gaara",
-      "requiredLevel": 1,
-      "mapKey": "huntPaisDoVento",
-      "description": "Caça automática de Gaara para níveis 1+.",
-      "targets": [
-        {
-          "id": "wonsr-character-gaara",
-          "sourceId": "wonsr-character-gaara",
-          "name": "Gaara",
-          "category": "personagem",
-          "source": "curated/gaara",
-          "lookType": 1395,
-          "hasSprite": false,
-          "requiredLevel": 1,
-          "level": 1,
-          "hp": 63,
-          "xp": 14,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
       "id": "wonsr-hunt-006",
       "name": "Mapa de Uchiha Sasuke",
-      "requiredLevel": 10,
+      "requiredLevel": 1,
       "mapKey": "huntDistritoUchiha",
-      "description": "Caça automática de Uchiha Sasuke para níveis 10+.",
+      "description": "Caça automática de Uchiha Sasuke para níveis 1+.",
       "targets": [
         {
           "id": "wonsr-character-uchiha-sasuke",
@@ -3291,10 +3191,10 @@
           "source": "curated/sasuke",
           "lookType": 9012,
           "hasSprite": false,
-          "requiredLevel": 10,
-          "level": 10,
-          "hp": 235,
-          "xp": 45,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
           "speed": 50,
           "targetDistance": 1,
           "loot": []
@@ -3302,19 +3202,94 @@
       ]
     },
     {
-      "id": "wonsr-hunt-007",
-      "name": "Mapa de Uchiha Itachi",
-      "requiredLevel": 10,
-      "mapKey": "huntDistritoUchiha",
-      "description": "Caça automática de Uchiha Itachi para níveis 10+.",
+      "id": "wonsr-hunt-045",
+      "name": "Mapa de Hyuga Hinata (Kid)",
+      "requiredLevel": 1,
+      "mapKey": "huntCampoTreinamento",
+      "description": "Caça automática de Hyuga Hinata (Kid) para níveis 1+.",
       "targets": [
         {
-          "id": "wonsr-character-uchiha-itachi",
-          "sourceId": "wonsr-character-uchiha-itachi",
-          "name": "Uchiha Itachi",
+          "id": "curated-character-hinata-kid",
+          "sourceId": "curated-character-hinata-kid",
+          "name": "Hyuga Hinata (Kid)",
           "category": "personagem",
-          "source": "curated/uchiha-itachi",
-          "lookType": 9002,
+          "source": "curated/hinata-kid",
+          "lookType": 9106,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-067",
+      "name": "Mapa de Tenten (Kid)",
+      "requiredLevel": 1,
+      "mapKey": "huntArenaExameChunin",
+      "description": "Caça automática de Tenten (Kid) para níveis 1+.",
+      "targets": [
+        {
+          "id": "curated-character-tenten-kid",
+          "sourceId": "curated-character-tenten-kid",
+          "name": "Tenten (Kid)",
+          "category": "personagem",
+          "source": "curated/tenten-kid",
+          "lookType": 9107,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-047",
+      "name": "Mapa de Kiba Inuzuka (Kid)",
+      "requiredLevel": 1,
+      "mapKey": "huntForestClearing",
+      "description": "Caça automática de Kiba Inuzuka (Kid) para níveis 1+.",
+      "targets": [
+        {
+          "id": "curated-character-kiba-kid",
+          "sourceId": "curated-character-kiba-kid",
+          "name": "Kiba Inuzuka (Kid)",
+          "category": "personagem",
+          "source": "curated/kiba-kid",
+          "lookType": 9075,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-049",
+      "name": "Mapa de Konohamaru Sarutobi",
+      "requiredLevel": 10,
+      "mapKey": "huntCampoTreinamento",
+      "description": "Caça automática de Konohamaru Sarutobi para níveis 10+.",
+      "targets": [
+        {
+          "id": "curated-character-konohamaru",
+          "sourceId": "curated-character-konohamaru",
+          "name": "Konohamaru Sarutobi",
+          "category": "personagem",
+          "source": "curated/konohamaru",
+          "lookType": 9074,
           "hasSprite": false,
           "requiredLevel": 10,
           "level": 10,
@@ -3327,19 +3302,19 @@
       ]
     },
     {
-      "id": "wonsr-hunt-008",
-      "name": "Mapa de Uchiha Shisui",
+      "id": "wonsr-hunt-002",
+      "name": "Mapa de Rock Lee",
       "requiredLevel": 10,
-      "mapKey": "huntDistritoUchiha",
-      "description": "Caça automática de Uchiha Shisui para níveis 10+.",
+      "mapKey": "huntArenaExameChunin",
+      "description": "Caça automática de Rock Lee para níveis 10+.",
       "targets": [
         {
-          "id": "curated-character-shisui",
-          "sourceId": "curated-character-shisui",
-          "name": "Uchiha Shisui",
+          "id": "wonsr-character-rock-lee",
+          "sourceId": "wonsr-character-rock-lee",
+          "name": "Rock Lee",
           "category": "personagem",
-          "source": "curated/shisui",
-          "lookType": 9030,
+          "source": "curated/rock-lee",
+          "lookType": 9013,
           "hasSprite": false,
           "requiredLevel": 10,
           "level": 10,
@@ -3377,6 +3352,31 @@
       ]
     },
     {
+      "id": "wonsr-hunt-004",
+      "name": "Mapa de Shikamaru Nara",
+      "requiredLevel": 10,
+      "mapKey": "huntArenaExameChunin",
+      "description": "Caça automática de Shikamaru Nara para níveis 10+.",
+      "targets": [
+        {
+          "id": "wonsr-character-shikamaru-nara",
+          "sourceId": "wonsr-character-shikamaru-nara",
+          "name": "Shikamaru Nara",
+          "category": "personagem",
+          "source": "curated/shikamaru",
+          "lookType": 1426,
+          "hasSprite": false,
+          "requiredLevel": 10,
+          "level": 10,
+          "hp": 235,
+          "xp": 45,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
       "id": "wonsr-hunt-010",
       "name": "Mapa de Chouji Akimichi",
       "requiredLevel": 10,
@@ -3395,6 +3395,31 @@
           "level": 10,
           "hp": 235,
           "xp": 45,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-032",
+      "name": "Mapa de Akimichi Choji (Jump Force)",
+      "requiredLevel": 20,
+      "mapKey": "huntArenaExameChunin",
+      "description": "Caça automática de Akimichi Choji (Jump Force) para níveis 20+.",
+      "targets": [
+        {
+          "id": "curated-character-choji-jf",
+          "sourceId": "curated-character-choji-jf",
+          "name": "Akimichi Choji (Jump Force)",
+          "category": "personagem",
+          "source": "curated/choji-jf",
+          "lookType": 9088,
+          "hasSprite": false,
+          "requiredLevel": 20,
+          "level": 20,
+          "hp": 434,
+          "xp": 80,
           "speed": 50,
           "targetDistance": 1,
           "loot": []
@@ -3427,19 +3452,44 @@
       ]
     },
     {
-      "id": "wonsr-hunt-012",
-      "name": "Mapa de Might Guy",
+      "id": "wonsr-hunt-030",
+      "name": "Mapa de Shino Aburame",
+      "requiredLevel": 20,
+      "mapKey": "huntForestClearing",
+      "description": "Caça automática de Shino Aburame para níveis 20+.",
+      "targets": [
+        {
+          "id": "wonsr-character-shino",
+          "sourceId": "wonsr-character-shino",
+          "name": "Shino Aburame",
+          "category": "personagem",
+          "source": "curated/shino",
+          "lookType": 9027,
+          "hasSprite": false,
+          "requiredLevel": 20,
+          "level": 20,
+          "hp": 434,
+          "xp": 80,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-026",
+      "name": "Mapa de Tenten",
       "requiredLevel": 20,
       "mapKey": "huntArenaExameChunin",
-      "description": "Caça automática de Might Guy para níveis 20+.",
+      "description": "Caça automática de Tenten para níveis 20+.",
       "targets": [
         {
-          "id": "wonsr-character-might-guy",
-          "sourceId": "wonsr-character-might-guy",
-          "name": "Might Guy",
+          "id": "wonsr-character-tenten",
+          "sourceId": "wonsr-character-tenten",
+          "name": "Tenten",
           "category": "personagem",
-          "source": "curated/guy",
-          "lookType": 9006,
+          "source": "curated/tenten",
+          "lookType": 9024,
           "hasSprite": false,
           "requiredLevel": 20,
           "level": 20,
@@ -3452,124 +3502,24 @@
       ]
     },
     {
-      "id": "wonsr-hunt-013",
-      "name": "Mapa de Hatake Kakashi",
+      "id": "wonsr-hunt-003",
+      "name": "Mapa de Hinata Hyuga",
       "requiredLevel": 20,
       "mapKey": "huntCampoTreinamento",
-      "description": "Caça automática de Hatake Kakashi para níveis 20+.",
+      "description": "Caça automática de Hinata Hyuga para níveis 20+.",
       "targets": [
         {
-          "id": "wonsr-character-hatake-kakashi",
-          "sourceId": "wonsr-character-hatake-kakashi",
-          "name": "Hatake Kakashi",
+          "id": "wonsr-character-hinata-hyuga",
+          "sourceId": "wonsr-character-hinata-hyuga",
+          "name": "Hinata Hyuga",
           "category": "personagem",
-          "source": "curated/kakashi",
-          "lookType": 9008,
+          "source": "curated/hinata",
+          "lookType": 9005,
           "hasSprite": false,
           "requiredLevel": 20,
           "level": 20,
           "hp": 434,
           "xp": 80,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-014",
-      "name": "Mapa de Jiraya",
-      "requiredLevel": 20,
-      "mapKey": "huntMonteMyoboku",
-      "description": "Caça automática de Jiraya para níveis 20+.",
-      "targets": [
-        {
-          "id": "wonsr-character-jiraiya",
-          "sourceId": "wonsr-character-jiraiya",
-          "name": "Jiraya",
-          "category": "personagem",
-          "source": "curated/jiraiya",
-          "lookType": 9009,
-          "hasSprite": false,
-          "requiredLevel": 20,
-          "level": 20,
-          "hp": 434,
-          "xp": 80,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-015",
-      "name": "Mapa de Jiroubou",
-      "requiredLevel": 20,
-      "mapKey": "huntLabOrochimaru",
-      "description": "Caça automática de Jiroubou para níveis 20+.",
-      "targets": [
-        {
-          "id": "wonsr-character-jirobo",
-          "sourceId": "wonsr-character-jirobo",
-          "name": "Jiroubou",
-          "category": "personagem",
-          "source": "curated/jirobo",
-          "lookType": 9010,
-          "hasSprite": false,
-          "requiredLevel": 20,
-          "level": 20,
-          "hp": 434,
-          "xp": 80,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-016",
-      "name": "Mapa de Yakushi Kabuto",
-      "requiredLevel": 30,
-      "mapKey": "huntLabOrochimaru",
-      "description": "Caça automática de Yakushi Kabuto para níveis 30+.",
-      "targets": [
-        {
-          "id": "wonsr-character-yakushi-kabuto",
-          "sourceId": "wonsr-character-yakushi-kabuto",
-          "name": "Yakushi Kabuto",
-          "category": "personagem",
-          "source": "curated/kabuto",
-          "lookType": 9014,
-          "hasSprite": false,
-          "requiredLevel": 30,
-          "level": 30,
-          "hp": 636,
-          "xp": 115,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-017",
-      "name": "Mapa de Tsunade",
-      "requiredLevel": 30,
-      "mapKey": "huntCampoTreinamento",
-      "description": "Caça automática de Tsunade para níveis 30+.",
-      "targets": [
-        {
-          "id": "wonsr-character-tsunade",
-          "sourceId": "wonsr-character-tsunade",
-          "name": "Tsunade",
-          "category": "personagem",
-          "source": "curated/tsunade",
-          "lookType": 9015,
-          "hasSprite": false,
-          "requiredLevel": 30,
-          "level": 30,
-          "hp": 636,
-          "xp": 115,
           "speed": 50,
           "targetDistance": 1,
           "loot": []
@@ -3602,19 +3552,19 @@
       ]
     },
     {
-      "id": "wonsr-hunt-019",
-      "name": "Mapa de Kimimaro",
+      "id": "wonsr-hunt-005",
+      "name": "Mapa de Gaara",
       "requiredLevel": 30,
-      "mapKey": "huntLabOrochimaru",
-      "description": "Caça automática de Kimimaro para níveis 30+.",
+      "mapKey": "huntPaisDoVento",
+      "description": "Caça automática de Gaara para níveis 30+.",
       "targets": [
         {
-          "id": "wonsr-character-kimimaro",
-          "sourceId": "wonsr-character-kimimaro",
-          "name": "Kimimaro",
+          "id": "wonsr-character-gaara",
+          "sourceId": "wonsr-character-gaara",
+          "name": "Gaara",
           "category": "personagem",
-          "source": "curated/kimimaro",
-          "lookType": 9017,
+          "source": "curated/gaara",
+          "lookType": 1395,
           "hasSprite": false,
           "requiredLevel": 30,
           "level": 30,
@@ -3627,19 +3577,19 @@
       ]
     },
     {
-      "id": "wonsr-hunt-020",
-      "name": "Mapa de Sasuke Cursed",
+      "id": "wonsr-hunt-065",
+      "name": "Mapa de Temari (Kid)",
       "requiredLevel": 30,
-      "mapKey": "huntDistritoUchiha",
-      "description": "Caça automática de Sasuke Cursed para níveis 30+.",
+      "mapKey": "huntPaisDoVento",
+      "description": "Caça automática de Temari (Kid) para níveis 30+.",
       "targets": [
         {
-          "id": "wonsr-character-sasuke-cursed",
-          "sourceId": "wonsr-character-sasuke-cursed",
-          "name": "Sasuke Cursed",
+          "id": "curated-character-temari-kid",
+          "sourceId": "curated-character-temari-kid",
+          "name": "Temari (Kid)",
           "category": "personagem",
-          "source": "curated/sasuke-cursed",
-          "lookType": 9018,
+          "source": "curated/temari-kid",
+          "lookType": 9108,
           "hasSprite": false,
           "requiredLevel": 30,
           "level": 30,
@@ -3652,24 +3602,24 @@
       ]
     },
     {
-      "id": "wonsr-hunt-021",
-      "name": "Mapa de Orochimaru",
-      "requiredLevel": 40,
-      "mapKey": "huntLabOrochimaru",
-      "description": "Caça automática de Orochimaru para níveis 40+.",
+      "id": "wonsr-hunt-027",
+      "name": "Mapa de Temari",
+      "requiredLevel": 30,
+      "mapKey": "huntPaisDoVento",
+      "description": "Caça automática de Temari para níveis 30+.",
       "targets": [
         {
-          "id": "wonsr-character-orochimaru",
-          "sourceId": "wonsr-character-orochimaru",
-          "name": "Orochimaru",
+          "id": "wonsr-character-temari",
+          "sourceId": "wonsr-character-temari",
+          "name": "Temari",
           "category": "personagem",
-          "source": "curated/orochimaru",
-          "lookType": 9019,
+          "source": "curated/temari",
+          "lookType": 9025,
           "hasSprite": false,
-          "requiredLevel": 40,
-          "level": 40,
-          "hp": 840,
-          "xp": 150,
+          "requiredLevel": 30,
+          "level": 30,
+          "hp": 636,
+          "xp": 115,
           "speed": 50,
           "targetDistance": 1,
           "loot": []
@@ -3677,74 +3627,24 @@
       ]
     },
     {
-      "id": "wonsr-hunt-022",
-      "name": "Mapa de Naruto Kyubi",
-      "requiredLevel": 40,
-      "mapKey": "huntValeDoFim",
-      "description": "Caça automática de Naruto Kyubi para níveis 40+.",
+      "id": "wonsr-hunt-046",
+      "name": "Mapa de Kankuro",
+      "requiredLevel": 30,
+      "mapKey": "huntPaisDoVento",
+      "description": "Caça automática de Kankuro para níveis 30+.",
       "targets": [
         {
-          "id": "wonsr-character-naruto-kyubi",
-          "sourceId": "wonsr-character-naruto-kyubi",
-          "name": "Naruto Kyubi",
+          "id": "curated-character-kankuro",
+          "sourceId": "curated-character-kankuro",
+          "name": "Kankuro",
           "category": "personagem",
-          "source": "curated/naruto-kyubi",
-          "lookType": 9020,
+          "source": "curated/kankuro",
+          "lookType": 9098,
           "hasSprite": false,
-          "requiredLevel": 40,
-          "level": 40,
-          "hp": 840,
-          "xp": 150,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-023",
-      "name": "Mapa de Kisame Hoshigaki",
-      "requiredLevel": 40,
-      "mapKey": "huntEsconderijoAkatsuki",
-      "description": "Caça automática de Kisame Hoshigaki para níveis 40+.",
-      "targets": [
-        {
-          "id": "wonsr-character-kisame",
-          "sourceId": "wonsr-character-kisame",
-          "name": "Kisame Hoshigaki",
-          "category": "personagem",
-          "source": "curated/kisame",
-          "lookType": 9021,
-          "hasSprite": false,
-          "requiredLevel": 40,
-          "level": 40,
-          "hp": 840,
-          "xp": 150,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-024",
-      "name": "Mapa de Deidara",
-      "requiredLevel": 40,
-      "mapKey": "huntEsconderijoAkatsuki",
-      "description": "Caça automática de Deidara para níveis 40+.",
-      "targets": [
-        {
-          "id": "wonsr-character-deidara",
-          "sourceId": "wonsr-character-deidara",
-          "name": "Deidara",
-          "category": "personagem",
-          "source": "curated/deidara",
-          "lookType": 9022,
-          "hasSprite": false,
-          "requiredLevel": 40,
-          "level": 40,
-          "hp": 840,
-          "xp": 150,
+          "requiredLevel": 30,
+          "level": 30,
+          "hp": 636,
+          "xp": 115,
           "speed": 50,
           "targetDistance": 1,
           "loot": []
@@ -3777,24 +3677,24 @@
       ]
     },
     {
-      "id": "wonsr-hunt-026",
-      "name": "Mapa de Tenten",
-      "requiredLevel": 50,
+      "id": "wonsr-hunt-012",
+      "name": "Mapa de Might Guy",
+      "requiredLevel": 40,
       "mapKey": "huntArenaExameChunin",
-      "description": "Caça automática de Tenten para níveis 50+.",
+      "description": "Caça automática de Might Guy para níveis 40+.",
       "targets": [
         {
-          "id": "wonsr-character-tenten",
-          "sourceId": "wonsr-character-tenten",
-          "name": "Tenten",
+          "id": "wonsr-character-might-guy",
+          "sourceId": "wonsr-character-might-guy",
+          "name": "Might Guy",
           "category": "personagem",
-          "source": "curated/tenten",
-          "lookType": 9024,
+          "source": "curated/guy",
+          "lookType": 9006,
           "hasSprite": false,
-          "requiredLevel": 50,
-          "level": 50,
-          "hp": 1047,
-          "xp": 185,
+          "requiredLevel": 40,
+          "level": 40,
+          "hp": 840,
+          "xp": 150,
           "speed": 50,
           "targetDistance": 1,
           "loot": []
@@ -3802,24 +3702,24 @@
       ]
     },
     {
-      "id": "wonsr-hunt-027",
-      "name": "Mapa de Temari",
-      "requiredLevel": 50,
-      "mapKey": "huntPaisDoVento",
-      "description": "Caça automática de Temari para níveis 50+.",
+      "id": "wonsr-hunt-013",
+      "name": "Mapa de Hatake Kakashi",
+      "requiredLevel": 40,
+      "mapKey": "huntCampoTreinamento",
+      "description": "Caça automática de Hatake Kakashi para níveis 40+.",
       "targets": [
         {
-          "id": "wonsr-character-temari",
-          "sourceId": "wonsr-character-temari",
-          "name": "Temari",
+          "id": "wonsr-character-hatake-kakashi",
+          "sourceId": "wonsr-character-hatake-kakashi",
+          "name": "Hatake Kakashi",
           "category": "personagem",
-          "source": "curated/temari",
-          "lookType": 9025,
+          "source": "curated/kakashi",
+          "lookType": 9008,
           "hasSprite": false,
-          "requiredLevel": 50,
-          "level": 50,
-          "hp": 1047,
-          "xp": 185,
+          "requiredLevel": 40,
+          "level": 40,
+          "hp": 840,
+          "xp": 150,
           "speed": 50,
           "targetDistance": 1,
           "loot": []
@@ -3827,24 +3727,49 @@
       ]
     },
     {
-      "id": "wonsr-hunt-028",
-      "name": "Mapa de Tayuya",
-      "requiredLevel": 50,
+      "id": "wonsr-hunt-037",
+      "name": "Mapa de Asuma Sarutobi",
+      "requiredLevel": 40,
+      "mapKey": "huntEsconderijoAkatsuki",
+      "description": "Caça automática de Asuma Sarutobi para níveis 40+.",
+      "targets": [
+        {
+          "id": "curated-character-asuma",
+          "sourceId": "curated-character-asuma",
+          "name": "Asuma Sarutobi",
+          "category": "personagem",
+          "source": "curated/asuma",
+          "lookType": 9080,
+          "hasSprite": false,
+          "requiredLevel": 40,
+          "level": 40,
+          "hp": 840,
+          "xp": 150,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-070",
+      "name": "Mapa de Yuhi Kurenai",
+      "requiredLevel": 40,
       "mapKey": "huntLabOrochimaru",
-      "description": "Caça automática de Tayuya para níveis 50+.",
+      "description": "Caça automática de Yuhi Kurenai para níveis 40+.",
       "targets": [
         {
-          "id": "wonsr-character-tayuya",
-          "sourceId": "wonsr-character-tayuya",
-          "name": "Tayuya",
+          "id": "curated-character-kurenai",
+          "sourceId": "curated-character-kurenai",
+          "name": "Yuhi Kurenai",
           "category": "personagem",
-          "source": "curated/tayuya",
-          "lookType": 9026,
+          "source": "curated/kurenai",
+          "lookType": 9093,
           "hasSprite": false,
-          "requiredLevel": 50,
-          "level": 50,
-          "hp": 1047,
-          "xp": 185,
+          "requiredLevel": 40,
+          "level": 40,
+          "hp": 840,
+          "xp": 150,
           "speed": 50,
           "targetDistance": 1,
           "loot": []
@@ -3852,74 +3777,24 @@
       ]
     },
     {
-      "id": "wonsr-hunt-029",
-      "name": "Mapa de Tayuya",
+      "id": "wonsr-hunt-042",
+      "name": "Mapa de Hiruzen Sarutobi",
       "requiredLevel": 50,
-      "mapKey": "huntLabOrochimaru",
-      "description": "Caça automática de Tayuya para níveis 50+.",
-      "targets": [
-        {
-          "id": "curated-character-tayuya-nun5",
-          "sourceId": "curated-character-tayuya-nun5",
-          "name": "Tayuya",
-          "category": "personagem",
-          "source": "curated/tayuya-nun5",
-          "lookType": 9109,
-          "hasSprite": false,
-          "requiredLevel": 50,
-          "level": 50,
-          "hp": 1047,
-          "xp": 185,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-030",
-      "name": "Mapa de Shino Aburame",
-      "requiredLevel": 50,
-      "mapKey": "huntForestClearing",
-      "description": "Caça automática de Shino Aburame para níveis 50+.",
-      "targets": [
-        {
-          "id": "wonsr-character-shino",
-          "sourceId": "wonsr-character-shino",
-          "name": "Shino Aburame",
-          "category": "personagem",
-          "source": "curated/shino",
-          "lookType": 9027,
-          "hasSprite": false,
-          "requiredLevel": 50,
-          "level": 50,
-          "hp": 1047,
-          "xp": 185,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-031",
-      "name": "Mapa de Pain (Deva)",
-      "requiredLevel": 60,
       "mapKey": "huntKonohaDestruida",
-      "description": "Caça automática de Pain (Deva) para níveis 60+.",
+      "description": "Caça automática de Hiruzen Sarutobi para níveis 50+.",
       "targets": [
         {
-          "id": "curated-character-pain",
-          "sourceId": "curated-character-pain",
-          "name": "Pain (Deva)",
+          "id": "curated-character-hiruzen",
+          "sourceId": "curated-character-hiruzen",
+          "name": "Hiruzen Sarutobi",
           "category": "personagem",
-          "source": "curated/pain",
-          "lookType": 9087,
+          "source": "curated/hiruzen",
+          "lookType": 9079,
           "hasSprite": false,
-          "requiredLevel": 60,
-          "level": 60,
-          "hp": 1256,
-          "xp": 220,
+          "requiredLevel": 50,
+          "level": 50,
+          "hp": 1047,
+          "xp": 185,
           "speed": 50,
           "targetDistance": 1,
           "loot": []
@@ -3927,19 +3802,119 @@
       ]
     },
     {
-      "id": "wonsr-hunt-032",
-      "name": "Mapa de Akimichi Choji (Jump Force)",
-      "requiredLevel": 60,
-      "mapKey": "huntArenaExameChunin",
-      "description": "Caça automática de Akimichi Choji (Jump Force) para níveis 60+.",
+      "id": "wonsr-hunt-017",
+      "name": "Mapa de Tsunade",
+      "requiredLevel": 50,
+      "mapKey": "huntCampoTreinamento",
+      "description": "Caça automática de Tsunade para níveis 50+.",
       "targets": [
         {
-          "id": "curated-character-choji-jf",
-          "sourceId": "curated-character-choji-jf",
-          "name": "Akimichi Choji (Jump Force)",
+          "id": "wonsr-character-tsunade",
+          "sourceId": "wonsr-character-tsunade",
+          "name": "Tsunade",
           "category": "personagem",
-          "source": "curated/choji-jf",
-          "lookType": 9088,
+          "source": "curated/tsunade",
+          "lookType": 9015,
+          "hasSprite": false,
+          "requiredLevel": 50,
+          "level": 50,
+          "hp": 1047,
+          "xp": 185,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-014",
+      "name": "Mapa de Jiraya",
+      "requiredLevel": 50,
+      "mapKey": "huntMonteMyoboku",
+      "description": "Caça automática de Jiraya para níveis 50+.",
+      "targets": [
+        {
+          "id": "wonsr-character-jiraiya",
+          "sourceId": "wonsr-character-jiraiya",
+          "name": "Jiraya",
+          "category": "personagem",
+          "source": "curated/jiraiya",
+          "lookType": 9009,
+          "hasSprite": false,
+          "requiredLevel": 50,
+          "level": 50,
+          "hp": 1047,
+          "xp": 185,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-063",
+      "name": "Mapa de Shizune",
+      "requiredLevel": 50,
+      "mapKey": "huntCampoGuerraNinja",
+      "description": "Caça automática de Shizune para níveis 50+.",
+      "targets": [
+        {
+          "id": "curated-character-shizune",
+          "sourceId": "curated-character-shizune",
+          "name": "Shizune",
+          "category": "personagem",
+          "source": "curated/shizune",
+          "lookType": 9110,
+          "hasSprite": false,
+          "requiredLevel": 50,
+          "level": 50,
+          "hp": 1047,
+          "xp": 185,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-071",
+      "name": "Mapa de Zabuza Momochi",
+      "requiredLevel": 50,
+      "mapKey": "huntPontePaisOnda",
+      "description": "Caça automática de Zabuza Momochi para níveis 50+.",
+      "targets": [
+        {
+          "id": "curated-character-zabuza",
+          "sourceId": "curated-character-zabuza",
+          "name": "Zabuza Momochi",
+          "category": "personagem",
+          "source": "curated/zabuza",
+          "lookType": 9081,
+          "hasSprite": false,
+          "requiredLevel": 50,
+          "level": 50,
+          "hp": 1047,
+          "xp": 185,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-040",
+      "name": "Mapa de Haku",
+      "requiredLevel": 60,
+      "mapKey": "huntPontePaisOnda",
+      "description": "Caça automática de Haku para níveis 60+.",
+      "targets": [
+        {
+          "id": "curated-character-haku",
+          "sourceId": "curated-character-haku",
+          "name": "Haku",
+          "category": "personagem",
+          "source": "curated/haku",
+          "lookType": 9078,
           "hasSprite": false,
           "requiredLevel": 60,
           "level": 60,
@@ -3977,19 +3952,19 @@
       ]
     },
     {
-      "id": "wonsr-hunt-034",
-      "name": "Mapa de Danzo Shimura",
+      "id": "wonsr-hunt-021",
+      "name": "Mapa de Orochimaru",
       "requiredLevel": 60,
-      "mapKey": "huntCampoGuerraNinja",
-      "description": "Caça automática de Danzo Shimura para níveis 60+.",
+      "mapKey": "huntLabOrochimaru",
+      "description": "Caça automática de Orochimaru para níveis 60+.",
       "targets": [
         {
-          "id": "curated-character-danzo",
-          "sourceId": "curated-character-danzo",
-          "name": "Danzo Shimura",
+          "id": "wonsr-character-orochimaru",
+          "sourceId": "wonsr-character-orochimaru",
+          "name": "Orochimaru",
           "category": "personagem",
-          "source": "curated/danzo",
-          "lookType": 9090,
+          "source": "curated/orochimaru",
+          "lookType": 9019,
           "hasSprite": false,
           "requiredLevel": 60,
           "level": 60,
@@ -4002,19 +3977,19 @@
       ]
     },
     {
-      "id": "wonsr-hunt-035",
-      "name": "Mapa de Aburame Shino (G6)",
+      "id": "wonsr-hunt-016",
+      "name": "Mapa de Yakushi Kabuto",
       "requiredLevel": 60,
-      "mapKey": "huntForestClearing",
-      "description": "Caça automática de Aburame Shino (G6) para níveis 60+.",
+      "mapKey": "huntLabOrochimaru",
+      "description": "Caça automática de Yakushi Kabuto para níveis 60+.",
       "targets": [
         {
-          "id": "curated-character-shino-g6",
-          "sourceId": "curated-character-shino-g6",
-          "name": "Aburame Shino (G6)",
+          "id": "wonsr-character-yakushi-kabuto",
+          "sourceId": "wonsr-character-yakushi-kabuto",
+          "name": "Yakushi Kabuto",
           "category": "personagem",
-          "source": "curated/shino-g6",
-          "lookType": 9116,
+          "source": "curated/kabuto",
+          "lookType": 9014,
           "hasSprite": false,
           "requiredLevel": 60,
           "level": 60,
@@ -4027,19 +4002,44 @@
       ]
     },
     {
-      "id": "wonsr-hunt-036",
-      "name": "Mapa de Anko Mitarashi",
-      "requiredLevel": 70,
-      "mapKey": "huntDesertoSaiyajin",
-      "description": "Caça automática de Anko Mitarashi para níveis 70+.",
+      "id": "wonsr-hunt-020",
+      "name": "Mapa de Sasuke Cursed",
+      "requiredLevel": 60,
+      "mapKey": "huntDistritoUchiha",
+      "description": "Caça automática de Sasuke Cursed para níveis 60+.",
       "targets": [
         {
-          "id": "curated-character-anko",
-          "sourceId": "curated-character-anko",
-          "name": "Anko Mitarashi",
+          "id": "wonsr-character-sasuke-cursed",
+          "sourceId": "wonsr-character-sasuke-cursed",
+          "name": "Sasuke Cursed",
           "category": "personagem",
-          "source": "curated/anko",
-          "lookType": 9102,
+          "source": "curated/sasuke-cursed",
+          "lookType": 9018,
+          "hasSprite": false,
+          "requiredLevel": 60,
+          "level": 60,
+          "hp": 1256,
+          "xp": 220,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-019",
+      "name": "Mapa de Kimimaro",
+      "requiredLevel": 70,
+      "mapKey": "huntLabOrochimaru",
+      "description": "Caça automática de Kimimaro para níveis 70+.",
+      "targets": [
+        {
+          "id": "wonsr-character-kimimaro",
+          "sourceId": "wonsr-character-kimimaro",
+          "name": "Kimimaro",
+          "category": "personagem",
+          "source": "curated/kimimaro",
+          "lookType": 9017,
           "hasSprite": false,
           "requiredLevel": 70,
           "level": 70,
@@ -4052,19 +4052,19 @@
       ]
     },
     {
-      "id": "wonsr-hunt-037",
-      "name": "Mapa de Asuma Sarutobi",
+      "id": "wonsr-hunt-015",
+      "name": "Mapa de Jiroubou",
       "requiredLevel": 70,
-      "mapKey": "huntCampoTreinamento",
-      "description": "Caça automática de Asuma Sarutobi para níveis 70+.",
+      "mapKey": "huntLabOrochimaru",
+      "description": "Caça automática de Jiroubou para níveis 70+.",
       "targets": [
         {
-          "id": "curated-character-asuma",
-          "sourceId": "curated-character-asuma",
-          "name": "Asuma Sarutobi",
+          "id": "wonsr-character-jirobo",
+          "sourceId": "wonsr-character-jirobo",
+          "name": "Jiroubou",
           "category": "personagem",
-          "source": "curated/asuma",
-          "lookType": 9080,
+          "source": "curated/jirobo",
+          "lookType": 9010,
           "hasSprite": false,
           "requiredLevel": 70,
           "level": 70,
@@ -4077,19 +4077,19 @@
       ]
     },
     {
-      "id": "wonsr-hunt-038",
-      "name": "Mapa de Chiyo",
+      "id": "wonsr-hunt-028",
+      "name": "Mapa de Tayuya",
       "requiredLevel": 70,
-      "mapKey": "huntArenaExameChunin",
-      "description": "Caça automática de Chiyo para níveis 70+.",
+      "mapKey": "huntLabOrochimaru",
+      "description": "Caça automática de Tayuya para níveis 70+.",
       "targets": [
         {
-          "id": "curated-character-chiyo",
-          "sourceId": "curated-character-chiyo",
-          "name": "Chiyo",
+          "id": "wonsr-character-tayuya",
+          "sourceId": "wonsr-character-tayuya",
+          "name": "Tayuya",
           "category": "personagem",
-          "source": "curated/chiyo",
-          "lookType": 9077,
+          "source": "curated/tayuya",
+          "lookType": 9026,
           "hasSprite": false,
           "requiredLevel": 70,
           "level": 70,
@@ -4102,19 +4102,19 @@
       ]
     },
     {
-      "id": "wonsr-hunt-039",
-      "name": "Mapa de Gaara (Shukaku)",
+      "id": "wonsr-hunt-029",
+      "name": "Mapa de Tayuya",
       "requiredLevel": 70,
-      "mapKey": "huntPaisDoVento",
-      "description": "Caça automática de Gaara (Shukaku) para níveis 70+.",
+      "mapKey": "huntLabOrochimaru",
+      "description": "Caça automática de Tayuya para níveis 70+.",
       "targets": [
         {
-          "id": "curated-character-gaara-shukaku",
-          "sourceId": "curated-character-gaara-shukaku",
-          "name": "Gaara (Shukaku)",
+          "id": "curated-character-tayuya-nun5",
+          "sourceId": "curated-character-tayuya-nun5",
+          "name": "Tayuya",
           "category": "personagem",
-          "source": "curated/gaara-shukaku",
-          "lookType": 9113,
+          "source": "curated/tayuya-nun5",
+          "lookType": 9109,
           "hasSprite": false,
           "requiredLevel": 70,
           "level": 70,
@@ -4127,19 +4127,19 @@
       ]
     },
     {
-      "id": "wonsr-hunt-040",
-      "name": "Mapa de Haku",
+      "id": "wonsr-hunt-057",
+      "name": "Mapa de Sakon e Ukon",
       "requiredLevel": 70,
-      "mapKey": "huntPontePaisOnda",
-      "description": "Caça automática de Haku para níveis 70+.",
+      "mapKey": "huntLabOrochimaru",
+      "description": "Caça automática de Sakon e Ukon para níveis 70+.",
       "targets": [
         {
-          "id": "curated-character-haku",
-          "sourceId": "curated-character-haku",
-          "name": "Haku",
+          "id": "curated-character-sakon",
+          "sourceId": "curated-character-sakon",
+          "name": "Sakon e Ukon",
           "category": "personagem",
-          "source": "curated/haku",
-          "lookType": 9078,
+          "source": "curated/sakon",
+          "lookType": 9082,
           "hasSprite": false,
           "requiredLevel": 70,
           "level": 70,
@@ -4152,174 +4152,24 @@
       ]
     },
     {
-      "id": "wonsr-hunt-041",
-      "name": "Mapa de Hatake Kakashi (G6)",
-      "requiredLevel": 80,
-      "mapKey": "huntCampoTreinamento",
-      "description": "Caça automática de Hatake Kakashi (G6) para níveis 80+.",
-      "targets": [
-        {
-          "id": "curated-character-kakashi-g6",
-          "sourceId": "curated-character-kakashi-g6",
-          "name": "Hatake Kakashi (G6)",
-          "category": "personagem",
-          "source": "curated/kakashi-g6",
-          "lookType": 9122,
-          "hasSprite": false,
-          "requiredLevel": 80,
-          "level": 80,
-          "hp": 1677,
-          "xp": 290,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-042",
-      "name": "Mapa de Hiruzen Sarutobi",
-      "requiredLevel": 80,
-      "mapKey": "huntEsconderijoAkatsuki",
-      "description": "Caça automática de Hiruzen Sarutobi para níveis 80+.",
-      "targets": [
-        {
-          "id": "curated-character-hiruzen",
-          "sourceId": "curated-character-hiruzen",
-          "name": "Hiruzen Sarutobi",
-          "category": "personagem",
-          "source": "curated/hiruzen",
-          "lookType": 9079,
-          "hasSprite": false,
-          "requiredLevel": 80,
-          "level": 80,
-          "hp": 1677,
-          "xp": 290,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-043",
-      "name": "Mapa de Hyuga Hanabi",
+      "id": "wonsr-hunt-058",
+      "name": "Mapa de Sakon e Ukon",
       "requiredLevel": 80,
       "mapKey": "huntLabOrochimaru",
-      "description": "Caça automática de Hyuga Hanabi para níveis 80+.",
+      "description": "Caça automática de Sakon e Ukon para níveis 80+.",
       "targets": [
         {
-          "id": "curated-character-hanabi",
-          "sourceId": "curated-character-hanabi",
-          "name": "Hyuga Hanabi",
+          "id": "curated-character-sakon-nun5",
+          "sourceId": "curated-character-sakon-nun5",
+          "name": "Sakon e Ukon",
           "category": "personagem",
-          "source": "curated/hanabi",
-          "lookType": 9101,
+          "source": "curated/sakon-nun5",
+          "lookType": 9111,
           "hasSprite": false,
           "requiredLevel": 80,
           "level": 80,
           "hp": 1677,
           "xp": 290,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-044",
-      "name": "Mapa de Hyuga Hinata",
-      "requiredLevel": 80,
-      "mapKey": "huntCampoTreinamento",
-      "description": "Caça automática de Hyuga Hinata para níveis 80+.",
-      "targets": [
-        {
-          "id": "curated-character-hinata-g6",
-          "sourceId": "curated-character-hinata-g6",
-          "name": "Hyuga Hinata",
-          "category": "personagem",
-          "source": "curated/hinata-g6",
-          "lookType": 9103,
-          "hasSprite": false,
-          "requiredLevel": 80,
-          "level": 80,
-          "hp": 1677,
-          "xp": 290,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-045",
-      "name": "Mapa de Hyuga Hinata (Kid)",
-      "requiredLevel": 80,
-      "mapKey": "huntCampoTreinamento",
-      "description": "Caça automática de Hyuga Hinata (Kid) para níveis 80+.",
-      "targets": [
-        {
-          "id": "curated-character-hinata-kid",
-          "sourceId": "curated-character-hinata-kid",
-          "name": "Hyuga Hinata (Kid)",
-          "category": "personagem",
-          "source": "curated/hinata-kid",
-          "lookType": 9106,
-          "hasSprite": false,
-          "requiredLevel": 80,
-          "level": 80,
-          "hp": 1677,
-          "xp": 290,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-046",
-      "name": "Mapa de Kankuro",
-      "requiredLevel": 90,
-      "mapKey": "huntPaisDoVento",
-      "description": "Caça automática de Kankuro para níveis 90+.",
-      "targets": [
-        {
-          "id": "curated-character-kankuro",
-          "sourceId": "curated-character-kankuro",
-          "name": "Kankuro",
-          "category": "personagem",
-          "source": "curated/kankuro",
-          "lookType": 9098,
-          "hasSprite": false,
-          "requiredLevel": 90,
-          "level": 90,
-          "hp": 1890,
-          "xp": 325,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-047",
-      "name": "Mapa de Kiba Inuzuka (Kid)",
-      "requiredLevel": 90,
-      "mapKey": "huntForestClearing",
-      "description": "Caça automática de Kiba Inuzuka (Kid) para níveis 90+.",
-      "targets": [
-        {
-          "id": "curated-character-kiba-kid",
-          "sourceId": "curated-character-kiba-kid",
-          "name": "Kiba Inuzuka (Kid)",
-          "category": "personagem",
-          "source": "curated/kiba-kid",
-          "lookType": 9075,
-          "hasSprite": false,
-          "requiredLevel": 90,
-          "level": 90,
-          "hp": 1890,
-          "xp": 325,
           "speed": 50,
           "targetDistance": 1,
           "loot": []
@@ -4329,9 +4179,9 @@
     {
       "id": "wonsr-hunt-048",
       "name": "Mapa de Kidomaru",
-      "requiredLevel": 90,
+      "requiredLevel": 80,
       "mapKey": "huntLabOrochimaru",
-      "description": "Caça automática de Kidomaru para níveis 90+.",
+      "description": "Caça automática de Kidomaru para níveis 80+.",
       "targets": [
         {
           "id": "curated-character-kidomaru",
@@ -4341,10 +4191,10 @@
           "source": "curated/kidomaru",
           "lookType": 9112,
           "hasSprite": false,
-          "requiredLevel": 90,
-          "level": 90,
-          "hp": 1890,
-          "xp": 325,
+          "requiredLevel": 80,
+          "level": 80,
+          "hp": 1677,
+          "xp": 290,
           "speed": 50,
           "targetDistance": 1,
           "loot": []
@@ -4352,19 +4202,94 @@
       ]
     },
     {
-      "id": "wonsr-hunt-049",
-      "name": "Mapa de Konohamaru Sarutobi",
-      "requiredLevel": 90,
-      "mapKey": "huntCampoTreinamento",
-      "description": "Caça automática de Konohamaru Sarutobi para níveis 90+.",
+      "id": "wonsr-hunt-007",
+      "name": "Mapa de Uchiha Itachi",
+      "requiredLevel": 80,
+      "mapKey": "huntDistritoUchiha",
+      "description": "Caça automática de Uchiha Itachi para níveis 80+.",
       "targets": [
         {
-          "id": "curated-character-konohamaru",
-          "sourceId": "curated-character-konohamaru",
-          "name": "Konohamaru Sarutobi",
+          "id": "wonsr-character-uchiha-itachi",
+          "sourceId": "wonsr-character-uchiha-itachi",
+          "name": "Uchiha Itachi",
           "category": "personagem",
-          "source": "curated/konohamaru",
-          "lookType": 9074,
+          "source": "curated/uchiha-itachi",
+          "lookType": 9002,
+          "hasSprite": false,
+          "requiredLevel": 80,
+          "level": 80,
+          "hp": 1677,
+          "xp": 290,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-023",
+      "name": "Mapa de Kisame Hoshigaki",
+      "requiredLevel": 80,
+      "mapKey": "huntEsconderijoAkatsuki",
+      "description": "Caça automática de Kisame Hoshigaki para níveis 80+.",
+      "targets": [
+        {
+          "id": "wonsr-character-kisame",
+          "sourceId": "wonsr-character-kisame",
+          "name": "Kisame Hoshigaki",
+          "category": "personagem",
+          "source": "curated/kisame",
+          "lookType": 9021,
+          "hasSprite": false,
+          "requiredLevel": 80,
+          "level": 80,
+          "hp": 1677,
+          "xp": 290,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-059",
+      "name": "Mapa de Sasori",
+      "requiredLevel": 80,
+      "mapKey": "huntEsconderijoAkatsuki",
+      "description": "Caça automática de Sasori para níveis 80+.",
+      "targets": [
+        {
+          "id": "curated-character-sasori",
+          "sourceId": "curated-character-sasori",
+          "name": "Sasori",
+          "category": "personagem",
+          "source": "curated/sasori",
+          "lookType": 9097,
+          "hasSprite": false,
+          "requiredLevel": 80,
+          "level": 80,
+          "hp": 1677,
+          "xp": 290,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-060",
+      "name": "Mapa de Sasori (Hiruko)",
+      "requiredLevel": 90,
+      "mapKey": "huntEsconderijoAkatsuki",
+      "description": "Caça automática de Sasori (Hiruko) para níveis 90+.",
+      "targets": [
+        {
+          "id": "curated-character-sasori-puppet",
+          "sourceId": "curated-character-sasori-puppet",
+          "name": "Sasori (Hiruko)",
+          "category": "personagem",
+          "source": "curated/sasori-puppet",
+          "lookType": 9076,
           "hasSprite": false,
           "requiredLevel": 90,
           "level": 90,
@@ -4377,19 +4302,94 @@
       ]
     },
     {
-      "id": "wonsr-hunt-050",
-      "name": "Mapa de Namikaze Minato (Jonin)",
+      "id": "wonsr-hunt-024",
+      "name": "Mapa de Deidara",
       "requiredLevel": 90,
-      "mapKey": "huntArredoresReinoClover",
-      "description": "Caça automática de Namikaze Minato (Jonin) para níveis 90+.",
+      "mapKey": "huntEsconderijoAkatsuki",
+      "description": "Caça automática de Deidara para níveis 90+.",
       "targets": [
         {
-          "id": "curated-character-minato-jonin",
-          "sourceId": "curated-character-minato-jonin",
-          "name": "Namikaze Minato (Jonin)",
+          "id": "wonsr-character-deidara",
+          "sourceId": "wonsr-character-deidara",
+          "name": "Deidara",
           "category": "personagem",
-          "source": "curated/minato-jonin",
-          "lookType": 9096,
+          "source": "curated/deidara",
+          "lookType": 9022,
+          "hasSprite": false,
+          "requiredLevel": 90,
+          "level": 90,
+          "hp": 1890,
+          "xp": 325,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-031",
+      "name": "Mapa de Pain (Deva)",
+      "requiredLevel": 90,
+      "mapKey": "huntKonohaDestruida",
+      "description": "Caça automática de Pain (Deva) para níveis 90+.",
+      "targets": [
+        {
+          "id": "curated-character-pain",
+          "sourceId": "curated-character-pain",
+          "name": "Pain (Deva)",
+          "category": "personagem",
+          "source": "curated/pain",
+          "lookType": 9087,
+          "hasSprite": false,
+          "requiredLevel": 90,
+          "level": 90,
+          "hp": 1890,
+          "xp": 325,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-034",
+      "name": "Mapa de Danzo Shimura",
+      "requiredLevel": 90,
+      "mapKey": "huntCampoGuerraNinja",
+      "description": "Caça automática de Danzo Shimura para níveis 90+.",
+      "targets": [
+        {
+          "id": "curated-character-danzo",
+          "sourceId": "curated-character-danzo",
+          "name": "Danzo Shimura",
+          "category": "personagem",
+          "source": "curated/danzo",
+          "lookType": 9090,
+          "hasSprite": false,
+          "requiredLevel": 90,
+          "level": 90,
+          "hp": 1890,
+          "xp": 325,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-053",
+      "name": "Mapa de Naruto Shippuden",
+      "requiredLevel": 90,
+      "mapKey": "huntValeDoFim",
+      "description": "Caça automática de Naruto Shippuden para níveis 90+.",
+      "targets": [
+        {
+          "id": "curated-character-naruto-shippuden",
+          "sourceId": "curated-character-naruto-shippuden",
+          "name": "Naruto Shippuden",
+          "category": "personagem",
+          "source": "curated/naruto-shippuden",
+          "lookType": 9031,
           "hasSprite": false,
           "requiredLevel": 90,
           "level": 90,
@@ -4452,19 +4452,19 @@
       ]
     },
     {
-      "id": "wonsr-hunt-053",
-      "name": "Mapa de Naruto Shippuden",
+      "id": "wonsr-hunt-022",
+      "name": "Mapa de Naruto Kyubi",
       "requiredLevel": 100,
       "mapKey": "huntValeDoFim",
-      "description": "Caça automática de Naruto Shippuden para níveis 100+.",
+      "description": "Caça automática de Naruto Kyubi para níveis 100+.",
       "targets": [
         {
-          "id": "curated-character-naruto-shippuden",
-          "sourceId": "curated-character-naruto-shippuden",
-          "name": "Naruto Shippuden",
+          "id": "wonsr-character-naruto-kyubi",
+          "sourceId": "wonsr-character-naruto-kyubi",
+          "name": "Naruto Kyubi",
           "category": "personagem",
-          "source": "curated/naruto-shippuden",
-          "lookType": 9031,
+          "source": "curated/naruto-kyubi",
+          "lookType": 9020,
           "hasSprite": false,
           "requiredLevel": 100,
           "level": 100,
@@ -4477,19 +4477,19 @@
       ]
     },
     {
-      "id": "wonsr-hunt-054",
-      "name": "Mapa de Orochimaru (G6)",
+      "id": "wonsr-hunt-050",
+      "name": "Mapa de Namikaze Minato (Jonin)",
       "requiredLevel": 100,
-      "mapKey": "huntLabOrochimaru",
-      "description": "Caça automática de Orochimaru (G6) para níveis 100+.",
+      "mapKey": "huntDesertoSaiyajin",
+      "description": "Caça automática de Namikaze Minato (Jonin) para níveis 100+.",
       "targets": [
         {
-          "id": "curated-character-orochimaru-g6",
-          "sourceId": "curated-character-orochimaru-g6",
-          "name": "Orochimaru (G6)",
+          "id": "curated-character-minato-jonin",
+          "sourceId": "curated-character-minato-jonin",
+          "name": "Namikaze Minato (Jonin)",
           "category": "personagem",
-          "source": "curated/orochimaru-g6",
-          "lookType": 9121,
+          "source": "curated/minato-jonin",
+          "lookType": 9096,
           "hasSprite": false,
           "requiredLevel": 100,
           "level": 100,
@@ -4502,19 +4502,19 @@
       ]
     },
     {
-      "id": "wonsr-hunt-055",
-      "name": "Mapa de Rock Lee (G6)",
+      "id": "wonsr-hunt-069",
+      "name": "Mapa de Yamato",
       "requiredLevel": 100,
-      "mapKey": "huntArenaExameChunin",
-      "description": "Caça automática de Rock Lee (G6) para níveis 100+.",
+      "mapKey": "huntCampoTreinamento",
+      "description": "Caça automática de Yamato para níveis 100+.",
       "targets": [
         {
-          "id": "curated-character-rock-lee-g6",
-          "sourceId": "curated-character-rock-lee-g6",
-          "name": "Rock Lee (G6)",
+          "id": "curated-character-yamato",
+          "sourceId": "curated-character-yamato",
+          "name": "Yamato",
           "category": "personagem",
-          "source": "curated/rock-lee-g6",
-          "lookType": 9120,
+          "source": "curated/yamato",
+          "lookType": 9105,
           "hasSprite": false,
           "requiredLevel": 100,
           "level": 100,
@@ -4552,94 +4552,19 @@
       ]
     },
     {
-      "id": "wonsr-hunt-057",
-      "name": "Mapa de Sakon e Ukon",
+      "id": "wonsr-hunt-039",
+      "name": "Mapa de Gaara (Shukaku)",
       "requiredLevel": 110,
-      "mapKey": "huntLabOrochimaru",
-      "description": "Caça automática de Sakon e Ukon para níveis 110+.",
+      "mapKey": "huntPaisDoVento",
+      "description": "Caça automática de Gaara (Shukaku) para níveis 110+.",
       "targets": [
         {
-          "id": "curated-character-sakon",
-          "sourceId": "curated-character-sakon",
-          "name": "Sakon e Ukon",
+          "id": "curated-character-gaara-shukaku",
+          "sourceId": "curated-character-gaara-shukaku",
+          "name": "Gaara (Shukaku)",
           "category": "personagem",
-          "source": "curated/sakon",
-          "lookType": 9082,
-          "hasSprite": false,
-          "requiredLevel": 110,
-          "level": 110,
-          "hp": 2318,
-          "xp": 395,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-058",
-      "name": "Mapa de Sakon e Ukon",
-      "requiredLevel": 110,
-      "mapKey": "huntLabOrochimaru",
-      "description": "Caça automática de Sakon e Ukon para níveis 110+.",
-      "targets": [
-        {
-          "id": "curated-character-sakon-nun5",
-          "sourceId": "curated-character-sakon-nun5",
-          "name": "Sakon e Ukon",
-          "category": "personagem",
-          "source": "curated/sakon-nun5",
-          "lookType": 9111,
-          "hasSprite": false,
-          "requiredLevel": 110,
-          "level": 110,
-          "hp": 2318,
-          "xp": 395,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-059",
-      "name": "Mapa de Sasori",
-      "requiredLevel": 110,
-      "mapKey": "huntEsconderijoAkatsuki",
-      "description": "Caça automática de Sasori para níveis 110+.",
-      "targets": [
-        {
-          "id": "curated-character-sasori",
-          "sourceId": "curated-character-sasori",
-          "name": "Sasori",
-          "category": "personagem",
-          "source": "curated/sasori",
-          "lookType": 9097,
-          "hasSprite": false,
-          "requiredLevel": 110,
-          "level": 110,
-          "hp": 2318,
-          "xp": 395,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-060",
-      "name": "Mapa de Sasori (Hiruko)",
-      "requiredLevel": 110,
-      "mapKey": "huntEsconderijoAkatsuki",
-      "description": "Caça automática de Sasori (Hiruko) para níveis 110+.",
-      "targets": [
-        {
-          "id": "curated-character-sasori-puppet",
-          "sourceId": "curated-character-sasori-puppet",
-          "name": "Sasori (Hiruko)",
-          "category": "personagem",
-          "source": "curated/sasori-puppet",
-          "lookType": 9076,
+          "source": "curated/gaara-shukaku",
+          "lookType": 9113,
           "hasSprite": false,
           "requiredLevel": 110,
           "level": 110,
@@ -4654,9 +4579,9 @@
     {
       "id": "wonsr-hunt-061",
       "name": "Mapa de Senju Hashirama",
-      "requiredLevel": 120,
+      "requiredLevel": 110,
       "mapKey": "huntValeDoFim",
-      "description": "Caça automática de Senju Hashirama para níveis 120+.",
+      "description": "Caça automática de Senju Hashirama para níveis 110+.",
       "targets": [
         {
           "id": "curated-character-hashirama",
@@ -4666,10 +4591,10 @@
           "source": "curated/hashirama",
           "lookType": 9094,
           "hasSprite": false,
-          "requiredLevel": 120,
-          "level": 120,
-          "hp": 2533,
-          "xp": 430,
+          "requiredLevel": 110,
+          "level": 110,
+          "hp": 2318,
+          "xp": 395,
           "speed": 50,
           "targetDistance": 1,
           "loot": []
@@ -4679,9 +4604,9 @@
     {
       "id": "wonsr-hunt-062",
       "name": "Mapa de Senju Tobirama",
-      "requiredLevel": 120,
-      "mapKey": "huntKonohaDestruida",
-      "description": "Caça automática de Senju Tobirama para níveis 120+.",
+      "requiredLevel": 110,
+      "mapKey": "huntPaisDoVento",
+      "description": "Caça automática de Senju Tobirama para níveis 110+.",
       "targets": [
         {
           "id": "curated-character-tobirama",
@@ -4690,6 +4615,56 @@
           "category": "personagem",
           "source": "curated/tobirama",
           "lookType": 9095,
+          "hasSprite": false,
+          "requiredLevel": 110,
+          "level": 110,
+          "hp": 2318,
+          "xp": 395,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-008",
+      "name": "Mapa de Uchiha Shisui",
+      "requiredLevel": 110,
+      "mapKey": "huntDistritoUchiha",
+      "description": "Caça automática de Uchiha Shisui para níveis 110+.",
+      "targets": [
+        {
+          "id": "curated-character-shisui",
+          "sourceId": "curated-character-shisui",
+          "name": "Uchiha Shisui",
+          "category": "personagem",
+          "source": "curated/shisui",
+          "lookType": 9030,
+          "hasSprite": false,
+          "requiredLevel": 110,
+          "level": 110,
+          "hp": 2318,
+          "xp": 395,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-043",
+      "name": "Mapa de Hyuga Hanabi",
+      "requiredLevel": 120,
+      "mapKey": "huntLabOrochimaru",
+      "description": "Caça automática de Hyuga Hanabi para níveis 120+.",
+      "targets": [
+        {
+          "id": "curated-character-hanabi",
+          "sourceId": "curated-character-hanabi",
+          "name": "Hyuga Hanabi",
+          "category": "personagem",
+          "source": "curated/hanabi",
+          "lookType": 9101,
           "hasSprite": false,
           "requiredLevel": 120,
           "level": 120,
@@ -4702,19 +4677,44 @@
       ]
     },
     {
-      "id": "wonsr-hunt-063",
-      "name": "Mapa de Shizune",
+      "id": "wonsr-hunt-044",
+      "name": "Mapa de Hyuga Hinata",
       "requiredLevel": 120,
-      "mapKey": "huntMonteMyoboku",
-      "description": "Caça automática de Shizune para níveis 120+.",
+      "mapKey": "huntCampoTreinamento",
+      "description": "Caça automática de Hyuga Hinata para níveis 120+.",
       "targets": [
         {
-          "id": "curated-character-shizune",
-          "sourceId": "curated-character-shizune",
-          "name": "Shizune",
+          "id": "curated-character-hinata-g6",
+          "sourceId": "curated-character-hinata-g6",
+          "name": "Hyuga Hinata",
           "category": "personagem",
-          "source": "curated/shizune",
-          "lookType": 9110,
+          "source": "curated/hinata-g6",
+          "lookType": 9103,
+          "hasSprite": false,
+          "requiredLevel": 120,
+          "level": 120,
+          "hp": 2533,
+          "xp": 430,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-055",
+      "name": "Mapa de Rock Lee (G6)",
+      "requiredLevel": 120,
+      "mapKey": "huntArenaExameChunin",
+      "description": "Caça automática de Rock Lee (G6) para níveis 120+.",
+      "targets": [
+        {
+          "id": "curated-character-rock-lee-g6",
+          "sourceId": "curated-character-rock-lee-g6",
+          "name": "Rock Lee (G6)",
+          "category": "personagem",
+          "source": "curated/rock-lee-g6",
+          "lookType": 9120,
           "hasSprite": false,
           "requiredLevel": 120,
           "level": 120,
@@ -4752,19 +4752,19 @@
       ]
     },
     {
-      "id": "wonsr-hunt-065",
-      "name": "Mapa de Temari (Kid)",
+      "id": "wonsr-hunt-066",
+      "name": "Mapa de Tenten (G6)",
       "requiredLevel": 120,
-      "mapKey": "huntPaisDoVento",
-      "description": "Caça automática de Temari (Kid) para níveis 120+.",
+      "mapKey": "huntArenaExameChunin",
+      "description": "Caça automática de Tenten (G6) para níveis 120+.",
       "targets": [
         {
-          "id": "curated-character-temari-kid",
-          "sourceId": "curated-character-temari-kid",
-          "name": "Temari (Kid)",
+          "id": "curated-character-tenten-g6",
+          "sourceId": "curated-character-tenten-g6",
+          "name": "Tenten (G6)",
           "category": "personagem",
-          "source": "curated/temari-kid",
-          "lookType": 9108,
+          "source": "curated/tenten-g6",
+          "lookType": 9114,
           "hasSprite": false,
           "requiredLevel": 120,
           "level": 120,
@@ -4777,44 +4777,19 @@
       ]
     },
     {
-      "id": "wonsr-hunt-066",
-      "name": "Mapa de Tenten (G6)",
+      "id": "wonsr-hunt-035",
+      "name": "Mapa de Aburame Shino (G6)",
       "requiredLevel": 130,
-      "mapKey": "huntArenaExameChunin",
-      "description": "Caça automática de Tenten (G6) para níveis 130+.",
+      "mapKey": "huntForestClearing",
+      "description": "Caça automática de Aburame Shino (G6) para níveis 130+.",
       "targets": [
         {
-          "id": "curated-character-tenten-g6",
-          "sourceId": "curated-character-tenten-g6",
-          "name": "Tenten (G6)",
+          "id": "curated-character-shino-g6",
+          "sourceId": "curated-character-shino-g6",
+          "name": "Aburame Shino (G6)",
           "category": "personagem",
-          "source": "curated/tenten-g6",
-          "lookType": 9114,
-          "hasSprite": false,
-          "requiredLevel": 130,
-          "level": 130,
-          "hp": 2749,
-          "xp": 465,
-          "speed": 50,
-          "targetDistance": 1,
-          "loot": []
-        }
-      ]
-    },
-    {
-      "id": "wonsr-hunt-067",
-      "name": "Mapa de Tenten (Kid)",
-      "requiredLevel": 130,
-      "mapKey": "huntArenaExameChunin",
-      "description": "Caça automática de Tenten (Kid) para níveis 130+.",
-      "targets": [
-        {
-          "id": "curated-character-tenten-kid",
-          "sourceId": "curated-character-tenten-kid",
-          "name": "Tenten (Kid)",
-          "category": "personagem",
-          "source": "curated/tenten-kid",
-          "lookType": 9107,
+          "source": "curated/shino-g6",
+          "lookType": 9116,
           "hasSprite": false,
           "requiredLevel": 130,
           "level": 130,
@@ -4852,19 +4827,94 @@
       ]
     },
     {
-      "id": "wonsr-hunt-071",
-      "name": "Mapa de Yamato",
-      "requiredLevel": 140,
-      "mapKey": "huntSalaDoTempo",
-      "description": "Caça automática de Yamato para níveis 140+.",
+      "id": "wonsr-hunt-054",
+      "name": "Mapa de Orochimaru (G6)",
+      "requiredLevel": 130,
+      "mapKey": "huntLabOrochimaru",
+      "description": "Caça automática de Orochimaru (G6) para níveis 130+.",
       "targets": [
         {
-          "id": "curated-character-yamato",
-          "sourceId": "curated-character-yamato",
-          "name": "Yamato",
+          "id": "curated-character-orochimaru-g6",
+          "sourceId": "curated-character-orochimaru-g6",
+          "name": "Orochimaru (G6)",
           "category": "personagem",
-          "source": "curated/yamato",
-          "lookType": 9105,
+          "source": "curated/orochimaru-g6",
+          "lookType": 9121,
+          "hasSprite": false,
+          "requiredLevel": 130,
+          "level": 130,
+          "hp": 2749,
+          "xp": 465,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-041",
+      "name": "Mapa de Hatake Kakashi (G6)",
+      "requiredLevel": 130,
+      "mapKey": "huntCampoTreinamento",
+      "description": "Caça automática de Hatake Kakashi (G6) para níveis 130+.",
+      "targets": [
+        {
+          "id": "curated-character-kakashi-g6",
+          "sourceId": "curated-character-kakashi-g6",
+          "name": "Hatake Kakashi (G6)",
+          "category": "personagem",
+          "source": "curated/kakashi-g6",
+          "lookType": 9122,
+          "hasSprite": false,
+          "requiredLevel": 130,
+          "level": 130,
+          "hp": 2749,
+          "xp": 465,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-036",
+      "name": "Mapa de Anko Mitarashi",
+      "requiredLevel": 130,
+      "mapKey": "huntTorneioArtesMarciais",
+      "description": "Caça automática de Anko Mitarashi para níveis 130+.",
+      "targets": [
+        {
+          "id": "curated-character-anko",
+          "sourceId": "curated-character-anko",
+          "name": "Anko Mitarashi",
+          "category": "personagem",
+          "source": "curated/anko",
+          "lookType": 9102,
+          "hasSprite": false,
+          "requiredLevel": 130,
+          "level": 130,
+          "hp": 2749,
+          "xp": 465,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ]
+    },
+    {
+      "id": "wonsr-hunt-038",
+      "name": "Mapa de Chiyo",
+      "requiredLevel": 140,
+      "mapKey": "huntSalaDoTempo",
+      "description": "Caça automática de Chiyo para níveis 140+.",
+      "targets": [
+        {
+          "id": "curated-character-chiyo",
+          "sourceId": "curated-character-chiyo",
+          "name": "Chiyo",
+          "category": "personagem",
+          "source": "curated/chiyo",
+          "lookType": 9077,
           "hasSprite": false,
           "requiredLevel": 140,
           "level": 140,
@@ -4877,11 +4927,635 @@
       ]
     },
     {
-      "id": "wonsr-hunt-072",
+      "id": "hunt-td-001",
+      "name": "Mapa de Uzumaki Naruto",
+      "requiredLevel": 1,
+      "mapKey": "huntTdValeDoFim",
+      "description": "Caça automática de Uzumaki Naruto para níveis 1+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-uzumaki-naruto",
+          "sourceId": "wonsr-character-uzumaki-naruto",
+          "name": "Uzumaki Naruto",
+          "category": "personagem",
+          "source": "curated/naruto",
+          "lookType": 9011,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-006",
+      "name": "Mapa de Uchiha Sasuke",
+      "requiredLevel": 1,
+      "mapKey": "huntTdValeDoFim",
+      "description": "Caça automática de Uchiha Sasuke para níveis 1+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-uchiha-sasuke",
+          "sourceId": "wonsr-character-uchiha-sasuke",
+          "name": "Uchiha Sasuke",
+          "category": "personagem",
+          "source": "curated/sasuke",
+          "lookType": 9012,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-045",
+      "name": "Mapa de Hyuga Hinata (Kid)",
+      "requiredLevel": 1,
+      "mapKey": "huntTdClareiraEquipe7",
+      "description": "Caça automática de Hyuga Hinata (Kid) para níveis 1+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-hinata-kid",
+          "sourceId": "curated-character-hinata-kid",
+          "name": "Hyuga Hinata (Kid)",
+          "category": "personagem",
+          "source": "curated/hinata-kid",
+          "lookType": 9106,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-067",
+      "name": "Mapa de Tenten (Kid)",
+      "requiredLevel": 1,
+      "mapKey": "huntTdArenaExameChunin",
+      "description": "Caça automática de Tenten (Kid) para níveis 1+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-tenten-kid",
+          "sourceId": "curated-character-tenten-kid",
+          "name": "Tenten (Kid)",
+          "category": "personagem",
+          "source": "curated/tenten-kid",
+          "lookType": 9107,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-047",
+      "name": "Mapa de Kiba Inuzuka (Kid)",
+      "requiredLevel": 1,
+      "mapKey": "huntTdClareiraEquipe7",
+      "description": "Caça automática de Kiba Inuzuka (Kid) para níveis 1+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-kiba-kid",
+          "sourceId": "curated-character-kiba-kid",
+          "name": "Kiba Inuzuka (Kid)",
+          "category": "personagem",
+          "source": "curated/kiba-kid",
+          "lookType": 9075,
+          "hasSprite": false,
+          "requiredLevel": 1,
+          "level": 1,
+          "hp": 63,
+          "xp": 14,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-049",
+      "name": "Mapa de Konohamaru Sarutobi",
+      "requiredLevel": 10,
+      "mapKey": "huntTdClareiraEquipe7",
+      "description": "Caça automática de Konohamaru Sarutobi para níveis 10+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-konohamaru",
+          "sourceId": "curated-character-konohamaru",
+          "name": "Konohamaru Sarutobi",
+          "category": "personagem",
+          "source": "curated/konohamaru",
+          "lookType": 9074,
+          "hasSprite": false,
+          "requiredLevel": 10,
+          "level": 10,
+          "hp": 235,
+          "xp": 45,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-002",
+      "name": "Mapa de Rock Lee",
+      "requiredLevel": 10,
+      "mapKey": "huntTdArenaExameChunin",
+      "description": "Caça automática de Rock Lee para níveis 10+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-rock-lee",
+          "sourceId": "wonsr-character-rock-lee",
+          "name": "Rock Lee",
+          "category": "personagem",
+          "source": "curated/rock-lee",
+          "lookType": 9013,
+          "hasSprite": false,
+          "requiredLevel": 10,
+          "level": 10,
+          "hp": 235,
+          "xp": 45,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-009",
+      "name": "Mapa de Neji Hyuga",
+      "requiredLevel": 10,
+      "mapKey": "huntTdArenaExameChunin",
+      "description": "Caça automática de Neji Hyuga para níveis 10+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-neji-hyuga",
+          "sourceId": "wonsr-character-neji-hyuga",
+          "name": "Neji Hyuga",
+          "category": "personagem",
+          "source": "curated/neji",
+          "lookType": 9003,
+          "hasSprite": false,
+          "requiredLevel": 10,
+          "level": 10,
+          "hp": 235,
+          "xp": 45,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-004",
+      "name": "Mapa de Shikamaru Nara",
+      "requiredLevel": 10,
+      "mapKey": "huntTdArenaExameChunin",
+      "description": "Caça automática de Shikamaru Nara para níveis 10+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-shikamaru-nara",
+          "sourceId": "wonsr-character-shikamaru-nara",
+          "name": "Shikamaru Nara",
+          "category": "personagem",
+          "source": "curated/shikamaru",
+          "lookType": 1426,
+          "hasSprite": false,
+          "requiredLevel": 10,
+          "level": 10,
+          "hp": 235,
+          "xp": 45,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-010",
+      "name": "Mapa de Chouji Akimichi",
+      "requiredLevel": 10,
+      "mapKey": "huntTdArenaExameChunin",
+      "description": "Caça automática de Chouji Akimichi para níveis 10+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-chouji-akimichi",
+          "sourceId": "wonsr-character-chouji-akimichi",
+          "name": "Chouji Akimichi",
+          "category": "personagem",
+          "source": "curated/chouji",
+          "lookType": 9004,
+          "hasSprite": false,
+          "requiredLevel": 10,
+          "level": 10,
+          "hp": 235,
+          "xp": 45,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-032",
+      "name": "Mapa de Akimichi Choji (Jump Force)",
+      "requiredLevel": 20,
+      "mapKey": "huntTdArenaExameChunin",
+      "description": "Caça automática de Akimichi Choji (Jump Force) para níveis 20+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-choji-jf",
+          "sourceId": "curated-character-choji-jf",
+          "name": "Akimichi Choji (Jump Force)",
+          "category": "personagem",
+          "source": "curated/choji-jf",
+          "lookType": 9088,
+          "hasSprite": false,
+          "requiredLevel": 20,
+          "level": 20,
+          "hp": 434,
+          "xp": 80,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-011",
+      "name": "Mapa de Ino Yamanaka",
+      "requiredLevel": 20,
+      "mapKey": "huntTdArenaExameChunin",
+      "description": "Caça automática de Ino Yamanaka para níveis 20+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-ino-yamanaka",
+          "sourceId": "wonsr-character-ino-yamanaka",
+          "name": "Ino Yamanaka",
+          "category": "personagem",
+          "source": "curated/ino",
+          "lookType": 9007,
+          "hasSprite": false,
+          "requiredLevel": 20,
+          "level": 20,
+          "hp": 434,
+          "xp": 80,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-030",
+      "name": "Mapa de Shino Aburame",
+      "requiredLevel": 20,
+      "mapKey": "huntTdClareiraEquipe7",
+      "description": "Caça automática de Shino Aburame para níveis 20+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-shino",
+          "sourceId": "wonsr-character-shino",
+          "name": "Shino Aburame",
+          "category": "personagem",
+          "source": "curated/shino",
+          "lookType": 9027,
+          "hasSprite": false,
+          "requiredLevel": 20,
+          "level": 20,
+          "hp": 434,
+          "xp": 80,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-026",
+      "name": "Mapa de Tenten",
+      "requiredLevel": 20,
+      "mapKey": "huntTdArenaExameChunin",
+      "description": "Caça automática de Tenten para níveis 20+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-tenten",
+          "sourceId": "wonsr-character-tenten",
+          "name": "Tenten",
+          "category": "personagem",
+          "source": "curated/tenten",
+          "lookType": 9024,
+          "hasSprite": false,
+          "requiredLevel": 20,
+          "level": 20,
+          "hp": 434,
+          "xp": 80,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-003",
+      "name": "Mapa de Hinata Hyuga",
+      "requiredLevel": 20,
+      "mapKey": "huntTdClareiraEquipe7",
+      "description": "Caça automática de Hinata Hyuga para níveis 20+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-hinata-hyuga",
+          "sourceId": "wonsr-character-hinata-hyuga",
+          "name": "Hinata Hyuga",
+          "category": "personagem",
+          "source": "curated/hinata",
+          "lookType": 9005,
+          "hasSprite": false,
+          "requiredLevel": 20,
+          "level": 20,
+          "hp": 434,
+          "xp": 80,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-018",
+      "name": "Mapa de Kiba Inuzuka",
+      "requiredLevel": 30,
+      "mapKey": "huntTdClareiraEquipe7",
+      "description": "Caça automática de Kiba Inuzuka para níveis 30+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-kiba-inuzuka",
+          "sourceId": "wonsr-character-kiba-inuzuka",
+          "name": "Kiba Inuzuka",
+          "category": "personagem",
+          "source": "curated/kiba",
+          "lookType": 9016,
+          "hasSprite": false,
+          "requiredLevel": 30,
+          "level": 30,
+          "hp": 636,
+          "xp": 115,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-005",
+      "name": "Mapa de Gaara",
+      "requiredLevel": 30,
+      "mapKey": "huntTdArenaVilaAreia",
+      "description": "Caça automática de Gaara para níveis 30+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-gaara",
+          "sourceId": "wonsr-character-gaara",
+          "name": "Gaara",
+          "category": "personagem",
+          "source": "curated/gaara",
+          "lookType": 1395,
+          "hasSprite": false,
+          "requiredLevel": 30,
+          "level": 30,
+          "hp": 636,
+          "xp": 115,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-065",
+      "name": "Mapa de Temari (Kid)",
+      "requiredLevel": 30,
+      "mapKey": "huntTdArenaVilaAreia",
+      "description": "Caça automática de Temari (Kid) para níveis 30+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-temari-kid",
+          "sourceId": "curated-character-temari-kid",
+          "name": "Temari (Kid)",
+          "category": "personagem",
+          "source": "curated/temari-kid",
+          "lookType": 9108,
+          "hasSprite": false,
+          "requiredLevel": 30,
+          "level": 30,
+          "hp": 636,
+          "xp": 115,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-027",
+      "name": "Mapa de Temari",
+      "requiredLevel": 30,
+      "mapKey": "huntTdArenaVilaAreia",
+      "description": "Caça automática de Temari para níveis 30+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-temari",
+          "sourceId": "wonsr-character-temari",
+          "name": "Temari",
+          "category": "personagem",
+          "source": "curated/temari",
+          "lookType": 9025,
+          "hasSprite": false,
+          "requiredLevel": 30,
+          "level": 30,
+          "hp": 636,
+          "xp": 115,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-046",
+      "name": "Mapa de Kankuro",
+      "requiredLevel": 30,
+      "mapKey": "huntTdArenaVilaAreia",
+      "description": "Caça automática de Kankuro para níveis 30+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-kankuro",
+          "sourceId": "curated-character-kankuro",
+          "name": "Kankuro",
+          "category": "personagem",
+          "source": "curated/kankuro",
+          "lookType": 9098,
+          "hasSprite": false,
+          "requiredLevel": 30,
+          "level": 30,
+          "hp": 636,
+          "xp": 115,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-025",
+      "name": "Mapa de Sakura Shippuden",
+      "requiredLevel": 40,
+      "mapKey": "huntTdClareiraEquipe7",
+      "description": "Caça automática de Sakura Shippuden para níveis 40+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-sakura-shippuden",
+          "sourceId": "wonsr-character-sakura-shippuden",
+          "name": "Sakura Shippuden",
+          "category": "personagem",
+          "source": "curated/sakura-shippuden",
+          "lookType": 9023,
+          "hasSprite": false,
+          "requiredLevel": 40,
+          "level": 40,
+          "hp": 840,
+          "xp": 150,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-012",
+      "name": "Mapa de Might Guy",
+      "requiredLevel": 40,
+      "mapKey": "huntTdArenaExameChunin",
+      "description": "Caça automática de Might Guy para níveis 40+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-might-guy",
+          "sourceId": "wonsr-character-might-guy",
+          "name": "Might Guy",
+          "category": "personagem",
+          "source": "curated/guy",
+          "lookType": 9006,
+          "hasSprite": false,
+          "requiredLevel": 40,
+          "level": 40,
+          "hp": 840,
+          "xp": 150,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-013",
+      "name": "Mapa de Hatake Kakashi",
+      "requiredLevel": 40,
+      "mapKey": "huntTdClareiraEquipe7",
+      "description": "Caça automática de Hatake Kakashi para níveis 40+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-hatake-kakashi",
+          "sourceId": "wonsr-character-hatake-kakashi",
+          "name": "Hatake Kakashi",
+          "category": "personagem",
+          "source": "curated/kakashi",
+          "lookType": 9008,
+          "hasSprite": false,
+          "requiredLevel": 40,
+          "level": 40,
+          "hp": 840,
+          "xp": 150,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-037",
+      "name": "Mapa de Asuma Sarutobi",
+      "requiredLevel": 40,
+      "mapKey": "huntTdCavernaAkatsuki",
+      "description": "Caça automática de Asuma Sarutobi para níveis 40+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-asuma",
+          "sourceId": "curated-character-asuma",
+          "name": "Asuma Sarutobi",
+          "category": "personagem",
+          "source": "curated/asuma",
+          "lookType": 9080,
+          "hasSprite": false,
+          "requiredLevel": 40,
+          "level": 40,
+          "hp": 840,
+          "xp": 150,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-070",
       "name": "Mapa de Yuhi Kurenai",
-      "requiredLevel": 140,
-      "mapKey": "huntDesertoSaiyajin",
-      "description": "Caça automática de Yuhi Kurenai para níveis 140+.",
+      "requiredLevel": 40,
+      "mapKey": "huntTdLaboratorioOrochimaru",
+      "description": "Caça automática de Yuhi Kurenai para níveis 40+. (top-down)",
       "targets": [
         {
           "id": "curated-character-kurenai",
@@ -4891,22 +5565,127 @@
           "source": "curated/kurenai",
           "lookType": 9093,
           "hasSprite": false,
-          "requiredLevel": 140,
-          "level": 140,
-          "hp": 2966,
-          "xp": 500,
+          "requiredLevel": 40,
+          "level": 40,
+          "hp": 840,
+          "xp": 150,
           "speed": 50,
           "targetDistance": 1,
           "loot": []
         }
-      ]
+      ],
+      "tab": "naruto-topdown"
     },
     {
-      "id": "wonsr-hunt-073",
+      "id": "hunt-td-042",
+      "name": "Mapa de Hiruzen Sarutobi",
+      "requiredLevel": 50,
+      "mapKey": "huntTdCrateraKonoha",
+      "description": "Caça automática de Hiruzen Sarutobi para níveis 50+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-hiruzen",
+          "sourceId": "curated-character-hiruzen",
+          "name": "Hiruzen Sarutobi",
+          "category": "personagem",
+          "source": "curated/hiruzen",
+          "lookType": 9079,
+          "hasSprite": false,
+          "requiredLevel": 50,
+          "level": 50,
+          "hp": 1047,
+          "xp": 185,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-017",
+      "name": "Mapa de Tsunade",
+      "requiredLevel": 50,
+      "mapKey": "huntTdClareiraEquipe7",
+      "description": "Caça automática de Tsunade para níveis 50+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-tsunade",
+          "sourceId": "wonsr-character-tsunade",
+          "name": "Tsunade",
+          "category": "personagem",
+          "source": "curated/tsunade",
+          "lookType": 9015,
+          "hasSprite": false,
+          "requiredLevel": 50,
+          "level": 50,
+          "hp": 1047,
+          "xp": 185,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-014",
+      "name": "Mapa de Jiraya",
+      "requiredLevel": 50,
+      "mapKey": "huntTdClareiraEquipe7",
+      "description": "Caça automática de Jiraya para níveis 50+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-jiraiya",
+          "sourceId": "wonsr-character-jiraiya",
+          "name": "Jiraya",
+          "category": "personagem",
+          "source": "curated/jiraiya",
+          "lookType": 9009,
+          "hasSprite": false,
+          "requiredLevel": 50,
+          "level": 50,
+          "hp": 1047,
+          "xp": 185,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-063",
+      "name": "Mapa de Shizune",
+      "requiredLevel": 50,
+      "mapKey": "huntTdCrateraKonoha",
+      "description": "Caça automática de Shizune para níveis 50+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-shizune",
+          "sourceId": "curated-character-shizune",
+          "name": "Shizune",
+          "category": "personagem",
+          "source": "curated/shizune",
+          "lookType": 9110,
+          "hasSprite": false,
+          "requiredLevel": 50,
+          "level": 50,
+          "hp": 1047,
+          "xp": 185,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-071",
       "name": "Mapa de Zabuza Momochi",
-      "requiredLevel": 140,
-      "mapKey": "huntPontePaisOnda",
-      "description": "Caça automática de Zabuza Momochi para níveis 140+.",
+      "requiredLevel": 50,
+      "mapKey": "huntTdPonteDasOndas",
+      "description": "Caça automática de Zabuza Momochi para níveis 50+. (top-down)",
       "targets": [
         {
           "id": "curated-character-zabuza",
@@ -4916,6 +5695,1072 @@
           "source": "curated/zabuza",
           "lookType": 9081,
           "hasSprite": false,
+          "requiredLevel": 50,
+          "level": 50,
+          "hp": 1047,
+          "xp": 185,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-040",
+      "name": "Mapa de Haku",
+      "requiredLevel": 60,
+      "mapKey": "huntTdPonteDasOndas",
+      "description": "Caça automática de Haku para níveis 60+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-haku",
+          "sourceId": "curated-character-haku",
+          "name": "Haku",
+          "category": "personagem",
+          "source": "curated/haku",
+          "lookType": 9078,
+          "hasSprite": false,
+          "requiredLevel": 60,
+          "level": 60,
+          "hp": 1256,
+          "xp": 220,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-033",
+      "name": "Mapa de Haku (Jump Force)",
+      "requiredLevel": 60,
+      "mapKey": "huntTdPonteDasOndas",
+      "description": "Caça automática de Haku (Jump Force) para níveis 60+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-haku-jf",
+          "sourceId": "curated-character-haku-jf",
+          "name": "Haku (Jump Force)",
+          "category": "personagem",
+          "source": "curated/haku-jf",
+          "lookType": 9089,
+          "hasSprite": false,
+          "requiredLevel": 60,
+          "level": 60,
+          "hp": 1256,
+          "xp": 220,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-021",
+      "name": "Mapa de Orochimaru",
+      "requiredLevel": 60,
+      "mapKey": "huntTdLaboratorioOrochimaru",
+      "description": "Caça automática de Orochimaru para níveis 60+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-orochimaru",
+          "sourceId": "wonsr-character-orochimaru",
+          "name": "Orochimaru",
+          "category": "personagem",
+          "source": "curated/orochimaru",
+          "lookType": 9019,
+          "hasSprite": false,
+          "requiredLevel": 60,
+          "level": 60,
+          "hp": 1256,
+          "xp": 220,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-016",
+      "name": "Mapa de Yakushi Kabuto",
+      "requiredLevel": 60,
+      "mapKey": "huntTdLaboratorioOrochimaru",
+      "description": "Caça automática de Yakushi Kabuto para níveis 60+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-yakushi-kabuto",
+          "sourceId": "wonsr-character-yakushi-kabuto",
+          "name": "Yakushi Kabuto",
+          "category": "personagem",
+          "source": "curated/kabuto",
+          "lookType": 9014,
+          "hasSprite": false,
+          "requiredLevel": 60,
+          "level": 60,
+          "hp": 1256,
+          "xp": 220,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-020",
+      "name": "Mapa de Sasuke Cursed",
+      "requiredLevel": 60,
+      "mapKey": "huntTdValeDoFim",
+      "description": "Caça automática de Sasuke Cursed para níveis 60+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-sasuke-cursed",
+          "sourceId": "wonsr-character-sasuke-cursed",
+          "name": "Sasuke Cursed",
+          "category": "personagem",
+          "source": "curated/sasuke-cursed",
+          "lookType": 9018,
+          "hasSprite": false,
+          "requiredLevel": 60,
+          "level": 60,
+          "hp": 1256,
+          "xp": 220,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-019",
+      "name": "Mapa de Kimimaro",
+      "requiredLevel": 70,
+      "mapKey": "huntTdLaboratorioOrochimaru",
+      "description": "Caça automática de Kimimaro para níveis 70+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-kimimaro",
+          "sourceId": "wonsr-character-kimimaro",
+          "name": "Kimimaro",
+          "category": "personagem",
+          "source": "curated/kimimaro",
+          "lookType": 9017,
+          "hasSprite": false,
+          "requiredLevel": 70,
+          "level": 70,
+          "hp": 1466,
+          "xp": 255,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-015",
+      "name": "Mapa de Jiroubou",
+      "requiredLevel": 70,
+      "mapKey": "huntTdLaboratorioOrochimaru",
+      "description": "Caça automática de Jiroubou para níveis 70+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-jirobo",
+          "sourceId": "wonsr-character-jirobo",
+          "name": "Jiroubou",
+          "category": "personagem",
+          "source": "curated/jirobo",
+          "lookType": 9010,
+          "hasSprite": false,
+          "requiredLevel": 70,
+          "level": 70,
+          "hp": 1466,
+          "xp": 255,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-028",
+      "name": "Mapa de Tayuya",
+      "requiredLevel": 70,
+      "mapKey": "huntTdLaboratorioOrochimaru",
+      "description": "Caça automática de Tayuya para níveis 70+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-tayuya",
+          "sourceId": "wonsr-character-tayuya",
+          "name": "Tayuya",
+          "category": "personagem",
+          "source": "curated/tayuya",
+          "lookType": 9026,
+          "hasSprite": false,
+          "requiredLevel": 70,
+          "level": 70,
+          "hp": 1466,
+          "xp": 255,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-029",
+      "name": "Mapa de Tayuya",
+      "requiredLevel": 70,
+      "mapKey": "huntTdLaboratorioOrochimaru",
+      "description": "Caça automática de Tayuya para níveis 70+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-tayuya-nun5",
+          "sourceId": "curated-character-tayuya-nun5",
+          "name": "Tayuya",
+          "category": "personagem",
+          "source": "curated/tayuya-nun5",
+          "lookType": 9109,
+          "hasSprite": false,
+          "requiredLevel": 70,
+          "level": 70,
+          "hp": 1466,
+          "xp": 255,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-057",
+      "name": "Mapa de Sakon e Ukon",
+      "requiredLevel": 70,
+      "mapKey": "huntTdLaboratorioOrochimaru",
+      "description": "Caça automática de Sakon e Ukon para níveis 70+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-sakon",
+          "sourceId": "curated-character-sakon",
+          "name": "Sakon e Ukon",
+          "category": "personagem",
+          "source": "curated/sakon",
+          "lookType": 9082,
+          "hasSprite": false,
+          "requiredLevel": 70,
+          "level": 70,
+          "hp": 1466,
+          "xp": 255,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-058",
+      "name": "Mapa de Sakon e Ukon",
+      "requiredLevel": 80,
+      "mapKey": "huntTdLaboratorioOrochimaru",
+      "description": "Caça automática de Sakon e Ukon para níveis 80+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-sakon-nun5",
+          "sourceId": "curated-character-sakon-nun5",
+          "name": "Sakon e Ukon",
+          "category": "personagem",
+          "source": "curated/sakon-nun5",
+          "lookType": 9111,
+          "hasSprite": false,
+          "requiredLevel": 80,
+          "level": 80,
+          "hp": 1677,
+          "xp": 290,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-048",
+      "name": "Mapa de Kidomaru",
+      "requiredLevel": 80,
+      "mapKey": "huntTdLaboratorioOrochimaru",
+      "description": "Caça automática de Kidomaru para níveis 80+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-kidomaru",
+          "sourceId": "curated-character-kidomaru",
+          "name": "Kidomaru",
+          "category": "personagem",
+          "source": "curated/kidomaru",
+          "lookType": 9112,
+          "hasSprite": false,
+          "requiredLevel": 80,
+          "level": 80,
+          "hp": 1677,
+          "xp": 290,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-007",
+      "name": "Mapa de Uchiha Itachi",
+      "requiredLevel": 80,
+      "mapKey": "huntTdValeDoFim",
+      "description": "Caça automática de Uchiha Itachi para níveis 80+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-uchiha-itachi",
+          "sourceId": "wonsr-character-uchiha-itachi",
+          "name": "Uchiha Itachi",
+          "category": "personagem",
+          "source": "curated/uchiha-itachi",
+          "lookType": 9002,
+          "hasSprite": false,
+          "requiredLevel": 80,
+          "level": 80,
+          "hp": 1677,
+          "xp": 290,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-023",
+      "name": "Mapa de Kisame Hoshigaki",
+      "requiredLevel": 80,
+      "mapKey": "huntTdCavernaAkatsuki",
+      "description": "Caça automática de Kisame Hoshigaki para níveis 80+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-kisame",
+          "sourceId": "wonsr-character-kisame",
+          "name": "Kisame Hoshigaki",
+          "category": "personagem",
+          "source": "curated/kisame",
+          "lookType": 9021,
+          "hasSprite": false,
+          "requiredLevel": 80,
+          "level": 80,
+          "hp": 1677,
+          "xp": 290,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-059",
+      "name": "Mapa de Sasori",
+      "requiredLevel": 80,
+      "mapKey": "huntTdCavernaAkatsuki",
+      "description": "Caça automática de Sasori para níveis 80+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-sasori",
+          "sourceId": "curated-character-sasori",
+          "name": "Sasori",
+          "category": "personagem",
+          "source": "curated/sasori",
+          "lookType": 9097,
+          "hasSprite": false,
+          "requiredLevel": 80,
+          "level": 80,
+          "hp": 1677,
+          "xp": 290,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-060",
+      "name": "Mapa de Sasori (Hiruko)",
+      "requiredLevel": 90,
+      "mapKey": "huntTdCavernaAkatsuki",
+      "description": "Caça automática de Sasori (Hiruko) para níveis 90+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-sasori-puppet",
+          "sourceId": "curated-character-sasori-puppet",
+          "name": "Sasori (Hiruko)",
+          "category": "personagem",
+          "source": "curated/sasori-puppet",
+          "lookType": 9076,
+          "hasSprite": false,
+          "requiredLevel": 90,
+          "level": 90,
+          "hp": 1890,
+          "xp": 325,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-024",
+      "name": "Mapa de Deidara",
+      "requiredLevel": 90,
+      "mapKey": "huntTdCavernaAkatsuki",
+      "description": "Caça automática de Deidara para níveis 90+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-deidara",
+          "sourceId": "wonsr-character-deidara",
+          "name": "Deidara",
+          "category": "personagem",
+          "source": "curated/deidara",
+          "lookType": 9022,
+          "hasSprite": false,
+          "requiredLevel": 90,
+          "level": 90,
+          "hp": 1890,
+          "xp": 325,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-031",
+      "name": "Mapa de Pain (Deva)",
+      "requiredLevel": 90,
+      "mapKey": "huntTdCrateraKonoha",
+      "description": "Caça automática de Pain (Deva) para níveis 90+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-pain",
+          "sourceId": "curated-character-pain",
+          "name": "Pain (Deva)",
+          "category": "personagem",
+          "source": "curated/pain",
+          "lookType": 9087,
+          "hasSprite": false,
+          "requiredLevel": 90,
+          "level": 90,
+          "hp": 1890,
+          "xp": 325,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-034",
+      "name": "Mapa de Danzo Shimura",
+      "requiredLevel": 90,
+      "mapKey": "huntTdCrateraKonoha",
+      "description": "Caça automática de Danzo Shimura para níveis 90+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-danzo",
+          "sourceId": "curated-character-danzo",
+          "name": "Danzo Shimura",
+          "category": "personagem",
+          "source": "curated/danzo",
+          "lookType": 9090,
+          "hasSprite": false,
+          "requiredLevel": 90,
+          "level": 90,
+          "hp": 1890,
+          "xp": 325,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-053",
+      "name": "Mapa de Naruto Shippuden",
+      "requiredLevel": 90,
+      "mapKey": "huntTdValeDoFim",
+      "description": "Caça automática de Naruto Shippuden para níveis 90+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-naruto-shippuden",
+          "sourceId": "curated-character-naruto-shippuden",
+          "name": "Naruto Shippuden",
+          "category": "personagem",
+          "source": "curated/naruto-shippuden",
+          "lookType": 9031,
+          "hasSprite": false,
+          "requiredLevel": 90,
+          "level": 90,
+          "hp": 1890,
+          "xp": 325,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-051",
+      "name": "Mapa de Naruto (1 Cauda)",
+      "requiredLevel": 100,
+      "mapKey": "huntTdValeDoFim",
+      "description": "Caça automática de Naruto (1 Cauda) para níveis 100+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-naruto-1-tail",
+          "sourceId": "curated-character-naruto-1-tail",
+          "name": "Naruto (1 Cauda)",
+          "category": "personagem",
+          "source": "curated/naruto-1-tail",
+          "lookType": 9104,
+          "hasSprite": false,
+          "requiredLevel": 100,
+          "level": 100,
+          "hp": 2103,
+          "xp": 360,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-052",
+      "name": "Mapa de Naruto (4 Caudas)",
+      "requiredLevel": 100,
+      "mapKey": "huntTdValeDoFim",
+      "description": "Caça automática de Naruto (4 Caudas) para níveis 100+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-naruto-4-tails",
+          "sourceId": "curated-character-naruto-4-tails",
+          "name": "Naruto (4 Caudas)",
+          "category": "personagem",
+          "source": "curated/naruto-4-tails",
+          "lookType": 9100,
+          "hasSprite": false,
+          "requiredLevel": 100,
+          "level": 100,
+          "hp": 2103,
+          "xp": 360,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-022",
+      "name": "Mapa de Naruto Kyubi",
+      "requiredLevel": 100,
+      "mapKey": "huntTdValeDoFim",
+      "description": "Caça automática de Naruto Kyubi para níveis 100+. (top-down)",
+      "targets": [
+        {
+          "id": "wonsr-character-naruto-kyubi",
+          "sourceId": "wonsr-character-naruto-kyubi",
+          "name": "Naruto Kyubi",
+          "category": "personagem",
+          "source": "curated/naruto-kyubi",
+          "lookType": 9020,
+          "hasSprite": false,
+          "requiredLevel": 100,
+          "level": 100,
+          "hp": 2103,
+          "xp": 360,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-050",
+      "name": "Mapa de Namikaze Minato (Jonin)",
+      "requiredLevel": 100,
+      "mapKey": "huntTdCrateraKonoha",
+      "description": "Caça automática de Namikaze Minato (Jonin) para níveis 100+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-minato-jonin",
+          "sourceId": "curated-character-minato-jonin",
+          "name": "Namikaze Minato (Jonin)",
+          "category": "personagem",
+          "source": "curated/minato-jonin",
+          "lookType": 9096,
+          "hasSprite": false,
+          "requiredLevel": 100,
+          "level": 100,
+          "hp": 2103,
+          "xp": 360,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-069",
+      "name": "Mapa de Yamato",
+      "requiredLevel": 100,
+      "mapKey": "huntTdClareiraEquipe7",
+      "description": "Caça automática de Yamato para níveis 100+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-yamato",
+          "sourceId": "curated-character-yamato",
+          "name": "Yamato",
+          "category": "personagem",
+          "source": "curated/yamato",
+          "lookType": 9105,
+          "hasSprite": false,
+          "requiredLevel": 100,
+          "level": 100,
+          "hp": 2103,
+          "xp": 360,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-056",
+      "name": "Mapa de Sai",
+      "requiredLevel": 110,
+      "mapKey": "huntTdArenaExameChunin",
+      "description": "Caça automática de Sai para níveis 110+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-sai",
+          "sourceId": "curated-character-sai",
+          "name": "Sai",
+          "category": "personagem",
+          "source": "curated/sai",
+          "lookType": 9099,
+          "hasSprite": false,
+          "requiredLevel": 110,
+          "level": 110,
+          "hp": 2318,
+          "xp": 395,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-039",
+      "name": "Mapa de Gaara (Shukaku)",
+      "requiredLevel": 110,
+      "mapKey": "huntTdArenaVilaAreia",
+      "description": "Caça automática de Gaara (Shukaku) para níveis 110+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-gaara-shukaku",
+          "sourceId": "curated-character-gaara-shukaku",
+          "name": "Gaara (Shukaku)",
+          "category": "personagem",
+          "source": "curated/gaara-shukaku",
+          "lookType": 9113,
+          "hasSprite": false,
+          "requiredLevel": 110,
+          "level": 110,
+          "hp": 2318,
+          "xp": 395,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-061",
+      "name": "Mapa de Senju Hashirama",
+      "requiredLevel": 110,
+      "mapKey": "huntTdValeDoFim",
+      "description": "Caça automática de Senju Hashirama para níveis 110+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-hashirama",
+          "sourceId": "curated-character-hashirama",
+          "name": "Senju Hashirama",
+          "category": "personagem",
+          "source": "curated/hashirama",
+          "lookType": 9094,
+          "hasSprite": false,
+          "requiredLevel": 110,
+          "level": 110,
+          "hp": 2318,
+          "xp": 395,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-062",
+      "name": "Mapa de Senju Tobirama",
+      "requiredLevel": 110,
+      "mapKey": "huntTdArenaVilaAreia",
+      "description": "Caça automática de Senju Tobirama para níveis 110+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-tobirama",
+          "sourceId": "curated-character-tobirama",
+          "name": "Senju Tobirama",
+          "category": "personagem",
+          "source": "curated/tobirama",
+          "lookType": 9095,
+          "hasSprite": false,
+          "requiredLevel": 110,
+          "level": 110,
+          "hp": 2318,
+          "xp": 395,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-008",
+      "name": "Mapa de Uchiha Shisui",
+      "requiredLevel": 110,
+      "mapKey": "huntTdValeDoFim",
+      "description": "Caça automática de Uchiha Shisui para níveis 110+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-shisui",
+          "sourceId": "curated-character-shisui",
+          "name": "Uchiha Shisui",
+          "category": "personagem",
+          "source": "curated/shisui",
+          "lookType": 9030,
+          "hasSprite": false,
+          "requiredLevel": 110,
+          "level": 110,
+          "hp": 2318,
+          "xp": 395,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-043",
+      "name": "Mapa de Hyuga Hanabi",
+      "requiredLevel": 120,
+      "mapKey": "huntTdLaboratorioOrochimaru",
+      "description": "Caça automática de Hyuga Hanabi para níveis 120+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-hanabi",
+          "sourceId": "curated-character-hanabi",
+          "name": "Hyuga Hanabi",
+          "category": "personagem",
+          "source": "curated/hanabi",
+          "lookType": 9101,
+          "hasSprite": false,
+          "requiredLevel": 120,
+          "level": 120,
+          "hp": 2533,
+          "xp": 430,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-044",
+      "name": "Mapa de Hyuga Hinata",
+      "requiredLevel": 120,
+      "mapKey": "huntTdClareiraEquipe7",
+      "description": "Caça automática de Hyuga Hinata para níveis 120+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-hinata-g6",
+          "sourceId": "curated-character-hinata-g6",
+          "name": "Hyuga Hinata",
+          "category": "personagem",
+          "source": "curated/hinata-g6",
+          "lookType": 9103,
+          "hasSprite": false,
+          "requiredLevel": 120,
+          "level": 120,
+          "hp": 2533,
+          "xp": 430,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-055",
+      "name": "Mapa de Rock Lee (G6)",
+      "requiredLevel": 120,
+      "mapKey": "huntTdArenaExameChunin",
+      "description": "Caça automática de Rock Lee (G6) para níveis 120+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-rock-lee-g6",
+          "sourceId": "curated-character-rock-lee-g6",
+          "name": "Rock Lee (G6)",
+          "category": "personagem",
+          "source": "curated/rock-lee-g6",
+          "lookType": 9120,
+          "hasSprite": false,
+          "requiredLevel": 120,
+          "level": 120,
+          "hp": 2533,
+          "xp": 430,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-064",
+      "name": "Mapa de Temari (G6)",
+      "requiredLevel": 120,
+      "mapKey": "huntTdArenaVilaAreia",
+      "description": "Caça automática de Temari (G6) para níveis 120+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-temari-g6",
+          "sourceId": "curated-character-temari-g6",
+          "name": "Temari (G6)",
+          "category": "personagem",
+          "source": "curated/temari-g6",
+          "lookType": 9115,
+          "hasSprite": false,
+          "requiredLevel": 120,
+          "level": 120,
+          "hp": 2533,
+          "xp": 430,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-066",
+      "name": "Mapa de Tenten (G6)",
+      "requiredLevel": 120,
+      "mapKey": "huntTdArenaExameChunin",
+      "description": "Caça automática de Tenten (G6) para níveis 120+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-tenten-g6",
+          "sourceId": "curated-character-tenten-g6",
+          "name": "Tenten (G6)",
+          "category": "personagem",
+          "source": "curated/tenten-g6",
+          "lookType": 9114,
+          "hasSprite": false,
+          "requiredLevel": 120,
+          "level": 120,
+          "hp": 2533,
+          "xp": 430,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-035",
+      "name": "Mapa de Aburame Shino (G6)",
+      "requiredLevel": 130,
+      "mapKey": "huntTdClareiraEquipe7",
+      "description": "Caça automática de Aburame Shino (G6) para níveis 130+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-shino-g6",
+          "sourceId": "curated-character-shino-g6",
+          "name": "Aburame Shino (G6)",
+          "category": "personagem",
+          "source": "curated/shino-g6",
+          "lookType": 9116,
+          "hasSprite": false,
+          "requiredLevel": 130,
+          "level": 130,
+          "hp": 2749,
+          "xp": 465,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-068",
+      "name": "Mapa de Uchiha Sasuke (G6)",
+      "requiredLevel": 130,
+      "mapKey": "huntTdValeDoFim",
+      "description": "Caça automática de Uchiha Sasuke (G6) para níveis 130+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-sasuke-g6",
+          "sourceId": "curated-character-sasuke-g6",
+          "name": "Uchiha Sasuke (G6)",
+          "category": "personagem",
+          "source": "curated/sasuke-g6",
+          "lookType": 9119,
+          "hasSprite": false,
+          "requiredLevel": 130,
+          "level": 130,
+          "hp": 2749,
+          "xp": 465,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-054",
+      "name": "Mapa de Orochimaru (G6)",
+      "requiredLevel": 130,
+      "mapKey": "huntTdLaboratorioOrochimaru",
+      "description": "Caça automática de Orochimaru (G6) para níveis 130+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-orochimaru-g6",
+          "sourceId": "curated-character-orochimaru-g6",
+          "name": "Orochimaru (G6)",
+          "category": "personagem",
+          "source": "curated/orochimaru-g6",
+          "lookType": 9121,
+          "hasSprite": false,
+          "requiredLevel": 130,
+          "level": 130,
+          "hp": 2749,
+          "xp": 465,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-041",
+      "name": "Mapa de Hatake Kakashi (G6)",
+      "requiredLevel": 130,
+      "mapKey": "huntTdClareiraEquipe7",
+      "description": "Caça automática de Hatake Kakashi (G6) para níveis 130+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-kakashi-g6",
+          "sourceId": "curated-character-kakashi-g6",
+          "name": "Hatake Kakashi (G6)",
+          "category": "personagem",
+          "source": "curated/kakashi-g6",
+          "lookType": 9122,
+          "hasSprite": false,
+          "requiredLevel": 130,
+          "level": 130,
+          "hp": 2749,
+          "xp": 465,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-036",
+      "name": "Mapa de Anko Mitarashi",
+      "requiredLevel": 130,
+      "mapKey": "huntTdCrateraKonoha",
+      "description": "Caça automática de Anko Mitarashi para níveis 130+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-anko",
+          "sourceId": "curated-character-anko",
+          "name": "Anko Mitarashi",
+          "category": "personagem",
+          "source": "curated/anko",
+          "lookType": 9102,
+          "hasSprite": false,
+          "requiredLevel": 130,
+          "level": 130,
+          "hp": 2749,
+          "xp": 465,
+          "speed": 50,
+          "targetDistance": 1,
+          "loot": []
+        }
+      ],
+      "tab": "naruto-topdown"
+    },
+    {
+      "id": "hunt-td-038",
+      "name": "Mapa de Chiyo",
+      "requiredLevel": 140,
+      "mapKey": "huntTdLaboratorioOrochimaru",
+      "description": "Caça automática de Chiyo para níveis 140+. (top-down)",
+      "targets": [
+        {
+          "id": "curated-character-chiyo",
+          "sourceId": "curated-character-chiyo",
+          "name": "Chiyo",
+          "category": "personagem",
+          "source": "curated/chiyo",
+          "lookType": 9077,
+          "hasSprite": false,
           "requiredLevel": 140,
           "level": 140,
           "hp": 2966,
@@ -4924,7 +6769,8 @@
           "targetDistance": 1,
           "loot": []
         }
-      ]
+      ],
+      "tab": "naruto-topdown"
     }
   ]
 }

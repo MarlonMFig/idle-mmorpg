@@ -2,7 +2,7 @@ let activePlayerId: string | null = null;
 
 export function setAuthPlayerIdentity(authUserId: string): string {
   const normalized = authUserId.trim();
-  activePlayerId = normalized ? `p-neon-${normalized}` : null;
+  activePlayerId = normalized ? `p-supabase-${normalized}` : null;
   return activePlayerId ?? '';
 }
 

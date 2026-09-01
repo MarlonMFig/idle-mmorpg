@@ -2,7 +2,7 @@ import { and, eq } from 'drizzle-orm';
 import type { SocialDb } from '@/server/db/client';
 import { players } from '@/server/db/schema';
 
-const AUTH_PROVIDER = 'neon-auth';
+const AUTH_PROVIDER = 'supabase';
 
 export interface AuthenticatedUser {
   id: string;
@@ -33,7 +33,7 @@ export async function getOrCreateAuthPlayer(
     return { playerId: existing[0].id, nickname };
   }
 
-  const playerId = `p-neon-${user.id}`;
+  const playerId = `p-supabase-${user.id}`;
   await db
     .insert(players)
     .values({

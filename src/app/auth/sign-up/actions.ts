@@ -1,6 +1,6 @@
 'use server';
 
-import { auth } from '@/lib/auth/server';
+import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
 export type AuthActionState = { error?: string; message?: string } | null;
@@ -32,14 +32,22 @@ export async function signUpWithEmail(
     return { error: 'As senhas não coincidem.' };
   }
 
-  const { error } = await auth.signUp.email({
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signUp({
     email,
-    name,
     password,
+    options: { data: { name } },
   });
 
   if (error) {
     return { error: error.message || 'Não foi possível criar a conta.' };
+  }
+
+  // Without email confirmation enabled, Supabase returns a session immediately.
+  if (!data.session) {
+    return {
+      message: 'Conta criada. Se o email exigir confirmação, verifique sua caixa de entrada.',
+    };
   }
 
   redirect('/');

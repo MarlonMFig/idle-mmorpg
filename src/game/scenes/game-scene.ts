@@ -148,7 +148,12 @@ export class GameScene extends Phaser.Scene {
         const huntId = data?.huntId ?? locationStore.getSnapshot().huntId;
         const catalog = this.cache.json.get('wonsr-hunts') as HuntCatalog | undefined;
         const hunt = huntId ? catalog?.hunts.find((entry) => entry.id === huntId) : undefined;
-        await loadOutfitSheets(this, index, filterOutfitLookTypes(lookTypes), collectHuntFxSheets(hunt));
+        await loadOutfitSheets(
+          this,
+          index,
+          filterOutfitLookTypes(lookTypes),
+          collectHuntFxSheets(hunt),
+        );
       }
       if (buildSeq !== this.buildSeq || !this.sys.isActive()) return;
       this.buildWorld(data);
@@ -342,7 +347,7 @@ export class GameScene extends Phaser.Scene {
         return;
       }
 
-      // Mapas WONSR recortados: PNG única como visual + colisão invisível do TMX.
+      // Mapas WONSR recortados: PNG única como visual + colisão opcional do TMX.
       const rendered = getWonsrRenderedMap(this.mapKey);
       let collisionLayer: Phaser.Tilemaps.TilemapLayer | null = null;
 
@@ -380,21 +385,23 @@ export class GameScene extends Phaser.Scene {
           }
         }
 
-        let layers: Phaser.Tilemaps.TilemapLayer[] = [];
-        try {
-          layers = maps.createLayers(this.mapKey).layers;
-        } catch (error) {
-          console.warn(`[GameScene] colisão TMX falhou (${this.mapKey})`, error);
-        }
-        const collision = layers.find((layer) => layer.layer.name === 'collision');
-        for (const layer of layers) {
-          layer.setVisible(false);
-          layer.setAlpha(0);
-          layer.setDepth(-10);
-        }
-        if (collision) {
-          collision.setCollisionByExclusion([-1]);
-          collisionLayer = collision;
+        if (rendered.collisionMode !== 'none') {
+          let layers: Phaser.Tilemaps.TilemapLayer[] = [];
+          try {
+            layers = maps.createLayers(this.mapKey).layers;
+          } catch (error) {
+            console.warn(`[GameScene] colisão TMX falhou (${this.mapKey})`, error);
+          }
+          const collision = layers.find((layer) => layer.layer.name === 'collision');
+          for (const layer of layers) {
+            layer.setVisible(false);
+            layer.setAlpha(0);
+            layer.setDepth(-10);
+          }
+          if (collision) {
+            collision.setCollisionByExclusion([-1]);
+            collisionLayer = collision;
+          }
         }
         if (rendered.foregroundKey && this.textures.exists(rendered.foregroundKey)) {
           const mapFg = this.add
@@ -436,13 +443,13 @@ export class GameScene extends Phaser.Scene {
       if (loc.encounterKind === 'boss' && loc.bossId) {
         const boss = bossStore.getDefinition(loc.bossId);
         const runtime = bossStore.getSnapshot().runtime;
-        const spawn =
-          getWonsrRenderedMap(this.mapKey)?.enemySpawns[0] ?? { x: spawnX + 220, y: spawnY };
+        const spawn = getWonsrRenderedMap(this.mapKey)?.enemySpawns[0] ?? {
+          x: spawnX + 220,
+          y: spawnY,
+        };
         if (boss) {
-          const spawnHp =
-            runtime && runtime.bossId === boss.id ? runtime.currentHp : boss.hp;
-          const spawnHpMax =
-            runtime && runtime.bossId === boss.id ? runtime.hpMax : boss.hp;
+          const spawnHp = runtime && runtime.bossId === boss.id ? runtime.currentHp : boss.hp;
+          const spawnHpMax = runtime && runtime.bossId === boss.id ? runtime.hpMax : boss.hp;
           const def = this.enemyManager.buildLookTypePresentation(
             boss.lookType,
             this.mapKey,
@@ -520,7 +527,10 @@ export class GameScene extends Phaser.Scene {
         y: spawnY,
         pack,
         displayName: session?.nickname,
-        worldScale: getDevMapConfig(hub.tilemapKey ?? this.mapKey)?.layoutScale ?? hub.layoutScale ?? HUB_CHARACTER_SCALE,
+        worldScale:
+          getDevMapConfig(hub.tilemapKey ?? this.mapKey)?.layoutScale ??
+          hub.layoutScale ??
+          HUB_CHARACTER_SCALE,
         instanceId: teamStore.getActive()?.id ?? null,
         alignmentContext: 'hub',
       });
@@ -779,19 +789,19 @@ export class GameScene extends Phaser.Scene {
     cam.setViewport(0, 0, w, h);
     cam.setRoundPixels(this.mode !== 'hub');
 
-  // Hub follow (Map Lab / modo follow): zoom inteiro opcional.
-  // Cover/contain do hub pintado usam o caminho normal abaixo (LINEAR).
-  if (this.mode === 'hub' && this.cameraLayout === 'follow') {
-    const hub = getActiveHub();
-    const preferred =
-      getDevMapConfig(hub.tilemapKey ?? this.mapKey)?.cameraZoom ?? hub.cameraZoom ?? null;
-    if (preferred != null) {
-      const zoom = integerHubCameraZoom(w, h, this.worldW, this.worldH, preferred);
-      cam.setZoom(zoom);
-      refreshWorldTextResolution(this);
-      return;
+    // Hub follow (Map Lab / modo follow): zoom inteiro opcional.
+    // Cover/contain do hub pintado usam o caminho normal abaixo (LINEAR).
+    if (this.mode === 'hub' && this.cameraLayout === 'follow') {
+      const hub = getActiveHub();
+      const preferred =
+        getDevMapConfig(hub.tilemapKey ?? this.mapKey)?.cameraZoom ?? hub.cameraZoom ?? null;
+      if (preferred != null) {
+        const zoom = integerHubCameraZoom(w, h, this.worldW, this.worldH, preferred);
+        cam.setZoom(zoom);
+        refreshWorldTextResolution(this);
+        return;
+      }
     }
-  }
 
     const savedZoom = this.mode === 'hub' ? null : officialCameraZoom(this.mapKey);
     if (
@@ -934,8 +944,9 @@ export class GameScene extends Phaser.Scene {
       ((lab.catalogId === 'hub' && this.mode === 'hub') || String(lab.mapKey) === String(mapKey))
         ? lab.lateralFloorY
         : null;
-    const fromDev = getDevMapConfig(this.mode === 'hub' ? (getActiveHub().tilemapKey ?? mapKey) : mapKey)
-      ?.lateralFloorY;
+    const fromDev = getDevMapConfig(
+      this.mode === 'hub' ? (getActiveHub().tilemapKey ?? mapKey) : mapKey,
+    )?.lateralFloorY;
     const floorY =
       fromLab ??
       fromDev ??

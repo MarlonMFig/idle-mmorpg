@@ -1,19 +1,20 @@
-import { createNeonAuth } from '@neondatabase/auth/next/server';
+import { createClient } from '@/lib/supabase/server';
+import type { AuthenticatedUser } from '@/server/social/auth-player';
 
-const baseUrl = process.env.NEON_AUTH_BASE_URL;
-const cookieSecret = process.env.NEON_AUTH_COOKIE_SECRET;
+export async function getAuthUser(): Promise<AuthenticatedUser | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user) return null;
 
-if (!baseUrl) {
-  throw new Error('NEON_AUTH_BASE_URL não configurado.');
+  const meta = data.user.user_metadata as Record<string, unknown> | undefined;
+  const name =
+    (typeof meta?.name === 'string' && meta.name) ||
+    (typeof meta?.full_name === 'string' && meta.full_name) ||
+    null;
+
+  return {
+    id: data.user.id,
+    email: data.user.email ?? null,
+    name,
+  };
 }
-
-if (!cookieSecret || cookieSecret.length < 32) {
-  throw new Error('NEON_AUTH_COOKIE_SECRET deve ter pelo menos 32 caracteres.');
-}
-
-export const auth = createNeonAuth({
-  baseUrl,
-  cookies: {
-    secret: cookieSecret,
-  },
-});

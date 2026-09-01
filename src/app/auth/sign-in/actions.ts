@@ -1,6 +1,6 @@
 'use server';
 
-import { auth } from '@/lib/auth/server';
+import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
 export type AuthActionState = { error?: string; message?: string } | null;
@@ -18,7 +18,8 @@ export async function signInWithEmail(
     return { error: 'Informe seu email e sua senha.' };
   }
 
-  const { error } = await auth.signIn.email({ email, password });
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) {
     return { error: error.message || 'Email ou senha inválidos.' };
   }

@@ -21,7 +21,7 @@ export const players = pgTable(
   {
     id: text('id').primaryKey(),
     nickname: text('nickname').notNull(),
-    /** Legado de Guest Account; contas Neon Auth usam linkedAuthSubject. */
+    /** Legado de Guest Account; contas autenticadas usam linkedAuthSubject. */
     tokenHash: text('token_hash'),
     /** Identidade gerenciada pelo provedor de autenticação. */
     linkedAuthProvider: text('linked_auth_provider'),

@@ -1597,6 +1597,26 @@ export const characterLabStore = {
     persist();
   },
 
+  /**
+   * Rebaseia a escala global confirmada pelo writer no pack em memória.
+   * O Fast Refresh pode atualizar o arquivo depois do POST; sem este passo,
+   * o `sync-runtime` reaplica o pack antigo e o preview parece ignorar o save.
+   */
+  applySavedPackScale(applied: Record<string, string | number> | undefined): void {
+    if (!applied) return;
+    const playerId = store.getSnapshot().playerId;
+    if (!playerId) return;
+    const pack = CharacterRegistry.get(playerId)?.pack;
+    if (!pack) return;
+
+    if (typeof applied.displayScale === 'number') {
+      pack.displayScale = applied.displayScale;
+    }
+    if (typeof applied.displayScaleX === 'number') {
+      pack.displayScaleX = applied.displayScaleX;
+    }
+  },
+
   setTravelDebug(travelDebug: LabTravelDebug | null): void {
     const prev = store.getSnapshot().travelDebug;
     if (

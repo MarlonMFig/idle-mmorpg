@@ -1,5 +1,5 @@
 import { getSocialDb } from '@/server/db/client';
-import { auth } from '@/lib/auth/server';
+import { getAuthUser } from '@/lib/auth/server';
 import { getOrCreateAuthPlayer } from '@/server/social/auth-player';
 import { socialErrorResponse, SocialError } from '@/server/social/errors';
 import { assertDistributedRateLimit } from '@/server/social/rate-limit';
@@ -53,11 +53,11 @@ export async function withSocialApi(
     let nickname: string | null = null;
 
     if (opts.auth !== false) {
-      const { data: session } = await auth.getSession();
-      if (!session?.user) {
+      const user = await getAuthUser();
+      if (!user) {
         throw new SocialError('UNAUTHORIZED', 'Autenticação necessária.', 401);
       }
-      const player = await getOrCreateAuthPlayer(db, session.user);
+      const player = await getOrCreateAuthPlayer(db, user);
       playerId = player.playerId;
       nickname = player.nickname;
       if (opts.rateKey) {
