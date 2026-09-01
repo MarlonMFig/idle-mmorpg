@@ -1,5 +1,6 @@
 'use server';
 
+import { mapAuthErrorMessage } from '@/lib/auth/auth-errors';
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
@@ -32,22 +33,27 @@ export async function signUpWithEmail(
     return { error: 'As senhas não coincidem.' };
   }
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: { data: { name } },
-  });
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { name } },
+    });
 
-  if (error) {
-    return { error: error.message || 'Não foi possível criar a conta.' };
-  }
+    if (error) {
+      return { error: mapAuthErrorMessage(error.message, 'Não foi possível criar a conta.') };
+    }
 
-  // Without email confirmation enabled, Supabase returns a session immediately.
-  if (!data.session) {
-    return {
-      message: 'Conta criada. Se o email exigir confirmação, verifique sua caixa de entrada.',
-    };
+    // Without email confirmation enabled, Supabase returns a session immediately.
+    if (!data.session) {
+      return {
+        message: 'Conta criada. Se o email exigir confirmação, verifique sua caixa de entrada.',
+      };
+    }
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { error: mapAuthErrorMessage(msg, 'Não foi possível criar a conta.') };
   }
 
   redirect('/');
