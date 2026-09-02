@@ -15,7 +15,7 @@ const MIGRATIONS = [
 ] as const;
 
 async function main(): Promise<void> {
-  const databaseUrl = process.env.DATABASE_URL_UNPOOLED?.trim();
+  const databaseUrl = (process.env.DATABASE_URL_UNPOOLED || process.env.DIRECT_URL)?.trim();
   if (!databaseUrl) {
     throw new Error(
       'DATABASE_URL_UNPOOLED é obrigatório para migrações. Não use DATABASE_URL_DEV nem localhost.',

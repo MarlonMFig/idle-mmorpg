@@ -3,8 +3,9 @@ import { defineConfig } from 'drizzle-kit';
 /** Drizzle Kit — schema social. */
 const isProduction = process.env.NODE_ENV === 'production';
 const url = isProduction
-  ? process.env.DATABASE_URL_UNPOOLED
+  ? process.env.DATABASE_URL_UNPOOLED || process.env.DIRECT_URL
   : process.env.DATABASE_URL_UNPOOLED ||
+    process.env.DIRECT_URL ||
     process.env.DATABASE_URL ||
     process.env.DATABASE_URL_DEV ||
     'postgresql://localhost:5432/idle_mmorpg';

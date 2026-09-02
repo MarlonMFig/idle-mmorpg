@@ -7,6 +7,7 @@ const AUTH_PROVIDER = 'supabase';
 export interface AuthenticatedUser {
   id: string;
   name?: string | null;
+  username?: string | null;
   email?: string | null;
 }
 

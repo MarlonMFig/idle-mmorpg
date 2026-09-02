@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
 
 const baseUrl = (process.env.HTTP_TEST_BASE_URL || 'http://127.0.0.1:3000').replace(/\/$/, '');
-const email = process.env.HTTP_TEST_EMAIL;
+const username = process.env.HTTP_TEST_USERNAME || process.env.HTTP_TEST_EMAIL;
 const password = process.env.HTTP_TEST_PASSWORD;
 
-if (!email || !password) {
-  throw new Error('HTTP_TEST_EMAIL e HTTP_TEST_PASSWORD são obrigatórios.');
+if (!username || !password) {
+  throw new Error('HTTP_TEST_USERNAME (ou HTTP_TEST_EMAIL) e HTTP_TEST_PASSWORD são obrigatórios.');
 }
 
 let cookie = '';
@@ -36,14 +36,14 @@ async function json(response: Response): Promise<Record<string, unknown>> {
 const signUp = await request('/api/auth/sign-up', {
   method: 'POST',
   headers: { 'content-type': 'application/json' },
-  body: JSON.stringify({ email, password, name: 'HTTP Test' }),
+  body: JSON.stringify({ username, password, name: 'HTTP Test' }),
 });
 assert.ok([200, 400, 409, 422].includes(signUp.status), `signup HTTP ${signUp.status}`);
 
 const signIn = await request('/api/auth/sign-in', {
   method: 'POST',
   headers: { 'content-type': 'application/json' },
-  body: JSON.stringify({ email, password }),
+  body: JSON.stringify({ username, password }),
 });
 const signInBody = await json(signIn);
 assert.equal(signIn.status, 200, `signin HTTP ${signIn.status}: ${JSON.stringify(signInBody)}`);

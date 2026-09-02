@@ -1,11 +1,5 @@
-import type { Metadata } from 'next';
-import { PasswordResetForm } from '@/components/auth/password-reset-form';
-import { resetPassword } from './actions';
-
-export const metadata: Metadata = {
-  title: 'Nova senha | Naruto World Idle',
-};
+import { redirect } from 'next/navigation';
 
 export default function ResetPasswordPage() {
-  return <PasswordResetForm action={resetPassword} />;
+  redirect('/auth/sign-in');
 }

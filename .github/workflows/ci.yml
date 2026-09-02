@@ -35,7 +35,7 @@ jobs:
       - run: npm run social:test
 
   http-real:
-    if: ${{ secrets.DATABASE_URL != '' && secrets.DATABASE_URL_UNPOOLED != '' && secrets.NEXT_PUBLIC_SUPABASE_URL != '' && secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY != '' && secrets.HTTP_TEST_EMAIL != '' && secrets.HTTP_TEST_PASSWORD != '' }}
+    if: ${{ secrets.DATABASE_URL != '' && secrets.DATABASE_URL_UNPOOLED != '' && secrets.NEXT_PUBLIC_SUPABASE_URL != '' && secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY != '' && secrets.HTTP_TEST_PASSWORD != '' && (secrets.HTTP_TEST_USERNAME != '' || secrets.HTTP_TEST_EMAIL != '') }}
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
@@ -44,6 +44,7 @@ jobs:
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
       HTTP_TEST_BASE_URL: http://127.0.0.1:3000
+      HTTP_TEST_USERNAME: ${{ secrets.HTTP_TEST_USERNAME }}
       HTTP_TEST_EMAIL: ${{ secrets.HTTP_TEST_EMAIL }}
       HTTP_TEST_PASSWORD: ${{ secrets.HTTP_TEST_PASSWORD }}
       NODE_ENV: production

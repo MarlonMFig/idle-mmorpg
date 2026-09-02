@@ -1,33 +1,56 @@
 import { NextResponse } from 'next/server';
+import { mapAuthErrorMessage } from '@/lib/auth/auth-errors';
+import {
+  normalizeUsername,
+  usernameToAuthEmail,
+  validateUsername,
+} from '@/lib/auth/username-credential';
 import { createClient } from '@/lib/supabase/server';
 
 export async function POST(request: Request) {
-  let body: { email?: string; password?: string; name?: string };
+  let body: { username?: string; password?: string };
   try {
-    body = (await request.json()) as { email?: string; password?: string; name?: string };
+    body = (await request.json()) as { username?: string; password?: string };
   } catch {
     return NextResponse.json({ error: 'JSON inválido.' }, { status: 400 });
   }
 
-  const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+  const username = typeof body.username === 'string' ? body.username : '';
   const password = typeof body.password === 'string' ? body.password : '';
-  const name = typeof body.name === 'string' ? body.name.trim() : 'Shinobi';
 
-  if (!email || !email.includes('@') || password.length < 8) {
-    return NextResponse.json({ error: 'Email ou senha inválidos.' }, { status: 422 });
+  const usernameError = validateUsername(username);
+  if (usernameError) {
+    return NextResponse.json({ error: usernameError }, { status: 422 });
+  }
+  if (password.length < 8) {
+    return NextResponse.json({ error: 'Senha inválida.' }, { status: 422 });
   }
 
+  const displayUsername = username.trim();
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
-    email,
+    email: usernameToAuthEmail(username),
     password,
-    options: { data: { name } },
+    options: {
+      data: {
+        username: displayUsername,
+        name: displayUsername,
+      },
+    },
   });
 
   if (error) {
-    const status = error.message.toLowerCase().includes('already') ? 409 : 400;
-    return NextResponse.json({ error: error.message }, { status });
+    const status = /already registered|already exists|duplicate/i.test(error.message)
+      ? 409
+      : 400;
+    return NextResponse.json(
+      { error: mapAuthErrorMessage(error.message, 'Não foi possível criar a conta.') },
+      { status },
+    );
   }
 
-  return NextResponse.json({ ok: true, user: data.user }, { status: 200 });
+  return NextResponse.json(
+    { ok: true, user: data.user, username: normalizeUsername(username) },
+    { status: 200 },
+  );
 }

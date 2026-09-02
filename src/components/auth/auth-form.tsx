@@ -24,34 +24,22 @@ export function AuthForm({ mode, action }: AuthFormProps) {
         </h1>
         <p className="auth-subtitle">
           {isSignUp
-            ? 'Crie sua conta para salvar sua jornada shinobi.'
+            ? 'Escolha um nome de usuário para salvar sua jornada shinobi.'
             : 'Continue sua jornada shinobi.'}
         </p>
 
         <form action={formAction} className="auth-form">
-          {isSignUp ? (
-            <label className="auth-field">
-              <span>Nome shinobi</span>
-              <input
-                name="name"
-                type="text"
-                autoComplete="name"
-                minLength={2}
-                maxLength={24}
-                required
-                placeholder="Seu nome"
-              />
-            </label>
-          ) : null}
-
           <label className="auth-field">
-            <span>Email</span>
+            <span>Nome de usuário</span>
             <input
-              name="email"
-              type="email"
-              autoComplete="email"
+              name="username"
+              type="text"
+              autoComplete="username"
+              minLength={3}
+              maxLength={20}
+              pattern="[a-zA-Z0-9_]+"
               required
-              placeholder="voce@email.com"
+              placeholder="seu_usuario"
             />
           </label>
 
@@ -92,11 +80,6 @@ export function AuthForm({ mode, action }: AuthFormProps) {
             {isPending ? 'Aguarde…' : isSignUp ? 'Criar conta' : 'Entrar'}
           </button>
         </form>
-        {!isSignUp ? (
-          <p className="auth-switch">
-            <Link href="/auth/forgot-password">Esqueci minha senha</Link>
-          </p>
-        ) : null}
 
         <p className="auth-switch">
           {isSignUp ? 'Já possui uma conta?' : 'Ainda não possui uma conta?'}{' '}
