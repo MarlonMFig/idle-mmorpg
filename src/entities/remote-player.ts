@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 import { NAMEPLATE_GAP_PX } from '@/constants/combat';
 import { MULTIPLAYER_INTERPOLATION } from '@/constants/multiplayer';
-import { addNameplate, REMOTE_NAMEPLATE_STYLE, worldDepthForY } from '@/constants/nameplate';
+import { addNameplate, REMOTE_NAMEPLATE_STYLE, sharpenWorldText, worldDepthForY } from '@/constants/nameplate';
 import { combatTextDepthForY } from '@/constants/render-layers';
 import { directionFacesLeft, type PlayerDirection } from '@/constants/player';
 import {
@@ -78,9 +78,7 @@ export class RemotePlayer {
       state.y - characterNameplateLift(this.pack) * this.worldScale - NAMEPLATE_GAP_PX,
       state.nickname,
       REMOTE_NAMEPLATE_STYLE,
-    )
-      .setScale(this.worldScale)
-      .setVisible(false);
+    ).setVisible(false);
 
     void loadCharacterPack(scene, this.pack).then(() => {
       if (!this.sprite.active) return;
@@ -118,6 +116,7 @@ export class RemotePlayer {
     if (state.nickname !== this.nickname) {
       this.nickname = state.nickname;
       this.nameLabel.setText(state.nickname);
+      sharpenWorldText(this.nameLabel);
     }
     if (this.ready) this.applyAnimation();
   }

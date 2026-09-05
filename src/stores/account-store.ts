@@ -25,11 +25,14 @@ export interface AccountMetaState {
   lineageProgress: PlayerLineageProgress;
   /** Menu Linhagem aberto. */
   isOpen: boolean;
+  /** Menu Graduação aberto. */
+  graduationOpen: boolean;
 }
 
 const store = createStore<AccountMetaState>({
   lineageProgress: { ...DEFAULT_PLAYER_LINEAGE_PROGRESS },
   isOpen: false,
+  graduationOpen: false,
 });
 
 function isLineageIdLocal(value: unknown): value is LineageId {
@@ -71,6 +74,7 @@ export const accountStore = {
     store.setState({
       lineageProgress: { ...DEFAULT_PLAYER_LINEAGE_PROGRESS },
       isOpen: false,
+      graduationOpen: false,
     });
   },
 
@@ -91,6 +95,7 @@ export const accountStore = {
             lineageId,
           },
       isOpen: false,
+      graduationOpen: false,
     });
   },
 
@@ -122,11 +127,40 @@ export const accountStore = {
 
   toggleOpen(): void {
     const state = store.getSnapshot();
-    store.setState({ ...state, isOpen: !state.isOpen });
+    const next = !state.isOpen;
+    store.setState({
+      ...state,
+      isOpen: next,
+      graduationOpen: next ? false : state.graduationOpen,
+    });
   },
 
   setOpen(isOpen: boolean): void {
-    store.setState({ ...store.getSnapshot(), isOpen });
+    const state = store.getSnapshot();
+    store.setState({
+      ...state,
+      isOpen,
+      graduationOpen: isOpen ? false : state.graduationOpen,
+    });
+  },
+
+  toggleGraduationOpen(): void {
+    const state = store.getSnapshot();
+    const next = !state.graduationOpen;
+    store.setState({
+      ...state,
+      graduationOpen: next,
+      isOpen: next ? false : state.isOpen,
+    });
+  },
+
+  setGraduationOpen(graduationOpen: boolean): void {
+    const state = store.getSnapshot();
+    store.setState({
+      ...state,
+      graduationOpen,
+      isOpen: graduationOpen ? false : state.isOpen,
+    });
   },
 
   /**

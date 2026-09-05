@@ -344,7 +344,7 @@ const SKILL_LIST: SkillDefinition[] = [
     requiredLevel: 5,
     cooldownMs: 5500,
     damage: 58,
-    icon: '/sprites/skills/fire.svg',
+    icon: '/sprites/skills/shikamaru/kunai-explosiva.svg',
     animation: { kind: 'character', durationMs: 2250, scale: 1 },
     range: 110,
     developmentStatus: 'ready',

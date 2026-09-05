@@ -1,3 +1,4 @@
+import { VILLAGE_SYSTEM_BY_ID } from '@/constants/village-system';
 import type { VillageId } from '@/types/village';
 
 export type { VillageId } from '@/types/village';
@@ -7,96 +8,63 @@ export type VillageIconKind = 'leaf' | 'sand' | 'mist' | 'cloud' | 'stone';
 export interface VillageDefinition {
   id: VillageId;
   name: string;
-  /** Nome completo exibido na criação. */
   fullName: string;
+  country: string;
   shortLabel: string;
-  /** Cor de destaque (CSS). */
   accent: string;
   icon: VillageIconKind;
-  /** Rival histórico sugerido (guerras futuras). */
+  iconSrc: string;
   rivalId: VillageId;
-  elementsLabel: string;
-  passiveTitle: string;
-  passiveBonus: string;
-  lore: string;
-  startingItems: string;
+  element: string;
+  profile: string;
+  bonusLabel: string;
 }
 
 export const VILLAGES: readonly VillageDefinition[] = [
   {
-    id: 'konoha',
-    name: 'Konoha',
-    fullName: 'Vila da Folha',
+    ...VILLAGE_SYSTEM_BY_ID.konoha,
     shortLabel: 'Folha',
     accent: '#3ecf6a',
     icon: 'leaf',
+    iconSrc: '/ui/villages/konoha.png',
     rivalId: 'iwa',
-    elementsLabel: 'ELEMENTO FUTON / KATON',
-    passiveTitle: 'Habilidade Passiva Inicial:',
-    passiveBonus: '+10% XP Bônus & +5% Velocidade de Ataque',
-    lore:
-      'A vila mais famosa e equilibrada, lar de grandes prodígios. Foco em determinação (Vontade do Fogo) e evolução contínua.',
-    startingItems: 'Kunai de Treino Básica e a Bandana da Vila escolhida!',
+    bonusLabel: '+10% chance de captura',
   },
   {
-    id: 'suna',
-    name: 'Suna',
-    fullName: 'Vila da Areia',
+    ...VILLAGE_SYSTEM_BY_ID.suna,
     shortLabel: 'Areia',
     accent: '#e8a04a',
     icon: 'sand',
+    iconSrc: '/ui/villages/suna.png',
     rivalId: 'kiri',
-    elementsLabel: 'ELEMENTO FUTTON / DOTON',
-    passiveTitle: 'Habilidade Passiva Inicial:',
-    passiveBonus: '+8% Defesa & +6% Dano à Distância',
-    lore:
-      'Guardiã do deserto. Sobrevive com disciplina, puppets e tempestades de areia que desgastam o inimigo.',
-    startingItems: 'Kunai de Treino Básica e a Bandana da Vila escolhida!',
+    bonusLabel: '+15% velocidade de kill',
   },
   {
-    id: 'kiri',
-    name: 'Kiri',
-    fullName: 'Vila da Névoa',
+    ...VILLAGE_SYSTEM_BY_ID.kiri,
     shortLabel: 'Névoa',
     accent: '#6eb6ff',
     icon: 'mist',
+    iconSrc: '/ui/villages/kiri.png',
     rivalId: 'suna',
-    elementsLabel: 'ELEMENTO SUITON / DOTON',
-    passiveTitle: 'Habilidade Passiva Inicial:',
-    passiveBonus: '+10% Crítico & +5% Evasão',
-    lore:
-      'Nascida da névoa silenciosa. Especialistas em assassinato silencioso e controle do campo com água.',
-    startingItems: 'Kunai de Treino Básica e a Bandana da Vila escolhida!',
+    bonusLabel: '+20% raridade alta / -10% chance de captura',
   },
   {
-    id: 'kumo',
-    name: 'Kumo',
-    fullName: 'Vila da Nuvem',
+    ...VILLAGE_SYSTEM_BY_ID.kumo,
     shortLabel: 'Nuvem',
     accent: '#f0c14a',
     icon: 'cloud',
+    iconSrc: '/ui/villages/kumo.png',
     rivalId: 'konoha',
-    elementsLabel: 'ELEMENTO RAITON / FUTTON',
-    passiveTitle: 'Habilidade Passiva Inicial:',
-    passiveBonus: '+12% Velocidade & +4% Dano Elétrico',
-    lore:
-      'Poder nas montanhas. Shinobis rápidos e agressivos, mestres do raio e da pressão ofensiva.',
-    startingItems: 'Kunai de Treino Básica e a Bandana da Vila escolhida!',
+    bonusLabel: '+15% XP por kill',
   },
   {
-    id: 'iwa',
-    name: 'Iwa',
-    fullName: 'Vila da Pedra',
+    ...VILLAGE_SYSTEM_BY_ID.iwa,
     shortLabel: 'Pedra',
     accent: '#c4a882',
     icon: 'stone',
+    iconSrc: '/ui/villages/iwa.png',
     rivalId: 'konoha',
-    elementsLabel: 'ELEMENTO DOTON / KATON',
-    passiveTitle: 'Habilidade Passiva Inicial:',
-    passiveBonus: '+12% HP Máximo & +5% Resistência',
-    lore:
-      'Inabalável como a montanha. Foco em resistência, explosivos e controle de terreno.',
-    startingItems: 'Kunai de Treino Básica e a Bandana da Vila escolhida!',
+    bonusLabel: '+10% chance de drop de loot',
   },
 ] as const;
 

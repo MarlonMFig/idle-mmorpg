@@ -16,6 +16,12 @@ export { CharacterRegistry, getCharacterDefinition, getCharacterDefinitionByLook
 export { getPackAnimation, listAvailableAnimSlots } from '@/data/characters/animation-slots';
 export { resolveCharacterUniverse } from '@/data/characters/universes';
 export {
+  getCharacterNature,
+  getCharacterNatureLabel,
+  CHARACTER_NATURE_BY_ID,
+} from '@/data/character-natures';
+export type { CharacterNatureId } from '@/data/character-natures';
+export {
   runDevCharacterValidation,
   validateAllCharacterDefinitions,
   validateCharacterDefinition,

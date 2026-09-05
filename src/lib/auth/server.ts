@@ -1,8 +1,13 @@
-import { createClient } from '@/lib/supabase/server';
+import { LOCAL_DEV_AUTH_USER, shouldUseSupabase } from '@/lib/auth/local-runtime';
 import { readUsernameFromMetadata } from '@/lib/auth/username-credential';
+import { createClient } from '@/lib/supabase/server';
 import type { AuthenticatedUser } from '@/server/social/auth-player';
 
 export async function getAuthUser(): Promise<AuthenticatedUser | null> {
+  if (!shouldUseSupabase()) {
+    return LOCAL_DEV_AUTH_USER;
+  }
+
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getUser();
   if (error || !data.user) return null;

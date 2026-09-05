@@ -50,6 +50,7 @@ import {
   characterLabStore,
   clampLabEnemyCount,
   friendlyLabAnimName,
+  LAB_ENEMY_COUNT_MAX,
   labOriginalVisuals,
   type LabDistancePreset,
   type LabEnemyHpMode,
@@ -68,7 +69,6 @@ import { CharacterLabSpriteAlignment } from '@/ui/dev/character-lab-sprite-align
 import { CharacterLabMapViewport } from '@/ui/dev/character-lab-map-viewport';
 import { CharacterLabHubEffects } from '@/ui/dev/character-lab-hub-effects';
 import { CharacterLabMasteryDebug } from '@/ui/dev/character-lab-mastery';
-import { CharacterLabAwakeningDebug } from '@/ui/dev/character-lab-awakening';
 import { CharacterLabLineageDebug } from '@/ui/dev/character-lab-lineage';
 import { CharacterLabAchievementsDebug } from '@/ui/dev/character-lab-achievements';
 import { CharacterLabMissionsDebug } from '@/ui/dev/character-lab-missions';
@@ -78,7 +78,6 @@ import { CharacterLabRankingDebug } from '@/ui/dev/character-lab-ranking';
 import { CharacterLabGuildDebug } from '@/ui/dev/character-lab-guild';
 import { CharacterLabGuildBossDebug } from '@/ui/dev/character-lab-guild-boss';
 import { CharacterLabGuildShopDebug } from '@/ui/dev/character-lab-guild-shop';
-import { CharacterLabWorldBossDebug } from '@/ui/dev/character-lab-world-boss';
 import { CharacterLabEconomyDebug } from '@/ui/dev/character-lab-economy';
 import { CharacterLabGameCycleDebug } from '@/ui/dev/character-lab-game-cycle';
 import { LabPreviewAwakening } from '@/ui/dev/lab-preview-awakening';
@@ -146,7 +145,10 @@ const HP_OPTIONS: { id: LabEnemyHpMode; label: string }[] = [
   { id: 'infinite', label: 'HP infinito' },
 ];
 
-const LAB_ENEMY_COUNT_OPTIONS = [1, 2, 3, 4, 5, 6] as const;
+const LAB_ENEMY_COUNT_OPTIONS = Array.from(
+  { length: LAB_ENEMY_COUNT_MAX },
+  (_, index) => index + 1,
+);
 
 function labSkillVfxLabel(
   vfxId: string | null,
@@ -421,15 +423,8 @@ function CharacterTestLabBody() {
   };
 
   const selectedSkillAnim = lastSkillId ? playerDef?.pack.skillAnims[lastSkillId] : undefined;
-  const awakeningCtx = {
-    characterId: playerId,
-    awakeningLevel: previewAwakening,
-    preview: true as const,
-  };
-  const effectiveSkill = lastSkillId ? resolveEffectiveSkill(lastSkillId, awakeningCtx) : undefined;
-  const effectiveAnim = lastSkillId
-    ? resolveEffectiveSkillAnim(selectedSkillAnim, lastSkillId, awakeningCtx)
-    : undefined;
+  const effectiveSkill = lastSkillId ? resolveEffectiveSkill(lastSkillId, playerId) : undefined;
+  const effectiveAnim = lastSkillId ? resolveEffectiveSkillAnim(selectedSkillAnim, lastSkillId) : undefined;
   const baseVfxId = selectedSkillAnim?.vfxId ?? null;
   const effectiveVfxId = effectiveAnim?.vfxId ?? baseVfxId;
   const visualTimeline = useMemo(() => {
@@ -1101,7 +1096,7 @@ function CharacterTestLabBody() {
                 </select>
               </label>
               <label>
-                Inimigos (área)
+                Inimigos (espalhados)
                 <select
                   value={labEnemyCount}
                   disabled={!enemyId}
@@ -1120,7 +1115,8 @@ function CharacterTestLabBody() {
                 </select>
               </label>
               <p className="character-lab__hint">
-                O inimigo central é o alvo primário; os extras ficam ao lado para testar jutsus de área.
+                Usa os pontos de spawn do mapa (padrão top-down), centrados no jogador. Com 1
+                inimigo, respeita a distância escolhida abaixo.
               </p>
               <label>
                 Distância
@@ -1758,9 +1754,7 @@ function CharacterTestLabBody() {
               <CharacterLabGuildDebug />
               <CharacterLabGuildBossDebug />
               <CharacterLabGuildShopDebug />
-              <CharacterLabWorldBossDebug />
               <CharacterLabEconomyDebug />
-              <CharacterLabAwakeningDebug />
               <CharacterLabAiDebug />
               <CharacterLabLootEconomyAnalyzer />
               <CharacterLabCaptureInspector />

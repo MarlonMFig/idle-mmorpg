@@ -5,6 +5,8 @@ import {
   type StatusModifiers,
 } from '@/data/status-effect-def';
 import { getActiveLineageSpecializationModifiers } from '@/lib/lineage-specialization-modifiers';
+import { villageKillSpeedMultiplier } from '@/lib/village-bonuses';
+import { heritageCombatExtras } from '@/lib/heritage-runtime';
 import { Decimal, d, floorNonNeg, type Decimal as DecimalValue } from '@/lib/decimal';
 
 export const PLAYER_STATUS_UNIT_ID = 'player';
@@ -79,6 +81,13 @@ function lineageCombatExtras(unitId: string): {
   }
 }
 
+function villageCombatExtras(unitId: string): { attackSpeedMultiplier: number } {
+  if (unitId !== PLAYER_STATUS_UNIT_ID && !unitId.startsWith('companion:')) {
+    return { attackSpeedMultiplier: 1 };
+  }
+  return { attackSpeedMultiplier: villageKillSpeedMultiplier() };
+}
+
 export function getEffectiveCombatStats(
   unitId: string,
   bases?: CombatStatBases,
@@ -91,11 +100,18 @@ export function getEffectiveCombatStats(
   const critBase = isPlayerLike ? attributesStore.getCritical() : (bases?.criticalChance ?? 0);
   const critDmgBase = bases?.criticalDamage ?? 1;
   const lineage = isPlayerLike ? lineageCombatExtras(unitId) : { attackSpeedPercent: 0, criticalDamage: 0 };
+  const village = villageCombatExtras(unitId);
+  const heritageAs =
+    unitId === PLAYER_STATUS_UNIT_ID ? 1 + (heritageCombatExtras().attackSpeedPercent ?? 0) : 1;
   return {
     attack: Decimal.max(d(0), d(attackBase).mul(product(mods.attackMultiplier))),
     defense: Decimal.max(d(0), d(defenseBase).mul(product(mods.defenseMultiplier))),
     movementSpeed: Math.max(0, moveBase * product(mods.movementSpeedMultiplier)),
-    attackSpeedMultiplier: product(mods.attackSpeedMultiplier) * (1 + lineage.attackSpeedPercent),
+    attackSpeedMultiplier:
+      product(mods.attackSpeedMultiplier) *
+      (1 + lineage.attackSpeedPercent) *
+      village.attackSpeedMultiplier *
+      heritageAs,
     criticalChance: Math.max(0, critBase * product(mods.criticalChanceMultiplier)),
     criticalDamage: Math.max(0, critDmgBase * product(mods.criticalDamageMultiplier) * (1 + lineage.criticalDamage)),
     defenseMultiplier: product(mods.defenseMultiplier),

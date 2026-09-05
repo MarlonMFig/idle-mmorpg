@@ -10,12 +10,10 @@ export function buildMissionWorldSnapshot(): MissionWorldSnapshot {
   let maxCharacterLevel = 1;
   let maxStars = 0;
   let maxMastery = 0;
-  let maxAwakening = 0;
   for (const entry of collection) {
     maxCharacterLevel = Math.max(maxCharacterLevel, entry.level ?? 1);
     maxStars = Math.max(maxStars, entry.stars ?? 0);
     maxMastery = Math.max(maxMastery, entry.masteryLevel ?? 0);
-    maxAwakening = Math.max(maxAwakening, entry.awakeningLevel ?? 0);
   }
 
   const lineageProgress = accountStore.getLineageProgress();
@@ -30,7 +28,7 @@ export function buildMissionWorldSnapshot(): MissionWorldSnapshot {
     maxCharacterLevel,
     maxMastery,
     maxStars,
-    maxAwakening,
+    maxAwakening: 0,
     uniqueCharacters: unique.size,
     hasLineage: lineageProgress.lineageId != null,
     lineageId: lineageProgress.lineageId,

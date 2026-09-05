@@ -1,0 +1,82 @@
+{
+  "mapKey": "huntTdUzushiogakure",
+  "slug": "hunt-td-uzushiogakure",
+  "label": "hunt-td-uzushiogakure",
+  "source": "03_Uzushiogakure_Proporcional_3840x2160.png",
+  "image": "/maps/hunt-td-uzushiogakure.png",
+  "tmx": "/maps/hunt-td-uzushiogakure.tmx",
+  "cacheTag": "tdnov2026",
+  "width": 4096,
+  "height": 2304,
+  "spawn": {
+    "x": 2040,
+    "y": 1144
+  },
+  "enemySpawns": [
+    {
+      "x": 2536,
+      "y": 744
+    },
+    {
+      "x": 1928,
+      "y": 808
+    },
+    {
+      "x": 1512,
+      "y": 824
+    },
+    {
+      "x": 1224,
+      "y": 872
+    },
+    {
+      "x": 2280,
+      "y": 872
+    },
+    {
+      "x": 2616,
+      "y": 1016
+    },
+    {
+      "x": 1688,
+      "y": 1080
+    },
+    {
+      "x": 2392,
+      "y": 1208
+    },
+    {
+      "x": 1800,
+      "y": 1416
+    },
+    {
+      "x": 1496,
+      "y": 1432
+    },
+    {
+      "x": 2568,
+      "y": 1464
+    },
+    {
+      "x": 2152,
+      "y": 1480
+    },
+    {
+      "x": 1240,
+      "y": 1576
+    },
+    {
+      "x": 2808,
+      "y": 1624
+    },
+    {
+      "x": 2024,
+      "y": 1768
+    },
+    {
+      "x": 2040,
+      "y": 2056
+    }
+  ],
+  "walkMode": "forest"
+}

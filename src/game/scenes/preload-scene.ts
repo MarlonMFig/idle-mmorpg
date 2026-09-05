@@ -9,6 +9,7 @@ import { getSpawnCharacterPack } from '@/lib/active-character';
 import { isDevMode } from '@/config/devConfig';
 import { runDevCharacterValidation } from '@/data/characters';
 import { MapLoader, MAP_KEYS } from '@/maps';
+import { bootLoadingStore } from '@/stores/boot-loading-store';
 import { EnemyManager, LootManager, NPCManager, SkillVfx } from '@/systems';
 
 /**
@@ -24,7 +25,12 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   preload(): void {
+    bootLoadingStore.setPhase('preload');
     this.cameras.main.setBackgroundColor('#000000');
+    this.load.on('progress', (value: number) => {
+      // Reserva ~0.05–0.82 para o loader; o resto é montagem do hub.
+      bootLoadingStore.setProgress(0.05 + Math.max(0, Math.min(1, value)) * 0.77);
+    });
 
     const session = getPlayerSession(this.registry);
     const pack = getSpawnCharacterPack(session?.starterCharacterId ?? 'naruto-classic');

@@ -1,0 +1,66 @@
+{
+  "mapKey": "huntWonsrClareiraEquipe7",
+  "slug": "wonsr-clareira-equipe-7",
+  "label": "wonsr-clareira-equipe-7",
+  "source": "02_Campo_Uchiha_Proporcional_3840x2160.png",
+  "image": "/maps/wonsr-clareira-equipe-7.png",
+  "tmx": "/maps/wonsr-clareira-equipe-7.tmx",
+  "cacheTag": "tdnov2026",
+  "width": 4096,
+  "height": 2304,
+  "spawn": {
+    "x": 2040,
+    "y": 1144
+  },
+  "enemySpawns": [
+    {
+      "x": 1432,
+      "y": 904
+    },
+    {
+      "x": 2360,
+      "y": 904
+    },
+    {
+      "x": 1992,
+      "y": 936
+    },
+    {
+      "x": 2632,
+      "y": 984
+    },
+    {
+      "x": 2904,
+      "y": 1064
+    },
+    {
+      "x": 1688,
+      "y": 1080
+    },
+    {
+      "x": 1432,
+      "y": 1208
+    },
+    {
+      "x": 2392,
+      "y": 1208
+    },
+    {
+      "x": 2008,
+      "y": 1224
+    },
+    {
+      "x": 1784,
+      "y": 1416
+    },
+    {
+      "x": 2600,
+      "y": 1432
+    },
+    {
+      "x": 2136,
+      "y": 1480
+    }
+  ],
+  "walkMode": "forest"
+}

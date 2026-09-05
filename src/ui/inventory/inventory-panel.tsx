@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   CHARACTER_QUALITY_COLORS,
   CHARACTER_QUALITY_LABELS,
-  FORGE_MATERIAL_COST_BY_QUALITY,
   STAR_BONUS_PER_LEVEL,
 } from '@/constants/character-progression';
 import { formatQualityStatMultiplier } from '@/constants/character-quality-stats';
@@ -23,6 +22,19 @@ import type { SealedCharacter } from '@/types/team';
 import { formatStars } from '@/utils/character-display';
 import { computeInstanceTotals } from '@/lib/character-instance-stats';
 
+function progressPct(current: number, required: number): number {
+  if (required <= 0) return 100;
+  return Math.max(0, Math.min(100, Math.round((current / required) * 100)));
+}
+
+function formatMissingResources(missing: Array<'copies' | 'fragments' | 'signature'>): string {
+  const label: Record<'copies' | 'fragments' | 'signature', string> = {
+    copies: 'cópias',
+    fragments: 'fragmentos',
+    signature: 'assinatura',
+  };
+  return missing.map((key) => label[key]).join(', ');
+}
 function slotLabel(slot: InventorySlot): string {
   if (!slot) return '';
   const def = getItem(slot.itemId);
@@ -135,6 +147,7 @@ function Portrait({
 export function ForgeTab() {
   const collection = useStore(teamStore, (s) => s.collection);
   const teamIds = useStore(teamStore, (s) => s.teamIds);
+  void useStore(inventoryStore, (s) => s.slots);
   const [targetId, setTargetId] = useState<string | null>(null);
   const [pendingConfirm, setPendingConfirm] = useState(false);
 
@@ -179,7 +192,8 @@ export function ForgeTab() {
   }, [collection, groups, targetId]);
 
   const plan = targetId ? planForgeStar({ targetId, collection, teamIds }) : null;
-  const commonCost = FORGE_MATERIAL_COST_BY_QUALITY.D ?? 20;
+  const starCost = plan?.cost ?? null;
+  const starHint = plan?.missing.length ? formatMissingResources(plan.missing) : '';
   const target = plan?.target ?? collection.find((entry) => entry.id === targetId) ?? null;
   const selectedGroup = groups.find((group) => group.entries.some((entry) => entry.id === targetId));
   const currentStats = target ? computeInstanceTotals(target) : null;
@@ -314,30 +328,75 @@ export function ForgeTab() {
                 </ul>
               </div>
 
-              <div className="char-forge__cost">
-                <div>
-                  <span>Cópias para aprimorar</span>
-                  <strong>
-                    {plan?.materialIds.length ?? 0}/{plan?.cost || commonCost}
-                  </strong>
+              <div className="char-forge__star-card">
+                <div className="char-forge__star-head">
+                  <strong>Estrelas do herói</strong>
+                  <span>
+                    {target.stars} / {starCap} ★
+                  </span>
                 </div>
-                {plan?.reason === 'quality-not-configured' ? (
-                  <p className="char-forge__warn">
-                    A forja de qualidade {CHARACTER_QUALITY_LABELS[target.quality]} ainda não está
-                    disponível.
-                  </p>
+                {starCost ? (
+                  <>
+                    <div className="char-forge__star-progress">
+                      <div className="char-forge__meter-row">
+                        <span>Cópias da mesma raridade</span>
+                        <strong>
+                          {plan?.resources.copies ?? 0} / {starCost.copies}
+                        </strong>
+                      </div>
+                      <div className="char-forge__meter-track">
+                        <span
+                          className="char-forge__meter-fill is-copies"
+                          style={{
+                            width: `${progressPct(plan?.resources.copies ?? 0, starCost.copies)}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="char-forge__star-progress">
+                      <div className="char-forge__meter-row">
+                        <span>Fragmentos do personagem</span>
+                        <strong>
+                          {plan?.resources.fragments ?? 0} / {starCost.fragments}
+                        </strong>
+                      </div>
+                      <div className="char-forge__meter-track">
+                        <span
+                          className="char-forge__meter-fill is-fragments"
+                          style={{
+                            width: `${progressPct(plan?.resources.fragments ?? 0, starCost.fragments)}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <div className="char-forge__star-progress">
+                      <div className="char-forge__meter-row">
+                        <span>Itens de assinatura</span>
+                        <strong>
+                          {plan?.resources.signature ?? 0} / {starCost.signature}
+                        </strong>
+                      </div>
+                      <div className="char-forge__meter-track">
+                        <span
+                          className="char-forge__meter-fill is-signature"
+                          style={{
+                            width: `${progressPct(plan?.resources.signature ?? 0, starCost.signature)}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                    <p className="char-forge__star-note">
+                      A evolução consome cópias da mesma raridade, fragmentos e assinatura ao
+                      mesmo tempo.
+                    </p>
+                  </>
                 ) : null}
-                {plan?.reason === 'max-stars' ? (
-                  <p className="char-forge__warn">{formatMaxStarsReachedMessage(target.quality)}</p>
-                ) : null}
-                {plan?.reason === 'not-enough-materials' ? (
-                  <p className="char-forge__warn">
-                    Faltam {(plan.cost || commonCost) - plan.materialIds.length} cópias elegíveis.
-                  </p>
+                {plan?.reason === 'not-enough-resources' && starHint ? (
+                  <p className="char-forge__warn">Faltam: {starHint}.</p>
                 ) : null}
               </div>
 
-              {plan?.reason === 'ok' ? (
+              {plan?.canUpgrade ? (
                 <div className="char-forge__actions">
                   {!pendingConfirm ? (
                     <button
@@ -350,13 +409,14 @@ export function ForgeTab() {
                   ) : (
                     <>
                       <p className="char-forge__confirm">
-                        Consumir {plan.cost} cópias de {target.name}?
+                        Consumir {starCost?.copies} cópias, {starCost?.fragments} fragmentos e{' '}
+                        {starCost?.signature} itens de assinatura?
                       </p>
                       <button
                         type="button"
                         className="char-forge__cta"
                         onClick={() => {
-                          const ok = teamStore.forgeStar(plan.target!.id, plan.materialIds);
+                          const ok = teamStore.upgradeStar(target.id);
                           if (ok) attributesStore.onActiveCharacterChanged(false);
                           setPendingConfirm(false);
                         }}
@@ -373,6 +433,12 @@ export function ForgeTab() {
                     </>
                   )}
                 </div>
+              ) : starCost ? (
+                <div className="char-forge__actions">
+                  <button type="button" className="char-forge__cta" disabled title={starHint || undefined}>
+                    Faltam: {starHint || 'recursos'}
+                  </button>
+                </div>
               ) : null}
               </>
               )}
@@ -386,8 +452,8 @@ export function ForgeTab() {
         </section>
       </div>
       <p className="char-forge__hint">
-        Cada linha reúne todas as cópias do mesmo personagem e qualidade. A forja preserva o
-        personagem principal e consome apenas cópias fora da equipe, desbloqueadas e não favoritas.
+        Cada linha reúne todas as cópias do mesmo personagem e qualidade. A forja evolui estrelas
+        consumindo cópias extras, fragmentos dropados na hunt e itens de assinatura do personagem.
       </p>
     </div>
   );

@@ -94,7 +94,7 @@ export function HuntSelector() {
   const [query, setQuery] = useState('');
   const [onlyUnlocked, setOnlyUnlocked] = useState(false);
   const [levelFilter, setLevelFilter] = useState<HuntLevelFilter>('all');
-  const [tab, setTab] = useState<HuntSelectorTab>('naruto');
+  const [tab, setTab] = useState<HuntSelectorTab>('naruto-topdown');
   const worldRef = useRef<HTMLDivElement | null>(null);
   const allHuntsUnlocked = isDevMode();
 
@@ -134,7 +134,7 @@ export function HuntSelector() {
   }, [open]);
 
   const huntsOnTab = useMemo(
-    () => catalog?.hunts.filter((hunt) => (hunt.tab ?? 'naruto') === tab) ?? [],
+    () => catalog?.hunts.filter((hunt) => hunt.tab === tab) ?? [],
     [catalog, tab],
   );
 
@@ -200,7 +200,7 @@ export function HuntSelector() {
   }, [capturedLookTypes, huntsOnTab]);
 
   const bossStats = useMemo(() => {
-    const bossHunts = catalog?.hunts.filter((hunt) => (hunt.tab ?? 'naruto') === 'bosses') ?? [];
+    const bossHunts = catalog?.hunts.filter((hunt) => hunt.tab === 'bosses') ?? [];
     const defeated = Object.values(defeatedBosses).filter(Boolean).length;
     return { defeated, total: Math.max(bossHunts.length, defeated) };
   }, [catalog, defeatedBosses]);
@@ -219,8 +219,7 @@ export function HuntSelector() {
     node.scrollBy({ left: direction * Math.max(280, node.clientWidth * 0.55), behavior: 'smooth' });
   }
 
-  const title =
-    tab === 'naruto-topdown' ? 'Top down' : tab === 'bosses' ? 'Bosses' : 'Mapa Naruto World';
+  const title = tab === 'bosses' ? 'Bosses' : 'Top down';
 
   return (
     <div className="hunt-selector" role="dialog" aria-modal="true" aria-label="Selecionar caça">
@@ -243,15 +242,6 @@ export function HuntSelector() {
         </header>
 
         <div className="hunt-selector__tabs" role="tablist" aria-label="Universo das caças">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={tab === 'naruto'}
-            className={`hunt-selector__tab${tab === 'naruto' ? ' hunt-selector__tab--active' : ''}`}
-            onClick={() => setTab('naruto')}
-          >
-            Naruto World
-          </button>
           <button
             type="button"
             role="tab"

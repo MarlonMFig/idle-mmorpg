@@ -19,6 +19,8 @@ import { hasNarutoLootProfile } from '@/data/naruto-loot-tiers';
 import { getItem, getItemDefinition } from '@/data/items';
 import { lootRandom } from '@/lib/loot-rng';
 import { guildCopperBonusMultiplier, guildLootBonusMultiplier, vipEmptyLootRerollChance } from '@/lib/progression-bonuses';
+import { applyVillageBonus } from '@/lib/village-bonuses';
+import { heritageCombatExtras } from '@/lib/heritage-runtime';
 import type { Enemy } from '@/entities/enemy';
 import type { LootDropEntry, RewardItem, RewardResult, RolledLoot } from '@/types/loot';
 
@@ -44,7 +46,9 @@ export function normalizeLootEntry(entry: LootDropEntry): {
 }
 
 export function effectiveDropChance(baseChance: number): number {
-  const chance = Math.min(1, Math.max(0, baseChance * guildLootBonusMultiplier()));
+  const villageAdjusted = applyVillageBonus(baseChance, 'lootDropChance');
+  const heritageBonus = 1 + (heritageCombatExtras().dropChancePercent ?? 0);
+  const chance = Math.min(1, Math.max(0, villageAdjusted * heritageBonus * guildLootBonusMultiplier()));
   const reroll = vipEmptyLootRerollChance();
   if (reroll <= 0) return chance;
   return chance + (1 - chance) * reroll * chance;

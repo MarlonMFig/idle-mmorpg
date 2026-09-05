@@ -102,7 +102,7 @@ for (const tier of SEALING_SCROLL_TIERS) {
 }
 
 assert('boss tab fora', isHuntCatalogSealable({ tab: 'bosses' }) === false);
-assert('hunt normal selável', isHuntCatalogSealable({ tab: 'naruto' }) === true);
+assert('hunt top-down selável', isHuntCatalogSealable({ tab: 'naruto-topdown' }) === true);
 
 const weights = CHARACTER_QUALITIES.map((q) => QUALITY_SPAWN_WEIGHTS[q]);
 for (let i = 1; i < weights.length; i += 1) {

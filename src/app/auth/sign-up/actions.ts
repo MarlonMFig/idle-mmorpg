@@ -6,9 +6,9 @@ import {
   validateUsername,
 } from '@/lib/auth/username-credential';
 import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 
-export type AuthActionState = { error?: string; message?: string } | null;
+export type AuthActionState = { error?: string; message?: string; success?: boolean } | null;
 
 export async function signUpWithUsername(
   _previousState: AuthActionState,
@@ -64,5 +64,6 @@ export async function signUpWithUsername(
     return { error: mapAuthErrorMessage(msg, 'Não foi possível criar a conta.') };
   }
 
-  redirect('/');
+  revalidatePath('/', 'layout');
+  return { success: true };
 }

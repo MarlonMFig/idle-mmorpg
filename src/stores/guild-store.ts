@@ -87,6 +87,10 @@ function localListAll(): Guild[] | null {
 }
 
 let myGuildCache: Guild | null = null;
+let pendingOnlineKills = 0;
+let pendingOnlineKillSource: 'online' | 'offline' | 'dev' = 'online';
+let onlineKillFlushTimer: ReturnType<typeof setTimeout> | null = null;
+const ONLINE_KILL_FLUSH_MS = 2_000;
 
 async function refreshMyGuildCache(): Promise<void> {
   const { guildId } = store.getSnapshot();
@@ -96,6 +100,24 @@ async function refreshMyGuildCache(): Promise<void> {
     myGuildCache = null;
   }
   bump();
+}
+
+async function flushPendingOnlineKills(): Promise<void> {
+  onlineKillFlushTimer = null;
+  const count = pendingOnlineKills;
+  const source = pendingOnlineKillSource;
+  pendingOnlineKills = 0;
+  if (count <= 0) return;
+  const state = store.getSnapshot();
+  if (!state.guildId || !state.playerId) return;
+  try {
+    for (let i = 0; i < count; i += 1) {
+      await provider().grantOnlineKillProgress(state.guildId, state.playerId, { source });
+    }
+    await refreshMyGuildCache();
+  } catch {
+    // ignore
+  }
 }
 
 let providerBound = false;
@@ -564,12 +586,12 @@ export const guildStore = {
   notifyOnlineKill(opts?: { source?: 'online' | 'offline' | 'dev' }): void {
     const state = store.getSnapshot();
     if (!state.guildId || !state.playerId) return;
-    void provider()
-      .grantOnlineKillProgress(state.guildId, state.playerId, {
-        source: opts?.source ?? 'online',
-      })
-      .then(() => refreshMyGuildCache())
-      .catch(() => undefined);
+    pendingOnlineKills += 1;
+    pendingOnlineKillSource = opts?.source ?? 'online';
+    if (onlineKillFlushTimer) return;
+    onlineKillFlushTimer = setTimeout(() => {
+      void flushPendingOnlineKills();
+    }, ONLINE_KILL_FLUSH_MS);
   },
 
   async devAddGuildXp(amount: number): Promise<void> {

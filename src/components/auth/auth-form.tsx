@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 
-export type AuthActionState = { error?: string; message?: string } | null;
+export type AuthActionState = { error?: string; message?: string; success?: boolean } | null;
 type AuthAction = (previousState: AuthActionState, formData: FormData) => Promise<AuthActionState>;
 
 interface AuthFormProps {
@@ -14,6 +14,12 @@ interface AuthFormProps {
 export function AuthForm({ mode, action }: AuthFormProps) {
   const isSignUp = mode === 'sign-up';
   const [state, formAction, isPending] = useActionState(action, null);
+
+  useEffect(() => {
+    if (state?.success) {
+      window.location.assign('/');
+    }
+  }, [state?.success]);
 
   return (
     <main className="auth-shell">

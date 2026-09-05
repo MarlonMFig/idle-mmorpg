@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import { CHARACTER_DISPLAY_HEIGHT } from '@/constants/sprites';
+import { addNameplate, NAMEPLATE_STYLE } from '@/constants/nameplate';
 import { dialogueStore } from '@/stores/dialogue-store';
 import type { NpcDefinition } from '@/types/npc';
 
@@ -33,15 +34,13 @@ export class Npc {
     this.sprite.setScale(fit.scale);
     this.sprite.setData('npcId', definition.id);
 
-    this.nameLabel = scene.add
-      .text(definition.position.x, definition.position.y - CHARACTER_DISPLAY_HEIGHT - 28, definition.name, {
-        fontFamily: 'Tahoma, "Segoe UI", sans-serif',
-        fontSize: '11px',
-        color: '#f2efe6',
-        stroke: '#0a0a0a',
-        strokeThickness: 2,
-      })
-      .setOrigin(0.5, 1)
+    this.nameLabel = addNameplate(
+      scene,
+      definition.position.x,
+      definition.position.y - CHARACTER_DISPLAY_HEIGHT - 28,
+      definition.name,
+      NAMEPLATE_STYLE,
+    )
       .setDepth(7)
       .setInteractive({ useHandCursor: true });
 

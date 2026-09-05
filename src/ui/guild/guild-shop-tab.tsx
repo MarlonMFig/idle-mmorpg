@@ -11,7 +11,6 @@ function fmt(n: number): string {
   return n.toLocaleString('pt-BR');
 }
 
-/** UI mecânica mínima — visual definitivo depois. */
 export function GuildShopTab({ guild }: { guild: Guild }) {
   const tick = useStore(guildShopStore, (s) => s.tick);
   const busyOfferId = useStore(guildShopStore, (s) => s.busyOfferId);
@@ -32,28 +31,36 @@ export function GuildShopTab({ guild }: { guild: Guild }) {
   }, [tick, guild.level]);
 
   return (
-    <div className="guild-win__shop-tab">
-      <h3>Loja da Guild</h3>
-      <p className="guild-win__hint">
-        Guild Lv {guildLevel} · Copper: {fmt(copper)} · Sem Guild Coin
-      </p>
-      <ul className="guild-win__apps">
-        {entries.length === 0 ? (
-          <li className="guild-win__empty">Nenhuma oferta (ou sem Guild).</li>
-        ) : (
-          entries.map((entry) => {
+    <div className="guild-win__feature">
+      <div className="guild-win__feature-hero">
+        <div>
+          <p className="guild-win__feature-eyebrow">Economia da guild</p>
+          <h3>Loja da Guild</h3>
+          <p className="guild-win__hint">Ofertas por nível · pagamento em Copper</p>
+        </div>
+        <div className="guild-win__wallet-chip">
+          <span>Guild Lv {guildLevel}</span>
+          <strong>{fmt(copper)} Copper</strong>
+        </div>
+      </div>
+
+      {entries.length === 0 ? (
+        <p className="guild-win__empty">Nenhuma oferta disponível.</p>
+      ) : (
+        <ul className="guild-win__shop-grid">
+          {entries.map((entry) => {
             const { offer } = entry;
             const name = getItem(offer.itemId)?.name ?? offer.itemId;
             const busy = busyOfferId === offer.id;
             const limitReached = entry.remaining != null && entry.remaining <= 0;
             const noCopper = !entry.canAfford;
-            let label = 'COMPRAR';
+            let label = 'Comprar';
             let disabled = busy || Boolean(guildShopStore.getSnapshot().busyOfferId);
             if (!entry.unlocked) {
-              label = `Bloqueado (Guild Lv ${offer.guildLevelRequirement})`;
+              label = `Lv ${offer.guildLevelRequirement}`;
               disabled = true;
             } else if (limitReached) {
-              label = 'Limite atingido';
+              label = 'Limite';
               disabled = true;
             } else if (noCopper) {
               label = 'Sem Copper';
@@ -63,16 +70,22 @@ export function GuildShopTab({ guild }: { guild: Guild }) {
             }
 
             return (
-              <li key={offer.id}>
-                <div>
-                  <strong>{name}</strong> ×{offer.quantityPerPurchase}
-                  <br />
-                  {fmt(offer.price)} Copper · Guild Lv {offer.guildLevelRequirement}
-                  {entry.remaining != null
-                    ? ` · Restante: ${entry.remaining}/${offer.purchaseLimit}`
-                    : ''}
-                  {offer.provisionalPrice ? ' · preço provisional' : ''}
+              <li
+                key={offer.id}
+                className={`guild-win__shop-card${!entry.unlocked ? ' is-locked' : ''}`}
+              >
+                <div className="guild-win__shop-card-top">
+                  <strong>{name}</strong>
+                  <span>×{offer.quantityPerPurchase}</span>
                 </div>
+                <p className="guild-win__shop-price">{fmt(offer.price)} Copper</p>
+                <p className="guild-win__shop-meta">
+                  Guild Lv {offer.guildLevelRequirement}
+                  {entry.remaining != null
+                    ? ` · ${entry.remaining}/${offer.purchaseLimit} restantes`
+                    : ''}
+                  {offer.provisionalPrice ? ' · preço provisório' : ''}
+                </p>
                 <button
                   type="button"
                   className="guild-win__btn-green"
@@ -83,9 +96,9 @@ export function GuildShopTab({ guild }: { guild: Guild }) {
                 </button>
               </li>
             );
-          })
-        )}
-      </ul>
+          })}
+        </ul>
+      )}
     </div>
   );
 }

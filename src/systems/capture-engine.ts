@@ -12,6 +12,8 @@ import {
   clampCaptureChance,
 } from '@/constants/capture';
 import { rollCaptureQualityBundle } from '@/lib/hunt-spawn';
+import { applyVillageBonus, villageHighRarityLuck } from '@/lib/village-bonuses';
+import { heritageCombatExtras } from '@/lib/heritage-runtime';
 import type { CharacterQuality } from '@/types/character-meta';
 import {
   listCaptureScrollTiers,
@@ -120,13 +122,16 @@ export function getCaptureChance(
   const captureTier = resolveCaptureEnemyTierFromDefinition(target);
   const scrollModifier = scrollCaptureMultiplier(scroll.itemId);
   const baseChance = captureBaseChanceForTier(captureTier);
-  const finalChance = computeCaptureChance(captureTier, scroll.itemId);
+  const villageCaptureBonus = applyVillageBonus(1, 'captureChance');
+  const heritageCaptureBonus = 1 + (heritageCombatExtras().captureChancePercent ?? 0);
+  const otherModifiers = villageCaptureBonus * heritageCaptureBonus;
+  const finalChance = clampCaptureChance(computeCaptureChance(captureTier, scroll.itemId) * otherModifiers);
   return {
     captureTier,
     baseChance,
     scrollModifier,
     rarityModifier: 1,
-    otherModifiers: 1,
+    otherModifiers,
     finalChance,
     quality: 'D',
   };
@@ -282,7 +287,7 @@ export function attemptCapture(input: AttemptCaptureInput): CaptureResult {
     }
 
     markCaptureResolved(attemptKey);
-    const rolled = rollCaptureQualityBundle(rng, definition);
+    const rolled = rollCaptureQualityBundle(rng, definition, villageHighRarityLuck());
     const instance = buildSealedCharacter({
       id: createCharacterInstanceId(),
       name: seal.name,

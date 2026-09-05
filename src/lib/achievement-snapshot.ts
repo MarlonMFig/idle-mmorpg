@@ -18,11 +18,9 @@ export function buildAchievementWorldSnapshot(): AchievementWorldSnapshot {
   const unique = new Set(collection.map((entry) => entry.characterId));
   let maxStars = 0;
   let maxMastery = 0;
-  let maxAwakening = 0;
   for (const entry of collection) {
     maxStars = Math.max(maxStars, entry.stars ?? 0);
     maxMastery = Math.max(maxMastery, entry.masteryLevel ?? 0);
-    maxAwakening = Math.max(maxAwakening, entry.awakeningLevel ?? 0);
   }
 
   const lineageProgress = accountStore.getLineageProgress();
@@ -42,7 +40,7 @@ export function buildAchievementWorldSnapshot(): AchievementWorldSnapshot {
     uniqueCharacters: unique.size,
     maxStars,
     maxMastery,
-    maxAwakening,
+    maxAwakening: 0,
     hasLineage: lineageProgress.lineageId != null,
     lineageId: lineageProgress.lineageId,
     lineageRank: active.rank,

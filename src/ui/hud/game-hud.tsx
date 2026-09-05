@@ -14,7 +14,7 @@ import { InventoryPanel } from '@/ui/inventory';
 import { TeamCombatStrip, TeamPanel, toggleTeamManager } from '@/ui/team';
 import { SkillHotbar } from '@/ui/skills';
 import { ShopPanel } from '@/ui/shop';
-import { LineagePanel } from '@/ui/lineages';
+import { GraduationPanel, LineagePanel } from '@/ui/lineages';
 import { GuildPanel } from '@/ui/guild';
 import { HuntAnalyzerPanel } from '@/ui/hunt-analyzer';
 import { HelperPanel } from '@/ui/helper';
@@ -27,7 +27,7 @@ import { CharacterTestLabPanel } from '@/ui/dev';
 import { AchievementsPanel, AchievementToastHost } from '@/ui/achievements';
 import { MissionsPanel } from '@/ui/missions';
 import { DailyLoginPanel } from '@/ui/daily-login';
-import { BossesPanel, BossCombatHud, BossResultOverlay } from '@/ui/bosses';
+import { BossCombatHud, BossResultOverlay } from '@/ui/bosses';
 import { RankingPanel } from '@/ui/ranking';
 import { bindRankingListeners } from '@/lib/ranking-listeners';
 import { OfflineDevSimulator, OfflineReturnModal } from '@/ui/offline';
@@ -101,11 +101,11 @@ export function GameHud({ player }: GameHudProps) {
 
       <TeamPanel variant="modal" />
       <LineagePanel />
+      <GraduationPanel />
       <GuildPanel />
       <AchievementsPanel />
       <MissionsPanel />
       <DailyLoginPanel />
-      <BossesPanel />
       <BossCombatHud />
       <BossResultOverlay />
       <RankingPanel />

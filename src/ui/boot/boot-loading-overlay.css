@@ -1,0 +1,75 @@
+.boot-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(36, 52, 78, 0.55), transparent 55%),
+    linear-gradient(165deg, #0c1018 0%, #151c28 48%, #0a0e14 100%);
+  color: #e8efe6;
+  font-family: var(--font-body), 'Segoe UI', sans-serif;
+  transition: opacity 0.32s ease;
+  pointer-events: auto;
+}
+
+.boot-loading.is-fading {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot-loading__panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: min(18rem, 86vw);
+  padding: 1.35rem 1.6rem 1.2rem;
+  border-radius: 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(12, 16, 24, 0.78);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+}
+
+.boot-loading__title {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #f4f7fb;
+}
+
+.boot-loading__phase {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #9ec8ff;
+  text-align: center;
+}
+
+.boot-loading__bar {
+  width: 100%;
+  height: 0.45rem;
+  margin-top: 0.35rem;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.boot-loading__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #3d7acc, #6aa8ff 55%, #9ec8ff);
+  transition: width 0.18s ease-out;
+}
+
+.boot-loading__pct {
+  margin: 0.15rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(232, 239, 230, 0.72);
+}

@@ -1,0 +1,309 @@
+{
+  "generatedAt": "2026-09-02T03:43:54.749Z",
+  "cacheTag": "hq2026",
+  "maps": [
+    {
+      "mapKey": "huntValeDoFim",
+      "slug": "hunt-vale-do-fim",
+      "label": "Vale do Fim",
+      "source": "VALE DO FIM (1).png",
+      "image": "/maps/hunt-vale-do-fim.png",
+      "foreground": "/maps/hunt-vale-do-fim-fg.png",
+      "tmx": "/maps/hunt-vale-do-fim.tmx",
+      "cacheTag": "hq2026",
+      "width": 6688,
+      "height": 3764,
+      "spawn": {
+        "x": 3344,
+        "y": 2412
+      },
+      "enemySpawns": [
+        {
+          "x": 6409,
+          "y": 2412
+        },
+        {
+          "x": 279,
+          "y": 2412
+        }
+      ],
+      "lateralFloorY": 2412,
+      "layoutScale": 8.27
+    },
+    {
+      "mapKey": "huntPontePaisOnda",
+      "slug": "hunt-ponte-pais-onda",
+      "label": "Ponte do País da Onda",
+      "source": "PONTE DO PAIS DA ONDA (1).png",
+      "image": "/maps/hunt-ponte-pais-onda.png",
+      "foreground": "/maps/hunt-ponte-pais-onda-fg.png",
+      "tmx": "/maps/hunt-ponte-pais-onda.tmx",
+      "cacheTag": "hq2026",
+      "width": 6688,
+      "height": 3764,
+      "spawn": {
+        "x": 3344,
+        "y": 2562
+      },
+      "enemySpawns": [
+        {
+          "x": 6409,
+          "y": 2562
+        },
+        {
+          "x": 279,
+          "y": 2562
+        }
+      ],
+      "lateralFloorY": 2562,
+      "layoutScale": 8.27
+    },
+    {
+      "mapKey": "huntCampoTreinamento",
+      "slug": "hunt-campo-treinamento",
+      "label": "Campo de Treinamento",
+      "source": "CAMPO DE TREINAMENTO (1).png",
+      "image": "/maps/hunt-campo-treinamento.png",
+      "foreground": "/maps/hunt-campo-treinamento-fg.png",
+      "tmx": "/maps/hunt-campo-treinamento.tmx",
+      "cacheTag": "hq2026",
+      "width": 6688,
+      "height": 3764,
+      "spawn": {
+        "x": 3344,
+        "y": 2415
+      },
+      "enemySpawns": [
+        {
+          "x": 6409,
+          "y": 2415
+        },
+        {
+          "x": 279,
+          "y": 2415
+        }
+      ],
+      "lateralFloorY": 2415,
+      "layoutScale": 8.27
+    },
+    {
+      "mapKey": "huntEsconderijoAkatsuki",
+      "slug": "hunt-esconderijo-akatsuki",
+      "label": "Esconderijo Akatsuki",
+      "source": "ESCONDERIJO AKATSUKI (1).png",
+      "image": "/maps/hunt-esconderijo-akatsuki.png",
+      "foreground": "/maps/hunt-esconderijo-akatsuki-fg.png",
+      "tmx": "/maps/hunt-esconderijo-akatsuki.tmx",
+      "cacheTag": "hq2026",
+      "width": 8192,
+      "height": 4608,
+      "spawn": {
+        "x": 4096,
+        "y": 2987
+      },
+      "enemySpawns": [
+        {
+          "x": 7851,
+          "y": 2987
+        },
+        {
+          "x": 341,
+          "y": 2987
+        }
+      ],
+      "lateralFloorY": 2987,
+      "layoutScale": 10.13
+    },
+    {
+      "mapKey": "huntLabOrochimaru",
+      "slug": "hunt-lab-orochimaru",
+      "label": "Laboratório Orochimaru",
+      "source": "LABORATORIO OROCHIMARU (1).png",
+      "image": "/maps/hunt-lab-orochimaru.png",
+      "foreground": "/maps/hunt-lab-orochimaru-fg.png",
+      "tmx": "/maps/hunt-lab-orochimaru.tmx",
+      "cacheTag": "hq2026",
+      "width": 8192,
+      "height": 4608,
+      "spawn": {
+        "x": 4096,
+        "y": 2987
+      },
+      "enemySpawns": [
+        {
+          "x": 7851,
+          "y": 2987
+        },
+        {
+          "x": 341,
+          "y": 2987
+        }
+      ],
+      "lateralFloorY": 2987,
+      "layoutScale": 10.13
+    },
+    {
+      "mapKey": "huntPaisDoVento",
+      "slug": "hunt-pais-do-vento",
+      "label": "Vila da Areia",
+      "source": "Mapa_Caca_Vila_da_Areia_3840x2160.png",
+      "image": "/maps/hunt-pais-do-vento.png",
+      "foreground": "/maps/hunt-pais-do-vento-fg.png",
+      "tmx": "/maps/hunt-pais-do-vento.tmx",
+      "cacheTag": "hq2026",
+      "width": 8192,
+      "height": 4608,
+      "spawn": {
+        "x": 4096,
+        "y": 2959
+      },
+      "enemySpawns": [
+        {
+          "x": 7851,
+          "y": 2959
+        },
+        {
+          "x": 341,
+          "y": 2959
+        }
+      ],
+      "lateralFloorY": 2959,
+      "layoutScale": 10.13
+    },
+    {
+      "mapKey": "huntArenaExameChunnin",
+      "slug": "hunt-arena-exame-chunnin",
+      "label": "País do Ferro",
+      "source": "04_Pais_do_Ferro_Proporcional_3840x2160.png",
+      "image": "/maps/hunt-arena-exame-chunnin.png",
+      "foreground": "/maps/hunt-arena-exame-chunnin-fg.png",
+      "tmx": "/maps/hunt-arena-exame-chunnin.tmx",
+      "cacheTag": "hq2026",
+      "width": 8192,
+      "height": 4608,
+      "spawn": {
+        "x": 4096,
+        "y": 2987
+      },
+      "enemySpawns": [
+        {
+          "x": 7851,
+          "y": 2987
+        },
+        {
+          "x": 341,
+          "y": 2987
+        }
+      ],
+      "lateralFloorY": 2987,
+      "layoutScale": 10.13
+    },
+    {
+      "mapKey": "huntDistritoUchiha",
+      "slug": "hunt-distrito-uchiha",
+      "label": "Distrito Uchiha",
+      "source": "Uchiha3840x2160.png",
+      "image": "/maps/hunt-distrito-uchiha.png",
+      "foreground": "/maps/hunt-distrito-uchiha-fg.png",
+      "tmx": "/maps/hunt-distrito-uchiha.tmx",
+      "cacheTag": "hq2026",
+      "width": 8000,
+      "height": 4500,
+      "spawn": {
+        "x": 4000,
+        "y": 2958
+      },
+      "enemySpawns": [
+        {
+          "x": 7667,
+          "y": 2958
+        },
+        {
+          "x": 333,
+          "y": 2958
+        }
+      ],
+      "lateralFloorY": 2958,
+      "layoutScale": 9.9
+    },
+    {
+      "mapKey": "huntArenaExameChunin",
+      "slug": "hunt-arena-exame-chunin",
+      "label": "Arena Exame Chunin",
+      "source": "ARENA EXAME CHUNNIN (1).png",
+      "image": "/maps/hunt-arena-exame-chunin.png",
+      "foreground": "/maps/hunt-arena-exame-chunin-fg.png",
+      "tmx": "/maps/hunt-arena-exame-chunin.tmx",
+      "cacheTag": "hq2026",
+      "width": 6688,
+      "height": 3764,
+      "spawn": {
+        "x": 3344,
+        "y": 2614
+      },
+      "enemySpawns": [
+        {
+          "x": 6409,
+          "y": 2614
+        },
+        {
+          "x": 279,
+          "y": 2614
+        }
+      ],
+      "lateralFloorY": 2614,
+      "layoutScale": 8.27
+    },
+    {
+      "mapKey": "huntKonohaDestruida",
+      "slug": "hunt-konoha-destruida",
+      "label": "Konoha Destruída",
+      "source": "KONOHA DESTRUIDA POR PAIN (1).png",
+      "image": "/maps/hunt-konoha-destruida.png",
+      "foreground": null,
+      "tmx": "/maps/hunt-konoha-destruida.tmx",
+      "cacheTag": "hq2026",
+      "width": 8192,
+      "height": 4608,
+      "spawn": {
+        "x": 4224,
+        "y": 3104
+      },
+      "enemySpawns": [
+        {
+          "x": 4224,
+          "y": 1929
+        },
+        {
+          "x": 2833,
+          "y": 2665
+        },
+        {
+          "x": 5617,
+          "y": 2665
+        },
+        {
+          "x": 3249,
+          "y": 2225
+        },
+        {
+          "x": 5201,
+          "y": 2225
+        },
+        {
+          "x": 3113,
+          "y": 2961
+        },
+        {
+          "x": 5335,
+          "y": 2961
+        },
+        {
+          "x": 4224,
+          "y": 2737
+        }
+      ],
+      "layoutScale": 8
+    }
+  ]
+}

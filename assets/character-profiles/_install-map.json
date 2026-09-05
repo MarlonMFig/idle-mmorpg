@@ -1,0 +1,381 @@
+{
+  "preferredSource": "C:\\Users\\marlo\\Projects\\idle-mmorpg\\.tmp-profiles-extract\\naruto-world-idle-perfis-pixel-art\\individuais-256x256",
+  "installed": [
+    {
+      "slug": "uzumaki-naruto",
+      "id": "naruto-classic",
+      "dest": "public/ui/profiles/naruto-classic.png"
+    },
+    {
+      "slug": "uzumaki-naruto",
+      "id": "naruto",
+      "dest": "public/ui/profiles/naruto.png"
+    },
+    {
+      "slug": "naruto-shippuden",
+      "id": "naruto-shippuden",
+      "dest": "public/ui/profiles/naruto-shippuden.png"
+    },
+    {
+      "slug": "naruto-1-cauda",
+      "id": "naruto-1-tail",
+      "dest": "public/ui/profiles/naruto-1-tail.png"
+    },
+    {
+      "slug": "naruto-4-caudas",
+      "id": "naruto-4-tails",
+      "dest": "public/ui/profiles/naruto-4-tails.png"
+    },
+    {
+      "slug": "naruto-kyubi",
+      "id": "naruto-kyubi",
+      "dest": "public/ui/profiles/naruto-kyubi.png"
+    },
+    {
+      "slug": "uchiha-sasuke",
+      "id": "sasuke-classic",
+      "dest": "public/ui/profiles/sasuke-classic.png"
+    },
+    {
+      "slug": "uchiha-sasuke",
+      "id": "sasuke",
+      "dest": "public/ui/profiles/sasuke.png"
+    },
+    {
+      "slug": "sasuke-cursed",
+      "id": "sasuke-cursed",
+      "dest": "public/ui/profiles/sasuke-cursed.png"
+    },
+    {
+      "slug": "uchiha-sasuke-g6",
+      "id": "sasuke-g6",
+      "dest": "public/ui/profiles/sasuke-g6.png"
+    },
+    {
+      "slug": "uchiha-itachi",
+      "id": "uchiha-itachi",
+      "dest": "public/ui/profiles/uchiha-itachi.png"
+    },
+    {
+      "slug": "uchiha-itachi",
+      "id": "itachi",
+      "dest": "public/ui/profiles/itachi.png"
+    },
+    {
+      "slug": "uchiha-shisui",
+      "id": "shisui",
+      "dest": "public/ui/profiles/shisui.png"
+    },
+    {
+      "slug": "rock-lee",
+      "id": "rock-lee",
+      "dest": "public/ui/profiles/rock-lee.png"
+    },
+    {
+      "slug": "rock-lee-g6",
+      "id": "rock-lee-g6",
+      "dest": "public/ui/profiles/rock-lee-g6.png"
+    },
+    {
+      "slug": "neji-hyuga",
+      "id": "neji",
+      "dest": "public/ui/profiles/neji.png"
+    },
+    {
+      "slug": "shikamaru-nara",
+      "id": "shikamaru",
+      "dest": "public/ui/profiles/shikamaru.png"
+    },
+    {
+      "slug": "chouji-akimichi",
+      "id": "chouji",
+      "dest": "public/ui/profiles/chouji.png"
+    },
+    {
+      "slug": "akimichi-choji-jump-force",
+      "id": "choji-jf",
+      "dest": "public/ui/profiles/choji-jf.png"
+    },
+    {
+      "slug": "ino-yamanaka",
+      "id": "ino",
+      "dest": "public/ui/profiles/ino.png"
+    },
+    {
+      "slug": "shino-aburame",
+      "id": "shino",
+      "dest": "public/ui/profiles/shino.png"
+    },
+    {
+      "slug": "aburame-shino-g6",
+      "id": "shino-g6",
+      "dest": "public/ui/profiles/shino-g6.png"
+    },
+    {
+      "slug": "tenten",
+      "id": "tenten",
+      "dest": "public/ui/profiles/tenten.png"
+    },
+    {
+      "slug": "tenten-kid",
+      "id": "tenten-kid",
+      "dest": "public/ui/profiles/tenten-kid.png"
+    },
+    {
+      "slug": "tenten-g6",
+      "id": "tenten-g6",
+      "dest": "public/ui/profiles/tenten-g6.png"
+    },
+    {
+      "slug": "hinata-hyuga",
+      "id": "hinata",
+      "dest": "public/ui/profiles/hinata.png"
+    },
+    {
+      "slug": "hyuga-hinata-kid",
+      "id": "hinata-kid",
+      "dest": "public/ui/profiles/hinata-kid.png"
+    },
+    {
+      "slug": "hyuga-hinata",
+      "id": "hinata-g6",
+      "dest": "public/ui/profiles/hinata-g6.png"
+    },
+    {
+      "slug": "hyuga-hanabi",
+      "id": "hanabi",
+      "dest": "public/ui/profiles/hanabi.png"
+    },
+    {
+      "slug": "kiba-inuzuka",
+      "id": "kiba",
+      "dest": "public/ui/profiles/kiba.png"
+    },
+    {
+      "slug": "kiba-inuzuka-kid",
+      "id": "kiba-kid",
+      "dest": "public/ui/profiles/kiba-kid.png"
+    },
+    {
+      "slug": "konohamaru-sarutobi",
+      "id": "konohamaru",
+      "dest": "public/ui/profiles/konohamaru.png"
+    },
+    {
+      "slug": "gaara",
+      "id": "gaara",
+      "dest": "public/ui/profiles/gaara.png"
+    },
+    {
+      "slug": "gaara-shukaku",
+      "id": "gaara-shukaku",
+      "dest": "public/ui/profiles/gaara-shukaku.png"
+    },
+    {
+      "slug": "temari",
+      "id": "temari",
+      "dest": "public/ui/profiles/temari.png"
+    },
+    {
+      "slug": "temari-kid",
+      "id": "temari-kid",
+      "dest": "public/ui/profiles/temari-kid.png"
+    },
+    {
+      "slug": "temari-g6",
+      "id": "temari-g6",
+      "dest": "public/ui/profiles/temari-g6.png"
+    },
+    {
+      "slug": "kankuro",
+      "id": "kankuro",
+      "dest": "public/ui/profiles/kankuro.png"
+    },
+    {
+      "slug": "sakura-shippuden",
+      "id": "sakura-shippuden",
+      "dest": "public/ui/profiles/sakura-shippuden.png"
+    },
+    {
+      "slug": "sakura-shippuden",
+      "id": "sakura",
+      "dest": "public/ui/profiles/sakura.png"
+    },
+    {
+      "slug": "might-guy",
+      "id": "guy",
+      "dest": "public/ui/profiles/guy.png"
+    },
+    {
+      "slug": "hatake-kakashi",
+      "id": "kakashi",
+      "dest": "public/ui/profiles/kakashi.png"
+    },
+    {
+      "slug": "hatake-kakashi-g6",
+      "id": "kakashi-g6",
+      "dest": "public/ui/profiles/kakashi-g6.png"
+    },
+    {
+      "slug": "asuma-sarutobi",
+      "id": "asuma",
+      "dest": "public/ui/profiles/asuma.png"
+    },
+    {
+      "slug": "yuhi-kurenai",
+      "id": "kurenai",
+      "dest": "public/ui/profiles/kurenai.png"
+    },
+    {
+      "slug": "hiruzen-sarutobi",
+      "id": "hiruzen",
+      "dest": "public/ui/profiles/hiruzen.png"
+    },
+    {
+      "slug": "tsunade",
+      "id": "tsunade",
+      "dest": "public/ui/profiles/tsunade.png"
+    },
+    {
+      "slug": "jiraya",
+      "id": "jiraiya",
+      "dest": "public/ui/profiles/jiraiya.png"
+    },
+    {
+      "slug": "shizune",
+      "id": "shizune",
+      "dest": "public/ui/profiles/shizune.png"
+    },
+    {
+      "slug": "zabuza-momochi",
+      "id": "zabuza",
+      "dest": "public/ui/profiles/zabuza.png"
+    },
+    {
+      "slug": "haku",
+      "id": "haku",
+      "dest": "public/ui/profiles/haku.png"
+    },
+    {
+      "slug": "haku-jump-force",
+      "id": "haku-jf",
+      "dest": "public/ui/profiles/haku-jf.png"
+    },
+    {
+      "slug": "orochimaru",
+      "id": "orochimaru",
+      "dest": "public/ui/profiles/orochimaru.png"
+    },
+    {
+      "slug": "orochimaru-g6",
+      "id": "orochimaru-g6",
+      "dest": "public/ui/profiles/orochimaru-g6.png"
+    },
+    {
+      "slug": "yakushi-kabuto",
+      "id": "kabuto",
+      "dest": "public/ui/profiles/kabuto.png"
+    },
+    {
+      "slug": "kimimaro",
+      "id": "kimimaro",
+      "dest": "public/ui/profiles/kimimaro.png"
+    },
+    {
+      "slug": "jiroubou",
+      "id": "jirobo",
+      "dest": "public/ui/profiles/jirobo.png"
+    },
+    {
+      "slug": "tayuya-nun5",
+      "id": "tayuya-nun5",
+      "dest": "public/ui/profiles/tayuya-nun5.png"
+    },
+    {
+      "slug": "tayuya-nun5",
+      "id": "tayuya",
+      "dest": "public/ui/profiles/tayuya.png"
+    },
+    {
+      "slug": "sakon-e-ukon-nun5",
+      "id": "sakon-nun5",
+      "dest": "public/ui/profiles/sakon-nun5.png"
+    },
+    {
+      "slug": "sakon-e-ukon-nun5",
+      "id": "sakon",
+      "dest": "public/ui/profiles/sakon.png"
+    },
+    {
+      "slug": "kidomaru",
+      "id": "kidomaru",
+      "dest": "public/ui/profiles/kidomaru.png"
+    },
+    {
+      "slug": "kisame-hoshigaki",
+      "id": "kisame",
+      "dest": "public/ui/profiles/kisame.png"
+    },
+    {
+      "slug": "sasori",
+      "id": "sasori",
+      "dest": "public/ui/profiles/sasori.png"
+    },
+    {
+      "slug": "sasori-hiruko",
+      "id": "sasori-puppet",
+      "dest": "public/ui/profiles/sasori-puppet.png"
+    },
+    {
+      "slug": "deidara",
+      "id": "deidara",
+      "dest": "public/ui/profiles/deidara.png"
+    },
+    {
+      "slug": "pain-deva",
+      "id": "pain",
+      "dest": "public/ui/profiles/pain.png"
+    },
+    {
+      "slug": "danzo-shimura",
+      "id": "danzo",
+      "dest": "public/ui/profiles/danzo.png"
+    },
+    {
+      "slug": "namikaze-minato-jonin",
+      "id": "minato-jonin",
+      "dest": "public/ui/profiles/minato-jonin.png"
+    },
+    {
+      "slug": "yamato",
+      "id": "yamato",
+      "dest": "public/ui/profiles/yamato.png"
+    },
+    {
+      "slug": "sai",
+      "id": "sai",
+      "dest": "public/ui/profiles/sai.png"
+    },
+    {
+      "slug": "senju-hashirama",
+      "id": "hashirama",
+      "dest": "public/ui/profiles/hashirama.png"
+    },
+    {
+      "slug": "senju-tobirama",
+      "id": "tobirama",
+      "dest": "public/ui/profiles/tobirama.png"
+    },
+    {
+      "slug": "anko-mitarashi",
+      "id": "anko",
+      "dest": "public/ui/profiles/anko.png"
+    },
+    {
+      "slug": "chiyo",
+      "id": "chiyo",
+      "dest": "public/ui/profiles/chiyo.png"
+    }
+  ],
+  "unknown": []
+}

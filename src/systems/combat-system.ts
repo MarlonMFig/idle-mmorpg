@@ -16,7 +16,6 @@ import { characterLabStore, isLabBlockingHuntGameplay } from '@/stores/character
 import { SKILL_DEFAULT_RANGE } from '@/constants/skill';
 import { resolveSkillEnergyCost } from '@/data/skill-ai-def';
 import { BASIC_ATTACK_ELEMENT, resolveSkillElement, type DamageElement } from '@/data/damage-elements';
-import { resolveAwakeningRuntime } from '@/lib/awakening-runtime';
 import { resolveEffectiveSkill, resolveSkillWithAnim } from '@/lib/resolve-effective-skill';
 import type { Player } from '@/entities/player';
 import type { Enemy } from '@/entities/enemy';
@@ -34,6 +33,8 @@ import { createBossAiState, decideBossAction } from '@/lib/boss-ai';
 import { getSkill } from '@/data/skills';
 import { autoHelperSystem } from '@/systems/auto-helper-system';
 import { scheduleHandleEnemyKill } from '@/systems/combat-rewards';
+import { heritageStore } from '@/stores/heritage-store';
+import { heritageCombatExtras } from '@/lib/heritage-runtime';
 import {
   getEffectiveCombatStats,
   PLAYER_STATUS_UNIT_ID,
@@ -92,6 +93,8 @@ export class CombatSystem {
   private rotationCharacterId: string | null = null;
   /** Último tick de regen passiva (scene time) — delta, não por frame. */
   private lastEnergyTickAt = 0;
+  /** Último tick de Herança (Sennin regen contínua). */
+  private lastHeritageTickAt = 0;
   /** Quando o jogador pode reviver após a morte (ms scene). */
   private playerRespawnAt = 0;
   /** Mira visual do VFX (`targeting`). */
@@ -122,13 +125,7 @@ export class CombatSystem {
   }
 
   private effectiveSkill(skillId: string) {
-    const skill = resolveEffectiveSkill(
-      skillId,
-      resolveAwakeningRuntime({
-        characterId: this.player.pack.id,
-        instanceId: this.player.instanceId,
-      }),
-    );
+    const skill = resolveEffectiveSkill(skillId, this.player.pack.id);
     return skill ? resolveSkillWithAnim(skill, this.player.getSkillAnim(skillId)) : skill;
   }
 
@@ -236,8 +233,10 @@ export class CombatSystem {
     // durante busy/skill/CD — mas NÃO após morte.
     if (this.player.isDead() || vitalsStore.isDead()) {
       this.lastEnergyTickAt = time;
+      this.lastHeritageTickAt = time;
     } else {
       this.tickPlayerEnergyRegen(time);
+      this.tickHeritageRuntime(time);
     }
 
     if (isLabBlockingHuntGameplay()) {
@@ -282,6 +281,8 @@ export class CombatSystem {
 
     if (dialogueStore.isOpen()) return;
     if (this.statuses.isStunned(PLAYER_STATUS_UNIT_ID)) return;
+    // Modo Sennin: durante a carga de chakra o jogador não ataca.
+    if (heritageStore.getSnapshot().sennin.phase === 'charging') return;
     if (this.player.isBusy()) return;
     if (this.executions.blocksNewAction(this.player.pack.id)) return;
     if (time - this.lastActionAt < 140) return;
@@ -375,6 +376,31 @@ export class CombatSystem {
     this.lastEnergyTickAt = time;
     if (deltaSeconds <= 0) return;
     combatEnergyStore.tickPassiveRegen(deltaSeconds);
+  }
+
+  /** Ciclo Modo Sennin + regen contínua (Lesma) enquanto ativo. */
+  private tickHeritageRuntime(time: number): void {
+    const now = Date.now();
+    // Carga exige não atacar — a UI inicia a carga; aqui só avança o ciclo.
+    heritageStore.tickSennin(now, false);
+
+    if (this.lastHeritageTickAt <= 0) {
+      this.lastHeritageTickAt = time;
+      return;
+    }
+    const deltaSeconds = Math.max(0, (time - this.lastHeritageTickAt) / 1000);
+    this.lastHeritageTickAt = time;
+    if (deltaSeconds <= 0) return;
+
+    const regenPerSecond = heritageCombatExtras(now).regenPerSecond ?? 0;
+    if (regenPerSecond <= 0 || !heritageStore.isSenninActive(now)) return;
+    const { hpMax } = vitalsStore.getSnapshot();
+    const amount = Decimal.max(d(0), hpMax.mul(regenPerSecond * deltaSeconds));
+    if (amount.lte(0)) return;
+    const healed = vitalsStore.heal(amount);
+    if (healed.gt(0)) {
+      this.vfx.healNumber(this.player.x, this.player.y, healed);
+    }
   }
 
   private publishSkillRotationDebug(decision: ReturnType<typeof decideNextAction>): void {
@@ -495,9 +521,8 @@ export class CombatSystem {
 
     this.scene.time.delayedCall(hitDelay, () => {
       if (!target.isAlive) return;
-      const dropX = target.sprite.x;
-      const dropY = target.sprite.y;
-      this.vfx.playComboHit(dropX, dropY, this.player.sprite.scaleX * 0.95);
+      const bounds = target.sprite.getBounds();
+      this.vfx.playComboHit(bounds.centerX, bounds.centerY, this.player.sprite.scaleX * 0.5);
       const damage = scaleOutgoingDamage(
         d(BASIC_ATTACK_FLAT).add(
           getEffectiveCombatStats(PLAYER_STATUS_UNIT_ID).attack.mul(BASIC_ATTACK_ATK_FACTOR).floor(),
@@ -710,7 +735,7 @@ export class CombatSystem {
       sourceId,
       enemy,
       element,
-      onKill: (killed) => this.onKill(killed, killed.sprite.x, killed.sprite.y),
+      onKill: (killed) => this.onKill(killed),
     });
   }
 
@@ -747,7 +772,7 @@ export class CombatSystem {
         return { x: enemy.sprite.x, y: enemy.sprite.y };
       },
       isPlayerDead: () => this.player.isDead() || vitalsStore.isDead(),
-      onEnemyKilled: (enemy) => this.onKill(enemy, enemy.sprite.x, enemy.sprite.y),
+      onEnemyKilled: (enemy) => this.onKill(enemy),
     });
   }
 
@@ -826,7 +851,7 @@ export class CombatSystem {
     if (bossEnemy && pendingHp != null) {
       bossEnemy.setHp(pendingHp);
       if (pendingHp <= 0) {
-        this.onKill(bossEnemy, bossEnemy.sprite.x, bossEnemy.sprite.y);
+        this.onKill(bossEnemy);
         return;
       }
     }
@@ -879,7 +904,7 @@ export class CombatSystem {
     this.applyEnemyHit(damage);
   }
 
-  private onKill(enemy: Enemy, dropX: number, dropY: number): void {
+  private onKill(enemy: Enemy): void {
     if (this.isBossFight()) {
       bossStore.syncFromEnemy(d(0), enemy.stats.hpMax);
       bossStore.finishVictory({ officialReward: true });
@@ -887,7 +912,7 @@ export class CombatSystem {
       this.enemyManager.setHuntPaused(true);
       return;
     }
-    scheduleHandleEnemyKill(this.scene, enemy, this.lootManager, dropX, dropY);
+    scheduleHandleEnemyKill(this.scene, enemy);
     this.enemyManager.onEnemyKilled(enemy.id);
   }
 }

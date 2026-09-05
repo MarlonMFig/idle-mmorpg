@@ -20,7 +20,7 @@ export const RARITIES: Record<
 };
 
 export const STAR_RULES = {
-  /** Teto oficial por raridade. Bônus continua +8% por estrela. */
+  /** Teto oficial por raridade. Bônus continua +10% por estrela. */
   maxByRarity: {
     D: 2,
     C: 2,
@@ -33,18 +33,18 @@ export const STAR_RULES = {
   starsOnUnlock: {
     D: 0,
     C: 0,
-    B: 2,
-    A: 2,
-    S: 3,
-    SS: 3,
-    SSS: 3,
+    B: 0,
+    A: 0,
+    S: 0,
+    SS: 0,
+    SSS: 0,
   } satisfies Record<CharacterQuality, number>,
   absoluteMax: 5,
 } as const;
 
 export const STAR_BONUSES = {
-  /** +8% nos atributos base por estrela (0★ = base, 5★ = +40%). */
-  perStar: 0.08,
+  /** +10% nos atributos base por estrela (0★ = base, 5★ = +50%). */
+  perStar: 0.1,
 } as const;
 
 export interface XpStageBand {

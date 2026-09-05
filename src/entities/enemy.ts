@@ -12,7 +12,7 @@ import {
   NAMEPLATE_BAR_GAP_PX,
   NAMEPLATE_GAP_PX,
 } from '@/constants/combat';
-import { addNameplate, NAMEPLATE_STYLE, worldDepthForY } from '@/constants/nameplate';
+import { addNameplate, NAMEPLATE_STYLE, sharpenWorldText, worldDepthForY } from '@/constants/nameplate';
 import { combatTextDepthForY } from '@/constants/render-layers';
 import {
   CHARACTER_BODY_HEIGHT,
@@ -199,7 +199,6 @@ export class Enemy {
     this.hpBarGloss = scene.add
       .rectangle(0, 0, barW, ENEMY_HP_BAR_GLOSS_H * s, 0xffffff, 0.28)
       .setOrigin(0, 0.5);
-    this.nameLabel.setScale(s);
     this.statusIcons = scene.add
       .text(0, 0, '', {
         fontFamily: 'Segoe UI Emoji, Apple Color Emoji, sans-serif',
@@ -698,6 +697,7 @@ export class Enemy {
 
     this.nameLabel.setText(next.name);
     this.nameLabel.setVisible(true);
+    sharpenWorldText(this.nameLabel);
     this.statusIcons.setText('');
     this.setHpBarVisible(true);
     this.nextPatrolAt = this.scene.time.now + Phaser.Math.Between(250, 900);

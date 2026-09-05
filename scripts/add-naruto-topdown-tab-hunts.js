@@ -1,6 +1,6 @@
 /**
  * Duplica as caças da aba Naruto World para a aba NARUTO TOP DOWN
- * com os 8 mapas 3840×2160 de arenas amplas.
+ * com os 13 mapas MAPAS NOVOS.
  * node scripts/add-naruto-topdown-tab-hunts.js
  */
 const fs = require('fs');
@@ -22,11 +22,12 @@ const LATERAL_TO_TD = {
   huntCampoGuerraNinja: 'huntTdCrateraKonoha',
   huntLabOrochimaru: 'huntTdLaboratorioOrochimaru',
   huntPaisDoVento: 'huntTdArenaVilaAreia',
-  huntMonteMyoboku: 'huntTdClareiraEquipe7',
-  huntDistritoUchiha: 'huntTdValeDoFim',
+  huntMonteMyoboku: 'huntTdMonteMyoboku',
+  huntDistritoUchiha: 'huntTdCampoUchiha',
 };
 
-const FALLBACK = [
+/** 13 mapas top-down distintos do MAPAS NOVOS. */
+const ALL_TD = [
   'huntTdValeDoFim',
   'huntTdArenaExameChunin',
   'huntTdPonteDasOndas',
@@ -35,28 +36,38 @@ const FALLBACK = [
   'huntTdCrateraKonoha',
   'huntTdLaboratorioOrochimaru',
   'huntTdArenaVilaAreia',
+  'huntTdIlhaTartaruga',
+  'huntTdMonteMyoboku',
+  'huntTdUzushiogakure',
+  'huntTdCampoUchiha',
+  'huntTdHospitalKonoha',
 ];
 
 function pickTdMap(mapKey, index, targets) {
   if (LATERAL_TO_TD[mapKey]) return LATERAL_TO_TD[mapKey];
   const blob = `${targets[0]?.id || ''} ${targets[0]?.name || ''}`.toLowerCase();
-  if (/gaara|areia|temari|kankuro/.test(blob)) return 'huntTdArenaVilaAreia';
+  if (/gaara|areia|temari|kankuro|sasori/.test(blob)) return 'huntTdArenaVilaAreia';
   if (/zabuza|onda|haku|ponte/.test(blob)) return 'huntTdPonteDasOndas';
   if (/orochimaru|kabuto|lab|kimimaro/.test(blob)) return 'huntTdLaboratorioOrochimaru';
-  if (/kisame|akatsuki|pain|konan/.test(blob)) return 'huntTdCavernaAkatsuki';
-  if (/sasuke|itachi|madara|hashirama|vale|naruto/.test(blob)) return 'huntTdValeDoFim';
-  if (/neji|lee|guy|exame|chunin/.test(blob)) return 'huntTdArenaExameChunin';
-  if (/sakura|kakashi|equipe/.test(blob)) return 'huntTdClareiraEquipe7';
-  return FALLBACK[index % FALLBACK.length];
+  if (/kisame|akatsuki|pain|konan|deidara/.test(blob)) return 'huntTdCavernaAkatsuki';
+  if (/myoboku|gamabunta|jiraiya|sennin/.test(blob)) return 'huntTdMonteMyoboku';
+  if (/uzushio|kushina|minato/.test(blob)) return 'huntTdUzushiogakure';
+  if (/hospital|shizune|tsunade|sakura/.test(blob)) return 'huntTdHospitalKonoha';
+  if (/ilha|tartaruga|bee|killer|gyuki/.test(blob)) return 'huntTdIlhaTartaruga';
+  if (/uchiha|sasuke|itachi|shisui|danzo/.test(blob)) return 'huntTdCampoUchiha';
+  if (/vale|hashirama|tobirama|madara/.test(blob)) return 'huntTdValeDoFim';
+  if (/neji|lee|guy|exame|chunin|tenten/.test(blob)) return 'huntTdArenaExameChunin';
+  if (/kakashi|equipe|naruto|konoha/.test(blob)) return 'huntTdClareiraEquipe7';
+  return ALL_TD[index % ALL_TD.length];
 }
 
 const catalog = JSON.parse(fs.readFileSync(HUNTS_FILE, 'utf8'));
 catalog.hunts = catalog.hunts.filter((hunt) => hunt.tab !== 'naruto-topdown');
 
 const sources = catalog.hunts.filter((hunt) => {
-  if (hunt.tab === 'bosses' || hunt.tab === 'wonsr') return false;
+  if (hunt.tab === 'bosses' || hunt.tab === 'wonsr' || hunt.tab === 'naruto-topdown') return false;
   if (hunt.id.startsWith('test-') || hunt.id.startsWith('hunt-teste')) return false;
-  return (hunt.tab ?? 'naruto') === 'naruto';
+  return true;
 });
 
 const clones = sources.map((hunt, index) => ({

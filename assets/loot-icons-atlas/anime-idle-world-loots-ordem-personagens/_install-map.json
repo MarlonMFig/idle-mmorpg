@@ -1,0 +1,727 @@
+{
+  "iconByItemId": {
+    "item-anime-naruto-papel-pergaminho": "papel-pergaminho.png",
+    "item-anime-naruto-espiral-uzumaki": "espiral-uzumaki.png",
+    "item-anime-naruto-nucleo-rasengan": "nucleo-rasengan.png",
+    "item-anime-naruto-chakra-residual": "chakra-residual.png",
+    "item-anime-naruto-manto-chakra-vermelho": "manto-chakra-vermelho.png",
+    "item-anime-naruto-garra-quatro-caudas": "garra-quatro-caudas.png",
+    "item-anime-naruto-chakra-bijuu": "chakra-bijuu.png",
+    "item-anime-naruto-nucleo-kurama": "nucleo-kurama.png",
+    "item-anime-naruto-shuriken-gasta": "shuriken-gasta.png",
+    "item-anime-naruto-brasao-uchiha": "brasao-uchiha.png",
+    "item-anime-naruto-chakra-amaldicoado": "chakra-amaldicoado.png",
+    "item-anime-naruto-marca-maldita-ceu": "marca-maldita-ceu.png",
+    "item-anime-naruto-fio-condutor-raiton": "fio-condutor-raiton.png",
+    "item-anime-naruto-lamina-kusanagi": "lamina-kusanagi.png",
+    "item-anime-naruto-pena-corvo": "pena-corvo.png",
+    "item-anime-naruto-olho-mangekyou": "olho-mangekyou.png",
+    "item-anime-naruto-folha-teletransporte": "folha-teletransporte.png",
+    "item-anime-naruto-essencia-kotoamatsukami": "essencia-kotoamatsukami.png",
+    "item-anime-naruto-bandagem-usada": "bandagem-usada.png",
+    "item-anime-naruto-peso-tornozelo": "peso-tornozelo.png",
+    "item-anime-naruto-vapor-portoes": "vapor-portoes.png",
+    "item-anime-naruto-selo-sexto-portao": "selo-sexto-portao.png",
+    "item-anime-naruto-chakra-oitavo-portao": "chakra-oitavo-portao.png",
+    "item-anime-naruto-essencia-byakugan": "essencia-byakugan.png",
+    "item-anime-naruto-selo-passaro-gaiola": "selo-passaro-gaiola.png",
+    "item-anime-naruto-tecido-branco": "tecido-branco.png",
+    "item-anime-naruto-casaco-bege": "casaco-bege.png",
+    "item-anime-naruto-luvas-juuken": "luvas-juuken.png",
+    "item-anime-naruto-chakra-punhos-leao": "chakra-punhos-leao.png",
+    "item-anime-naruto-insignia-casa-principal": "insignia-casa-principal.png",
+    "item-anime-naruto-essencia-sombra": "essencia-sombra.png",
+    "item-anime-naruto-peca-shogi": "peca-shogi.png",
+    "item-anime-naruto-pilula-calorias": "pilula-calorias.png",
+    "item-anime-naruto-armadura-akimichi": "armadura-akimichi.png",
+    "item-anime-naruto-pilula-borboleta": "pilula-borboleta.png",
+    "item-anime-naruto-petala-flor": "petala-flor.png",
+    "item-anime-naruto-essencia-mental": "essencia-mental.png",
+    "item-anime-naruto-maco-cigarros": "maco-cigarros.png",
+    "item-anime-naruto-laminas-chakra": "laminas-chakra.png",
+    "item-anime-naruto-essencia-genjutsu": "essencia-genjutsu.png",
+    "item-anime-naruto-espinho-ilusorio": "espinho-ilusorio.png",
+    "item-anime-naruto-casulo-insetos": "casulo-insetos.png",
+    "item-anime-naruto-enxame-kikaichu": "enxame-kikaichu.png",
+    "item-anime-naruto-rainha-kikaichu": "rainha-kikaichu.png",
+    "item-anime-naruto-tufo-pelo-canino": "tufo-pelo-canino.png",
+    "item-anime-naruto-coleira-filhote": "coleira-filhote.png",
+    "item-anime-naruto-presa-akamaru": "presa-akamaru.png",
+    "item-anime-naruto-kunai-enferrujada": "kunai-enferrujada.png",
+    "item-anime-naruto-fita-coque": "fita-coque.png",
+    "item-anime-naruto-selo-armamento": "selo-armamento.png",
+    "item-anime-naruto-leque-bashosen": "leque-bashosen.png",
+    "item-anime-naruto-cachecol-azul": "cachecol-azul.png",
+    "item-anime-naruto-insignia-sarutobi": "insignia-sarutobi.png",
+    "item-anime-naruto-erva-medicinal": "erva-medicinal.png",
+    "item-anime-naruto-luva-forca-sobre-humana": "luva-forca-sobre-humana.png",
+    "item-anime-naruto-faisca-chidori": "faisca-chidori.png",
+    "item-anime-naruto-livro-icha-icha": "livro-icha-icha.png",
+    "item-anime-naruto-lente-kamui": "lente-kamui.png",
+    "item-anime-naruto-cinzas-cachimbo": "cinzas-cachimbo.png",
+    "item-anime-naruto-bastao-enma": "bastao-enma.png",
+    "item-anime-naruto-selo-yin-byakugou": "selo-yin-byakugou.png",
+    "item-anime-naruto-oleo-sapo": "oleo-sapo.png",
+    "item-anime-naruto-pergaminho-myoboku": "pergaminho-myoboku.png",
+    "item-anime-naruto-lancador-senbon": "lancador-senbon.png",
+    "item-anime-naruto-espeto-dango": "espeto-dango.png",
+    "item-anime-naruto-casaco-malha": "casaco-malha.png",
+    "item-anime-naruto-seiva-mokuton": "seiva-mokuton.png",
+    "item-anime-naruto-mascara-anbu": "mascara-anbu.png",
+    "item-anime-naruto-tinta-nanquim": "tinta-nanquim.png",
+    "item-anime-naruto-pincel-choju-giga": "pincel-choju-giga.png",
+    "item-anime-naruto-bandagem-raiz": "bandagem-raiz.png",
+    "item-anime-naruto-braco-izanagi": "braco-izanagi.png",
+    "item-anime-naruto-kunai-tres-pontas": "kunai-tres-pontas.png",
+    "item-anime-naruto-marca-hiraishin": "marca-hiraishin.png",
+    "item-anime-naruto-cristal-primeiro": "cristal-primeiro.png",
+    "item-anime-naruto-gota-suiton-pura": "gota-suiton-pura.png",
+    "item-anime-naruto-selo-edo-tensei": "selo-edo-tensei.png",
+    "item-anime-naruto-areia-fina": "areia-fina.png",
+    "item-anime-naruto-cabaca-areia": "cabaca-areia.png",
+    "item-anime-naruto-areia-dourada": "areia-dourada.png",
+    "item-anime-naruto-chakra-shukaku": "chakra-shukaku.png",
+    "item-anime-naruto-papel-leque": "papel-leque.png",
+    "item-anime-naruto-leque-treino": "leque-treino.png",
+    "item-anime-naruto-leque-tessen": "leque-tessen.png",
+    "item-anime-naruto-chakra-futon": "chakra-futon.png",
+    "item-anime-naruto-pergaminho-kirikiri-mai": "pergaminho-kirikiri-mai.png",
+    "item-anime-naruto-madeira-marionete": "madeira-marionete.png",
+    "item-anime-naruto-peca-karasu": "peca-karasu.png",
+    "item-anime-naruto-fio-chakra": "fio-chakra.png",
+    "item-anime-naruto-selo-dez-marionetes": "selo-dez-marionetes.png",
+    "item-anime-naruto-frasco-nevoa": "frasco-nevoa.png",
+    "item-anime-naruto-kubikiribocho": "kubikiribocho.png",
+    "item-anime-naruto-cristal-gelo": "cristal-gelo.png",
+    "item-anime-naruto-senbon-congelada": "senbon-congelada.png",
+    "item-anime-naruto-espelho-demoniaco": "espelho-demoniaco.png",
+    "item-anime-naruto-escama-tubarao": "escama-tubarao.png",
+    "item-anime-naruto-fragmento-samehada": "fragmento-samehada.png",
+    "item-anime-naruto-escama-serpente": "escama-serpente.png",
+    "item-anime-naruto-kusanagi-grama": "kusanagi-grama.png",
+    "item-anime-naruto-frasco-experimento": "frasco-experimento.png",
+    "item-anime-naruto-essencia-yamata": "essencia-yamata.png",
+    "item-anime-naruto-oculos-redondos": "oculos-redondos.png",
+    "item-anime-naruto-bisturi-chakra": "bisturi-chakra.png",
+    "item-anime-naruto-osso-cla-kaguya": "osso-cla-kaguya.png",
+    "item-anime-naruto-medula-shikotsumyaku": "medula-shikotsumyaku.png",
+    "item-anime-naruto-cascalho-doton": "cascalho-doton.png",
+    "item-anime-naruto-nucleo-prisao-terra": "nucleo-prisao-terra.png",
+    "item-anime-naruto-bocal-flauta": "bocal-flauta.png",
+    "item-anime-naruto-flauta-doki": "flauta-doki.png",
+    "item-anime-naruto-retalho-duplo": "retalho-duplo.png",
+    "item-anime-naruto-celula-parasita": "celula-parasita.png",
+    "item-anime-naruto-teia-dourada": "teia-dourada.png",
+    "item-anime-naruto-arco-teia": "arco-teia.png",
+    "item-anime-naruto-nucleo-vivo-sasori": "nucleo-vivo-sasori.png",
+    "item-anime-naruto-placa-hiruko": "placa-hiruko.png",
+    "item-anime-naruto-cauda-ferrao": "cauda-ferrao.png",
+    "item-anime-naruto-argila-bruta": "argila-bruta.png",
+    "item-anime-naruto-argila-explosiva": "argila-explosiva.png",
+    "item-anime-naruto-bastao-negro-chakra": "bastao-negro-chakra.png",
+    "item-anime-naruto-olho-rinnegan": "olho-rinnegan.png"
+  },
+  "missing": [],
+  "copied": [
+    {
+      "name": "Papel de Pergaminho",
+      "itemId": "item-anime-naruto-papel-pergaminho",
+      "destName": "papel-pergaminho.png"
+    },
+    {
+      "name": "Espiral Uzumaki",
+      "itemId": "item-anime-naruto-espiral-uzumaki",
+      "destName": "espiral-uzumaki.png"
+    },
+    {
+      "name": "Núcleo de Rasengan",
+      "itemId": "item-anime-naruto-nucleo-rasengan",
+      "destName": "nucleo-rasengan.png"
+    },
+    {
+      "name": "Chakra Residual",
+      "itemId": "item-anime-naruto-chakra-residual",
+      "destName": "chakra-residual.png"
+    },
+    {
+      "name": "Manto de Chakra Vermelho",
+      "itemId": "item-anime-naruto-manto-chakra-vermelho",
+      "destName": "manto-chakra-vermelho.png"
+    },
+    {
+      "name": "Garra de Quatro Caudas",
+      "itemId": "item-anime-naruto-garra-quatro-caudas",
+      "destName": "garra-quatro-caudas.png"
+    },
+    {
+      "name": "Chakra de Bijuu",
+      "itemId": "item-anime-naruto-chakra-bijuu",
+      "destName": "chakra-bijuu.png"
+    },
+    {
+      "name": "Núcleo de Kurama",
+      "itemId": "item-anime-naruto-nucleo-kurama",
+      "destName": "nucleo-kurama.png"
+    },
+    {
+      "name": "Shuriken Gasta",
+      "itemId": "item-anime-naruto-shuriken-gasta",
+      "destName": "shuriken-gasta.png"
+    },
+    {
+      "name": "Brasão Uchiha",
+      "itemId": "item-anime-naruto-brasao-uchiha",
+      "destName": "brasao-uchiha.png"
+    },
+    {
+      "name": "Chakra Amaldiçoado",
+      "itemId": "item-anime-naruto-chakra-amaldicoado",
+      "destName": "chakra-amaldicoado.png"
+    },
+    {
+      "name": "Marca Maldita do Céu",
+      "itemId": "item-anime-naruto-marca-maldita-ceu",
+      "destName": "marca-maldita-ceu.png"
+    },
+    {
+      "name": "Fio Condutor Raiton",
+      "itemId": "item-anime-naruto-fio-condutor-raiton",
+      "destName": "fio-condutor-raiton.png"
+    },
+    {
+      "name": "Lâmina Kusanagi",
+      "itemId": "item-anime-naruto-lamina-kusanagi",
+      "destName": "lamina-kusanagi.png"
+    },
+    {
+      "name": "Pena de Corvo",
+      "itemId": "item-anime-naruto-pena-corvo",
+      "destName": "pena-corvo.png"
+    },
+    {
+      "name": "Olho Mangekyou",
+      "itemId": "item-anime-naruto-olho-mangekyou",
+      "destName": "olho-mangekyou.png"
+    },
+    {
+      "name": "Folha de Teletransporte",
+      "itemId": "item-anime-naruto-folha-teletransporte",
+      "destName": "folha-teletransporte.png"
+    },
+    {
+      "name": "Essência Kotoamatsukami",
+      "itemId": "item-anime-naruto-essencia-kotoamatsukami",
+      "destName": "essencia-kotoamatsukami.png"
+    },
+    {
+      "name": "Bandagem Usada",
+      "itemId": "item-anime-naruto-bandagem-usada",
+      "destName": "bandagem-usada.png"
+    },
+    {
+      "name": "Peso de Tornozelo",
+      "itemId": "item-anime-naruto-peso-tornozelo",
+      "destName": "peso-tornozelo.png"
+    },
+    {
+      "name": "Vapor dos Portões",
+      "itemId": "item-anime-naruto-vapor-portoes",
+      "destName": "vapor-portoes.png"
+    },
+    {
+      "name": "Selo do Sexto Portão",
+      "itemId": "item-anime-naruto-selo-sexto-portao",
+      "destName": "selo-sexto-portao.png"
+    },
+    {
+      "name": "Chakra do Oitavo Portão",
+      "itemId": "item-anime-naruto-chakra-oitavo-portao",
+      "destName": "chakra-oitavo-portao.png"
+    },
+    {
+      "name": "Essência de Byakugan",
+      "itemId": "item-anime-naruto-essencia-byakugan",
+      "destName": "essencia-byakugan.png"
+    },
+    {
+      "name": "Selo do Pássaro na Gaiola",
+      "itemId": "item-anime-naruto-selo-passaro-gaiola",
+      "destName": "selo-passaro-gaiola.png"
+    },
+    {
+      "name": "Tecido Branco",
+      "itemId": "item-anime-naruto-tecido-branco",
+      "destName": "tecido-branco.png"
+    },
+    {
+      "name": "Casaco Bege",
+      "itemId": "item-anime-naruto-casaco-bege",
+      "destName": "casaco-bege.png"
+    },
+    {
+      "name": "Luvas de Juuken",
+      "itemId": "item-anime-naruto-luvas-juuken",
+      "destName": "luvas-juuken.png"
+    },
+    {
+      "name": "Chakra dos Punhos-Leão",
+      "itemId": "item-anime-naruto-chakra-punhos-leao",
+      "destName": "chakra-punhos-leao.png"
+    },
+    {
+      "name": "Insígnia da Casa Principal",
+      "itemId": "item-anime-naruto-insignia-casa-principal",
+      "destName": "insignia-casa-principal.png"
+    },
+    {
+      "name": "Essência de Sombra",
+      "itemId": "item-anime-naruto-essencia-sombra",
+      "destName": "essencia-sombra.png"
+    },
+    {
+      "name": "Peça de Shogi",
+      "itemId": "item-anime-naruto-peca-shogi",
+      "destName": "peca-shogi.png"
+    },
+    {
+      "name": "Pílula de Calorias",
+      "itemId": "item-anime-naruto-pilula-calorias",
+      "destName": "pilula-calorias.png"
+    },
+    {
+      "name": "Armadura Akimichi",
+      "itemId": "item-anime-naruto-armadura-akimichi",
+      "destName": "armadura-akimichi.png"
+    },
+    {
+      "name": "Pílula Borboleta",
+      "itemId": "item-anime-naruto-pilula-borboleta",
+      "destName": "pilula-borboleta.png"
+    },
+    {
+      "name": "Pétala de Flor",
+      "itemId": "item-anime-naruto-petala-flor",
+      "destName": "petala-flor.png"
+    },
+    {
+      "name": "Essência Mental",
+      "itemId": "item-anime-naruto-essencia-mental",
+      "destName": "essencia-mental.png"
+    },
+    {
+      "name": "Maço de Cigarros",
+      "itemId": "item-anime-naruto-maco-cigarros",
+      "destName": "maco-cigarros.png"
+    },
+    {
+      "name": "Lâminas de Chakra",
+      "itemId": "item-anime-naruto-laminas-chakra",
+      "destName": "laminas-chakra.png"
+    },
+    {
+      "name": "Essência de Genjutsu",
+      "itemId": "item-anime-naruto-essencia-genjutsu",
+      "destName": "essencia-genjutsu.png"
+    },
+    {
+      "name": "Espinho Ilusório",
+      "itemId": "item-anime-naruto-espinho-ilusorio",
+      "destName": "espinho-ilusorio.png"
+    },
+    {
+      "name": "Casulo de Inseto",
+      "itemId": "item-anime-naruto-casulo-insetos",
+      "destName": "casulo-insetos.png"
+    },
+    {
+      "name": "Enxame Kikaichu",
+      "itemId": "item-anime-naruto-enxame-kikaichu",
+      "destName": "enxame-kikaichu.png"
+    },
+    {
+      "name": "Rainha Kikaichu",
+      "itemId": "item-anime-naruto-rainha-kikaichu",
+      "destName": "rainha-kikaichu.png"
+    },
+    {
+      "name": "Tufo de Pelo Canino",
+      "itemId": "item-anime-naruto-tufo-pelo-canino",
+      "destName": "tufo-pelo-canino.png"
+    },
+    {
+      "name": "Coleira de Filhote",
+      "itemId": "item-anime-naruto-coleira-filhote",
+      "destName": "coleira-filhote.png"
+    },
+    {
+      "name": "Presa de Akamaru",
+      "itemId": "item-anime-naruto-presa-akamaru",
+      "destName": "presa-akamaru.png"
+    },
+    {
+      "name": "Kunai Enferrujada",
+      "itemId": "item-anime-naruto-kunai-enferrujada",
+      "destName": "kunai-enferrujada.png"
+    },
+    {
+      "name": "Fita de Coque",
+      "itemId": "item-anime-naruto-fita-coque",
+      "destName": "fita-coque.png"
+    },
+    {
+      "name": "Selo de Armamento",
+      "itemId": "item-anime-naruto-selo-armamento",
+      "destName": "selo-armamento.png"
+    },
+    {
+      "name": "Leque Bashosen",
+      "itemId": "item-anime-naruto-leque-bashosen",
+      "destName": "leque-bashosen.png"
+    },
+    {
+      "name": "Cachecol Azul",
+      "itemId": "item-anime-naruto-cachecol-azul",
+      "destName": "cachecol-azul.png"
+    },
+    {
+      "name": "Insígnia Sarutobi",
+      "itemId": "item-anime-naruto-insignia-sarutobi",
+      "destName": "insignia-sarutobi.png"
+    },
+    {
+      "name": "Erva Medicinal",
+      "itemId": "item-anime-naruto-erva-medicinal",
+      "destName": "erva-medicinal.png"
+    },
+    {
+      "name": "Luva de Força Sobre-humana",
+      "itemId": "item-anime-naruto-luva-forca-sobre-humana",
+      "destName": "luva-forca-sobre-humana.png"
+    },
+    {
+      "name": "Faísca de Chidori",
+      "itemId": "item-anime-naruto-faisca-chidori",
+      "destName": "faisca-chidori.png"
+    },
+    {
+      "name": "Livro Icha Icha",
+      "itemId": "item-anime-naruto-livro-icha-icha",
+      "destName": "livro-icha-icha.png"
+    },
+    {
+      "name": "Lente de Kamui",
+      "itemId": "item-anime-naruto-lente-kamui",
+      "destName": "lente-kamui.png"
+    },
+    {
+      "name": "Cinzas de Cachimbo",
+      "itemId": "item-anime-naruto-cinzas-cachimbo",
+      "destName": "cinzas-cachimbo.png"
+    },
+    {
+      "name": "Bastão de Enma",
+      "itemId": "item-anime-naruto-bastao-enma",
+      "destName": "bastao-enma.png"
+    },
+    {
+      "name": "Selo Yin Byakugou",
+      "itemId": "item-anime-naruto-selo-yin-byakugou",
+      "destName": "selo-yin-byakugou.png"
+    },
+    {
+      "name": "Óleo de Sapo",
+      "itemId": "item-anime-naruto-oleo-sapo",
+      "destName": "oleo-sapo.png"
+    },
+    {
+      "name": "Pergaminho de Myoboku",
+      "itemId": "item-anime-naruto-pergaminho-myoboku",
+      "destName": "pergaminho-myoboku.png"
+    },
+    {
+      "name": "Lançador de Senbon",
+      "itemId": "item-anime-naruto-lancador-senbon",
+      "destName": "lancador-senbon.png"
+    },
+    {
+      "name": "Espeto de Dango",
+      "itemId": "item-anime-naruto-espeto-dango",
+      "destName": "espeto-dango.png"
+    },
+    {
+      "name": "Casaco de Malha",
+      "itemId": "item-anime-naruto-casaco-malha",
+      "destName": "casaco-malha.png"
+    },
+    {
+      "name": "Seiva Mokuton",
+      "itemId": "item-anime-naruto-seiva-mokuton",
+      "destName": "seiva-mokuton.png"
+    },
+    {
+      "name": "Máscara ANBU",
+      "itemId": "item-anime-naruto-mascara-anbu",
+      "destName": "mascara-anbu.png"
+    },
+    {
+      "name": "Tinta Nanquim",
+      "itemId": "item-anime-naruto-tinta-nanquim",
+      "destName": "tinta-nanquim.png"
+    },
+    {
+      "name": "Pincel Choju Giga",
+      "itemId": "item-anime-naruto-pincel-choju-giga",
+      "destName": "pincel-choju-giga.png"
+    },
+    {
+      "name": "Bandagem da Raiz",
+      "itemId": "item-anime-naruto-bandagem-raiz",
+      "destName": "bandagem-raiz.png"
+    },
+    {
+      "name": "Braço de Izanagi",
+      "itemId": "item-anime-naruto-braco-izanagi",
+      "destName": "braco-izanagi.png"
+    },
+    {
+      "name": "Kunai de Três Pontas",
+      "itemId": "item-anime-naruto-kunai-tres-pontas",
+      "destName": "kunai-tres-pontas.png"
+    },
+    {
+      "name": "Marca de Hiraishin",
+      "itemId": "item-anime-naruto-marca-hiraishin",
+      "destName": "marca-hiraishin.png"
+    },
+    {
+      "name": "Cristal do Primeiro",
+      "itemId": "item-anime-naruto-cristal-primeiro",
+      "destName": "cristal-primeiro.png"
+    },
+    {
+      "name": "Gota Suiton Pura",
+      "itemId": "item-anime-naruto-gota-suiton-pura",
+      "destName": "gota-suiton-pura.png"
+    },
+    {
+      "name": "Selo de Edo Tensei",
+      "itemId": "item-anime-naruto-selo-edo-tensei",
+      "destName": "selo-edo-tensei.png"
+    },
+    {
+      "name": "Areia Fina",
+      "itemId": "item-anime-naruto-areia-fina",
+      "destName": "areia-fina.png"
+    },
+    {
+      "name": "Cabaça de Areia",
+      "itemId": "item-anime-naruto-cabaca-areia",
+      "destName": "cabaca-areia.png"
+    },
+    {
+      "name": "Areia Dourada",
+      "itemId": "item-anime-naruto-areia-dourada",
+      "destName": "areia-dourada.png"
+    },
+    {
+      "name": "Chakra de Shukaku",
+      "itemId": "item-anime-naruto-chakra-shukaku",
+      "destName": "chakra-shukaku.png"
+    },
+    {
+      "name": "Papel de Leque",
+      "itemId": "item-anime-naruto-papel-leque",
+      "destName": "papel-leque.png"
+    },
+    {
+      "name": "Leque de Treino",
+      "itemId": "item-anime-naruto-leque-treino",
+      "destName": "leque-treino.png"
+    },
+    {
+      "name": "Leque Tessen",
+      "itemId": "item-anime-naruto-leque-tessen",
+      "destName": "leque-tessen.png"
+    },
+    {
+      "name": "Chakra Futon",
+      "itemId": "item-anime-naruto-chakra-futon",
+      "destName": "chakra-futon.png"
+    },
+    {
+      "name": "Pergaminho Kirikiri Mai",
+      "itemId": "item-anime-naruto-pergaminho-kirikiri-mai",
+      "destName": "pergaminho-kirikiri-mai.png"
+    },
+    {
+      "name": "Madeira de Marionete",
+      "itemId": "item-anime-naruto-madeira-marionete",
+      "destName": "madeira-marionete.png"
+    },
+    {
+      "name": "Peça de Karasu",
+      "itemId": "item-anime-naruto-peca-karasu",
+      "destName": "peca-karasu.png"
+    },
+    {
+      "name": "Fio de Chakra",
+      "itemId": "item-anime-naruto-fio-chakra",
+      "destName": "fio-chakra.png"
+    },
+    {
+      "name": "Selo das Dez Marionetes",
+      "itemId": "item-anime-naruto-selo-dez-marionetes",
+      "destName": "selo-dez-marionetes.png"
+    },
+    {
+      "name": "Frasco de Névoa",
+      "itemId": "item-anime-naruto-frasco-nevoa",
+      "destName": "frasco-nevoa.png"
+    },
+    {
+      "name": "Kubikiribocho",
+      "itemId": "item-anime-naruto-kubikiribocho",
+      "destName": "kubikiribocho.png"
+    },
+    {
+      "name": "Cristal de Gelo",
+      "itemId": "item-anime-naruto-cristal-gelo",
+      "destName": "cristal-gelo.png"
+    },
+    {
+      "name": "Senbon Congelada",
+      "itemId": "item-anime-naruto-senbon-congelada",
+      "destName": "senbon-congelada.png"
+    },
+    {
+      "name": "Espelho Demoníaco",
+      "itemId": "item-anime-naruto-espelho-demoniaco",
+      "destName": "espelho-demoniaco.png"
+    },
+    {
+      "name": "Escama de Tubarão",
+      "itemId": "item-anime-naruto-escama-tubarao",
+      "destName": "escama-tubarao.png"
+    },
+    {
+      "name": "Fragmento de Samehada",
+      "itemId": "item-anime-naruto-fragmento-samehada",
+      "destName": "fragmento-samehada.png"
+    },
+    {
+      "name": "Escama de Serpente",
+      "itemId": "item-anime-naruto-escama-serpente",
+      "destName": "escama-serpente.png"
+    },
+    {
+      "name": "Kusanagi da Grama",
+      "itemId": "item-anime-naruto-kusanagi-grama",
+      "destName": "kusanagi-grama.png"
+    },
+    {
+      "name": "Frasco de Experimento",
+      "itemId": "item-anime-naruto-frasco-experimento",
+      "destName": "frasco-experimento.png"
+    },
+    {
+      "name": "Essência de Yamata",
+      "itemId": "item-anime-naruto-essencia-yamata",
+      "destName": "essencia-yamata.png"
+    },
+    {
+      "name": "Óculos Redondos",
+      "itemId": "item-anime-naruto-oculos-redondos",
+      "destName": "oculos-redondos.png"
+    },
+    {
+      "name": "Bisturi de Chakra",
+      "itemId": "item-anime-naruto-bisturi-chakra",
+      "destName": "bisturi-chakra.png"
+    },
+    {
+      "name": "Osso do Clã Kaguya",
+      "itemId": "item-anime-naruto-osso-cla-kaguya",
+      "destName": "osso-cla-kaguya.png"
+    },
+    {
+      "name": "Medula Shikotsumyaku",
+      "itemId": "item-anime-naruto-medula-shikotsumyaku",
+      "destName": "medula-shikotsumyaku.png"
+    },
+    {
+      "name": "Cascalho Doton",
+      "itemId": "item-anime-naruto-cascalho-doton",
+      "destName": "cascalho-doton.png"
+    },
+    {
+      "name": "Núcleo da Prisão de Terra",
+      "itemId": "item-anime-naruto-nucleo-prisao-terra",
+      "destName": "nucleo-prisao-terra.png"
+    },
+    {
+      "name": "Bocal de Flauta",
+      "itemId": "item-anime-naruto-bocal-flauta",
+      "destName": "bocal-flauta.png"
+    },
+    {
+      "name": "Flauta dos Doki",
+      "itemId": "item-anime-naruto-flauta-doki",
+      "destName": "flauta-doki.png"
+    },
+    {
+      "name": "Retalho Duplo",
+      "itemId": "item-anime-naruto-retalho-duplo",
+      "destName": "retalho-duplo.png"
+    },
+    {
+      "name": "Célula Parasita",
+      "itemId": "item-anime-naruto-celula-parasita",
+      "destName": "celula-parasita.png"
+    },
+    {
+      "name": "Teia Dourada",
+      "itemId": "item-anime-naruto-teia-dourada",
+      "destName": "teia-dourada.png"
+    },
+    {
+      "name": "Arco de Teia",
+      "itemId": "item-anime-naruto-arco-teia",
+      "destName": "arco-teia.png"
+    },
+    {
+      "name": "Núcleo Vivo de Sasori",
+      "itemId": "item-anime-naruto-nucleo-vivo-sasori",
+      "destName": "nucleo-vivo-sasori.png"
+    },
+    {
+      "name": "Placa de Hiruko",
+      "itemId": "item-anime-naruto-placa-hiruko",
+      "destName": "placa-hiruko.png"
+    },
+    {
+      "name": "Cauda-Ferrão",
+      "itemId": "item-anime-naruto-cauda-ferrao",
+      "destName": "cauda-ferrao.png"
+    },
+    {
+      "name": "Argila Bruta",
+      "itemId": "item-anime-naruto-argila-bruta",
+      "destName": "argila-bruta.png"
+    },
+    {
+      "name": "Argila Explosiva",
+      "itemId": "item-anime-naruto-argila-explosiva",
+      "destName": "argila-explosiva.png"
+    },
+    {
+      "name": "Bastão Negro de Chakra",
+      "itemId": "item-anime-naruto-bastao-negro-chakra",
+      "destName": "bastao-negro-chakra.png"
+    },
+    {
+      "name": "Olho Rinnegan",
+      "itemId": "item-anime-naruto-olho-rinnegan",
+      "destName": "olho-rinnegan.png"
+    }
+  ]
+}

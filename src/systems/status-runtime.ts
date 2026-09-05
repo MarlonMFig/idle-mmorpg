@@ -236,7 +236,10 @@ export class StatusEffectRuntime {
     if (this.destroyed) return;
     for (const [id, sprite] of this.vfx) {
       const row = this.instances.get(id);
-      if (!row || !sprite.active) continue;
+      if (!row || !sprite.active) {
+        if (sprite && !sprite.active) this.vfx.delete(id);
+        continue;
+      }
       const pos = this.hooks?.getTargetPos(row.targetId);
       if (!pos) continue;
       sprite.x = pos.x;

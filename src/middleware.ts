@@ -1,7 +1,11 @@
-import { type NextRequest } from 'next/server';
+import { shouldUseSupabase } from '@/lib/auth/local-runtime';
+import { type NextRequest, NextResponse } from 'next/server';
 import { updateSession } from '@/lib/supabase/middleware';
 
 export async function middleware(request: NextRequest) {
+  if (!shouldUseSupabase()) {
+    return NextResponse.next();
+  }
   return updateSession(request);
 }
 

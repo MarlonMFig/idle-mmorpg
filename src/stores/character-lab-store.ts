@@ -1,4 +1,5 @@
 import { isDevMode, setDevTestCatalogLookType, setDevLabSessionActive, resetDangerousDevOverrides } from '@/config/devConfig';
+import { captureOfficialProgressFreezeIfNeeded, restoreOfficialProgressFromFreeze } from '@/lib/official-progress-freeze';
 import { combatEnergyStore } from '@/stores/combat-energy-store';
 import type { CharacterAuraDef } from '@/data/character-packs';
 import type { LabExecutionDebug } from '@/data/skill-execution-def';
@@ -68,7 +69,7 @@ import {
 
 export const CHARACTER_LAB_STORAGE_KEY = 'idle-mmorpg:dev-character-lab-v1';
 export const LAB_DUMMY_ID = 'dev-lab-dummy';
-export const LAB_ENEMY_COUNT_MAX = 6;
+export const LAB_ENEMY_COUNT_MAX = 12;
 const LAB_DUMMY_EXTRA_PREFIX = `${LAB_DUMMY_ID}-`;
 
 /** ID estável do dummy do Lab — índice 0 mantém o id legado. */
@@ -830,6 +831,7 @@ export const characterLabStore = {
     if (store.getSnapshot().isOpen) return;
     const state = store.getSnapshot();
     setDevLabSessionActive(true);
+    captureOfficialProgressFreezeIfNeeded();
     patch({
       isOpen: true,
       sessionStartedAt: Date.now(),
@@ -849,6 +851,7 @@ export const characterLabStore = {
   },
 
   close(): void {
+    restoreOfficialProgressFromFreeze();
     resetDangerousDevOverrides();
     setDevTestCatalogLookType(null);
     setDevLabSessionActive(false);

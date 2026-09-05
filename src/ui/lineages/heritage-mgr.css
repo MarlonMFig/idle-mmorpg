@@ -1,0 +1,447 @@
+
+/* —— Menu Herança —— */
+.heritage-mgr-window.mgr-window--xl {
+  width: min(1080px, 96vw);
+}
+
+.heritage-mgr__body {
+  overflow: auto;
+  padding: 0.85rem 1rem 1rem;
+}
+
+.heritage-mgr {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-height: min(62vh, 560px);
+}
+
+.heritage-mgr__archetype-note {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(200, 210, 220, 0.72);
+}
+
+.heritage-mgr__section-head {
+  margin-bottom: 0.7rem;
+}
+
+.heritage-mgr__section-head h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #e8f0ff;
+}
+
+.heritage-mgr__section-head p {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(190, 200, 210, 0.72);
+  max-width: 52ch;
+}
+
+.heritage-mgr__locked {
+  color: #f0b070 !important;
+}
+
+/* Abas principais */
+.heritage-mgr__tabs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.heritage-mgr__tab {
+  appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  min-height: 3.4rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.55rem;
+  background: rgba(12, 16, 24, 0.88);
+  color: rgba(232, 239, 230, 0.78);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 140ms ease,
+    background 140ms ease,
+    color 140ms ease;
+}
+
+.heritage-mgr__tab:hover {
+  border-color: rgba(106, 168, 255, 0.35);
+  color: #f2f6ff;
+}
+
+.heritage-mgr__tab.is-on {
+  border-color: rgba(106, 168, 255, 0.65);
+  background: linear-gradient(165deg, rgba(40, 70, 120, 0.55), rgba(18, 28, 44, 0.95));
+  color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.heritage-mgr__tab.is-locked {
+  opacity: 0.72;
+}
+
+.heritage-mgr__tab.has-pick:not(.is-on) {
+  border-color: rgba(122, 212, 168, 0.28);
+}
+
+.heritage-mgr__tab-label {
+  font-size: 0.72rem;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+}
+
+.heritage-mgr__tab-meta {
+  font-size: 0.62rem;
+  color: rgba(170, 190, 210, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.heritage-mgr__tab.is-on .heritage-mgr__tab-meta {
+  color: #9ec8ff;
+}
+
+.heritage-mgr__tab.is-locked .heritage-mgr__tab-meta {
+  color: #f0b070;
+}
+
+.heritage-mgr__panel {
+  flex: 1;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.65rem;
+  padding: 0.85rem 0.9rem 1rem;
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.heritage-mgr__choice-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.55rem;
+}
+
+.heritage-mgr__choice-grid--gates {
+  width: 100%;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.heritage-mgr__choice-art--gate {
+  width: 4.5rem !important;
+  height: 4.5rem !important;
+  aspect-ratio: 1;
+  object-fit: contain;
+  image-rendering: pixelated;
+  border-radius: 0.35rem;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.heritage-mgr__choice-art--seal {
+  width: 5rem !important;
+  height: 5rem !important;
+  aspect-ratio: 1;
+  object-fit: contain;
+  image-rendering: auto;
+  border-radius: 0.35rem;
+  background: rgba(0, 0, 0, 0.22);
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+}
+
+.heritage-mgr__choice-grid.is-locked {
+  opacity: 0.62;
+}
+
+.heritage-mgr__choice-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  height: 100%;
+}
+
+.heritage-mgr__choice-card.is-selected .heritage-mgr__choice {
+  border-color: rgba(122, 212, 168, 0.55);
+  background: rgba(30, 70, 50, 0.38);
+}
+
+.heritage-mgr__choice,
+.heritage-mgr__chip,
+.heritage-mgr__primary,
+.heritage-mgr__clear,
+.heritage-mgr__upgrade {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  background: rgba(20, 24, 32, 0.9);
+  color: #e8efe6;
+  cursor: pointer;
+}
+
+.heritage-mgr__choice {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.28rem;
+  padding: 0.7rem 0.75rem;
+  text-align: left;
+  min-height: 7.5rem;
+}
+
+.heritage-mgr__choice:hover:not(:disabled) {
+  border-color: rgba(106, 168, 255, 0.4);
+}
+
+.heritage-mgr__choice.is-selected {
+  border-color: rgba(106, 168, 255, 0.6);
+  background: rgba(40, 70, 120, 0.38);
+}
+
+.heritage-mgr__choice.is-blocked,
+.heritage-mgr__choice:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+
+.heritage-mgr__choice-kicker {
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9ec8ff;
+}
+
+.heritage-mgr__choice-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f4f7fb;
+}
+
+.heritage-mgr__choice-tecnica {
+  font-size: 0.78rem;
+  color: #9ec8ff;
+  margin-top: -0.1rem;
+}
+
+.heritage-mgr__choice-grid--levels {
+  width: 100%;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.heritage-mgr__choice--art {
+  align-items: center;
+  text-align: center;
+  min-height: 0;
+  padding: 0.85rem 0.55rem 1rem;
+  gap: 0.35rem;
+}
+
+/* Lista de clãs: tamanho fixo (evita esticar PNG baixo e “inchamento” desigual). */
+.heritage-mgr__choice-grid:not(.heritage-mgr__choice-grid--levels) .heritage-mgr__choice-art {
+  width: 5rem !important;
+  height: 5rem !important;
+  aspect-ratio: 1;
+  object-fit: contain;
+  image-rendering: auto;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+}
+
+/* Níveis da técnica: aproveitam a largura do card. */
+.heritage-mgr__choice-grid--levels .heritage-mgr__choice-art {
+  width: min(11.5rem, 88%) !important;
+  height: auto !important;
+  aspect-ratio: 1;
+  max-width: 100%;
+  object-fit: contain;
+  image-rendering: auto;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+  flex: 0 0 auto;
+}
+
+.heritage-mgr__choice-art {
+  flex: 0 0 auto;
+}
+
+.heritage-mgr__clan-tech {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.heritage-mgr__clan-tech-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 0.75rem;
+}
+
+.heritage-mgr__clan-tech-icon {
+  width: 2.75rem !important;
+  height: 2.75rem !important;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex: 0 0 auto;
+}
+
+.heritage-mgr__clan-tech-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.heritage-mgr__clan-tech-copy strong {
+  font-size: 0.95rem;
+  color: #f2f6fb;
+}
+
+.heritage-mgr__clan-tech-copy span {
+  font-size: 0.78rem;
+  color: #9ec8ff;
+}
+
+.heritage-mgr__choice-mods {
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: rgba(190, 205, 220, 0.82);
+}
+
+.heritage-mgr__choice-next {
+  font-size: 0.64rem;
+  color: rgba(158, 200, 255, 0.78);
+}
+
+.heritage-mgr__choice-desc {
+  font-size: 0.64rem;
+  color: rgba(180, 190, 200, 0.65);
+}
+
+.heritage-mgr__upgrade {
+  padding: 0.4rem 0.55rem;
+  font-size: 0.72rem;
+  border-color: rgba(232, 200, 106, 0.4);
+  background: rgba(60, 48, 20, 0.55);
+  color: #f0d070;
+}
+
+.heritage-mgr__upgrade:hover {
+  border-color: rgba(232, 200, 106, 0.7);
+}
+
+.heritage-mgr__clear {
+  margin-top: 0.75rem;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.76rem;
+  color: rgba(232, 200, 106, 0.95);
+  border-color: rgba(232, 200, 106, 0.28);
+  background: transparent;
+}
+
+.heritage-mgr__sennin-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.7rem;
+  font-size: 0.78rem;
+}
+
+.heritage-mgr__sennin-phase {
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.heritage-mgr__sennin-phase.is-charging {
+  color: #9ec8ff;
+  border-color: rgba(106, 168, 255, 0.45);
+}
+
+.heritage-mgr__sennin-phase.is-active {
+  color: #7ad4a8;
+  border-color: rgba(122, 212, 168, 0.5);
+}
+
+.heritage-mgr__sennin-phase.is-cooldown {
+  color: #f0b070;
+  border-color: rgba(240, 176, 112, 0.45);
+}
+
+.heritage-mgr__primary {
+  padding: 0.4rem 0.7rem;
+  font-size: 0.78rem;
+  border-color: rgba(106, 168, 255, 0.45);
+  background: rgba(50, 90, 150, 0.4);
+}
+
+.heritage-mgr__archetype-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.heritage-mgr__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.76rem;
+}
+
+.heritage-mgr__chip.is-selected {
+  border-color: rgba(106, 168, 255, 0.55);
+}
+
+.heritage-mgr__footer-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.heritage-mgr__footer-label {
+  color: #9ec8ff;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.68rem;
+}
+
+@media (max-width: 900px) {
+  .heritage-mgr__tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .heritage-mgr__choice-grid--levels {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .heritage-mgr__choice-grid--gates {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .heritage-mgr__tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .heritage-mgr__choice-grid,
+  .heritage-mgr__choice-grid--gates,
+  .heritage-mgr__choice-grid--levels {
+    grid-template-columns: 1fr;
+  }
+}

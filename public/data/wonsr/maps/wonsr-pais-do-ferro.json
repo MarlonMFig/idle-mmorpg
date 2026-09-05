@@ -1,0 +1,82 @@
+{
+  "mapKey": "huntWonsrPaisDoFerro",
+  "slug": "wonsr-pais-do-ferro",
+  "label": "wonsr-pais-do-ferro",
+  "source": "01_Hospital_Konoha_Proporcional_3840x2160.png",
+  "image": "/maps/wonsr-pais-do-ferro.png",
+  "tmx": "/maps/wonsr-pais-do-ferro.tmx",
+  "cacheTag": "tdnov2026",
+  "width": 4096,
+  "height": 2304,
+  "spawn": {
+    "x": 2040,
+    "y": 1144
+  },
+  "enemySpawns": [
+    {
+      "x": 2056,
+      "y": 424
+    },
+    {
+      "x": 1304,
+      "y": 488
+    },
+    {
+      "x": 1928,
+      "y": 808
+    },
+    {
+      "x": 1512,
+      "y": 856
+    },
+    {
+      "x": 2584,
+      "y": 856
+    },
+    {
+      "x": 2280,
+      "y": 872
+    },
+    {
+      "x": 1688,
+      "y": 1080
+    },
+    {
+      "x": 2392,
+      "y": 1208
+    },
+    {
+      "x": 1800,
+      "y": 1416
+    },
+    {
+      "x": 1496,
+      "y": 1432
+    },
+    {
+      "x": 2568,
+      "y": 1464
+    },
+    {
+      "x": 2152,
+      "y": 1480
+    },
+    {
+      "x": 1240,
+      "y": 1576
+    },
+    {
+      "x": 2808,
+      "y": 1624
+    },
+    {
+      "x": 2024,
+      "y": 1768
+    },
+    {
+      "x": 2024,
+      "y": 2056
+    }
+  ],
+  "walkMode": "forest"
+}

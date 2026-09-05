@@ -21,7 +21,6 @@ const TEST_CHARACTERS = [
 
 const TEST_LEVEL = 100;
 const TEST_STARS = 0;
-const TEST_AWAKENING = 0;
 
 const MID_COMPONENT = Math.round(
   (CONFIG.potencial.componenteMin + CONFIG.potencial.componenteMax) / 2,
@@ -48,7 +47,6 @@ function statsFor(
     qualityStatMultiplier: multiplier,
     potential: pot,
     characterId,
-    awakeningLevel: TEST_AWAKENING,
   }).totals;
   return {
     hp: roundAttributeForDisplay(totals.hp),
@@ -61,7 +59,6 @@ function statsFor(
       qualityStatMultiplier: multiplier,
       potential: pot,
       characterId,
-      awakeningLevel: TEST_AWAKENING,
     }),
   };
 }
@@ -92,8 +89,7 @@ export function CharacterLabQualityTester() {
         sorteado. Não altera HP/ATK/DEF do inimigo da Hunt.
       </p>
       <p className="character-lab__hint">
-        Level {TEST_LEVEL} · Stars {TEST_STARS} · Awakening {TEST_AWAKENING}. Midpoint só como
-        referência.
+        Level {TEST_LEVEL} · Stars {TEST_STARS}. Midpoint só como referência.
       </p>
       <label className="character-lab__hint">
         Character

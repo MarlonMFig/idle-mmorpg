@@ -52,7 +52,7 @@ export function buildMyRankingProfile(nicknameFallback = 'Jogador'): RankingPlay
     activeStrength: attributesStore.getStrength(),
     activeDefense: attributesStore.getDefense(),
     activeSpeed: attributesStore.getSpeed(),
-    activeAwakening: active?.awakeningLevel ?? 0,
+    activeAwakening: 0,
     lineageRank: lineage.rank,
   });
 

@@ -10,6 +10,7 @@ import {
 } from '@/data/character-packs';
 import { applySharedVfxToAnim } from '@/data/vfx/apply-skill-vfx';
 import { resolveCharacterLineageId } from '@/data/character-lineages';
+import { getCharacterNature } from '@/data/character-natures';
 import { getPackAnimation } from '@/data/characters/animation-slots';
 import { resolveCharacterUniverse } from '@/data/characters/universes';
 import { getSkill } from '@/data/skills';
@@ -35,6 +36,7 @@ function toDefinition(pack: CharacterPack): CharacterDefinition {
         : null,
       sourceId: pack.id,
     }),
+    natureId: getCharacterNature(pack.id).id,
     lookTypes,
     active: !isInactiveCharacterPackId(pack.id),
     pack,

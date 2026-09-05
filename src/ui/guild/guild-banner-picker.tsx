@@ -5,6 +5,7 @@ import {
   GUILD_COLORS,
   GUILD_DEFAULT_EMBLEM,
   GUILD_EMBLEMS,
+  isGuildEmblemIcon,
 } from '@/constants/guild';
 
 export function crestGlow(color: string): string {
@@ -19,7 +20,8 @@ export function GuildEmblem({
   className?: string;
 }) {
   if (!value.startsWith('/')) return <span className={className}>{value}</span>;
-  return <Image src={value} alt="" width={160} height={210} className={className} unoptimized />;
+  const src = isGuildEmblemIcon(value) ? value : GUILD_DEFAULT_EMBLEM;
+  return <Image src={src} alt="" width={256} height={256} className={className} unoptimized />;
 }
 
 export function resolveEmblemIndex(icon: string | undefined): number {

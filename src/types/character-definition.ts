@@ -1,4 +1,5 @@
 import type { CharacterPack, CharacterSkillAnimDef, SpriteSheetDef } from '@/data/character-packs';
+import type { CharacterNatureId } from '@/data/character-natures';
 import type { LineageId } from '@/types/character-meta';
 import type { CharacterAwakeningConfig } from '@/constants/character-awakening';
 import type { SkillDefinition, SkillHitSpec } from '@/types/skill';
@@ -78,6 +79,8 @@ export interface CharacterDefinition {
   universe: CharacterUniverse;
   /** Afinidade de Linhagem (CharacterDefinition — não duplicar na instância). */
   lineageId: LineageId;
+  /** Natureza primária (ex.: Vento, Fogo). Metadado de ficha. */
+  natureId: CharacterNatureId;
   lookTypes: readonly number[];
   active: boolean;
   /** Pack visual + skillAnims + hotbar (fonte atual). */

@@ -10,6 +10,7 @@ import { skillsStore } from '@/stores/skills-store';
 import { teamStore } from '@/stores/team-store';
 import { villageStore } from '@/stores/village-store';
 import { vitalsStore } from '@/stores/vitals-store';
+import { applyVillageBonus } from '@/lib/village-bonuses';
 
 function syncAccountLevelUp(accountLeveled: boolean): void {
   achievementsStore.evaluate('playerLevel');
@@ -69,7 +70,7 @@ export function grantHuntKillXp(enemyHp: number | Decimal, enemyLevel: number): 
     enemyHp,
     xpMultiplier: boosts,
   });
-  const amount = row.finalXp;
+  const amount = row.finalXp.mul(applyVillageBonus(1, 'xpPerKill'));
   const accountLeveled = vitalsStore.addXp(amount);
   syncAccountLevelUp(accountLeveled);
   if (hunter && teamStore.addCharacterXp(hunter.id, amount)) {

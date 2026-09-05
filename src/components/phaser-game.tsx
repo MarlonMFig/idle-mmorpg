@@ -2,6 +2,8 @@
 
 import { useEffect, useRef } from 'react';
 import type { Game } from 'phaser';
+import { resolveCanvasSize } from '@/game/canvas-size';
+import { bootLoadingStore } from '@/stores/boot-loading-store';
 import type { PlayerCreation } from '@/types/player-creation';
 
 export interface PhaserGameProps {
@@ -10,12 +12,10 @@ export interface PhaserGameProps {
 
 const PHASER_GAME_KEY = '__idleMmorpgPhaserGame';
 const PHASER_SESSION_KEY = '__idleMmorpgPhaserSession';
-const PHASER_CREATING_KEY = '__idleMmorpgPhaserCreating';
 
 type PhaserGlobal = {
   [PHASER_GAME_KEY]?: Game;
   [PHASER_SESSION_KEY]?: string;
-  [PHASER_CREATING_KEY]?: Promise<Game | null>;
 };
 
 function sessionKey(player: PlayerCreation): string {
@@ -26,9 +26,41 @@ function isGameAlive(game: Game | undefined): game is Game {
   return Boolean(game && game.isRunning && game.canvas);
 }
 
+/** Aguarda o host ter layout antes de criar/redimensionar o canvas WebGL. */
+function waitForHostLayout(host: HTMLElement): Promise<void> {
+  const ready = () => host.clientWidth >= 2 && host.clientHeight >= 2;
+  if (ready()) return Promise.resolve();
+
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      ro.disconnect();
+      resolve();
+    };
+
+    const ro = new ResizeObserver(() => {
+      if (ready()) finish();
+    });
+    ro.observe(host);
+    requestAnimationFrame(() => {
+      if (ready()) finish();
+    });
+    window.setTimeout(finish, 500);
+  });
+}
+
+function syncCanvasSize(game: Game, host: HTMLElement): void {
+  const { width, height } = resolveCanvasSize(host);
+  if (game.scale.width === width && game.scale.height === height) return;
+  game.scale.resize(width, height);
+}
+
 function attachCanvas(game: Game, host: HTMLDivElement): void {
   const canvas = game.canvas;
   if (canvas && canvas.parentElement !== host) host.appendChild(canvas);
+  syncCanvasSize(game, host);
 }
 
 /**
@@ -37,51 +69,65 @@ function attachCanvas(game: Game, host: HTMLDivElement): void {
  */
 export function PhaserGame({ player }: PhaserGameProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
+  const mountGenRef = useRef(0);
 
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
 
+    const mountGen = ++mountGenRef.current;
+    let cancelled = false;
     const g = globalThis as PhaserGlobal;
     const key = sessionKey(player);
 
-    const existing = g[PHASER_GAME_KEY];
-    if (isGameAlive(existing) && g[PHASER_SESSION_KEY] === key) {
-      attachCanvas(existing, host);
-      return;
-    }
+    async function bootstrap(): Promise<void> {
+      const existing = g[PHASER_GAME_KEY];
+      if (isGameAlive(existing) && g[PHASER_SESSION_KEY] === key) {
+        await waitForHostLayout(host);
+        if (cancelled || mountGen !== mountGenRef.current || !hostRef.current) return;
+        attachCanvas(existing, hostRef.current);
+        // Fast Refresh / remount: se o mundo já existe, não prender o overlay.
+        if (existing.registry.get('worldReady') || bootLoadingStore.getSnapshot().ready) {
+          bootLoadingStore.setReady(true);
+        }
+        return;
+      }
 
-    if (existing && g[PHASER_SESSION_KEY] !== key) {
-      existing.destroy(true);
-      g[PHASER_GAME_KEY] = undefined;
-    }
+      if (existing) {
+        existing.destroy(true);
+        g[PHASER_GAME_KEY] = undefined;
+      }
 
-    if (!g[PHASER_CREATING_KEY]) {
+      bootLoadingStore.reset();
+
+      await waitForHostLayout(host);
+      if (cancelled || mountGen !== mountGenRef.current || !hostRef.current) return;
+
+      hostRef.current.querySelectorAll('canvas').forEach((node) => node.remove());
+
+      const { createGame } = await import('@/game/create-game');
+      if (cancelled || mountGen !== mountGenRef.current || !hostRef.current) return;
+
       g[PHASER_SESSION_KEY] = key;
-      g[PHASER_CREATING_KEY] = import('@/game/create-game')
-        .then(({ createGame }) => {
-          const live = g[PHASER_GAME_KEY];
-          if (isGameAlive(live) && g[PHASER_SESSION_KEY] === key) return live;
-          const parent = hostRef.current;
-          if (!parent) return null;
-          parent.querySelectorAll('canvas').forEach((node) => node.remove());
-          const game = createGame(parent, {
-            playerId: `player-${player.nickname.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
-            nickname: player.nickname,
-            villageId: player.villageId,
-            starterCharacterId: player.starterCharacterId,
-          });
-          g[PHASER_GAME_KEY] = game;
-          return game;
-        })
-        .finally(() => {
-          g[PHASER_CREATING_KEY] = undefined;
-        });
+      const game = createGame(hostRef.current, {
+        playerId: `player-${player.nickname.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
+        nickname: player.nickname,
+        villageId: player.villageId,
+        starterCharacterId: player.starterCharacterId,
+      });
+      g[PHASER_GAME_KEY] = game;
+
+      if (cancelled || mountGen !== mountGenRef.current || !hostRef.current) return;
+      attachCanvas(game, hostRef.current);
     }
 
-    void g[PHASER_CREATING_KEY]?.then((game) => {
-      if (game && hostRef.current) attachCanvas(game, hostRef.current);
+    void bootstrap().catch((error) => {
+      console.error('[PhaserGame] falha ao iniciar', error);
     });
+
+    return () => {
+      cancelled = true;
+    };
   }, [player.nickname, player.villageId, player.starterCharacterId]);
 
   return <div ref={hostRef} className="phaser-host" aria-label="Área do jogo" />;

@@ -36,7 +36,7 @@ export interface HuntTarget {
   }>;
 }
 
-export type HuntSelectorTab = 'naruto' | 'naruto-topdown' | 'bosses' | 'wonsr';
+export type HuntSelectorTab = 'naruto-topdown' | 'bosses' | 'wonsr';
 
 export interface HuntDefinition {
   id: string;
@@ -44,7 +44,7 @@ export interface HuntDefinition {
   requiredLevel: number;
   mapKey: MapKey;
   description: string;
-  /** Aba do seletor. Ausente = Naruto World. */
+  /** Aba do seletor (`naruto-topdown`, `bosses`, `wonsr`). */
   tab?: HuntSelectorTab;
   /** false = Hunt não selável (bosses, dummy de treino). Default true. */
   sealable?: boolean;

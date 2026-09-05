@@ -1,3 +1,4 @@
+import { LINEAGE_RANK_MODIFIERS } from '@/constants/lineage-rank-requirements';
 import {
   addLineageModifiers,
   emptyLineageModifiers,
@@ -68,13 +69,16 @@ export function getLineageSpecializationModifiers(
   }
 
   const idProgress: LineageIdProgress = getLineageIdProgress(playerLineageProgress, lineageId);
+  const rank = idProgress.rank;
+  const rankMods =
+    rank >= 1 && rank <= 4 ? LINEAGE_RANK_MODIFIERS[rank as 1 | 2 | 3 | 4] : {};
   const selected = idProgress.selectedSpecializationId;
-  if (!selected) return {};
+  if (!selected) return { ...rankMods };
   const spec = definition.specializations.find((row) => row.id === selected);
-  if (!spec) return {};
+  if (!spec) return { ...rankMods };
   const level = idProgress.specializationProgress[selected]?.level ?? idProgress.specializationLevel;
-  if (level <= 0) return {};
-  return sumSpecializationLevelModifiers(spec, level);
+  if (level <= 0) return { ...rankMods };
+  return addLineageModifiers(rankMods, sumSpecializationLevelModifiers(spec, level));
 }
 
 export function getActiveLineageSpecializationModifiers(

@@ -2,8 +2,11 @@
  * Item 37 — seleção de provider social (Ranking / Guild / Guild Boss).
  *
  * Produção: backend obrigatório (sem mock silencioso).
- * DEV: local-mock por padrão; backend se SOCIAL_BACKEND=backend.
+ * DEV local: local-mock por padrão (sem Supabase).
+ * DEV + NEXT_PUBLIC_USE_SUPABASE_LOCAL=1: backend para testar Supabase no localhost.
  */
+
+import { isLocalGameplayRuntime } from '@/lib/auth/local-runtime';
 
 export type SocialProviderMode = 'local' | 'backend' | 'unavailable';
 
@@ -33,6 +36,8 @@ export function hasSocialDatabaseConfigured(): boolean {
  */
 export function resolveSocialProviderMode(): SocialProviderMode {
   const isProd = process.env.NODE_ENV === 'production';
+  if (isLocalGameplayRuntime()) return 'local';
+
   const mode = readPublicMode();
 
   if (mode === 'unavailable') return 'unavailable';

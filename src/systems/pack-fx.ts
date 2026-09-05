@@ -345,7 +345,7 @@ export function playPackFx(
       bodyH: bodyH,
       fxW: fxW,
       fxH: fxH,
-      casterSpriteScaleX: caster.sprite.scaleX,
+      casterSpriteScaleX: caster.packFxCasterScaleX(),
       scaleMult: scaleMult,
       ground,
       independentScale: opts?.independentScale === true,
@@ -513,7 +513,7 @@ export function playPackThrowFx(
   noteLabVfx(textureKey, rock);
   opts?.hooks?.onSpawn?.(rock);
   opts?.hooks?.onEffectStart?.();
-  rock.setScale(caster.sprite.scaleX * 1.2 * fit);
+  rock.setScale(caster.packFxCasterScaleX() * 1.2 * fit);
   clampAboveFloor(rock, fromY, bodyLift);
   const landingY = Math.min(endY, toY + bodyLift * 0.1 - rock.displayHeight / 2);
   if (opts?.flip) {
@@ -646,7 +646,7 @@ function playTravelFx(
       bodyH: bodyH,
       fxW: fxW,
       fxH: fxH,
-      casterSpriteScaleX: caster.sprite.scaleX,
+      casterSpriteScaleX: caster.packFxCasterScaleX(),
       scaleMult: scaleMult,
       independentScale: Boolean(anim.fxIndependentScale),
       worldScale: caster.worldScale,
@@ -964,7 +964,7 @@ export function playPackImpactFx(
         bodyH,
         fxW: fxDef.frameWidth,
         fxH,
-        casterSpriteScaleX: caster.sprite.scaleX,
+        casterSpriteScaleX: caster.packFxCasterScaleX(),
         scaleMult,
         ground: false,
         independentScale: anim.fxIndependentScale === true,

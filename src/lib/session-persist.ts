@@ -3,6 +3,7 @@ import {
   OFFICIAL_SESSION_STORAGE_KEY,
   DEV_SESSION_STORAGE_KEY,
 } from '@/config/devConfig';
+import { isSocialBackendActive } from '@/config/social-backend';
 import { STARTERS } from '@/data/starters';
 import { addExperience } from '@/lib/player-progression';
 import { decimalToSave, decimalFromSave } from '@/lib/decimal-persist';
@@ -46,6 +47,8 @@ import { parsePersistedInventory, type PersistedInventory } from '@/lib/inventor
 import { rewardIdempotency } from '@/lib/reward-service';
 import { setSessionSaveFlusher } from '@/lib/session-save-flush';
 import { DEFAULT_PLAYER_LINEAGE_PROGRESS, type PlayerLineageProgress } from '@/types/lineage';
+import { heritageStore } from '@/stores/heritage-store';
+import type { HeritageLoadout } from '@/types/heritage';
 import {
   beginOfficialProgressFreeze,
   clearOfficialProgressFreeze,
@@ -103,7 +106,7 @@ function getSessionStorageKey(): string {
  */
 const SESSION_VERSION = 13 as const;
 const LEGACY_SESSION_VERSIONS = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]);
-const SAVE_DEBOUNCE_MS = 250;
+const SAVE_DEBOUNCE_MS = 1_500;
 const CLOUD_SAVE_DEBOUNCE_MS = 1_500;
 
 const STARTER_IDS = new Set<string>(STARTERS.map((entry) => entry.id));
@@ -194,6 +197,8 @@ export interface PersistedSession {
    * Ausente em saves v11-: migration cria defaults (Preset 1 = equipe atual).
    */
   teamPresets?: PersistedTeamPresets;
+  /** Herança — portões / clã / invocação / sennin / selo (loadout). */
+  heritage?: { loadout: HeritageLoadout };
 }
 
 let trackedPlayer: PlayerCreation | null = null;
@@ -248,6 +253,116 @@ function parseDailyLogin(raw: unknown): DailyLoginState | undefined {
 function parseBosses(raw: unknown): BossProgressState | undefined {
   if (!raw || typeof raw !== 'object') return undefined;
   return raw as BossProgressState;
+}
+
+function normalizeSessionBlob(raw: unknown): unknown {
+  if (!raw || typeof raw !== 'object') return raw;
+  const data = { ...(raw as Record<string, unknown>) };
+
+  if (typeof data.version !== 'number' || !LEGACY_SESSION_VERSIONS.has(data.version)) {
+    data.version = SESSION_VERSION;
+  }
+
+  const playerRaw = data.player;
+  if (!playerRaw || typeof playerRaw !== 'object') return data;
+  const player = { ...(playerRaw as Record<string, unknown>) };
+
+  const starter = player.starterCharacterId;
+  if (typeof starter !== 'string' || !STARTER_IDS.has(starter)) {
+    if (starter === 'naruto' || starter === 'naruto-kid') player.starterCharacterId = 'naruto-classic';
+    else if (starter === 'sasuke' || starter === 'sasuke-kid') player.starterCharacterId = 'sasuke-classic';
+    else player.starterCharacterId = 'naruto-classic';
+  }
+
+  if (typeof player.villageId !== 'string' || !player.villageId) {
+    player.villageId = 'konoha';
+  }
+
+  const nickname =
+    typeof player.nickname === 'string'
+      ? player.nickname.trim()
+      : typeof player.name === 'string'
+        ? player.name.trim()
+        : '';
+  if (nickname.length < 2) {
+    player.nickname = 'Shinobi';
+  } else {
+    player.nickname = nickname;
+  }
+
+  data.player = player;
+  return data;
+}
+
+function tryParseSessionFromRaw(raw: string): PersistedSession | null {
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    const strict = parsePersistedSession(parsed);
+    if (strict) return strict;
+    return parsePersistedSession(normalizeSessionBlob(parsed));
+  } catch {
+    return null;
+  }
+}
+
+function looksLikeSessionRaw(raw: string): boolean {
+  return raw.length >= 24 && raw.includes('"player"') && raw.includes('"vitals"');
+}
+
+interface StoredSessionCandidate {
+  storageKey: string;
+  session: PersistedSession;
+}
+
+function collectStoredSessionCandidates(): StoredSessionCandidate[] {
+  if (typeof window === 'undefined') return [];
+  const keys = new Set<string>([
+    getSessionStorageKey(),
+    OFFICIAL_SESSION_STORAGE_KEY,
+    DEV_SESSION_STORAGE_KEY,
+  ]);
+  for (let index = 0; index < window.localStorage.length; index += 1) {
+    const key = window.localStorage.key(index);
+    if (!key) continue;
+    if (key.includes('idle-mmorpg') || key.includes('session')) keys.add(key);
+  }
+
+  const candidates: StoredSessionCandidate[] = [];
+  const seen = new Set<string>();
+  for (const storageKey of keys) {
+    const raw = window.localStorage.getItem(storageKey);
+    if (!raw || !looksLikeSessionRaw(raw)) continue;
+    const session = tryParseSessionFromRaw(raw);
+    if (!session) continue;
+    const fingerprint = `${session.player.nickname}|${session.vitals.level}|${session.player.starterCharacterId}|${session.team.collection.length}`;
+    if (seen.has(fingerprint)) continue;
+    seen.add(fingerprint);
+    candidates.push({ storageKey, session });
+  }
+  return candidates;
+}
+
+export interface RecoverableSessionInfo {
+  storageKey: string;
+  nickname: string;
+  level: number;
+  starterCharacterId: StarterCharacterId;
+  savedAt: number | null;
+}
+
+export function listRecoverableSessions(): RecoverableSessionInfo[] {
+  return collectStoredSessionCandidates()
+    .map(({ storageKey, session }) => ({
+      storageKey,
+      nickname: session.player.nickname,
+      level: session.vitals.level,
+      starterCharacterId: session.player.starterCharacterId,
+      savedAt: session.savedAt ?? null,
+    }))
+    .sort((a, b) => {
+      if (a.level !== b.level) return b.level - a.level;
+      return (b.savedAt ?? 0) - (a.savedAt ?? 0);
+    });
 }
 
 /**
@@ -429,27 +544,88 @@ export function parsePersistedSession(raw: unknown): PersistedSession | null {
       const collectionIds = new Set(collection.map((c) => c.id));
       return parsePersistedTeamPresets(data.teamPresets, collectionIds, teamIds);
     })(),
+    heritage:
+      data.heritage && typeof data.heritage === 'object'
+        ? { loadout: (data.heritage as { loadout?: HeritageLoadout }).loadout as HeritageLoadout }
+        : undefined,
   };
+}
+
+function compareSessionProgress(a: PersistedSession, b: PersistedSession): number {
+  const levelA = a.vitals?.level ?? 1;
+  const levelB = b.vitals?.level ?? 1;
+  if (levelA !== levelB) return levelA - levelB;
+  const xpA = decimalFromSave(a.vitals?.xp ?? '0');
+  const xpB = decimalFromSave(b.vitals?.xp ?? '0');
+  return xpA.cmp(xpB);
+}
+
+function pickBetterSession(
+  current: PersistedSession | null,
+  candidate: PersistedSession | null,
+): PersistedSession | null {
+  if (!candidate) return current;
+  if (!current) return candidate;
+  const progressCmp = compareSessionProgress(candidate, current);
+  if (progressCmp > 0) return candidate;
+  if (progressCmp < 0) return current;
+  const savedAtA = candidate.savedAt ?? 0;
+  const savedAtB = current.savedAt ?? 0;
+  return savedAtA >= savedAtB ? candidate : current;
+}
+
+function readSessionFromStorageKey(key: string): PersistedSession | null {
+  if (typeof window === 'undefined') return null;
+  const raw = window.localStorage.getItem(key);
+  if (!raw) return null;
+  return tryParseSessionFromRaw(raw);
+}
+
+function selectBestLocalSession(): PersistedSession | null {
+  let best: PersistedSession | null = null;
+  for (const { session } of collectStoredSessionCandidates()) {
+    best = pickBetterSession(best, session);
+  }
+  return best;
+}
+
+function persistRecoveredSession(session: PersistedSession): void {
+  if (typeof window === 'undefined') return;
+  const canonicalKey = getSessionStorageKey();
+  const payload = { ...session, savedAt: session.savedAt ?? Date.now() };
+  const current = readSessionFromStorageKey(canonicalKey);
+  if (!current || compareSessionProgress(payload, current) >= 0) {
+    writeSessionJson(canonicalKey, payload);
+  }
+}
+
+export function recoverPersistedSession(): PersistedSession | null {
+  return loadPersistedSession();
+}
+
+/** Hidrata automaticamente o melhor save local encontrado no navegador. */
+export function bootstrapPlayerFromBestSave(): PlayerCreation | null {
+  const ranked = [...collectStoredSessionCandidates()].sort((a, b) =>
+    compareSessionProgress(b.session, a.session),
+  );
+  for (const { storageKey, session } of ranked) {
+    try {
+      persistRecoveredSession(session);
+      return applyPersistedSession(session);
+    } catch (error) {
+      console.warn(`[Save] Falha ao hidratar ${storageKey}:`, error);
+    }
+  }
+  return null;
 }
 
 export function loadPersistedSession(): PersistedSession | null {
   if (typeof window === 'undefined') return null;
   try {
-    const storageKey = getSessionStorageKey();
-    let raw = window.localStorage.getItem(storageKey);
-    if (!raw && sessionOwnerKey) {
-      const legacyRaw = window.localStorage.getItem(SESSION_STORAGE_KEY);
-      if (legacyRaw) {
-        const legacySession = parsePersistedSession(JSON.parse(legacyRaw) as unknown);
-        if (legacySession) {
-          window.localStorage.setItem(storageKey, legacyRaw);
-          window.localStorage.removeItem(SESSION_STORAGE_KEY);
-          raw = legacyRaw;
-        }
-      }
-    }
-    if (!raw) return null;
-    return parsePersistedSession(JSON.parse(raw) as unknown);
+    const best = selectBestLocalSession();
+    if (!best) return null;
+    persistRecoveredSession(best);
+    return best;
   } catch {
     return null;
   }
@@ -483,17 +659,22 @@ function ensureAutoSave(): void {
     shopStore.subscribe(scheduleSessionSave),
     inventoryStore.subscribe(scheduleSessionSave),
     teamPresetStore.subscribe(scheduleSessionSave),
+    heritageStore.subscribe(scheduleSessionSave),
   ];
   unsubAutoSave = () => {
     for (const unsub of unsubs) unsub();
   };
   setSessionSaveFlusher(() => {
-    if (saveTimer) {
-      clearTimeout(saveTimer);
-      saveTimer = null;
-    }
-    savePersistedSession();
+    flushAllSavesNow();
   });
+
+  const flushOnExit = () => flushAllSavesNow();
+  window.addEventListener('pagehide', flushOnExit);
+  const prevUnsub = unsubAutoSave;
+  unsubAutoSave = () => {
+    window.removeEventListener('pagehide', flushOnExit);
+    prevUnsub?.();
+  };
 }
 
 export function clearPersistedSession(): void {
@@ -655,7 +836,38 @@ function buildSessionPayload(player: PlayerCreation): PersistedSession {
     inventory: isolating && frozenInv ? frozenInv : inventoryStore.getPersistedInventory(),
     rewardTransactions: rewardIdempotency.list(),
     teamPresets: isolating && frozenPresets ? frozenPresets : teamPresetStore.getPersisted(),
+    heritage: heritageStore.toPersisted(),
   };
+}
+
+function flushCloudSaveNow(payload: PersistedSession): void {
+  if (typeof window === 'undefined' || !isSocialBackendActive()) return;
+  try {
+    void fetch('/api/social/save', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      keepalive: true,
+      body: JSON.stringify({ payload }),
+    });
+  } catch {
+    // ignore
+  }
+}
+
+function flushAllSavesNow(): void {
+  if (!trackedPlayer) return;
+  if (saveTimer) {
+    clearTimeout(saveTimer);
+    saveTimer = null;
+  }
+  if (cloudSaveTimer) {
+    clearTimeout(cloudSaveTimer);
+    cloudSaveTimer = null;
+  }
+  const payload = { ...buildSessionPayload(trackedPlayer), savedAt: Date.now() };
+  writeSessionJson(getSessionStorageKey(), payload);
+  flushCloudSaveNow(payload);
 }
 
 function writeSessionJson(key: string, session: PersistedSession): void {
@@ -667,6 +879,7 @@ function writeSessionJson(key: string, session: PersistedSession): void {
 }
 
 async function uploadCloudSave(payload: PersistedSession): Promise<void> {
+  if (!isSocialBackendActive()) return;
   try {
     const response = await fetch('/api/social/save', {
       method: 'PUT',
@@ -692,7 +905,7 @@ function scheduleCloudSave(payload: PersistedSession): void {
 }
 
 export async function hydrateSessionFromCloud(): Promise<PersistedSession | null> {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === 'undefined' || !isSocialBackendActive()) return null;
   try {
     const response = await fetch('/api/social/save', {
       credentials: 'include',
@@ -703,15 +916,20 @@ export async function hydrateSessionFromCloud(): Promise<PersistedSession | null
       save?: { payload?: unknown; updatedAt?: string } | null;
     };
     if (!body.save?.payload) return null;
-    const remote = parsePersistedSession(body.save.payload);
+    const remote =
+      parsePersistedSession(body.save.payload) ??
+      parsePersistedSession(normalizeSessionBlob(body.save.payload));
     if (!remote) return null;
 
     const local = loadPersistedSession();
     const remoteUpdatedAt = Date.parse(body.save.updatedAt ?? '');
     const localUpdatedAt = local?.savedAt ?? 0;
-    if (local && Number.isFinite(remoteUpdatedAt) && localUpdatedAt >= remoteUpdatedAt) {
-      scheduleCloudSave(local);
-      return null;
+    if (local) {
+      const progressCmp = compareSessionProgress(remote, local);
+      if (progressCmp < 0 || (progressCmp === 0 && localUpdatedAt >= remoteUpdatedAt)) {
+        scheduleCloudSave(local);
+        return null;
+      }
     }
     return remote;
   } catch {
@@ -768,6 +986,7 @@ export function savePersistedSession(): void {
       inventory: inventoryStore.getPersistedInventory(),
       rewardTransactions: rewardIdempotency.list(),
       teamPresets: teamPresetStore.getPersisted(),
+      heritage: heritageStore.toPersisted(),
     };
     writeSessionJson(DEV_SESSION_STORAGE_KEY, live);
   }
@@ -808,6 +1027,7 @@ export function applyPersistedSession(session: PersistedSession): PlayerCreation
   villageStore.reset();
   villageStore.joinVillage(player.villageId, player.nickname);
   accountStore.hydrate(session.account ?? { lineageProgress: null });
+  heritageStore.hydrate(session.heritage ?? null);
   guildStore.hydrate({
     playerId: session.guild?.playerId ?? null,
     guildId: session.guild?.guildId ?? null,
@@ -890,10 +1110,13 @@ export function applyPersistedSession(session: PersistedSession): PlayerCreation
 
   locationStore.hydrate(session.location);
 
-  // Retroativo após hydrate completo das fontes oficiais (silencioso).
-  achievementsStore.evaluateAllRetroactive();
-  missionsStore.ensureCycles();
-  missionsStore.syncStateMissions({ silent: true });
+  try {
+    achievementsStore.evaluateAllRetroactive();
+    missionsStore.ensureCycles();
+    missionsStore.syncStateMissions({ silent: true });
+  } catch (error) {
+    console.warn('[Save] Pós-hydrate opcional falhou:', error);
+  }
 
   trackSession(player);
   return player;

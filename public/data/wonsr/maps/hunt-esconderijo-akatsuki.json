@@ -1,28 +1,28 @@
 {
   "mapKey": "huntEsconderijoAkatsuki",
   "slug": "hunt-esconderijo-akatsuki",
-  "label": "Caverna Akatsuki",
+  "label": "Esconderijo Akatsuki",
+  "source": "ESCONDERIJO AKATSUKI (1).png",
   "image": "/maps/hunt-esconderijo-akatsuki.png",
   "foreground": "/maps/hunt-esconderijo-akatsuki-fg.png",
   "tmx": "/maps/hunt-esconderijo-akatsuki.tmx",
-  "width": 4096,
-  "height": 2160,
-  "cols": 256,
-  "rows": 135,
-  "lateralFloorY": 1400,
-  "layoutScale": 2.1,
+  "cacheTag": "hq2026",
+  "width": 8192,
+  "height": 4608,
   "spawn": {
-    "x": 2048,
-    "y": 1400
+    "x": 4096,
+    "y": 2987
   },
   "enemySpawns": [
     {
-      "x": 3808,
-      "y": 1400
+      "x": 7851,
+      "y": 2987
     },
     {
-      "x": 288,
-      "y": 1400
+      "x": 341,
+      "y": 2987
     }
-  ]
+  ],
+  "lateralFloorY": 2987,
+  "layoutScale": 10.13
 }

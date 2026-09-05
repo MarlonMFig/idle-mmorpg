@@ -2,14 +2,12 @@
 
 import { useCallback, useEffect, useMemo, useState, type CSSProperties, type FormEvent } from 'react';
 import { RANDOM_NICKNAMES, STARTERS } from '@/data/starters';
+import { VILLAGES } from '@/data/villages';
 import type {
   PlayerCreation,
   StarterCharacterId,
   VillageId,
 } from '@/types/player-creation';
-
-/** Vila padrão — seleção de vila removida da UI (modelo). */
-const DEFAULT_VILLAGE: VillageId = 'konoha';
 
 interface NewGameScreenProps {
   onCreatePlayer: (player: PlayerCreation) => void;
@@ -17,6 +15,7 @@ interface NewGameScreenProps {
 
 export function NewGameScreen({ onCreatePlayer }: NewGameScreenProps) {
   const [nickname, setNickname] = useState('');
+  const [villageId, setVillageId] = useState<VillageId>('konoha');
   const [starterCharacterId, setStarterCharacterId] =
     useState<StarterCharacterId>('naruto-classic');
   const [direction, setDirection] = useState(0);
@@ -28,6 +27,7 @@ export function NewGameScreen({ onCreatePlayer }: NewGameScreenProps) {
   );
 
   const starter = STARTERS[currentIndex] ?? STARTERS[0];
+  const selectedVillage = VILLAGES.find((entry) => entry.id === villageId) ?? VILLAGES[0];
 
   const selectByIndex = useCallback((index: number, dir: number) => {
     const next = STARTERS[index];
@@ -81,7 +81,7 @@ export function NewGameScreen({ onCreatePlayer }: NewGameScreenProps) {
     setValidationError(null);
     onCreatePlayer({
       nickname: trimmed,
-      villageId: DEFAULT_VILLAGE,
+      villageId,
       starterCharacterId,
     });
   }
@@ -228,6 +228,67 @@ export function NewGameScreen({ onCreatePlayer }: NewGameScreenProps) {
             );
           })}
         </div>
+      </section>
+
+      <section className="new-game__villages" aria-label="Seleção de vila">
+        <div className="new-game__field-row">
+          <label className="new-game__label">Seleção de Vila</label>
+          <span className="new-game__village-hint">Escolha única e permanente</span>
+        </div>
+        <div className="new-game__village-icons" role="radiogroup" aria-label="Vilas">
+          {VILLAGES.map((village) => {
+            const selected = village.id === villageId;
+            return (
+              <button
+                key={village.id}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                className={`new-game__village-icon${selected ? ' is-selected' : ''}`}
+                style={{ ['--village-accent' as string]: village.accent }}
+                onClick={() => setVillageId(village.id)}
+                title={village.name}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={village.iconSrc} alt="" width={72} height={72} draggable={false} />
+                <span>{village.shortLabel}</span>
+              </button>
+            );
+          })}
+        </div>
+        {selectedVillage ? (
+          <div
+            className="new-game__village-detail"
+            style={{ ['--village-accent' as string]: selectedVillage.accent }}
+          >
+            <div className="new-game__village-head">
+              <div>
+                <strong>{selectedVillage.name}</strong>
+                <span>{selectedVillage.fullName}</span>
+              </div>
+            </div>
+            <p className="new-game__village-bonus">{selectedVillage.bonusLabel}</p>
+            <p className="new-game__village-note">
+              Observação: a % multiplica o valor base.
+            </p>
+            <ul className="new-game__village-calc">
+              {selectedVillage.bonuses.map((bonus) => {
+                const signed =
+                  bonus.value >= 0
+                    ? `+${(bonus.value * 100).toFixed(0)}%`
+                    : `${(bonus.value * 100).toFixed(0)}%`;
+                const factor = (1 + bonus.value).toFixed(2);
+                return (
+                  <li key={`${bonus.kind}-${bonus.value}`}>
+                    valorFinal = valorBase × (1 {bonus.value >= 0 ? '+' : '−'}{' '}
+                    {Math.abs(bonus.value).toFixed(2)}) → ×{factor}
+                    <span> ({signed})</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ) : null}
       </section>
 
       <button className="new-game__cta" type="submit" disabled={!canStart}>

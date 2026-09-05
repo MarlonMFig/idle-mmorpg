@@ -16,7 +16,6 @@ import type { LineageSpecializationModifiers } from '@/types/lineage';
 import { applyQualityToPrimaryBase, resolveQualityStatMultiplier } from '@/constants/character-quality-stats';
 import type { CharacterPotential, CharacterQuality } from '@/types/character-meta';
 import { applyStarBonusToBase } from '@/utils/star-bonus';
-import { getAwakeningStatModifiers } from '@/lib/awakening-rewards';
 import { getLineageSpecializationStatModifiers } from '@/lib/lineage-specialization-modifiers';
 
 export function emptyModifiers(): AttributeModifiers {
@@ -79,7 +78,7 @@ export function sumBuffModifiers(buffs: readonly AttributeBuff[], now = Date.now
 
 /**
  * Compõe atributos na ordem oficial:
- * Base → Stars → Level → Quality (HP/ATK/DEF, uma vez) → Awakening → Lineage → Buffs.
+ * Base → Stars → Level → Quality (HP/ATK/DEF, uma vez) → Lineage → Buffs.
  * Qualidade vem da CharacterInstance, nunca da CharacterDefinition.
  */
 export function computePlayerAttributes(input: {
@@ -91,7 +90,6 @@ export function computePlayerAttributes(input: {
   buffs?: readonly AttributeBuff[];
   now?: number;
   characterId?: string | null;
-  awakeningLevel?: number;
   lineageModifiers?: LineageSpecializationModifiers;
 }): PlayerAttributes {
   const stars = input.stars ?? 0;
@@ -108,19 +106,10 @@ export function computePlayerAttributes(input: {
     resolveQualityStatMultiplier(input.quality, input.qualityStatMultiplier, input.potential),
     { quality: input.quality, potential: input.potential },
   );
-  const awakening = getAwakeningStatModifiers(
-    afterQuality,
-    input.characterId ?? null,
-    input.awakeningLevel ?? 0,
-  );
-
-  const afterAwakening = createZeroValues();
-  addModifiers(afterAwakening, afterQuality);
-  addModifiers(afterAwakening, awakening);
   let lineage: AttributeModifiers = {};
   try {
     lineage = getLineageSpecializationStatModifiers(
-      afterAwakening,
+      afterQuality,
       input.characterId ?? null,
       input.lineageModifiers,
     );
@@ -130,7 +119,6 @@ export function computePlayerAttributes(input: {
 
   const totals = createZeroValues();
   addModifiers(totals, afterQuality);
-  addModifiers(totals, awakening);
   addModifiers(totals, lineage);
   addModifiers(totals, buffs);
 
@@ -138,7 +126,7 @@ export function computePlayerAttributes(input: {
     totals,
     base,
     level,
-    awakening,
+    awakening: {},
     lineage,
     buffs,
     activeBuffs: buffList.filter(

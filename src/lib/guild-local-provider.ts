@@ -304,7 +304,10 @@ export class LocalGuildProvider implements GuildProvider {
     }
   }
 
-  private persist(): void {
+  private persistTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly PERSIST_DEBOUNCE_MS = 400;
+
+  private writePersist(): void {
     if (typeof window === 'undefined') return;
     try {
       const obj: Record<string, Guild> = {};
@@ -314,6 +317,24 @@ export class LocalGuildProvider implements GuildProvider {
       // ignore
     }
     this.bump();
+  }
+
+  private persist(): void {
+    if (typeof window === 'undefined') return;
+    if (this.persistTimer) return;
+    this.persistTimer = setTimeout(() => {
+      this.persistTimer = null;
+      this.writePersist();
+    }, this.PERSIST_DEBOUNCE_MS);
+  }
+
+  /** Grava já (dissolve / reset / operações críticas). */
+  private persistNow(): void {
+    if (this.persistTimer) {
+      clearTimeout(this.persistTimer);
+      this.persistTimer = null;
+    }
+    this.writePersist();
   }
 
   private get(guildId: string): Guild | null {
@@ -328,7 +349,7 @@ export class LocalGuildProvider implements GuildProvider {
 
   private delete(guildId: string): void {
     this.memory.delete(guildId);
-    this.persist();
+    this.persistNow();
   }
 
   findGuildIdByPlayer(playerId: string): string | null {
@@ -925,7 +946,7 @@ export class LocalGuildProvider implements GuildProvider {
   async resetAll(): Promise<void> {
     this.memory.clear();
     this.loaded = true;
-    this.persist();
+    this.persistNow();
   }
 
   async seedMockGuild(opts?: { memberCount?: number }): Promise<Guild> {

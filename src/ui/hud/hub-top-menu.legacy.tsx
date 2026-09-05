@@ -33,7 +33,6 @@ type HubMenuId =
   | 'conquistas'
   | 'missoes'
   | 'diario'
-  | 'bosses'
   | 'ranking'
   | 'mapa'
   | 'hunt-analyzer'
@@ -86,10 +85,10 @@ const HUB_MENU_ITEMS: readonly HubMenuItem[] = [
   },
   {
     id: 'cla',
-    label: 'Linhagem',
+    label: 'Herança',
     iconSrc: '/ui/hub-menu/cla.png',
     tone: '#5aa8ff',
-    title: 'Linhagem',
+    title: 'Herança',
   },
   {
     id: 'guild',
@@ -118,13 +117,6 @@ const HUB_MENU_ITEMS: readonly HubMenuItem[] = [
     iconSrc: '/ui/hub-menu/ranking.png',
     tone: '#f0d070',
     title: 'Recompensa Diária',
-  },
-  {
-    id: 'bosses',
-    label: 'Bosses',
-    iconSrc: '/ui/hub-menu/hunt-analyzer.png',
-    tone: '#e05a5a',
-    title: 'Bosses',
   },
   {
     id: 'ranking',
@@ -173,7 +165,6 @@ export function HubTopMenu() {
   const achvOpen = useStore(achievementsStore, (s) => s.isOpen);
   const missionOpen = useStore(missionsStore, (s) => s.isOpen);
   const dailyOpen = useStore(dailyLoginStore, (s) => s.isOpen);
-  const bossOpen = useStore(bossStore, (s) => s.isOpen);
   const rankingOpen = useStore(rankingStore, (s) => s.isOpen);
   const encounterKind = useStore(locationStore, (s) => s.encounterKind);
   const missionTick = useStore(
@@ -238,9 +229,6 @@ export function HubTopMenu() {
         case 'diario':
           dailyLoginStore.toggleOpen();
           return;
-        case 'bosses':
-          bossStore.toggleOpen();
-          return;
         case 'ranking':
           rankingStore.toggleOpen();
           return;
@@ -266,7 +254,6 @@ export function HubTopMenu() {
             (item.id === 'conquistas' && achvOpen) ||
             (item.id === 'missoes' && missionOpen) ||
             (item.id === 'diario' && dailyOpen) ||
-            (item.id === 'bosses' && bossOpen) ||
             (item.id === 'ranking' && rankingOpen);
 
           return (

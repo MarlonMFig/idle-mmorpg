@@ -15,7 +15,7 @@ import {
 } from '@/lib/dev/lab-pose-sheet';
 import { scheduleLabPoseFx } from '@/lib/dev/lab-pose-fx';
 import { DEFAULT_TRAVEL_SPEED_PX } from '@/lib/dev/lab-save-fields';
-import { getWonsrRenderedMap } from '@/data/wonsr-rendered-maps';
+import { combatLayoutScale, getWonsrRenderedMap, pickEvenSpawns } from '@/data/wonsr-rendered-maps';
 import type { MapKey } from '@/maps/map-registry';
 import {
   characterLabStore,
@@ -153,6 +153,8 @@ export class CharacterLabSystem {
     this.player.previewLabAlignment();
 
     if (this.lastLoadedVfxId !== lab.vfxId) {
+      // Evita sprite antigo renderizar enquanto a textura antiga/nova muda.
+      clearLabForcedFx();
       void this.ensureCatalogTexture(lab.vfxId);
     }
     if (lab.editingVfxId && lab.editingVfxId !== lab.vfxId) {
@@ -398,8 +400,8 @@ export class CharacterLabSystem {
             : null;
         const hit: Enemy[] = [];
         if (radius != null && radius > 0) {
-          const ox = primary?.sprite.x ?? to.x;
-          const oy = primary?.sprite.y ?? to.y;
+          const ox = this.player.x;
+          const oy = this.player.y;
           for (const enemy of this.labDummies()) {
             if (!enemy.isAlive) continue;
             const distance = Phaser.Math.Distance.Between(ox, oy, enemy.sprite.x, enemy.sprite.y);
@@ -600,6 +602,8 @@ export class CharacterLabSystem {
         this.player.resetLabPose();
       }
     }
+    // Loop/skill podem ter spawnado FX durante o await — limpa de novo.
+    clearLabForcedFx();
     const ids = [lab.vfxId, lab.editingVfxId].filter((id): id is string => Boolean(id));
     for (const id of ids) {
       invalidateSharedVfxTexture(this.scene, id);
@@ -691,16 +695,74 @@ export class CharacterLabSystem {
     }
   }
 
-  private dummyPos(index = 0): { x: number; y: number } {
+  private labDummyPositions(count: number): { x: number; y: number }[] {
     const lab = characterLabStore.getSnapshot();
-    const dist = LAB_DISTANCE_PX[lab.distance] * this.player.worldScale;
-    const baseX = this.player.x + dist;
-    const baseY = this.player.y;
-    if (index === 0) return { x: baseX, y: baseY };
-    const spacing = 48 * this.player.worldScale;
-    const side = index % 2 === 1 ? -1 : 1;
-    const row = Math.ceil(index / 2);
-    return { x: baseX + side * row * spacing, y: baseY };
+    const rendered = getWonsrRenderedMap(this.mapKey);
+
+    if (count <= 1) {
+      const dist = LAB_DISTANCE_PX[lab.distance] * this.player.worldScale;
+      return [{ x: this.player.x + dist, y: this.player.y }];
+    }
+
+    if (!rendered?.enemySpawns.length) {
+      const dist = LAB_DISTANCE_PX[lab.distance] * this.player.worldScale;
+      const layout = combatLayoutScale(this.mapKey);
+      const spacing = 64 * layout;
+      return Array.from({ length: count }, (_, index) => {
+        const col = index % 3;
+        const row = Math.floor(index / 3);
+        return {
+          x: this.player.x + dist + (col - 1) * spacing,
+          y: this.player.y + row * spacing * 0.65,
+        };
+      });
+    }
+
+    const anchor = rendered.spawn;
+    const px = this.player.x;
+    const py = this.player.y;
+
+    if (rendered.lateralFloorY != null) {
+      const floorY = rendered.lateralFloorY;
+      const pattern = rendered.enemySpawns.map((spawn) => ({
+        x: px + (spawn.x - anchor.x),
+        y: floorY,
+      }));
+      return this.orderLabSpawnsNearestFirst(pickEvenSpawns(pattern, count), px, py);
+    }
+
+    const pattern = rendered.enemySpawns.map((spawn) => ({
+      x: px + (spawn.x - anchor.x),
+      y: py + (spawn.y - anchor.y),
+    }));
+    return this.orderLabSpawnsNearestFirst(pickEvenSpawns(pattern, count), px, py);
+  }
+
+  /** Alvo primário (#1) = dummy mais perto do jogador; demais mantêm o espalhamento. */
+  private orderLabSpawnsNearestFirst(
+    positions: { x: number; y: number }[],
+    px: number,
+    py: number,
+  ): { x: number; y: number }[] {
+    if (positions.length <= 1) return positions;
+    let nearestIdx = 0;
+    let nearestDist = Number.POSITIVE_INFINITY;
+    for (let i = 0; i < positions.length; i += 1) {
+      const pos = positions[i];
+      const dist = (pos.x - px) ** 2 + (pos.y - py) ** 2;
+      if (dist < nearestDist) {
+        nearestDist = dist;
+        nearestIdx = i;
+      }
+    }
+    if (nearestIdx === 0) return positions;
+    return [...positions.slice(nearestIdx), ...positions.slice(0, nearestIdx)];
+  }
+
+  private dummyPos(index = 0): { x: number; y: number } {
+    const count = clampLabEnemyCount(characterLabStore.getSnapshot().labEnemyCount);
+    const positions = this.labDummyPositions(count);
+    return positions[index] ?? positions[0] ?? { x: this.player.x, y: this.player.y };
   }
 
   private placeDummy(): void {
@@ -817,9 +879,8 @@ export class CharacterLabSystem {
 
     if (lab.showAreaRadius && hasExecutionType(lab.execution, 'area')) {
       const radius = Math.max(0, lab.execution.radius ?? 80);
-      const dummy = this.dummy();
-      const cx = dummy?.sprite.x ?? this.player.x + 80;
-      const cy = dummy?.sprite.y ?? this.player.y;
+      const cx = this.player.x;
+      const cy = this.player.y;
       this.gfx.lineStyle(1, 0xffcc66, 0.7);
       this.gfx.strokeCircle(cx, cy, radius);
     }

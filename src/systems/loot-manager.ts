@@ -4,7 +4,8 @@ import { GroundLoot, toGroundLootData } from '@/entities/ground-loot';
 import type { RolledLoot } from '@/types/loot';
 
 /**
- * Spawna loot no chão. A rolagem fica no Loot Engine (`handleEnemyKill`).
+ * Spawna loot no chão (legado / casos especiais).
+ * Kills de hunt concedem loot direto no inventário — sem chão.
  */
 export class LootManager {
   private readonly drops = new Map<string, GroundLoot>();

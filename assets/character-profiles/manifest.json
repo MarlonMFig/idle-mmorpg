@@ -1,0 +1,850 @@
+{
+  "collection": "Naruto World Idle — Perfis Pixel Art",
+  "count": 69,
+  "formats": [
+    "PNG RGBA 128×128",
+    "PNG RGBA 256×256 nearest-neighbor"
+  ],
+  "atlas_128": {
+    "file": "atlas-perfis-1280x896.png",
+    "columns": 10,
+    "rows": 7,
+    "cell": 128
+  },
+  "atlas_256": {
+    "file": "atlas-perfis-2560x1792.png",
+    "columns": 10,
+    "rows": 7,
+    "cell": 256
+  },
+  "items": [
+    {
+      "order": 1,
+      "character": "Uzumaki Naruto",
+      "file_128": "individuais-128x128/01-uzumaki-naruto.png",
+      "file_256": "individuais-256x256/01-uzumaki-naruto.png",
+      "atlas_128": {
+        "x": 0,
+        "y": 0,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 2,
+      "character": "Naruto Shippuden",
+      "file_128": "individuais-128x128/02-naruto-shippuden.png",
+      "file_256": "individuais-256x256/02-naruto-shippuden.png",
+      "atlas_128": {
+        "x": 128,
+        "y": 0,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 3,
+      "character": "Naruto (1 Cauda)",
+      "file_128": "individuais-128x128/03-naruto-1-cauda.png",
+      "file_256": "individuais-256x256/03-naruto-1-cauda.png",
+      "atlas_128": {
+        "x": 256,
+        "y": 0,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 4,
+      "character": "Naruto (4 Caudas)",
+      "file_128": "individuais-128x128/04-naruto-4-caudas.png",
+      "file_256": "individuais-256x256/04-naruto-4-caudas.png",
+      "atlas_128": {
+        "x": 384,
+        "y": 0,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 5,
+      "character": "Naruto Kyubi",
+      "file_128": "individuais-128x128/05-naruto-kyubi.png",
+      "file_256": "individuais-256x256/05-naruto-kyubi.png",
+      "atlas_128": {
+        "x": 512,
+        "y": 0,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 6,
+      "character": "Uchiha Sasuke",
+      "file_128": "individuais-128x128/06-uchiha-sasuke.png",
+      "file_256": "individuais-256x256/06-uchiha-sasuke.png",
+      "atlas_128": {
+        "x": 640,
+        "y": 0,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 7,
+      "character": "Sasuke Cursed",
+      "file_128": "individuais-128x128/07-sasuke-cursed.png",
+      "file_256": "individuais-256x256/07-sasuke-cursed.png",
+      "atlas_128": {
+        "x": 768,
+        "y": 0,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 8,
+      "character": "Uchiha Sasuke (G6)",
+      "file_128": "individuais-128x128/08-uchiha-sasuke-g6.png",
+      "file_256": "individuais-256x256/08-uchiha-sasuke-g6.png",
+      "atlas_128": {
+        "x": 896,
+        "y": 0,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 9,
+      "character": "Uchiha Itachi",
+      "file_128": "individuais-128x128/09-uchiha-itachi.png",
+      "file_256": "individuais-256x256/09-uchiha-itachi.png",
+      "atlas_128": {
+        "x": 1024,
+        "y": 0,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 10,
+      "character": "Uchiha Shisui",
+      "file_128": "individuais-128x128/10-uchiha-shisui.png",
+      "file_256": "individuais-256x256/10-uchiha-shisui.png",
+      "atlas_128": {
+        "x": 1152,
+        "y": 0,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 11,
+      "character": "Rock Lee",
+      "file_128": "individuais-128x128/11-rock-lee.png",
+      "file_256": "individuais-256x256/11-rock-lee.png",
+      "atlas_128": {
+        "x": 0,
+        "y": 128,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 12,
+      "character": "Rock Lee (G6)",
+      "file_128": "individuais-128x128/12-rock-lee-g6.png",
+      "file_256": "individuais-256x256/12-rock-lee-g6.png",
+      "atlas_128": {
+        "x": 128,
+        "y": 128,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 13,
+      "character": "Neji Hyuga",
+      "file_128": "individuais-128x128/13-neji-hyuga.png",
+      "file_256": "individuais-256x256/13-neji-hyuga.png",
+      "atlas_128": {
+        "x": 256,
+        "y": 128,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 14,
+      "character": "Shikamaru Nara",
+      "file_128": "individuais-128x128/14-shikamaru-nara.png",
+      "file_256": "individuais-256x256/14-shikamaru-nara.png",
+      "atlas_128": {
+        "x": 384,
+        "y": 128,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 15,
+      "character": "Chouji Akimichi",
+      "file_128": "individuais-128x128/15-chouji-akimichi.png",
+      "file_256": "individuais-256x256/15-chouji-akimichi.png",
+      "atlas_128": {
+        "x": 512,
+        "y": 128,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 16,
+      "character": "Akimichi Choji (Jump Force)",
+      "file_128": "individuais-128x128/16-akimichi-choji-jump-force.png",
+      "file_256": "individuais-256x256/16-akimichi-choji-jump-force.png",
+      "atlas_128": {
+        "x": 640,
+        "y": 128,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 17,
+      "character": "Ino Yamanaka",
+      "file_128": "individuais-128x128/17-ino-yamanaka.png",
+      "file_256": "individuais-256x256/17-ino-yamanaka.png",
+      "atlas_128": {
+        "x": 768,
+        "y": 128,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 18,
+      "character": "Shino Aburame",
+      "file_128": "individuais-128x128/18-shino-aburame.png",
+      "file_256": "individuais-256x256/18-shino-aburame.png",
+      "atlas_128": {
+        "x": 896,
+        "y": 128,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 19,
+      "character": "Aburame Shino (G6)",
+      "file_128": "individuais-128x128/19-aburame-shino-g6.png",
+      "file_256": "individuais-256x256/19-aburame-shino-g6.png",
+      "atlas_128": {
+        "x": 1024,
+        "y": 128,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 20,
+      "character": "Tenten",
+      "file_128": "individuais-128x128/20-tenten.png",
+      "file_256": "individuais-256x256/20-tenten.png",
+      "atlas_128": {
+        "x": 1152,
+        "y": 128,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 21,
+      "character": "Tenten (Kid)",
+      "file_128": "individuais-128x128/21-tenten-kid.png",
+      "file_256": "individuais-256x256/21-tenten-kid.png",
+      "atlas_128": {
+        "x": 0,
+        "y": 256,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 22,
+      "character": "Tenten (G6)",
+      "file_128": "individuais-128x128/22-tenten-g6.png",
+      "file_256": "individuais-256x256/22-tenten-g6.png",
+      "atlas_128": {
+        "x": 128,
+        "y": 256,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 23,
+      "character": "Hinata Hyuga",
+      "file_128": "individuais-128x128/23-hinata-hyuga.png",
+      "file_256": "individuais-256x256/23-hinata-hyuga.png",
+      "atlas_128": {
+        "x": 256,
+        "y": 256,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 24,
+      "character": "Hyuga Hinata (Kid)",
+      "file_128": "individuais-128x128/24-hyuga-hinata-kid.png",
+      "file_256": "individuais-256x256/24-hyuga-hinata-kid.png",
+      "atlas_128": {
+        "x": 384,
+        "y": 256,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 25,
+      "character": "Hyuga Hinata",
+      "file_128": "individuais-128x128/25-hyuga-hinata.png",
+      "file_256": "individuais-256x256/25-hyuga-hinata.png",
+      "atlas_128": {
+        "x": 512,
+        "y": 256,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 26,
+      "character": "Hyuga Hanabi",
+      "file_128": "individuais-128x128/26-hyuga-hanabi.png",
+      "file_256": "individuais-256x256/26-hyuga-hanabi.png",
+      "atlas_128": {
+        "x": 640,
+        "y": 256,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 27,
+      "character": "Kiba Inuzuka",
+      "file_128": "individuais-128x128/27-kiba-inuzuka.png",
+      "file_256": "individuais-256x256/27-kiba-inuzuka.png",
+      "atlas_128": {
+        "x": 768,
+        "y": 256,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 28,
+      "character": "Kiba Inuzuka (Kid)",
+      "file_128": "individuais-128x128/28-kiba-inuzuka-kid.png",
+      "file_256": "individuais-256x256/28-kiba-inuzuka-kid.png",
+      "atlas_128": {
+        "x": 896,
+        "y": 256,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 29,
+      "character": "Konohamaru Sarutobi",
+      "file_128": "individuais-128x128/29-konohamaru-sarutobi.png",
+      "file_256": "individuais-256x256/29-konohamaru-sarutobi.png",
+      "atlas_128": {
+        "x": 1024,
+        "y": 256,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 30,
+      "character": "Gaara",
+      "file_128": "individuais-128x128/30-gaara.png",
+      "file_256": "individuais-256x256/30-gaara.png",
+      "atlas_128": {
+        "x": 1152,
+        "y": 256,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 31,
+      "character": "Gaara (Shukaku)",
+      "file_128": "individuais-128x128/31-gaara-shukaku.png",
+      "file_256": "individuais-256x256/31-gaara-shukaku.png",
+      "atlas_128": {
+        "x": 0,
+        "y": 384,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 32,
+      "character": "Temari",
+      "file_128": "individuais-128x128/32-temari.png",
+      "file_256": "individuais-256x256/32-temari.png",
+      "atlas_128": {
+        "x": 128,
+        "y": 384,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 33,
+      "character": "Temari (Kid)",
+      "file_128": "individuais-128x128/33-temari-kid.png",
+      "file_256": "individuais-256x256/33-temari-kid.png",
+      "atlas_128": {
+        "x": 256,
+        "y": 384,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 34,
+      "character": "Temari (G6)",
+      "file_128": "individuais-128x128/34-temari-g6.png",
+      "file_256": "individuais-256x256/34-temari-g6.png",
+      "atlas_128": {
+        "x": 384,
+        "y": 384,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 35,
+      "character": "Kankuro",
+      "file_128": "individuais-128x128/35-kankuro.png",
+      "file_256": "individuais-256x256/35-kankuro.png",
+      "atlas_128": {
+        "x": 512,
+        "y": 384,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 36,
+      "character": "Sakura Shippuden",
+      "file_128": "individuais-128x128/36-sakura-shippuden.png",
+      "file_256": "individuais-256x256/36-sakura-shippuden.png",
+      "atlas_128": {
+        "x": 640,
+        "y": 384,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 37,
+      "character": "Might Guy",
+      "file_128": "individuais-128x128/37-might-guy.png",
+      "file_256": "individuais-256x256/37-might-guy.png",
+      "atlas_128": {
+        "x": 768,
+        "y": 384,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 38,
+      "character": "Hatake Kakashi",
+      "file_128": "individuais-128x128/38-hatake-kakashi.png",
+      "file_256": "individuais-256x256/38-hatake-kakashi.png",
+      "atlas_128": {
+        "x": 896,
+        "y": 384,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 39,
+      "character": "Hatake Kakashi (G6)",
+      "file_128": "individuais-128x128/39-hatake-kakashi-g6.png",
+      "file_256": "individuais-256x256/39-hatake-kakashi-g6.png",
+      "atlas_128": {
+        "x": 1024,
+        "y": 384,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 40,
+      "character": "Asuma Sarutobi",
+      "file_128": "individuais-128x128/40-asuma-sarutobi.png",
+      "file_256": "individuais-256x256/40-asuma-sarutobi.png",
+      "atlas_128": {
+        "x": 1152,
+        "y": 384,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 41,
+      "character": "Yuhi Kurenai",
+      "file_128": "individuais-128x128/41-yuhi-kurenai.png",
+      "file_256": "individuais-256x256/41-yuhi-kurenai.png",
+      "atlas_128": {
+        "x": 0,
+        "y": 512,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 42,
+      "character": "Hiruzen Sarutobi",
+      "file_128": "individuais-128x128/42-hiruzen-sarutobi.png",
+      "file_256": "individuais-256x256/42-hiruzen-sarutobi.png",
+      "atlas_128": {
+        "x": 128,
+        "y": 512,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 43,
+      "character": "Tsunade",
+      "file_128": "individuais-128x128/43-tsunade.png",
+      "file_256": "individuais-256x256/43-tsunade.png",
+      "atlas_128": {
+        "x": 256,
+        "y": 512,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 44,
+      "character": "Jiraya",
+      "file_128": "individuais-128x128/44-jiraya.png",
+      "file_256": "individuais-256x256/44-jiraya.png",
+      "atlas_128": {
+        "x": 384,
+        "y": 512,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 45,
+      "character": "Shizune",
+      "file_128": "individuais-128x128/45-shizune.png",
+      "file_256": "individuais-256x256/45-shizune.png",
+      "atlas_128": {
+        "x": 512,
+        "y": 512,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 46,
+      "character": "Zabuza Momochi",
+      "file_128": "individuais-128x128/46-zabuza-momochi.png",
+      "file_256": "individuais-256x256/46-zabuza-momochi.png",
+      "atlas_128": {
+        "x": 640,
+        "y": 512,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 47,
+      "character": "Haku",
+      "file_128": "individuais-128x128/47-haku.png",
+      "file_256": "individuais-256x256/47-haku.png",
+      "atlas_128": {
+        "x": 768,
+        "y": 512,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 48,
+      "character": "Haku (Jump Force)",
+      "file_128": "individuais-128x128/48-haku-jump-force.png",
+      "file_256": "individuais-256x256/48-haku-jump-force.png",
+      "atlas_128": {
+        "x": 896,
+        "y": 512,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 49,
+      "character": "Orochimaru",
+      "file_128": "individuais-128x128/49-orochimaru.png",
+      "file_256": "individuais-256x256/49-orochimaru.png",
+      "atlas_128": {
+        "x": 1024,
+        "y": 512,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 50,
+      "character": "Orochimaru (G6)",
+      "file_128": "individuais-128x128/50-orochimaru-g6.png",
+      "file_256": "individuais-256x256/50-orochimaru-g6.png",
+      "atlas_128": {
+        "x": 1152,
+        "y": 512,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 51,
+      "character": "Yakushi Kabuto",
+      "file_128": "individuais-128x128/51-yakushi-kabuto.png",
+      "file_256": "individuais-256x256/51-yakushi-kabuto.png",
+      "atlas_128": {
+        "x": 0,
+        "y": 640,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 52,
+      "character": "Kimimaro",
+      "file_128": "individuais-128x128/52-kimimaro.png",
+      "file_256": "individuais-256x256/52-kimimaro.png",
+      "atlas_128": {
+        "x": 128,
+        "y": 640,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 53,
+      "character": "Jiroubou",
+      "file_128": "individuais-128x128/53-jiroubou.png",
+      "file_256": "individuais-256x256/53-jiroubou.png",
+      "atlas_128": {
+        "x": 256,
+        "y": 640,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 54,
+      "character": "Tayuya (+ nun5)",
+      "file_128": "individuais-128x128/54-tayuya-nun5.png",
+      "file_256": "individuais-256x256/54-tayuya-nun5.png",
+      "atlas_128": {
+        "x": 384,
+        "y": 640,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 55,
+      "character": "Sakon e Ukon (+ nun5)",
+      "file_128": "individuais-128x128/55-sakon-e-ukon-nun5.png",
+      "file_256": "individuais-256x256/55-sakon-e-ukon-nun5.png",
+      "atlas_128": {
+        "x": 512,
+        "y": 640,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 56,
+      "character": "Kidomaru",
+      "file_128": "individuais-128x128/56-kidomaru.png",
+      "file_256": "individuais-256x256/56-kidomaru.png",
+      "atlas_128": {
+        "x": 640,
+        "y": 640,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 57,
+      "character": "Kisame Hoshigaki",
+      "file_128": "individuais-128x128/57-kisame-hoshigaki.png",
+      "file_256": "individuais-256x256/57-kisame-hoshigaki.png",
+      "atlas_128": {
+        "x": 768,
+        "y": 640,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 58,
+      "character": "Sasori",
+      "file_128": "individuais-128x128/58-sasori.png",
+      "file_256": "individuais-256x256/58-sasori.png",
+      "atlas_128": {
+        "x": 896,
+        "y": 640,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 59,
+      "character": "Sasori (Hiruko)",
+      "file_128": "individuais-128x128/59-sasori-hiruko.png",
+      "file_256": "individuais-256x256/59-sasori-hiruko.png",
+      "atlas_128": {
+        "x": 1024,
+        "y": 640,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 60,
+      "character": "Deidara",
+      "file_128": "individuais-128x128/60-deidara.png",
+      "file_256": "individuais-256x256/60-deidara.png",
+      "atlas_128": {
+        "x": 1152,
+        "y": 640,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 61,
+      "character": "Pain (Deva)",
+      "file_128": "individuais-128x128/61-pain-deva.png",
+      "file_256": "individuais-256x256/61-pain-deva.png",
+      "atlas_128": {
+        "x": 0,
+        "y": 768,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 62,
+      "character": "Danzo Shimura",
+      "file_128": "individuais-128x128/62-danzo-shimura.png",
+      "file_256": "individuais-256x256/62-danzo-shimura.png",
+      "atlas_128": {
+        "x": 128,
+        "y": 768,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 63,
+      "character": "Namikaze Minato (Jonin)",
+      "file_128": "individuais-128x128/63-namikaze-minato-jonin.png",
+      "file_256": "individuais-256x256/63-namikaze-minato-jonin.png",
+      "atlas_128": {
+        "x": 256,
+        "y": 768,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 64,
+      "character": "Yamato",
+      "file_128": "individuais-128x128/64-yamato.png",
+      "file_256": "individuais-256x256/64-yamato.png",
+      "atlas_128": {
+        "x": 384,
+        "y": 768,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 65,
+      "character": "Sai",
+      "file_128": "individuais-128x128/65-sai.png",
+      "file_256": "individuais-256x256/65-sai.png",
+      "atlas_128": {
+        "x": 512,
+        "y": 768,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 66,
+      "character": "Senju Hashirama",
+      "file_128": "individuais-128x128/66-senju-hashirama.png",
+      "file_256": "individuais-256x256/66-senju-hashirama.png",
+      "atlas_128": {
+        "x": 640,
+        "y": 768,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 67,
+      "character": "Senju Tobirama",
+      "file_128": "individuais-128x128/67-senju-tobirama.png",
+      "file_256": "individuais-256x256/67-senju-tobirama.png",
+      "atlas_128": {
+        "x": 768,
+        "y": 768,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 68,
+      "character": "Anko Mitarashi",
+      "file_128": "individuais-128x128/68-anko-mitarashi.png",
+      "file_256": "individuais-256x256/68-anko-mitarashi.png",
+      "atlas_128": {
+        "x": 896,
+        "y": 768,
+        "width": 128,
+        "height": 128
+      }
+    },
+    {
+      "order": 69,
+      "character": "Chiyo",
+      "file_128": "individuais-128x128/69-chiyo.png",
+      "file_256": "individuais-256x256/69-chiyo.png",
+      "atlas_128": {
+        "x": 1024,
+        "y": 768,
+        "width": 128,
+        "height": 128
+      }
+    }
+  ]
+}

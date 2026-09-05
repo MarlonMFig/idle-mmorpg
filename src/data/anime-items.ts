@@ -1,5 +1,6 @@
 import type { AnimeId } from '@/types/anime';
 import type { ItemDefinition, ItemRarity } from '@/types/loot';
+import { NARUTO_CHARACTER_DROP_ITEMS } from '@/data/naruto-character-drop-items';
 import {
   listNarutoTierCharacterIds,
   NARUTO_CHARACTER_LABEL,
@@ -120,7 +121,7 @@ export const ANIME_LOOT_ITEMS: Record<string, ItemDefinition> = {
     'item-anime-naruto-mascara-anbu',
     'Máscara ANBU',
     'rare',
-    'mascara_anbu.png',
+    'mascara-anbu.png',
   ),
   'item-anime-naruto-tanto': animeItem(
     'item-anime-naruto-tanto',
@@ -170,7 +171,7 @@ export const ANIME_LOOT_ITEMS: Record<string, ItemDefinition> = {
     'item-anime-naruto-casulo-insetos',
     'Casulo de Insetos',
     'epic',
-    'casulo_insetos.png',
+    'casulo-insetos.png',
   ),
   'item-anime-naruto-selo-elemental': animeItem(
     'item-anime-naruto-selo-elemental',
@@ -182,7 +183,7 @@ export const ANIME_LOOT_ITEMS: Record<string, ItemDefinition> = {
     'item-anime-naruto-cabaca-areia',
     'Cabaça de Areia',
     'epic',
-    'cabaca_areia.png',
+    'cabaca-areia.png',
   ),
   'item-anime-naruto-lente-ocular': animeItem(
     'item-anime-naruto-lente-ocular',
@@ -242,14 +243,17 @@ export const ANIME_LOOT_ITEMS: Record<string, ItemDefinition> = {
     'pergaminho_proibido.svg',
   ),
 
-  // Fragmentos por personagem (tier define %; personagem define o item)
+  // Drops raro/assinatura por personagem (aditivos — não substituem o pack genérico)
+  ...NARUTO_CHARACTER_DROP_ITEMS,
+
+  // Fragmentos por personagem (tier define %; personagem define o item + ícone)
   ...Object.fromEntries(
     listNarutoTierCharacterIds().map((characterId) => {
       const id = narutoFragmentItemId(characterId);
       const label = NARUTO_CHARACTER_LABEL[characterId] ?? characterId;
       return [
         id,
-        animeItem(id, `Fragmento de ${label}`, 'mythic', 'fragmento_personagem.svg'),
+        animeItem(id, `Fragmento de ${label}`, 'mythic', `fragments/${characterId}.png`),
       ];
     }),
   ),

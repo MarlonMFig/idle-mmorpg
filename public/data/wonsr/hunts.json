@@ -1,6 +1,6 @@
 {
   "source": "curated character packs only (no WONSR vocations/monsters)",
-  "generatedAt": "2026-08-31T22:21:25.293Z",
+  "generatedAt": "2026-09-02T20:37:00.315Z",
   "progression": {
     "targetsPerHunt": 1,
     "charactersPerLevelTier": 5,
@@ -4956,7 +4956,7 @@
       "id": "hunt-td-006",
       "name": "Mapa de Uchiha Sasuke",
       "requiredLevel": 1,
-      "mapKey": "huntTdValeDoFim",
+      "mapKey": "huntTdCampoUchiha",
       "description": "Caça automática de Uchiha Sasuke para níveis 1+. (top-down)",
       "targets": [
         {
@@ -4982,7 +4982,7 @@
       "id": "hunt-td-045",
       "name": "Mapa de Hyuga Hinata (Kid)",
       "requiredLevel": 1,
-      "mapKey": "huntTdClareiraEquipe7",
+      "mapKey": "huntTdIlhaTartaruga",
       "description": "Caça automática de Hyuga Hinata (Kid) para níveis 1+. (top-down)",
       "targets": [
         {
@@ -5034,7 +5034,7 @@
       "id": "hunt-td-047",
       "name": "Mapa de Kiba Inuzuka (Kid)",
       "requiredLevel": 1,
-      "mapKey": "huntTdClareiraEquipe7",
+      "mapKey": "huntTdHospitalKonoha",
       "description": "Caça automática de Kiba Inuzuka (Kid) para níveis 1+. (top-down)",
       "targets": [
         {
@@ -5632,7 +5632,7 @@
       "id": "hunt-td-014",
       "name": "Mapa de Jiraya",
       "requiredLevel": 50,
-      "mapKey": "huntTdClareiraEquipe7",
+      "mapKey": "huntTdMonteMyoboku",
       "description": "Caça automática de Jiraya para níveis 50+. (top-down)",
       "targets": [
         {
@@ -5814,7 +5814,7 @@
       "id": "hunt-td-020",
       "name": "Mapa de Sasuke Cursed",
       "requiredLevel": 60,
-      "mapKey": "huntTdValeDoFim",
+      "mapKey": "huntTdCampoUchiha",
       "description": "Caça automática de Sasuke Cursed para níveis 60+. (top-down)",
       "targets": [
         {
@@ -6022,7 +6022,7 @@
       "id": "hunt-td-007",
       "name": "Mapa de Uchiha Itachi",
       "requiredLevel": 80,
-      "mapKey": "huntTdValeDoFim",
+      "mapKey": "huntTdCampoUchiha",
       "description": "Caça automática de Uchiha Itachi para níveis 80+. (top-down)",
       "targets": [
         {
@@ -6308,7 +6308,7 @@
       "id": "hunt-td-050",
       "name": "Mapa de Namikaze Minato (Jonin)",
       "requiredLevel": 100,
-      "mapKey": "huntTdCrateraKonoha",
+      "mapKey": "huntTdUzushiogakure",
       "description": "Caça automática de Namikaze Minato (Jonin) para níveis 100+. (top-down)",
       "targets": [
         {
@@ -6464,7 +6464,7 @@
       "id": "hunt-td-008",
       "name": "Mapa de Uchiha Shisui",
       "requiredLevel": 110,
-      "mapKey": "huntTdValeDoFim",
+      "mapKey": "huntTdCampoUchiha",
       "description": "Caça automática de Uchiha Shisui para níveis 110+. (top-down)",
       "targets": [
         {
@@ -6646,7 +6646,7 @@
       "id": "hunt-td-068",
       "name": "Mapa de Uchiha Sasuke (G6)",
       "requiredLevel": 130,
-      "mapKey": "huntTdValeDoFim",
+      "mapKey": "huntTdCampoUchiha",
       "description": "Caça automática de Uchiha Sasuke (G6) para níveis 130+. (top-down)",
       "targets": [
         {
@@ -6724,7 +6724,7 @@
       "id": "hunt-td-036",
       "name": "Mapa de Anko Mitarashi",
       "requiredLevel": 130,
-      "mapKey": "huntTdCrateraKonoha",
+      "mapKey": "huntTdCavernaAkatsuki",
       "description": "Caça automática de Anko Mitarashi para níveis 130+. (top-down)",
       "targets": [
         {
@@ -6750,7 +6750,7 @@
       "id": "hunt-td-038",
       "name": "Mapa de Chiyo",
       "requiredLevel": 140,
-      "mapKey": "huntTdLaboratorioOrochimaru",
+      "mapKey": "huntTdCrateraKonoha",
       "description": "Caça automática de Chiyo para níveis 140+. (top-down)",
       "targets": [
         {

@@ -11,7 +11,8 @@ import type {
 import { resolveQualityStatMultiplier } from '@/constants/character-quality-stats';
 import type { CharacterPotential, CharacterQuality } from '@/types/character-meta';
 import { computePlayerAttributes, emptyModifiers } from '@/utils/attributes';
-import { resolveAwakeningRuntime } from '@/lib/awakening-runtime';
+import { applyActiveHeritageToTotals } from '@/lib/heritage-runtime';
+import { heritageStore } from '@/stores/heritage-store';
 
 function activeStars(): number {
   return teamStore.getActive()?.stars ?? 0;
@@ -34,12 +35,10 @@ function buildState(
   level: number,
   stars: number,
   activeBuffs: AttributeBuff[],
-  awakening?: { characterId: string | null; awakeningLevel: number },
   quality: CharacterQuality = 'D',
   qualityStatMultiplier?: number,
   potential?: CharacterPotential | null,
 ): PlayerAttributes {
-  const runtime = awakening ?? resolveAwakeningRuntime();
   return computePlayerAttributes({
     level,
     stars,
@@ -47,27 +46,34 @@ function buildState(
     qualityStatMultiplier,
     potential,
     buffs: activeBuffs,
-    characterId: runtime.characterId,
-    awakeningLevel: runtime.awakeningLevel,
+    characterId: teamStore.getActive()?.characterId ?? null,
   });
 }
 
 let buffs: AttributeBuff[] = [];
 
 function liveState(): PlayerAttributes {
-  return buildState(
+  const attrs = buildState(
     activeCharacterLevel(),
     activeStars(),
     buffs,
-    undefined,
     activeQuality(),
     activeQualityStatMultiplier(),
     teamStore.getActive()?.potential,
   );
+  try {
+    void heritageStore.getSnapshot();
+    return {
+      ...attrs,
+      totals: applyActiveHeritageToTotals(attrs.totals),
+    };
+  } catch {
+    return attrs;
+  }
 }
 
 const store = createStore<PlayerAttributes>(
-  buildState(1, 0, buffs, { characterId: null, awakeningLevel: 0 }),
+  buildState(1, 0, buffs),
 );
 
 function syncVitals(fullHeal: boolean): void {

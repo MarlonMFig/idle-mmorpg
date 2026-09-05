@@ -2,27 +2,27 @@
   "mapKey": "huntArenaExameChunin",
   "slug": "hunt-arena-exame-chunin",
   "label": "Arena Exame Chunin",
+  "source": "ARENA EXAME CHUNNIN (1).png",
   "image": "/maps/hunt-arena-exame-chunin.png",
   "foreground": "/maps/hunt-arena-exame-chunin-fg.png",
   "tmx": "/maps/hunt-arena-exame-chunin.tmx",
-  "width": 4096,
-  "height": 2160,
-  "cols": 256,
-  "rows": 135,
-  "lateralFloorY": 1500,
-  "layoutScale": 2.1,
+  "cacheTag": "hq2026",
+  "width": 6688,
+  "height": 3764,
   "spawn": {
-    "x": 2048,
-    "y": 1500
+    "x": 3344,
+    "y": 2614
   },
   "enemySpawns": [
     {
-      "x": 3808,
-      "y": 1500
+      "x": 6409,
+      "y": 2614
     },
     {
-      "x": 288,
-      "y": 1500
+      "x": 279,
+      "y": 2614
     }
-  ]
+  ],
+  "lateralFloorY": 2614,
+  "layoutScale": 8.27
 }

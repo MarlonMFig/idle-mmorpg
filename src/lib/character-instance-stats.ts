@@ -7,7 +7,7 @@ import type { AttributeValues, PlayerAttributes } from '@/types/attributes';
 
 type InstanceStatSource = Pick<
   SealedCharacter,
-  'level' | 'stars' | 'quality' | 'qualityStatMultiplier' | 'characterId' | 'awakeningLevel'
+  'level' | 'stars' | 'quality' | 'qualityStatMultiplier' | 'characterId'
 > &
   Partial<Pick<SealedCharacter, 'potential'>>;
 
@@ -27,7 +27,6 @@ export function computeInstanceAttributes(
     ),
     potential: instance.potential,
     characterId: instance.characterId,
-    awakeningLevel: instance.awakeningLevel,
   });
 }
 
@@ -49,8 +48,7 @@ export function estimateInstanceCombatPower(
       t.defense * 2 +
       t.hp / 10 +
       t.speed * 2 +
-      level * 25 +
-      (instance.awakeningLevel ?? 0) * 300,
+      level * 25,
   );
 }
 

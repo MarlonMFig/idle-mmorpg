@@ -3,151 +3,126 @@
 import Image from 'next/image';
 import { useEffect, useMemo, type RefObject } from 'react';
 import { CHARACTER_QUALITY_COLORS } from '@/constants/character-progression';
+import { getHeritageOption } from '@/constants/heritage-system';
 import { TEAM_SLOT_COUNT } from '@/constants/sealing';
+import { getTitleDefinition } from '@/data/achievements/title-registry';
+import { getLineageCatalogEntry } from '@/data/lineages/catalog';
+import { getLineageDefinition } from '@/data/lineages/registry';
+import { getHeritageClanIcon } from '@/data/heritage-clan-art';
+import { getVillage } from '@/data/villages';
 import { useDraggablePanel } from '@/hooks/use-draggable-panel';
 import { useStore } from '@/hooks/use-store';
 import { switchActiveCharacter } from '@/lib/active-character';
-import { getXpBarPercent, isMaxLevel } from '@/lib/player-progression';
-import { guildStore } from '@/stores/guild-store';
-import { achievementsStore } from '@/stores/achievements-store';
-import { getTitleDefinition } from '@/data/achievements/title-registry';
-import { teamStore } from '@/stores/team-store';
-import { vitalsStore } from '@/stores/vitals-store';
-import { combatEnergyStore } from '@/stores/combat-energy-store';
-import { combatStatusHudStore } from '@/stores/combat-status-hud-store';
-import type { CombatStatusHudIcon } from '@/stores/combat-status-hud-store';
-import type { SealedCharacter } from '@/types/team';
+import { d } from '@/lib/decimal';
 import { formatStat } from '@/lib/format-stat';
-import { Decimal, d, hpRatio } from '@/lib/decimal';
-import { computeInstanceTotals } from '@/lib/character-instance-stats';
+import { getLineageIdProgress, rankNameFor } from '@/lib/lineage-progress';
+import { accountStore } from '@/stores/account-store';
+import { achievementsStore } from '@/stores/achievements-store';
+import { combatEnergyStore } from '@/stores/combat-energy-store';
+import { guildStore } from '@/stores/guild-store';
+import { heritageStore } from '@/stores/heritage-store';
+import { teamStore } from '@/stores/team-store';
+import { villageStore } from '@/stores/village-store';
+import { vitalsStore } from '@/stores/vitals-store';
+import { resolveMemberProfileUrl } from '@/data/character-profiles';
+import type { SealedCharacter } from '@/types/team';
 
-function estimateHpMax(member: SealedCharacter, level: number): number {
-  return Math.max(1, Math.round(computeInstanceTotals(member, level).hp));
+/** Perfis do zip pixel-art; fallback só se não houver arte para o personagem. */
+function resolveProfileSrc(member: SealedCharacter): string {
+  return (
+    resolveMemberProfileUrl(member) ||
+    member.previewUrl ||
+    '/ui/hub-menu/equipe.png?v=color'
+  );
 }
 
-function entryIcons(statusIcons: CombatStatusHudIcon[]) {
-  return statusIcons.map((entry) => (
-    <span
-      className={`active-team__status-icon active-team__status-icon--${entry.statusId}`}
-      key={entry.statusId}
-      title={`${entry.statusId}${entry.stacks > 1 ? ` x${entry.stacks}` : ''}${
-        entry.remainingMs != null ? ` · ${Math.ceil(entry.remainingMs / 1000)}s` : ''
-      }`}
-      aria-label={`${entry.statusId} ativo`}
-    >
-      {entry.icon}
-      {entry.statusId === 'attack-up' ? <small>ATK</small> : null}
-      {entry.stacks > 1 ? entry.stacks : ''}
-    </span>
-  ));
+function vitalPercent(
+  value: number | { toNumber?: () => number },
+  max: number | { toNumber?: () => number },
+): number {
+  const valueDec = d(value as number);
+  const maxDec = d(max as number);
+  const safeMax = maxDec.lte(0) ? d(1) : maxDec;
+  const ratio = valueDec.div(safeMax).toNumber();
+  return Math.round(Math.max(0, Math.min(1, Number.isFinite(ratio) ? ratio : 0)) * 100);
 }
 
-function ActiveTeamCard({
+function ActiveTeamVital({
+  label,
+  valueText,
+  percent,
+  variant,
+}: {
+  label: string;
+  valueText: string;
+  percent: number;
+  variant: 'hp' | 'chakra';
+}) {
+  return (
+    <div className={`active-team__vital active-team__vital--${variant}`}>
+      <span className="active-team__vital-ico" aria-hidden>
+        {variant === 'hp' ? '♥' : '◆'}
+      </span>
+      <div className="active-team__vital-body">
+        <div
+          className="active-team__vital-track"
+          role="progressbar"
+          aria-label={label}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={percent}
+        >
+          <div className="active-team__vital-fill" style={{ width: `${percent}%` }} />
+        </div>
+      </div>
+      <span className="active-team__vital-values">{valueText}</span>
+    </div>
+  );
+}
+
+function ActiveTeamPortrait({
   member,
   isActive,
-  level,
-  hp,
-  hpMax,
-  energy,
-  energyMax,
-  expPct,
-  atMaxLevel,
-  statusIcons,
+  index,
 }: {
   member: SealedCharacter;
   isActive: boolean;
-  level: number;
-  hp: number | import('@/lib/decimal').Decimal;
-  hpMax: number | import('@/lib/decimal').Decimal;
-  energy: number | null;
-  energyMax: number | null;
-  expPct: number;
-  atMaxLevel: boolean;
-  statusIcons: CombatStatusHudIcon[];
+  index: number;
 }) {
   const qualityColor = CHARACTER_QUALITY_COLORS[member.quality];
-  const hpSafe = Decimal.max(d(1), d(hpMax));
-  const hpPct = hpRatio(hp, hpSafe) * 100;
-  const expSafe = Math.max(0, Math.min(100, expPct));
-  const energySafeMax = Math.max(1, energyMax ?? 1);
-  const energyPct =
-    energy != null && energyMax != null
-      ? Math.max(0, Math.min(100, (energy / energySafeMax) * 100))
-      : null;
 
   return (
     <button
       type="button"
-      className={`active-team__card${isActive ? ' is-active' : ''}`}
+      className={`active-team__slot${isActive ? ' is-active' : ''}`}
       style={{ ['--q' as string]: qualityColor }}
       onClick={() => {
         if (!isActive) switchActiveCharacter(member.id);
       }}
       title={isActive ? `${member.name} (ativo)` : `Tornar ${member.name} ativo`}
+      aria-label={
+        isActive
+          ? `Slot ${index + 1}: ${member.name}, ativo`
+          : `Slot ${index + 1}: ${member.name}`
+      }
+      data-no-drag
     >
-      <div className="active-team__card-top">
-        <span className="active-team__rank">[{member.quality}]</span>
-        <span className="active-team__lv">
-          Lv.{level}
-          {atMaxLevel ? ' MAX' : ''}
-        </span>
-      </div>
-
-      <div className="active-team__portrait">
+      <span className="active-team__frame" aria-hidden>
         <Image
-          className="active-team__sprite"
-          src={member.previewUrl}
+          className="active-team__avatar"
+          src={resolveProfileSrc(member)}
           alt=""
-          width={56}
-          height={68}
+          width={128}
+          height={128}
           unoptimized
+          style={{ width: '100%', height: '100%' }}
         />
-      </div>
-
-      <span className="active-team__name">{member.name.toUpperCase()}</span>
-
-      <div className="active-team__bars">
-        <div className="active-team__bar active-team__bar--hp">
-          <span className="active-team__bar-icon" aria-hidden>
-            ♥
-          </span>
-          <span className="active-team__bar-track">
-            <span className="active-team__bar-fill" style={{ width: `${hpPct}%` }} />
-            <span className="active-team__bar-label">
-              {formatStat(hp)}/{formatStat(hpMax)}
-            </span>
-          </span>
-        </div>
-
-        {energyPct != null && energy != null && energyMax != null ? (
-          <div className="active-team__bar active-team__bar--energy" title="ENERGIA">
-            <span className="active-team__bar-icon" aria-hidden>
-              ⚡
-            </span>
-            <span className="active-team__bar-track">
-              <span className="active-team__bar-fill" style={{ width: `${energyPct}%` }} />
-              <span className="active-team__bar-label">
-                ENERGIA {formatStat(Math.floor(energy))}/{formatStat(Math.floor(energyMax))}
-              </span>
-            </span>
-          </div>
-        ) : null}
-
-        <div className="active-team__bar active-team__bar--exp">
-          <span className="active-team__bar-track">
-            <span className="active-team__bar-fill" style={{ width: `${expSafe}%` }} />
-            <span className="active-team__bar-label">
-              {atMaxLevel ? 'EXP MAX' : `EXP ${Math.round(expSafe)}%`}
-            </span>
-          </span>
-        </div>
-
-        {statusIcons.length > 0 ? (
-          <div className="active-team__status" aria-label="Status ativos">
-            {entryIcons(statusIcons)}
-          </div>
-        ) : null}
-      </div>
+      </span>
+      <span className="active-team__slot-meta">
+        <span className="active-team__slot-name">{member.name}</span>
+        <span className="active-team__slot-lv">Nv. {member.level}</span>
+      </span>
+      {isActive ? <span className="active-team__active-dot" aria-hidden /> : null}
     </button>
   );
 }
@@ -156,20 +131,15 @@ function ActiveTeamEmpty({ index }: { index: number }) {
   return (
     <button
       type="button"
-      className="active-team__card active-team__card--empty"
+      className="active-team__slot active-team__slot--empty"
       onClick={() => teamStore.setOpen(true)}
       title="Abrir equipe"
       aria-label={`Slot de equipe ${index + 1} vazio`}
+      data-no-drag
     >
-      <div className="active-team__card-top">
-        <span className="active-team__rank">[—]</span>
-        <span className="active-team__lv">Lv.—</span>
-      </div>
-      <div className="active-team__portrait active-team__portrait--empty">
-        <span>+</span>
-      </div>
-      <span className="active-team__name">SLOT VAZIO</span>
-      <p className="active-team__empty-hint">Toque para equipar</p>
+      <span className="active-team__frame active-team__frame--empty" aria-hidden>
+        +
+      </span>
     </button>
   );
 }
@@ -179,7 +149,7 @@ export interface TeamCombatStripProps {
 }
 
 /**
- * Janela Equipe Ativa — 3 cards verticais (estilo HUD ninja).
+ * Cartão do jogador + equipe — layout glass (Modelo 6).
  */
 export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
   const collection = useStore(teamStore, (s) => s.collection);
@@ -188,15 +158,20 @@ export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
   const guildId = useStore(guildStore, (s) => s.guildId);
   const guildRegistryTick = useStore(guildStore, (s) => s.registryTick);
   const equippedTitleId = useStore(achievementsStore, (s) => s.equippedTitleId);
-  const equippedTitle = getTitleDefinition(equippedTitleId);
+  const lineageProgress = useStore(accountStore, (s) => s.lineageProgress);
+  const heritageClaId = useStore(heritageStore, (s) => s.loadout.claId);
+  const hp = useStore(vitalsStore, (s) => s.hp);
+  const hpMax = useStore(vitalsStore, (s) => s.hpMax);
+  const level = useStore(vitalsStore, (s) => s.level);
+  const energy = useStore(combatEnergyStore, (s) => s.currentEnergy);
+  const energyMax = useStore(combatEnergyStore, (s) => s.maxEnergy);
+  const playerVillageId = useStore(villageStore, (s) => s.playerVillageId);
 
   useEffect(() => {
     teamStore.refreshPreviews();
   }, []);
-  const vitals = useStore(vitalsStore, (s) => s);
-  const energyState = useStore(combatEnergyStore, (s) => s);
-  const statusIcons = useStore(combatStatusHudStore, (s) => s.playerIcons);
-  const { panelRef, style, isDragging, handleProps } = useDraggablePanel('active-team', {
+
+  const { panelRef, style, isDragging, handleProps } = useDraggablePanel('active-team-portraits', {
     zIndex: 32,
     dragZIndex: 95,
   });
@@ -211,53 +186,66 @@ export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
     [teamIds, collection],
   );
 
-  const activeMember =
-    teamMembers.find((entry) => entry?.id === activeId) ?? teamMembers.find(Boolean) ?? null;
   const guild = useMemo(
     () => (guildId ? guildStore.getMyGuild() : null),
     [guildId, guildRegistryTick],
   );
+  const equippedTitle = getTitleDefinition(equippedTitleId);
+  const lineageId = lineageProgress.lineageId;
+  const lineage = lineageId ? getLineageCatalogEntry(lineageId) : null;
+  const heritageCla = heritageClaId ? getHeritageOption('cla', heritageClaId) : null;
+  const heritageClaOption = heritageCla && 'levels' in heritageCla ? heritageCla : null;
+  const heritageClaIcon = heritageClaOption
+    ? getHeritageClanIcon(heritageClaOption.id)
+    : null;
+
+  const village = playerVillageId ? getVillage(playerVillageId) : null;
+  const graduationName = useMemo(() => {
+    if (!lineageId) return null;
+    const definition = getLineageDefinition(lineageId);
+    if (!definition) return null;
+    const idProgress = getLineageIdProgress(lineageProgress, lineageId);
+    if (idProgress.rank <= 0) return null;
+    return rankNameFor(definition.ranks, idProgress.rank);
+  }, [lineageId, lineageProgress]);
+
+  const accent = village?.accent ?? lineage?.color ?? guild?.legacy?.emblemBg ?? '#6aa8ff';
+
+  const hpPct = vitalPercent(hp, hpMax);
+  const chakraPct = vitalPercent(Math.round(energy), energyMax);
 
   return (
     <aside
       ref={panelRef as RefObject<HTMLElement>}
       className={`active-team${isDragging ? ' is-dragging' : ''}`}
-      style={style}
+      style={{ ...style, ['--at-accent' as string]: accent }}
       aria-label="Equipe ativa"
     >
-      <header
-        className="active-team__head active-team__head--drag"
+      <div
+        className="active-team__card active-team__card--drag"
         title="Arrastar para mover"
         {...handleProps}
       >
-        <div className="active-team__brand-row">
-          <span className="active-team__brand-icon" aria-hidden>
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-              <circle cx="8" cy="8" r="3.2" />
-              <circle cx="16" cy="8" r="3.2" />
-              <circle cx="12" cy="16.5" r="3.2" />
-            </svg>
-          </span>
-          <h2 className="active-team__brand">EQUIPE</h2>
-          <p className="active-team__sub">
-            Conta Nv. {vitals.level}
-            {isMaxLevel(vitals.level) ? ' (máx.)' : ''}
-            {activeMember
-              ? ` – ${activeMember.name} Nv.${Math.max(1, activeMember.level || 1)}`
-              : ''}
-          </p>
-          <span className="active-team__leaf" aria-hidden title="Konoha" />
-        </div>
-        {(nickname || equippedTitle || guild) && (
-          <p className="active-team__meta">
-            {nickname ? <span className="active-team__nick">{nickname}</span> : null}
-            {equippedTitle ? (
-              <span className="active-team__title-badge" title={equippedTitle.description}>
-                [{equippedTitle.name}]
+        <div className="active-team__info">
+          <div className="active-team__hero">
+            <div className="active-team__nameplate">
+              <div className="active-team__name-block">
+                <p className="active-team__nick" title={nickname}>
+                  {nickname || 'Shinobi'}
+                </p>
+                {equippedTitle ? (
+                  <p className="active-team__title" title={equippedTitle.description}>
+                    {equippedTitle.name}
+                  </p>
+                ) : null}
+              </div>
+              <span className="active-team__level" title={`Nível ${level}`}>
+                Nv. {level}
               </span>
-            ) : null}
+            </div>
+
             {guild ? (
-              <span
+              <div
                 className="active-team__guild"
                 style={{ ['--g' as string]: guild.legacy?.emblemBg ?? '#7f1d1d' }}
                 title={`Guild ${guild.name} [${guild.tag}]`}
@@ -267,57 +255,120 @@ export function TeamCombatStrip({ nickname }: TeamCombatStripProps) {
                     className="active-team__guild-emblem"
                     src={guild.legacy!.emblemIcon!}
                     alt=""
-                    width={16}
-                    height={20}
+                    width={22}
+                    height={22}
                     unoptimized
                   />
                 ) : (
-                  <span className="active-team__guild-emblem">[{guild.tag}]</span>
+                  <span className="active-team__guild-tag">[{guild.tag}]</span>
                 )}
+                <span className="active-team__guild-kicker">Guild</span>
                 <span className="active-team__guild-name">{guild.name}</span>
-              </span>
+                <span className="active-team__guild-count">
+                  {guild.members.length}/{guild.maxMembers}
+                </span>
+              </div>
             ) : null}
-          </p>
-        )}
-      </header>
+          </div>
 
-      <ul className="active-team__list">
-        {teamMembers.map((member, index) => {
-          if (!member) {
-            return (
-              <li key={`empty-${index}`}>
+          <div className="active-team__chips" aria-label="Graduação, vila e clã">
+            <span
+              className="active-team__chip"
+              title={graduationName ? `Graduação ${graduationName}` : 'Sem graduação'}
+            >
+              <span className="active-team__chip-kicker">Graduação</span>
+              <span className="active-team__chip-row">
+                <Image
+                  className="active-team__chip-ico"
+                  src="/ui/hub-menu/graduacao.png"
+                  alt=""
+                  width={16}
+                  height={16}
+                  unoptimized
+                />
+                <span className="active-team__chip-text">{graduationName ?? '—'}</span>
+              </span>
+            </span>
+            <span
+              className="active-team__chip"
+              title={village?.fullName ?? 'Sem vila'}
+              style={village ? { ['--chip' as string]: village.accent } : undefined}
+            >
+              <span className="active-team__chip-kicker">Vila</span>
+              <span className="active-team__chip-row">
+                {village ? (
+                  <Image
+                    className="active-team__chip-ico"
+                    src={village.iconSrc}
+                    alt=""
+                    width={16}
+                    height={16}
+                    unoptimized
+                  />
+                ) : null}
+                <span className="active-team__chip-text">{village?.shortLabel ?? '—'}</span>
+              </span>
+            </span>
+            <span
+              className="active-team__chip"
+              title={
+                heritageClaOption
+                  ? heritageClaOption.tecnica
+                    ? `${heritageClaOption.name} — ${heritageClaOption.tecnica}`
+                    : heritageClaOption.name
+                  : 'Sem clã'
+              }
+            >
+              <span className="active-team__chip-kicker">Clã</span>
+              <span className="active-team__chip-row">
+                {heritageClaIcon ? (
+                  <Image
+                    className="active-team__chip-ico"
+                    src={heritageClaIcon}
+                    alt=""
+                    width={16}
+                    height={16}
+                    unoptimized
+                  />
+                ) : null}
+                <span className="active-team__chip-text">
+                  {heritageClaOption?.name ?? '—'}
+                </span>
+              </span>
+            </span>
+          </div>
+
+          <div className="active-team__vitals" aria-label="HP e Chakra" data-no-drag>
+            <ActiveTeamVital
+              label="HP"
+              valueText={`${formatStat(hp)} / ${formatStat(hpMax)}`}
+              percent={hpPct}
+              variant="hp"
+            />
+            <ActiveTeamVital
+              label="Chakra"
+              valueText={`${formatStat(Math.round(energy))} / ${formatStat(energyMax)}`}
+              percent={chakraPct}
+              variant="chakra"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="active-team__roster">
+        <p className="active-team__roster-label">Equipe</p>
+        <ul className="active-team__list">
+          {teamMembers.map((member, index) => (
+            <li key={member?.id ?? `empty-${index}`}>
+              {member ? (
+                <ActiveTeamPortrait member={member} isActive={member.id === activeId} index={index} />
+              ) : (
                 <ActiveTeamEmpty index={index} />
-              </li>
-            );
-          }
-
-          const isActive = member.id === activeId;
-          const memberLevel = Math.max(1, member.level || 1);
-          const atMaxLevel = isMaxLevel(memberLevel);
-          const hpMax = isActive
-            ? Decimal.max(d(1), vitals.hpMax)
-            : d(estimateHpMax(member, memberLevel));
-          const hp = isActive ? vitals.hp : hpMax;
-          const expPct = getXpBarPercent(member.xp, memberLevel);
-
-          return (
-            <li key={member.id}>
-              <ActiveTeamCard
-                member={member}
-                isActive={isActive}
-                level={memberLevel}
-                hp={hp}
-                hpMax={hpMax}
-                energy={isActive ? energyState.currentEnergy : null}
-                energyMax={isActive ? energyState.maxEnergy : null}
-                expPct={expPct}
-                atMaxLevel={atMaxLevel}
-                statusIcons={isActive ? statusIcons : []}
-              />
+              )}
             </li>
-          );
-        })}
-      </ul>
+          ))}
+        </ul>
+      </div>
     </aside>
   );
 }

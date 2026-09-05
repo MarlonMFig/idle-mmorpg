@@ -1,9 +1,7 @@
-import { FRAGMENTS_PER_STAR } from '@/constants/aiw-quality';
 import { formatMaxStarsReachedMessage, getMaxStarsForRarity } from '@/config/gameConfig';
 import { clampStars } from '@/constants/character-progression';
-import { getCharacterDefinitionByLookType } from '@/data/characters';
 import { getCharacterPack, NARUTO_CLASSIC_LOOK_TYPE, ROCK_LEE_LOOK_TYPE, SASUKE_CLASSIC_LOOK_TYPE } from '@/data/character-packs';
-import { narutoFragmentItemId } from '@/data/naruto-loot-tiers';
+import { narutoSignatureItemIds, narutoFragmentItemId } from '@/data/naruto-loot-tiers';
 import { inventoryStore } from '@/stores/inventory-store';
 import { addExperience } from '@/lib/player-progression';
 import { d, parseDecimal, type Decimal } from '@/lib/decimal';
@@ -13,11 +11,11 @@ import { isMaxMastery } from '@/lib/character-mastery';
 import { STARTERS } from '@/data/starters';
 import { getCharacterPreviewUrl } from '@/data/curated-map-sprites';
 import { emitSystemMessage } from '@/lib/system-log';
-import { planForgeStar } from '@/systems/forge';
 import { createStore } from '@/stores/create-store';
 import { TEAM_SLOT_COUNT } from '@/constants/sealing';
 import type { StarterCharacterId } from '@/types/player-creation';
 import type { SealedCharacter, TeamState } from '@/types/team';
+import { canUpgradeCharacterStar } from '@/lib/character-star-upgrade';
 import {
   buildSealedCharacter,
   createCharacterInstanceId,
@@ -341,6 +339,12 @@ export const teamStore = {
       .collection.filter((entry) => entry.characterId === characterId).length;
   },
 
+  countCopiesByCharacterAndQuality(characterId: string, quality: SealedCharacter['quality']): number {
+    return store
+      .getSnapshot()
+      .collection.filter((entry) => entry.characterId === characterId && entry.quality === quality).length;
+  },
+
   setFavorite(instanceId: string, isFavorite: boolean): boolean {
     const state = store.getSnapshot();
     let found = false;
@@ -446,82 +450,13 @@ export const teamStore = {
   },
 
   /**
-   * Forja +1 estrela no alvo consumindo materiais confirmados.
-   * UI deve listar `plan.materialIds` antes de chamar.
+   * Forja +1 estrela — delega ao fluxo oficial de evolução por estrelas.
    */
-  forgeStar(targetInstanceId: string, confirmedMaterialInstanceIds: readonly string[]): boolean {
-    const state = store.getSnapshot();
-    const plan = planForgeStar({
-      targetInstanceId,
-      collection: state.collection,
-      teamIds: state.teamIds,
-      materialInstanceIds: confirmedMaterialInstanceIds,
-    });
-
-    if (plan.reason === 'target-missing') {
-      emitSystemMessage('Alvo da forja não encontrado.');
-      return false;
-    }
-    if (plan.reason === 'quality-not-configured') {
-      emitSystemMessage('Forja para este rank ainda não está disponível.');
-      return false;
-    }
-    if (plan.reason === 'stars-unavailable') {
-      emitSystemMessage(formatMaxStarsReachedMessage(plan.target?.quality ?? 'D'));
-      return false;
-    }
-    if (plan.reason === 'max-stars' && plan.target) {
-      emitSystemMessage(formatMaxStarsReachedMessage(plan.target.quality));
-      return false;
-    }
-    if (plan.reason !== 'ok' || !plan.target) {
-      emitSystemMessage(
-        `Materiais insuficientes (precisa de ${plan.cost} cópias iguais elegíveis).`,
-      );
-      return false;
-    }
-
-    // Confirmar que o conjunto bate exatamente com o planejado.
-    if (
-      confirmedMaterialInstanceIds.length !== plan.materialIds.length ||
-      !plan.materialIds.every((id) => confirmedMaterialInstanceIds.includes(id))
-    ) {
-      emitSystemMessage('Lista de materiais inválida. Confirme novamente.');
-      return false;
-    }
-
-    const removeSet = new Set(plan.materialIds);
-    if (removeSet.has(targetInstanceId)) {
-      emitSystemMessage('O alvo não pode ser consumido como material.');
-      return false;
-    }
-
-    const collection = state.collection
-      .filter((entry) => !removeSet.has(entry.id))
-      .map((entry) => {
-        if (entry.id !== targetInstanceId) return entry;
-        return { ...entry, stars: clampStars(entry.stars + 1, entry.quality) };
-      });
-
-    if (collection.length !== state.collection.length - plan.cost) {
-      emitSystemMessage('Falha ao consumir materiais.');
-      return false;
-    }
-
-    // Materiais não deveriam estar na equipe (elegibilidade), mas limpa por segurança.
-    const teamIds = state.teamIds.filter((id) => !removeSet.has(id));
-    commit({ ...state, collection, teamIds });
-
-    const next = collection.find((entry) => entry.id === targetInstanceId);
-    emitSystemMessage(
-      `Forja concluída: ${next?.name ?? 'personagem'} agora com ${next?.stars ?? '?'}★.`,
-    );
-    void import('@/lib/achievement-listeners').then((m) => m.notifyAchievementStarsChanged());
-    void import('@/stores/missions-store').then((m) => m.missionsStore.syncStateMissions());
-    return true;
+  forgeStar(targetInstanceId: string): boolean {
+    return teamStore.upgradeStar(targetInstanceId);
   },
 
-  upgradeStarWithFragments(targetId: string): boolean {
+  upgradeStar(targetId: string): boolean {
     const state = store.getSnapshot();
     const target = state.collection.find((entry) => entry.id === targetId);
     if (!target) {
@@ -532,24 +467,75 @@ export const teamStore = {
       emitSystemMessage(formatMaxStarsReachedMessage(target.quality));
       return false;
     }
-    const charId =
-      target.sourceId ??
-      getCharacterDefinitionByLookType(target.lookType, { includeInactive: true })?.id ??
-      null;
-    const fragId = charId
-      ? narutoFragmentItemId(charId)
-      : 'item-anime-naruto-fragmento-personagem';
-    if (inventoryStore.countItem(fragId) < FRAGMENTS_PER_STAR) {
-      emitSystemMessage(`Precisa de ${FRAGMENTS_PER_STAR} fragmentos.`);
+    const check = canUpgradeCharacterStar(target, state.collection);
+    if (!check.cost) {
+      emitSystemMessage(formatMaxStarsReachedMessage(target.quality));
       return false;
     }
-    if (!inventoryStore.removeItem(fragId, FRAGMENTS_PER_STAR)) return false;
+    if (!check.canUpgrade) {
+      const label: Record<'copies' | 'fragments' | 'signature', string> = {
+        copies: 'cópias',
+        fragments: 'fragmentos',
+        signature: 'assinatura',
+      };
+      emitSystemMessage(`Faltam recursos: ${check.missing.map((key) => label[key]).join(', ')}.`);
+      return false;
+    }
+
+    const materialIds = state.collection
+      .filter(
+        (entry) =>
+          entry.id !== target.id &&
+          entry.characterId === target.characterId &&
+          entry.quality === target.quality,
+      )
+      .slice(0, check.cost.copies)
+      .map((entry) => entry.id);
+    if (materialIds.length < check.cost.copies) {
+      emitSystemMessage('Cópias insuficientes para a evolução.');
+      return false;
+    }
+
+    const fragmentItemId = narutoFragmentItemId(target.characterId);
+    const signatureItemIds = narutoSignatureItemIds(target.characterId);
+    const signatureCounts = signatureItemIds.map((itemId) => ({
+      itemId,
+      quantity: inventoryStore.countItem(itemId),
+    }));
+
+    if (inventoryStore.countItem(fragmentItemId) < check.cost.fragments) return false;
+    if (signatureCounts.reduce((sum, row) => sum + row.quantity, 0) < check.cost.signature) return false;
+
+    if (!inventoryStore.removeItem(fragmentItemId, check.cost.fragments)) return false;
+
+    let signatureRemaining = check.cost.signature;
+    const removedSignature: Array<{ itemId: string; quantity: number }> = [];
+    for (const row of signatureCounts) {
+      if (signatureRemaining <= 0) break;
+      const take = Math.min(signatureRemaining, row.quantity);
+      if (take <= 0) continue;
+      if (!inventoryStore.removeItem(row.itemId, take)) {
+        inventoryStore.addItem(fragmentItemId, check.cost.fragments);
+        for (const undo of removedSignature) inventoryStore.addItem(undo.itemId, undo.quantity);
+        return false;
+      }
+      removedSignature.push({ itemId: row.itemId, quantity: take });
+      signatureRemaining -= take;
+    }
+    if (signatureRemaining > 0) {
+      inventoryStore.addItem(fragmentItemId, check.cost.fragments);
+      for (const undo of removedSignature) inventoryStore.addItem(undo.itemId, undo.quantity);
+      return false;
+    }
+
+    const removeSet = new Set(materialIds);
     const collection = state.collection.map((entry) =>
       entry.id === targetId
         ? { ...entry, stars: clampStars(entry.stars + 1, entry.quality) }
         : entry,
-    );
-    commit({ ...state, collection });
+    ).filter((entry) => !removeSet.has(entry.id));
+    const teamIds = state.teamIds.filter((id) => !removeSet.has(id));
+    commit({ ...state, collection, teamIds });
     const next = collection.find((entry) => entry.id === targetId);
     emitSystemMessage(`${next?.name ?? 'Personagem'} evoluiu para ${next?.stars}★.`);
     void import('@/lib/achievement-listeners').then((m) => m.notifyAchievementStarsChanged());

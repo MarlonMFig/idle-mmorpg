@@ -1,13 +1,11 @@
 import * as Phaser from 'phaser';
+import { resolveCanvasSize } from '@/game/canvas-size';
 import { BootScene } from '@/game/scenes/boot-scene';
 import { GameScene } from '@/game/scenes/game-scene';
 import { PreloadScene } from '@/game/scenes/preload-scene';
 
-/** Resolução inicial do canvas (RESIZE ajusta ao parent em tempo real). */
-export const GAME_WIDTH = 1280;
-export const GAME_HEIGHT = 720;
-
 export function createGameConfig(parent: HTMLElement): Phaser.Types.Core.GameConfig {
+  const { width, height } = resolveCanvasSize(parent);
   return {
     type: Phaser.AUTO,
     parent,
@@ -15,8 +13,8 @@ export function createGameConfig(parent: HTMLElement): Phaser.Types.Core.GameCon
     scale: {
       mode: Phaser.Scale.RESIZE,
       autoCenter: Phaser.Scale.NO_CENTER,
-      width: parent.clientWidth || GAME_WIDTH,
-      height: parent.clientHeight || GAME_HEIGHT,
+      width,
+      height,
     },
     input: {
       // Sem isto o Phaser também processa `mousedown` da window: um clique num

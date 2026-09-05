@@ -203,9 +203,12 @@ export class HubInteractableManager {
   ): Phaser.GameObjects.RenderTexture | null {
     const artKey = getActiveHub().tilemapImageKey;
     if (!artKey || !this.scene.textures.exists(artKey)) return null;
+    if (width < 2 || height < 2) return null;
 
-    const w = Math.round((width * 1.14) / 2) * 2;
-    const h = Math.round((height * 1.14) / 2) * 2;
+    const w = Math.max(2, Math.round((width * 1.14) / 2) * 2);
+    const h = Math.max(2, Math.round((height * 1.14) / 2) * 2);
+    // Render textures enormes podem falhar em GPUs com limite baixo — usa fallback.
+    if (w > 4096 || h > 4096) return null;
     const left = Math.round(centerX - w / 2);
     const top = Math.round(centerY - h / 2);
 

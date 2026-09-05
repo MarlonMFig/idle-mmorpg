@@ -1,4 +1,4 @@
-import type { HuntDefinition, HuntTarget } from '@/types/hunt';
+﻿import type { HuntDefinition, HuntTarget } from '@/types/hunt';
 import type { MapKey } from '@/maps/map-registry';
 import type { CaptureEnemyTier } from '@/constants/capture-system';
 import { resolveCaptureEnemyTier } from '@/lib/capture-enemy-tier';
@@ -50,34 +50,40 @@ const TIER_TO_DIFFICULTY: Record<CaptureEnemyTier, HuntDifficultyId> = {
   chefe: 'muito-dificil',
 };
 
-/** Regiões do mapa-múndi visual — arte Top down existente como fundo. */
+/** Regiões do seletor — carrossel horizontal com arte top-down de cada mapa. */
 export const HUNT_WORLD_REGIONS: HuntWorldRegion[] = [
   {
     id: 'clareira',
     label: 'Clareira',
     location: 'Konoha - Floresta',
-    imageUrl: '/maps/hunt-td-clareira-equipe-7.png?v=naruto-td1',
-    mapKeys: ['huntForestClearing', 'huntTdClareiraEquipe7', 'huntTesteFarmWonsr', 'huntTesteDemon', 'huntTesteWonsrMonsters'],
+    imageUrl: '/maps/hunt-td-clareira-equipe-7.png?v=tdnov2026',
+    mapKeys: [
+      'huntForestClearing',
+      'huntTdClareiraEquipe7',
+      'huntTesteFarmWonsr',
+      'huntTesteDemon',
+      'huntTesteWonsrMonsters',
+    ],
   },
   {
     id: 'vale',
     label: 'Vale do Fim',
     location: 'Konoha - Vale do Fim',
-    imageUrl: '/maps/hunt-td-vale-do-fim.png?v=naruto-td1',
-    mapKeys: ['huntValeDoFim', 'huntTdValeDoFim', 'huntCampoGuerraNinja'],
+    imageUrl: '/maps/hunt-td-vale-do-fim.png?v=tdnov2026',
+    mapKeys: ['huntValeDoFim', 'huntTdValeDoFim'],
   },
   {
     id: 'treino',
     label: 'Campo de Treino',
     location: 'Konoha - Treinamento',
-    imageUrl: '/maps/wonsr-campo-treinamento.png?v=naruto-td1',
+    imageUrl: '/maps/wonsr-campo-treinamento.png?v=tdnov2026',
     mapKeys: ['huntCampoTreinamento', 'huntWonsrCampoTreinamento', 'huntTesteEquipe'],
   },
   {
     id: 'arena',
     label: 'Arena Chunin',
     location: 'Konoha - Arena',
-    imageUrl: '/maps/hunt-td-arena-exame-chunin.png?v=naruto-td1',
+    imageUrl: '/maps/hunt-td-arena-exame-chunin.png?v=tdnov2026',
     mapKeys: [
       'huntArenaExameChunin',
       'huntArenaExameChunnin',
@@ -87,23 +93,30 @@ export const HUNT_WORLD_REGIONS: HuntWorldRegion[] = [
   },
   {
     id: 'uchiha',
-    label: 'Distrito Uchiha',
+    label: 'Campo Uchiha',
     location: 'Konoha - Distrito Uchiha',
-    imageUrl: '/maps/hunt-td-cratera-konoha.png?v=naruto-td1',
-    mapKeys: ['huntDistritoUchiha', 'huntKonohaDestruida', 'huntTdCrateraKonoha'],
+    imageUrl: '/maps/hunt-td-campo-uchiha.png?v=tdnov2026',
+    mapKeys: ['huntDistritoUchiha', 'huntTdCampoUchiha', 'huntWonsrClareiraEquipe7'],
+  },
+  {
+    id: 'cratera',
+    label: 'Cratera Konoha',
+    location: 'Konoha - Destruída',
+    imageUrl: '/maps/hunt-td-cratera-konoha.png?v=tdnov2026',
+    mapKeys: ['huntKonohaDestruida', 'huntTdCrateraKonoha', 'huntCampoGuerraNinja'],
   },
   {
     id: 'ponte',
     label: 'Ponte das Ondas',
     location: 'País das Ondas',
-    imageUrl: '/maps/hunt-td-ponte-das-ondas.png?v=naruto-td1',
+    imageUrl: '/maps/hunt-td-ponte-das-ondas.png?v=tdnov2026',
     mapKeys: ['huntPontePaisOnda', 'huntTdPonteDasOndas', 'huntWonsrPonteDaNevoa'],
   },
   {
     id: 'areia',
     label: 'Deserto',
     location: 'País do Vento - Areia',
-    imageUrl: '/maps/hunt-td-arena-vila-areia.png?v=naruto-td1',
+    imageUrl: '/maps/hunt-td-arena-vila-areia.png?v=tdnov2026',
     mapKeys: [
       'huntPaisDoVento',
       'huntTdArenaVilaAreia',
@@ -115,19 +128,21 @@ export const HUNT_WORLD_REGIONS: HuntWorldRegion[] = [
     id: 'akatsuki',
     label: 'Caverna Akatsuki',
     location: 'Esconderijo Akatsuki',
-    imageUrl: '/maps/hunt-td-caverna-akatsuki.png?v=naruto-td1',
-    mapKeys: [
-      'huntEsconderijoAkatsuki',
-      'huntTdCavernaAkatsuki',
-      'huntWonsrCavernaAkatsuki',
-      'huntWonsrFlorestaDaMorte',
-    ],
+    imageUrl: '/maps/hunt-td-caverna-akatsuki.png?v=tdnov2026',
+    mapKeys: ['huntEsconderijoAkatsuki', 'huntTdCavernaAkatsuki', 'huntWonsrCavernaAkatsuki'],
+  },
+  {
+    id: 'ilha',
+    label: 'Ilha Tartaruga',
+    location: 'Ilha Tartaruga',
+    imageUrl: '/maps/hunt-td-ilha-tartaruga.png?v=tdnov2026',
+    mapKeys: ['huntTdIlhaTartaruga', 'huntWonsrFlorestaDaMorte'],
   },
   {
     id: 'orochimaru',
     label: 'Lab. Orochimaru',
     location: 'Esconderijo de Orochimaru',
-    imageUrl: '/maps/hunt-td-laboratorio-orochimaru.png?v=naruto-td1',
+    imageUrl: '/maps/hunt-td-laboratorio-orochimaru.png?v=tdnov2026',
     mapKeys: [
       'huntLabOrochimaru',
       'huntTdLaboratorioOrochimaru',
@@ -140,16 +155,30 @@ export const HUNT_WORLD_REGIONS: HuntWorldRegion[] = [
     id: 'myoboku',
     label: 'Monte Myoboku',
     location: 'Monte Myoboku',
-    imageUrl: '/maps/wonsr-clareira-equipe-7.png?v=naruto-td1',
-    mapKeys: ['huntMonteMyoboku', 'huntWonsrClareiraEquipe7', 'huntWonsrPaisDoFerro', 'huntWonsrValeDasEstatuas'],
+    imageUrl: '/maps/hunt-td-monte-myoboku.png?v=tdnov2026',
+    mapKeys: ['huntMonteMyoboku', 'huntTdMonteMyoboku'],
+  },
+  {
+    id: 'uzushio',
+    label: 'Uzushiogakure',
+    location: 'Vila do Redemoinho',
+    imageUrl: '/maps/hunt-td-uzushiogakure.png?v=tdnov2026',
+    mapKeys: ['huntTdUzushiogakure', 'huntWonsrValeDasEstatuas'],
+  },
+  {
+    id: 'hospital',
+    label: 'Hospital Konoha',
+    location: 'Konoha - Hospital',
+    imageUrl: '/maps/hunt-td-hospital-konoha.png?v=tdnov2026',
+    mapKeys: ['huntTdHospitalKonoha', 'huntWonsrPaisDoFerro'],
   },
 ];
 
 const FALLBACK_REGION: HuntWorldRegion = {
   id: 'fallback',
   label: 'Territórios',
-  location: 'Naruto World',
-  imageUrl: '/maps/hunt-td-clareira-equipe-7.png?v=naruto-td1',
+  location: 'Territórios',
+  imageUrl: '/maps/hunt-td-clareira-equipe-7.png?v=tdnov2026',
   mapKeys: [],
 };
 

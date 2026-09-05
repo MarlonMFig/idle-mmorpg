@@ -19,15 +19,18 @@ import { locationStore } from '@/stores/location-store';
 import { teamStore } from '@/stores/team-store';
 import { bossStore } from '@/stores/boss-store';
 import { guildStore } from '@/stores/guild-store';
-import { resolveLootFromEnemy, rewardItemsToRolled } from '@/systems/loot-engine';
-import type { RewardResult } from '@/types/loot';
-import type { LootManager } from '@/systems/loot-manager';
+import { resolveLootFromEnemy } from '@/systems/loot-engine';
+import type { RewardItem, RewardResult } from '@/types/loot';
 import { attemptCapture } from '@/systems/capture-engine';
 import { offlineProgressStore } from '@/stores/offline-progress-store';
 import { isNarutoLootTarget } from '@/data/anime-loot';
+import { SHOP_CURRENCY_ITEM_ID } from '@/constants/sealing';
+import { heritageCombatExtras } from '@/lib/heritage-runtime';
+import { vitalsStore } from '@/stores/vitals-store';
+import { Decimal, d } from '@/lib/decimal';
 
-/** Stores React/UI — separados do loot visual para não bloquear combate. */
-const STORE_REWARD_DEFER_MS = 48;
+/** Recompensas fora do frame da morte — sem loot no chão. */
+const STORE_REWARD_DEFER_MS = 80;
 
 function shouldSkipEnemyKill(enemy: Enemy): boolean {
   if (isLabDummyId(enemy.id) || isLabDummyId(enemy.definition.id)) return true;
@@ -35,6 +38,27 @@ function shouldSkipEnemyKill(enemy: Enemy): boolean {
   if (bossStore.isEncounterActive()) return true;
   if (enemy.rewardClaimed) return true;
   return false;
+}
+
+/** Inventário direto. Sem espaço = item não dropa (sem spawn no chão). */
+function deliverKillLoot(
+  reward: RewardResult,
+  sourceId: string,
+): { grantedCopper: number; grantedItems: RewardItem[] } {
+  const grant = rewardService.grant({
+    rewards: {
+      copper: reward.copper > 0 ? reward.copper : undefined,
+      items: reward.items.length ? reward.items : undefined,
+    },
+    source: 'hunt',
+    sourceId,
+    allowPartial: true,
+  });
+
+  return {
+    grantedCopper: grant.granted.copper ?? 0,
+    grantedItems: grant.granted.items ?? [],
+  };
 }
 
 function applyEnemyKillStoreRewards(enemy: Enemy, reward: RewardResult): void {
@@ -50,26 +74,36 @@ function applyEnemyKillStoreRewards(enemy: Enemy, reward: RewardResult): void {
   gemStore.recordKill();
   guildStore.notifyOnlineKill({ source: 'online' });
 
-  if (reward.copper > 0) {
-    const grant = rewardService.grant({
-      rewards: { copper: reward.copper },
-      source: 'hunt',
-      sourceId: enemy.definition.id,
-      allowPartial: true,
-    });
-    const grantedCopper = grant.granted.copper ?? 0;
-    if (grantedCopper > 0) {
-      missionsStore.applyGameplayEvent({ kind: 'combatCopper', amount: grantedCopper }, 'gameplay');
-    }
+  const regenPerKill = heritageCombatExtras().regenPerKill ?? 0;
+  if (regenPerKill > 0) {
+    const { hpMax } = vitalsStore.getSnapshot();
+    const amount = Decimal.max(d(1), hpMax.mul(regenPerKill).floor());
+    vitalsStore.heal(amount);
+  }
+
+  const delivered = deliverKillLoot(reward, enemy.definition.id);
+  if (delivered.grantedCopper > 0) {
+    missionsStore.applyGameplayEvent(
+      { kind: 'combatCopper', amount: delivered.grantedCopper },
+      'gameplay',
+    );
+  }
+  for (const item of delivered.grantedItems) {
+    if (item.itemId === SHOP_CURRENCY_ITEM_ID) continue;
+    missionsStore.applyGameplayEvent(
+      { kind: 'combatDrop', amount: item.quantity, itemId: item.itemId },
+      'gameplay',
+    );
   }
 
   huntAnalyzerStore.recordKill({
     xp: decimalToUnsafeNumber(xpGranted),
-    copper: reward.copper,
+    copper: delivered.grantedCopper,
     masteryXp: masteryGranted,
     quality: enemy.definition.sealable?.quality,
   });
-  for (const item of reward.items) {
+  for (const item of delivered.grantedItems) {
+    if (item.itemId === SHOP_CURRENCY_ITEM_ID) continue;
     huntAnalyzerStore.recordLootItems(item.itemId, item.quantity);
   }
 
@@ -117,58 +151,24 @@ function applyEnemyKillStoreRewards(enemy: Enemy, reward: RewardResult): void {
   enemy.captureResolved = true;
 }
 
-function applyEnemyKillRewards(
-  enemy: Enemy,
-  lootManager: LootManager,
-  dropX: number,
-  dropY: number,
-): void {
-  const reward = resolveLootFromEnemy(enemy, 1);
-  lootManager.spawnRolled(rewardItemsToRolled(reward.items), dropX, dropY);
-  applyEnemyKillStoreRewards(enemy, reward);
+/**
+ * Recompensas ao matar: XP/vila/quest + Loot Engine + selamento.
+ * LootManager permanece na assinatura por compatibilidade — kills não usam chão.
+ */
+export function handleEnemyKill(enemy: Enemy): void {
+  if (shouldSkipEnemyKill(enemy)) return;
+  enemy.rewardClaimed = true;
+  applyEnemyKillStoreRewards(enemy, resolveLootFromEnemy(enemy, 1));
 }
 
-function scheduleEnemyKillRewardPhases(
-  scene: Phaser.Scene,
-  enemy: Enemy,
-  lootManager: LootManager,
-  dropX: number,
-  dropY: number,
-): void {
-  scene.time.delayedCall(0, () => {
-    const reward = resolveLootFromEnemy(enemy, 1);
-    lootManager.spawnRolled(rewardItemsToRolled(reward.items), dropX, dropY);
-    scene.time.delayedCall(STORE_REWARD_DEFER_MS, () => {
-      applyEnemyKillStoreRewards(enemy, reward);
-    });
+/**
+ * Agenda recompensas fora do frame da morte.
+ */
+export function scheduleHandleEnemyKill(scene: Phaser.Scene, enemy: Enemy): void {
+  if (shouldSkipEnemyKill(enemy)) return;
+  enemy.rewardClaimed = true;
+  scene.time.delayedCall(STORE_REWARD_DEFER_MS, () => {
+    if (!enemy.rewardClaimed) return;
+    applyEnemyKillStoreRewards(enemy, resolveLootFromEnemy(enemy, 1));
   });
-}
-
-/**
- * Recompensas ao matar: XP/vila/quest + Loot Engine + selamento (sistema separado).
- */
-export function handleEnemyKill(
-  enemy: Enemy,
-  lootManager: LootManager,
-  dropX: number,
-  dropY: number,
-): void {
-  if (shouldSkipEnemyKill(enemy)) return;
-  enemy.rewardClaimed = true;
-  applyEnemyKillRewards(enemy, lootManager, dropX, dropY);
-}
-
-/**
- * Agenda recompensas fora do frame da morte (loot visual primeiro; stores depois).
- */
-export function scheduleHandleEnemyKill(
-  scene: Phaser.Scene,
-  enemy: Enemy,
-  lootManager: LootManager,
-  dropX: number,
-  dropY: number,
-): void {
-  if (shouldSkipEnemyKill(enemy)) return;
-  enemy.rewardClaimed = true;
-  scheduleEnemyKillRewardPhases(scene, enemy, lootManager, dropX, dropY);
 }

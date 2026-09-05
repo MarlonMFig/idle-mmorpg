@@ -273,7 +273,9 @@ export function shouldIsolateOfficialSave(): boolean {
 }
 
 export function shouldFreezeOfficialProgress(): boolean {
-  return shouldIsolateOfficialSave();
+  if (!isDevMode()) return false;
+  if (!isDevLabSessionActive()) return false;
+  return DEV_FLAGS.isolateOfficialSave === true;
 }
 
 export function shouldForceAllSkillsLevel1(): boolean {

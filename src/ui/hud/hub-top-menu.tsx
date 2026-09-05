@@ -29,11 +29,11 @@ type HubMenuId =
   | 'vip'
   | 'gemas'
   | 'cla'
+  | 'graduacao'
   | 'guild'
   | 'conquistas'
   | 'missoes'
   | 'diario'
-  | 'bosses'
   | 'ranking'
   | 'mapa'
   | 'hunt-analyzer'
@@ -86,10 +86,17 @@ const HUB_MENU_ITEMS: readonly HubMenuItem[] = [
   },
   {
     id: 'cla',
-    label: 'Linhagem',
+    label: 'Herança',
     iconSrc: '/ui/hub-menu/linhagem.png?v=color',
     tone: '#5aa8ff',
-    title: 'Linhagem',
+    title: 'Herança',
+  },
+  {
+    id: 'graduacao',
+    label: 'Graduação',
+    iconSrc: '/ui/hub-menu/graduacao.png?v=color',
+    tone: '#e8b84a',
+    title: 'Graduação',
   },
   {
     id: 'guild',
@@ -118,13 +125,6 @@ const HUB_MENU_ITEMS: readonly HubMenuItem[] = [
     iconSrc: '/ui/hub-menu/login-diario.png?v=color',
     tone: '#f0d070',
     title: 'Recompensa Diária',
-  },
-  {
-    id: 'bosses',
-    label: 'Bosses',
-    iconSrc: '/ui/hub-menu/bosses.png?v=color',
-    tone: '#e05a5a',
-    title: 'Bosses',
   },
   {
     id: 'ranking',
@@ -166,6 +166,7 @@ export function HubTopMenu() {
   const teamOpen = useStore(teamStore, (s) => s.isOpen);
   const invOpen = useStore(inventoryStore, (s) => s.isOpen);
   const clanOpen = useStore(accountStore, (s) => s.isOpen);
+  const graduationOpen = useStore(accountStore, (s) => s.graduationOpen);
   const guildOpen = useStore(guildStore, (s) => s.isOpen);
   const analyzerOpen = useStore(huntAnalyzerStore, (s) => s.isOpen);
   const helperOpen = useStore(helperStore, (s) => s.isOpen);
@@ -175,7 +176,6 @@ export function HubTopMenu() {
   const achvOpen = useStore(achievementsStore, (s) => s.isOpen);
   const missionOpen = useStore(missionsStore, (s) => s.isOpen);
   const dailyOpen = useStore(dailyLoginStore, (s) => s.isOpen);
-  const bossOpen = useStore(bossStore, (s) => s.isOpen);
   const rankingOpen = useStore(rankingStore, (s) => s.isOpen);
   const encounterKind = useStore(locationStore, (s) => s.encounterKind);
   const missionTick = useStore(
@@ -234,6 +234,9 @@ export function HubTopMenu() {
         case 'cla':
           accountStore.toggleOpen();
           return;
+        case 'graduacao':
+          accountStore.toggleGraduationOpen();
+          return;
         case 'mapa':
           huntStore.open();
           return;
@@ -264,9 +267,6 @@ export function HubTopMenu() {
         case 'diario':
           dailyLoginStore.toggleOpen();
           return;
-        case 'bosses':
-          bossStore.toggleOpen();
-          return;
         case 'ranking':
           rankingStore.toggleOpen();
           return;
@@ -283,6 +283,7 @@ export function HubTopMenu() {
             (item.id === 'equipe' && teamOpen) ||
             (item.id === 'inventario' && invOpen) ||
             (item.id === 'cla' && clanOpen) ||
+            (item.id === 'graduacao' && graduationOpen) ||
             (item.id === 'guild' && guildOpen) ||
             (item.id === 'hunt-analyzer' && analyzerOpen) ||
             (item.id === 'helper' && helperOpen) ||
@@ -292,7 +293,6 @@ export function HubTopMenu() {
             (item.id === 'conquistas' && achvOpen) ||
             (item.id === 'missoes' && missionOpen) ||
             (item.id === 'diario' && dailyOpen) ||
-            (item.id === 'bosses' && bossOpen) ||
             (item.id === 'ranking' && rankingOpen);
 
           return (

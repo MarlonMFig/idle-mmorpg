@@ -2,7 +2,7 @@ import type { ItemCategory, ItemDefinition, ItemRarity } from '@/types/loot';
 import { isItemRarity } from '@/types/loot';
 import { ANIME_LOOT_ITEMS } from '@/data/anime-items';
 import { HELPER_ITEM_DEFS } from '@/data/helper-items';
-import { NARUTO_CHARACTER_LOOT } from '@/data/naruto-loot-tiers';
+import { NARUTO_CHARACTER_LOOT, signatureItemIdsOf } from '@/data/naruto-loot-tiers';
 
 /**
  * Catálogo de itens (Item 36 — sem Equipment).
@@ -172,9 +172,11 @@ export function inferItemCategory(item: ItemDefinition): ItemCategory {
 function attachNarutoSignatureMetadata(): void {
   const byItem = new Map<string, string[]>();
   for (const [characterId, profile] of Object.entries(NARUTO_CHARACTER_LOOT)) {
-    const list = byItem.get(profile.signatureItemId) ?? [];
-    list.push(characterId);
-    byItem.set(profile.signatureItemId, list);
+    for (const itemId of signatureItemIdsOf(profile)) {
+      const list = byItem.get(itemId) ?? [];
+      list.push(characterId);
+      byItem.set(itemId, list);
+    }
   }
   for (const [itemId, characterIds] of byItem) {
     const item = ITEMS[itemId];

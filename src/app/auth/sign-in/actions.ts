@@ -7,9 +7,9 @@ import {
   validateUsername,
 } from '@/lib/auth/username-credential';
 import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 
-export type AuthActionState = { error?: string; message?: string } | null;
+export type AuthActionState = { error?: string; message?: string; success?: boolean } | null;
 
 export async function signInWithUsername(
   _previousState: AuthActionState,
@@ -44,5 +44,6 @@ export async function signInWithUsername(
     return { error: mapAuthErrorMessage(msg, 'Falha ao entrar. Tente de novo.') };
   }
 
-  redirect('/');
+  revalidatePath('/', 'layout');
+  return { success: true };
 }

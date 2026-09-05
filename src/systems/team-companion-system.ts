@@ -12,7 +12,6 @@ import {
 import { isSkillCooldownIgnored, scaleOutgoingDamage } from '@/config/devConfig';
 import { SKILL_DEFAULT_RANGE } from '@/constants/skill';
 import { BASIC_ATTACK_ELEMENT, resolveSkillElement, type DamageElement } from '@/data/damage-elements';
-import { resolveAwakeningRuntime } from '@/lib/awakening-runtime';
 import { resolveEffectiveSkill, resolveSkillWithAnim } from '@/lib/resolve-effective-skill';
 import { Decimal, d, hpRatio } from '@/lib/decimal';
 import type { Enemy } from '@/entities/enemy';
@@ -231,10 +230,7 @@ export class TeamCompanionSystem {
     const slots: CombatAiSlotInput[] = ([1, 2, 3, 4] as const).map((slot) => {
       const skillId = ids[slot - 1] ?? null;
       const baseSkill = skillId
-        ? resolveEffectiveSkill(
-            skillId,
-            resolveAwakeningRuntime({ characterId: companion.player.pack.id, instanceId: companion.id }),
-          )
+        ? resolveEffectiveSkill(skillId, companion.player.pack.id)
         : null;
       const skill = baseSkill ? resolveSkillWithAnim(baseSkill, companion.player.getSkillAnim(skillId!)) : null;
       if (!skill || skill.effect === 'heal' || level < (skill.requiredLevel ?? 1)) {
@@ -311,10 +307,7 @@ export class TeamCompanionSystem {
     const enemyManager = this.options.enemyManager;
     const lootManager = this.options.lootManager;
     if (!enemyManager || !lootManager || companion.player.isBusy()) return false;
-    const baseSkill = resolveEffectiveSkill(
-      skillId,
-      resolveAwakeningRuntime({ characterId: companion.player.pack.id, instanceId: companion.id }),
-    );
+    const baseSkill = resolveEffectiveSkill(skillId, companion.player.pack.id);
     const skill = baseSkill ? resolveSkillWithAnim(baseSkill, companion.player.getSkillAnim(skillId)) : null;
     if (!skill || skill.effect === 'heal') return false;
     if (
@@ -523,7 +516,7 @@ export class TeamCompanionSystem {
       enemy,
       element: element ?? BASIC_ATTACK_ELEMENT,
       onKill: (killed) => {
-        scheduleHandleEnemyKill(this.scene, killed, lootManager, killed.sprite.x, killed.sprite.y);
+        scheduleHandleEnemyKill(this.scene, killed);
         enemyManager.onEnemyKilled(killed.id);
       },
     });

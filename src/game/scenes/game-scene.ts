@@ -17,6 +17,7 @@ import { resolveCharacterPack } from '@/data/resolve-character-pack';
 import { Player } from '@/entities';
 import { getPlayerSession } from '@/game/registry';
 import { getSpawnCharacterPack } from '@/lib/active-character';
+import { bootLoadingStore } from '@/stores/boot-loading-store';
 import { isCharacterLabSession, isLabBlockingHuntGameplay } from '@/stores/character-lab-store';
 import { emitChatMessage, emitSystemMessage } from '@/lib/system-log';
 import type { HuntCatalog } from '@/types/hunt';
@@ -119,6 +120,8 @@ export class GameScene extends Phaser.Scene {
 
   create(data?: GameSceneData): void {
     this.worldReady = false;
+    this.registry.set('worldReady', false);
+    bootLoadingStore.setPhase('buildingWorld');
     this.cameras.main.setBackgroundColor('#000000');
 
     const session = getPlayerSession(this.registry);
@@ -164,6 +167,7 @@ export class GameScene extends Phaser.Scene {
       emitSystemMessage(
         `Falha ao montar o mapa (${this.mapKey}): ${error instanceof Error ? error.message : String(error)}`,
       );
+      bootLoadingStore.setReady(true);
     });
   }
 
@@ -362,11 +366,7 @@ export class GameScene extends Phaser.Scene {
         spawnX = rendered.spawn.x;
         spawnY = rendered.spawn.y;
         const mapBg = this.add.image(0, 0, rendered.imageKey).setOrigin(0, 0).setDepth(0);
-        mapBg.texture.setFilter(
-          rendered.foregroundKey
-            ? Phaser.Textures.FilterMode.NEAREST
-            : Phaser.Textures.FilterMode.LINEAR,
-        );
+        mapBg.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
         this.mapBackground = mapBg;
         if (rendered.videoKey && this.cache.video.exists(rendered.videoKey)) {
           try {
@@ -409,7 +409,7 @@ export class GameScene extends Phaser.Scene {
             .setOrigin(0, 0)
             .setDepth(RENDER_LAYER.mapForeground)
             .setScrollFactor(1);
-          mapFg.texture.setFilter(Phaser.Textures.FilterMode.NEAREST);
+          mapFg.texture.setFilter(Phaser.Textures.FilterMode.LINEAR);
         }
       } else {
         const { map, layers } = maps.createLayers(this.mapKey);
@@ -629,9 +629,12 @@ export class GameScene extends Phaser.Scene {
     });
 
     this.worldReady = true;
+    this.registry.set('worldReady', true);
+    bootLoadingStore.setReady(true);
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.worldReady = false;
+      this.registry.set('worldReady', false);
       this.scale.off('resize', this.onScaleResize, this);
       this.unsubLocation?.();
       this.unsubLocation = null;
@@ -776,6 +779,7 @@ export class GameScene extends Phaser.Scene {
   /** Canvas RESIZE: viewport e zoom acompanham o tamanho do parent (100vw × 100dvh). */
   private onScaleResize(): void {
     if (!this.worldReady) return;
+    if (this.scale.width < 2 || this.scale.height < 2) return;
     this.applyCameraLayout();
   }
 

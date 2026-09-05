@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <circle cx="16" cy="16" r="11" fill="#0c0a12" fill-opacity=".45"/>
+  <!-- shadow tendrils / kage mane -->
+  <path d="M10 24c2-6 1-10 4-14 1.2-1.5 3-2.2 4.5-1.5 1.8.8 1.5 3.2.2 4.5-1.6 1.6-3.8 1.8-4.8 3.8-.8 1.7.2 3.8 2.2 4.6" stroke="#d9d2e8" stroke-width="2.2" stroke-linecap="round" fill="none" opacity=".95"/>
+  <path d="M16 9c3-1 6 .5 7 3.5 1 2.8-.5 5-2.5 6.2" stroke="#b8a8d4" stroke-width="1.6" stroke-linecap="round" fill="none" opacity=".75"/>
+  <path d="M14 22c3 .4 5.5-1 7-3" stroke="#9a88c0" stroke-width="1.3" stroke-linecap="round" fill="none" opacity=".7"/>
+  <!-- caster palm hint -->
+  <ellipse cx="11.5" cy="24.5" rx="2.4" ry="1.5" fill="#e8dfd0" fill-opacity=".55"/>
+</svg>

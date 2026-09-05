@@ -2,27 +2,27 @@
   "mapKey": "huntCampoTreinamento",
   "slug": "hunt-campo-treinamento",
   "label": "Campo de Treinamento",
+  "source": "CAMPO DE TREINAMENTO (1).png",
   "image": "/maps/hunt-campo-treinamento.png",
   "foreground": "/maps/hunt-campo-treinamento-fg.png",
   "tmx": "/maps/hunt-campo-treinamento.tmx",
-  "width": 4096,
-  "height": 2160,
-  "cols": 256,
-  "rows": 135,
-  "lateralFloorY": 1386,
-  "layoutScale": 2.1,
+  "cacheTag": "hq2026",
+  "width": 6688,
+  "height": 3764,
   "spawn": {
-    "x": 2048,
-    "y": 1386
+    "x": 3344,
+    "y": 2415
   },
   "enemySpawns": [
     {
-      "x": 3808,
-      "y": 1386
+      "x": 6409,
+      "y": 2415
     },
     {
-      "x": 288,
-      "y": 1386
+      "x": 279,
+      "y": 2415
     }
-  ]
+  ],
+  "lateralFloorY": 2415,
+  "layoutScale": 8.27
 }

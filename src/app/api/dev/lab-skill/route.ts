@@ -216,12 +216,10 @@ export async function POST(request: Request) {
         skillId = skill.id;
         const catalog = insertLabVisualSkill(skill, { persist: false });
         catalogFile = catalog.relativePath;
-        writeDevSourceAfterResponse(catalog.absPath, catalog.source);
+        if (catalog.changed) writeDevSourceAfterResponse(catalog.absPath, catalog.source);
       } else if (changes.element) {
         const catalog = patchLabVisualSkillElement(existingId, changes.element, { persist: false });
-        const idToken = `id: '${existingId}'`;
-        const idTokenAlt = `id: "${existingId}"`;
-        if (catalog.source.includes(idToken) || catalog.source.includes(idTokenAlt)) {
+        if (catalog.changed) {
           catalogFile = catalog.relativePath;
           writeDevSourceAfterResponse(catalog.absPath, catalog.source);
         }

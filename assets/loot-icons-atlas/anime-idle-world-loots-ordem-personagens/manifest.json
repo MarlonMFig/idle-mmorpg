@@ -1,0 +1,2713 @@
+{
+  "collection": "Anime Idle World — Loots por Personagem",
+  "character_count": 69,
+  "loot_placements": 138,
+  "icon_size": {
+    "width": 256,
+    "height": 256
+  },
+  "format": "PNG RGBA",
+  "order_rule": "For each character: material first, signature item second",
+  "atlas": {
+    "file": "atlas-ordem-personagens-2048x4608.png",
+    "width": 2048,
+    "height": 4608,
+    "columns": 8,
+    "rows": 18,
+    "cell": 256,
+    "pairs_per_row": 4
+  },
+  "characters": [
+    {
+      "character_order": 1,
+      "group_order": 1,
+      "group": "Time 7 — Naruto",
+      "character": "Uzumaki Naruto",
+      "directory": "por-personagem/01-uzumaki-naruto",
+      "loots": [
+        {
+          "order": 1,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Papel de Pergaminho",
+          "source_file": "materiais/037-papel-de-pergaminho.png",
+          "character_file": "por-personagem/01-uzumaki-naruto/01-material-papel-de-pergaminho.png",
+          "flat_file": "ordem-plana/001-uzumaki-naruto-material-papel-de-pergaminho.png",
+          "atlas": {
+            "x": 0,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 2,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Espiral Uzumaki",
+          "source_file": "assinatura/073-espiral-uzumaki.png",
+          "character_file": "por-personagem/01-uzumaki-naruto/02-assinatura-espiral-uzumaki.png",
+          "flat_file": "ordem-plana/002-uzumaki-naruto-assinatura-espiral-uzumaki.png",
+          "atlas": {
+            "x": 256,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 2,
+      "group_order": 1,
+      "group": "Time 7 — Naruto",
+      "character": "Naruto Shippuden",
+      "directory": "por-personagem/02-naruto-shippuden",
+      "loots": [
+        {
+          "order": 3,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Papel de Pergaminho",
+          "source_file": "materiais/037-papel-de-pergaminho.png",
+          "character_file": "por-personagem/02-naruto-shippuden/01-material-papel-de-pergaminho.png",
+          "flat_file": "ordem-plana/003-naruto-shippuden-material-papel-de-pergaminho.png",
+          "atlas": {
+            "x": 512,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 4,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Núcleo de Rasengan",
+          "source_file": "assinatura/103-nucleo-de-rasengan.png",
+          "character_file": "por-personagem/02-naruto-shippuden/02-assinatura-nucleo-de-rasengan.png",
+          "flat_file": "ordem-plana/004-naruto-shippuden-assinatura-nucleo-de-rasengan.png",
+          "atlas": {
+            "x": 768,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 3,
+      "group_order": 1,
+      "group": "Time 7 — Naruto",
+      "character": "Naruto (1 Cauda)",
+      "directory": "por-personagem/03-naruto-1-cauda",
+      "loots": [
+        {
+          "order": 5,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Chakra Residual",
+          "source_file": "materiais/013-chakra-residual.png",
+          "character_file": "por-personagem/03-naruto-1-cauda/01-material-chakra-residual.png",
+          "flat_file": "ordem-plana/005-naruto-1-cauda-material-chakra-residual.png",
+          "atlas": {
+            "x": 1024,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 6,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Manto de Chakra Vermelho",
+          "source_file": "assinatura/095-manto-de-chakra-vermelho.png",
+          "character_file": "por-personagem/03-naruto-1-cauda/02-assinatura-manto-de-chakra-vermelho.png",
+          "flat_file": "ordem-plana/006-naruto-1-cauda-assinatura-manto-de-chakra-vermelho.png",
+          "atlas": {
+            "x": 1280,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 4,
+      "group_order": 1,
+      "group": "Time 7 — Naruto",
+      "character": "Naruto (4 Caudas)",
+      "directory": "por-personagem/04-naruto-4-caudas",
+      "loots": [
+        {
+          "order": 7,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Chakra Residual",
+          "source_file": "materiais/013-chakra-residual.png",
+          "character_file": "por-personagem/04-naruto-4-caudas/01-material-chakra-residual.png",
+          "flat_file": "ordem-plana/007-naruto-4-caudas-material-chakra-residual.png",
+          "atlas": {
+            "x": 1536,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 8,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Garra de Quatro Caudas",
+          "source_file": "assinatura/080-garra-de-quatro-caudas.png",
+          "character_file": "por-personagem/04-naruto-4-caudas/02-assinatura-garra-de-quatro-caudas.png",
+          "flat_file": "ordem-plana/008-naruto-4-caudas-assinatura-garra-de-quatro-caudas.png",
+          "atlas": {
+            "x": 1792,
+            "y": 0,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 5,
+      "group_order": 1,
+      "group": "Time 7 — Naruto",
+      "character": "Naruto Kyubi",
+      "directory": "por-personagem/05-naruto-kyubi",
+      "loots": [
+        {
+          "order": 9,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Chakra de Bijuu",
+          "source_file": "materiais/014-chakra-de-bijuu.png",
+          "character_file": "por-personagem/05-naruto-kyubi/01-material-chakra-de-bijuu.png",
+          "flat_file": "ordem-plana/009-naruto-kyubi-material-chakra-de-bijuu.png",
+          "atlas": {
+            "x": 0,
+            "y": 256,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 10,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Núcleo de Kurama",
+          "source_file": "assinatura/102-nucleo-de-kurama.png",
+          "character_file": "por-personagem/05-naruto-kyubi/02-assinatura-nucleo-de-kurama.png",
+          "flat_file": "ordem-plana/010-naruto-kyubi-assinatura-nucleo-de-kurama.png",
+          "atlas": {
+            "x": 256,
+            "y": 256,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 6,
+      "group_order": 2,
+      "group": "Uchiha",
+      "character": "Uchiha Sasuke",
+      "directory": "por-personagem/06-uchiha-sasuke",
+      "loots": [
+        {
+          "order": 11,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Shuriken Gasta",
+          "source_file": "materiais/045-shuriken-gasta.png",
+          "character_file": "por-personagem/06-uchiha-sasuke/01-material-shuriken-gasta.png",
+          "flat_file": "ordem-plana/011-uchiha-sasuke-material-shuriken-gasta.png",
+          "atlas": {
+            "x": 512,
+            "y": 256,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 12,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Brasão Uchiha",
+          "source_file": "assinatura/059-brasao-uchiha.png",
+          "character_file": "por-personagem/06-uchiha-sasuke/02-assinatura-brasao-uchiha.png",
+          "flat_file": "ordem-plana/012-uchiha-sasuke-assinatura-brasao-uchiha.png",
+          "atlas": {
+            "x": 768,
+            "y": 256,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 7,
+      "group_order": 2,
+      "group": "Uchiha",
+      "character": "Sasuke Cursed",
+      "directory": "por-personagem/07-sasuke-cursed",
+      "loots": [
+        {
+          "order": 13,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Chakra Amaldiçoado",
+          "source_file": "materiais/011-chakra-amaldicoado.png",
+          "character_file": "por-personagem/07-sasuke-cursed/01-material-chakra-amaldicoado.png",
+          "flat_file": "ordem-plana/013-sasuke-cursed-material-chakra-amaldicoado.png",
+          "atlas": {
+            "x": 1024,
+            "y": 256,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 14,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Marca Maldita do Céu",
+          "source_file": "assinatura/096-marca-maldita-do-ceu.png",
+          "character_file": "por-personagem/07-sasuke-cursed/02-assinatura-marca-maldita-do-ceu.png",
+          "flat_file": "ordem-plana/014-sasuke-cursed-assinatura-marca-maldita-do-ceu.png",
+          "atlas": {
+            "x": 1280,
+            "y": 256,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 8,
+      "group_order": 2,
+      "group": "Uchiha",
+      "character": "Uchiha Sasuke (G6)",
+      "directory": "por-personagem/08-uchiha-sasuke-g6",
+      "loots": [
+        {
+          "order": 15,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Fio Condutor Raiton",
+          "source_file": "materiais/025-fio-condutor-raiton.png",
+          "character_file": "por-personagem/08-uchiha-sasuke-g6/01-material-fio-condutor-raiton.png",
+          "flat_file": "ordem-plana/015-uchiha-sasuke-g6-material-fio-condutor-raiton.png",
+          "atlas": {
+            "x": 1536,
+            "y": 256,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 16,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Lâmina Kusanagi",
+          "source_file": "assinatura/093-lamina-kusanagi.png",
+          "character_file": "por-personagem/08-uchiha-sasuke-g6/02-assinatura-lamina-kusanagi.png",
+          "flat_file": "ordem-plana/016-uchiha-sasuke-g6-assinatura-lamina-kusanagi.png",
+          "atlas": {
+            "x": 1792,
+            "y": 256,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 9,
+      "group_order": 2,
+      "group": "Uchiha",
+      "character": "Uchiha Itachi",
+      "directory": "por-personagem/09-uchiha-itachi",
+      "loots": [
+        {
+          "order": 17,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Pena de Corvo",
+          "source_file": "materiais/038-pena-de-corvo.png",
+          "character_file": "por-personagem/09-uchiha-itachi/01-material-pena-de-corvo.png",
+          "flat_file": "ordem-plana/017-uchiha-itachi-material-pena-de-corvo.png",
+          "atlas": {
+            "x": 0,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 18,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Olho Mangekyou",
+          "source_file": "assinatura/104-olho-vermelho-evoluido.png",
+          "character_file": "por-personagem/09-uchiha-itachi/02-assinatura-olho-mangekyou.png",
+          "flat_file": "ordem-plana/018-uchiha-itachi-assinatura-olho-mangekyou.png",
+          "atlas": {
+            "x": 256,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 10,
+      "group_order": 2,
+      "group": "Uchiha",
+      "character": "Uchiha Shisui",
+      "directory": "por-personagem/10-uchiha-shisui",
+      "loots": [
+        {
+          "order": 19,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Folha de Teletransporte",
+          "source_file": "materiais/027-folha-de-teletransporte.png",
+          "character_file": "por-personagem/10-uchiha-shisui/01-material-folha-de-teletransporte.png",
+          "flat_file": "ordem-plana/019-uchiha-shisui-material-folha-de-teletransporte.png",
+          "atlas": {
+            "x": 512,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 20,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Essência Kotoamatsukami",
+          "source_file": "assinatura/074-essencia-kotoamatsukami.png",
+          "character_file": "por-personagem/10-uchiha-shisui/02-assinatura-essencia-kotoamatsukami.png",
+          "flat_file": "ordem-plana/020-uchiha-shisui-assinatura-essencia-kotoamatsukami.png",
+          "atlas": {
+            "x": 768,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 11,
+      "group_order": 3,
+      "group": "Taijutsu",
+      "character": "Rock Lee",
+      "directory": "por-personagem/11-rock-lee",
+      "loots": [
+        {
+          "order": 21,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Bandagem Usada",
+          "source_file": "materiais/004-bandagem-usada.png",
+          "character_file": "por-personagem/11-rock-lee/01-material-bandagem-usada.png",
+          "flat_file": "ordem-plana/021-rock-lee-material-bandagem-usada.png",
+          "atlas": {
+            "x": 1024,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 22,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Peso de Tornozelo",
+          "source_file": "assinatura/108-peso-de-tornozelo.png",
+          "character_file": "por-personagem/11-rock-lee/02-assinatura-peso-de-tornozelo.png",
+          "flat_file": "ordem-plana/022-rock-lee-assinatura-peso-de-tornozelo.png",
+          "atlas": {
+            "x": 1280,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 12,
+      "group_order": 3,
+      "group": "Taijutsu",
+      "character": "Rock Lee (G6)",
+      "directory": "por-personagem/12-rock-lee-g6",
+      "loots": [
+        {
+          "order": 23,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Vapor dos Portões",
+          "source_file": "materiais/050-vapor-dos-portoes.png",
+          "character_file": "por-personagem/12-rock-lee-g6/01-material-vapor-dos-portoes.png",
+          "flat_file": "ordem-plana/023-rock-lee-g6-material-vapor-dos-portoes.png",
+          "atlas": {
+            "x": 1536,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 24,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Selo do Sexto Portão",
+          "source_file": "assinatura/119-selo-do-sexto-portao.png",
+          "character_file": "por-personagem/12-rock-lee-g6/02-assinatura-selo-do-sexto-portao.png",
+          "flat_file": "ordem-plana/024-rock-lee-g6-assinatura-selo-do-sexto-portao.png",
+          "atlas": {
+            "x": 1792,
+            "y": 512,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 13,
+      "group_order": 3,
+      "group": "Taijutsu",
+      "character": "Might Guy",
+      "directory": "por-personagem/13-might-guy",
+      "loots": [
+        {
+          "order": 25,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Vapor dos Portões",
+          "source_file": "materiais/050-vapor-dos-portoes.png",
+          "character_file": "por-personagem/13-might-guy/01-material-vapor-dos-portoes.png",
+          "flat_file": "ordem-plana/025-might-guy-material-vapor-dos-portoes.png",
+          "atlas": {
+            "x": 0,
+            "y": 768,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 26,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Chakra do Oitavo Portão",
+          "source_file": "assinatura/065-chakra-do-oitavo-portao.png",
+          "character_file": "por-personagem/13-might-guy/02-assinatura-chakra-do-oitavo-portao.png",
+          "flat_file": "ordem-plana/026-might-guy-assinatura-chakra-do-oitavo-portao.png",
+          "atlas": {
+            "x": 256,
+            "y": 768,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 14,
+      "group_order": 4,
+      "group": "Hyuga",
+      "character": "Neji Hyuga",
+      "directory": "por-personagem/14-neji-hyuga",
+      "loots": [
+        {
+          "order": 27,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Essência de Byakugan",
+          "source_file": "materiais/021-essencia-de-byakugan.png",
+          "character_file": "por-personagem/14-neji-hyuga/01-material-essencia-de-byakugan.png",
+          "flat_file": "ordem-plana/027-neji-hyuga-material-essencia-de-byakugan.png",
+          "atlas": {
+            "x": 512,
+            "y": 768,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 28,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Selo do Pássaro na Gaiola",
+          "source_file": "assinatura/118-selo-do-passaro-na-gaiola.png",
+          "character_file": "por-personagem/14-neji-hyuga/02-assinatura-selo-do-passaro-na-gaiola.png",
+          "flat_file": "ordem-plana/028-neji-hyuga-assinatura-selo-do-passaro-na-gaiola.png",
+          "atlas": {
+            "x": 768,
+            "y": 768,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 15,
+      "group_order": 4,
+      "group": "Hyuga",
+      "character": "Hyuga Hinata (Kid)",
+      "directory": "por-personagem/15-hyuga-hinata-kid",
+      "loots": [
+        {
+          "order": 29,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Tecido Branco",
+          "source_file": "materiais/046-tecido-branco.png",
+          "character_file": "por-personagem/15-hyuga-hinata-kid/01-material-tecido-branco.png",
+          "flat_file": "ordem-plana/029-hyuga-hinata-kid-material-tecido-branco.png",
+          "atlas": {
+            "x": 1024,
+            "y": 768,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 30,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Casaco Bege",
+          "source_file": "assinatura/061-casaco-bege.png",
+          "character_file": "por-personagem/15-hyuga-hinata-kid/02-assinatura-casaco-bege.png",
+          "flat_file": "ordem-plana/030-hyuga-hinata-kid-assinatura-casaco-bege.png",
+          "atlas": {
+            "x": 1280,
+            "y": 768,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 16,
+      "group_order": 4,
+      "group": "Hyuga",
+      "character": "Hinata Hyuga",
+      "directory": "por-personagem/16-hinata-hyuga",
+      "loots": [
+        {
+          "order": 31,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Essência de Byakugan",
+          "source_file": "materiais/021-essencia-de-byakugan.png",
+          "character_file": "por-personagem/16-hinata-hyuga/01-material-essencia-de-byakugan.png",
+          "flat_file": "ordem-plana/031-hinata-hyuga-material-essencia-de-byakugan.png",
+          "atlas": {
+            "x": 1536,
+            "y": 768,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 32,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Luvas de Juuken",
+          "source_file": "assinatura/092-luvas-de-juuken.png",
+          "character_file": "por-personagem/16-hinata-hyuga/02-assinatura-luvas-de-juuken.png",
+          "flat_file": "ordem-plana/032-hinata-hyuga-assinatura-luvas-de-juuken.png",
+          "atlas": {
+            "x": 1792,
+            "y": 768,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 17,
+      "group_order": 4,
+      "group": "Hyuga",
+      "character": "Hyuga Hinata",
+      "directory": "por-personagem/17-hyuga-hinata",
+      "loots": [
+        {
+          "order": 33,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Essência de Byakugan",
+          "source_file": "materiais/021-essencia-de-byakugan.png",
+          "character_file": "por-personagem/17-hyuga-hinata/01-material-essencia-de-byakugan.png",
+          "flat_file": "ordem-plana/033-hyuga-hinata-material-essencia-de-byakugan.png",
+          "atlas": {
+            "x": 0,
+            "y": 1024,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 34,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Chakra dos Punhos-Leão",
+          "source_file": "assinatura/066-chakra-dos-punhos-leao.png",
+          "character_file": "por-personagem/17-hyuga-hinata/02-assinatura-chakra-dos-punhos-leao.png",
+          "flat_file": "ordem-plana/034-hyuga-hinata-assinatura-chakra-dos-punhos-leao.png",
+          "atlas": {
+            "x": 256,
+            "y": 1024,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 18,
+      "group_order": 4,
+      "group": "Hyuga",
+      "character": "Hyuga Hanabi",
+      "directory": "por-personagem/18-hyuga-hanabi",
+      "loots": [
+        {
+          "order": 35,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Tecido Branco",
+          "source_file": "materiais/046-tecido-branco.png",
+          "character_file": "por-personagem/18-hyuga-hanabi/01-material-tecido-branco.png",
+          "flat_file": "ordem-plana/035-hyuga-hanabi-material-tecido-branco.png",
+          "atlas": {
+            "x": 512,
+            "y": 1024,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 36,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Insígnia da Casa Principal",
+          "source_file": "assinatura/082-insignia-da-casa-principal.png",
+          "character_file": "por-personagem/18-hyuga-hanabi/02-assinatura-insignia-da-casa-principal.png",
+          "flat_file": "ordem-plana/036-hyuga-hanabi-assinatura-insignia-da-casa-principal.png",
+          "atlas": {
+            "x": 768,
+            "y": 1024,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 19,
+      "group_order": 5,
+      "group": "Time 10",
+      "character": "Shikamaru Nara",
+      "directory": "por-personagem/19-shikamaru-nara",
+      "loots": [
+        {
+          "order": 37,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Essência de Sombra",
+          "source_file": "materiais/023-essencia-de-sombra.png",
+          "character_file": "por-personagem/19-shikamaru-nara/01-material-essencia-de-sombra.png",
+          "flat_file": "ordem-plana/037-shikamaru-nara-material-essencia-de-sombra.png",
+          "atlas": {
+            "x": 1024,
+            "y": 1024,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 38,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Peça de Shogi",
+          "source_file": "assinatura/110-peca-de-shogi.png",
+          "character_file": "por-personagem/19-shikamaru-nara/02-assinatura-peca-de-shogi.png",
+          "flat_file": "ordem-plana/038-shikamaru-nara-assinatura-peca-de-shogi.png",
+          "atlas": {
+            "x": 1280,
+            "y": 1024,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 20,
+      "group_order": 5,
+      "group": "Time 10",
+      "character": "Chouji Akimichi",
+      "directory": "por-personagem/20-chouji-akimichi",
+      "loots": [
+        {
+          "order": 39,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Pílula de Calorias",
+          "source_file": "materiais/041-pilula-de-calorias.png",
+          "character_file": "por-personagem/20-chouji-akimichi/01-material-pilula-de-calorias.png",
+          "flat_file": "ordem-plana/039-chouji-akimichi-material-pilula-de-calorias.png",
+          "atlas": {
+            "x": 1536,
+            "y": 1024,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 40,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Armadura Akimichi",
+          "source_file": "assinatura/055-armadura-akimichi.png",
+          "character_file": "por-personagem/20-chouji-akimichi/02-assinatura-armadura-akimichi.png",
+          "flat_file": "ordem-plana/040-chouji-akimichi-assinatura-armadura-akimichi.png",
+          "atlas": {
+            "x": 1792,
+            "y": 1024,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 21,
+      "group_order": 5,
+      "group": "Time 10",
+      "character": "Akimichi Choji (Jump Force)",
+      "directory": "por-personagem/21-akimichi-choji-jump-force",
+      "loots": [
+        {
+          "order": 41,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Pílula de Calorias",
+          "source_file": "materiais/041-pilula-de-calorias.png",
+          "character_file": "por-personagem/21-akimichi-choji-jump-force/01-material-pilula-de-calorias.png",
+          "flat_file": "ordem-plana/041-akimichi-choji-jump-force-material-pilula-de-calorias.png",
+          "atlas": {
+            "x": 0,
+            "y": 1280,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 42,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Pílula Borboleta",
+          "source_file": "assinatura/113-pilula-borboleta.png",
+          "character_file": "por-personagem/21-akimichi-choji-jump-force/02-assinatura-pilula-borboleta.png",
+          "flat_file": "ordem-plana/042-akimichi-choji-jump-force-assinatura-pilula-borboleta.png",
+          "atlas": {
+            "x": 256,
+            "y": 1280,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 22,
+      "group_order": 5,
+      "group": "Time 10",
+      "character": "Ino Yamanaka",
+      "directory": "por-personagem/22-ino-yamanaka",
+      "loots": [
+        {
+          "order": 43,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Pétala de Flor",
+          "source_file": "materiais/040-petala-de-flor.png",
+          "character_file": "por-personagem/22-ino-yamanaka/01-material-petala-de-flor.png",
+          "flat_file": "ordem-plana/043-ino-yamanaka-material-petala-de-flor.png",
+          "atlas": {
+            "x": 512,
+            "y": 1280,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 44,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Essência Mental",
+          "source_file": "assinatura/075-essencia-mental.png",
+          "character_file": "por-personagem/22-ino-yamanaka/02-assinatura-essencia-mental.png",
+          "flat_file": "ordem-plana/044-ino-yamanaka-assinatura-essencia-mental.png",
+          "atlas": {
+            "x": 768,
+            "y": 1280,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 23,
+      "group_order": 5,
+      "group": "Time 10",
+      "character": "Asuma Sarutobi",
+      "directory": "por-personagem/23-asuma-sarutobi",
+      "loots": [
+        {
+          "order": 45,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Maço de Cigarros",
+          "source_file": "materiais/034-maco-de-cigarros.png",
+          "character_file": "por-personagem/23-asuma-sarutobi/01-material-maco-de-cigarros.png",
+          "flat_file": "ordem-plana/045-asuma-sarutobi-material-maco-de-cigarros.png",
+          "atlas": {
+            "x": 1024,
+            "y": 1280,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 46,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Lâminas de Chakra",
+          "source_file": "assinatura/094-laminas-de-chakra.png",
+          "character_file": "por-personagem/23-asuma-sarutobi/02-assinatura-laminas-de-chakra.png",
+          "flat_file": "ordem-plana/046-asuma-sarutobi-assinatura-laminas-de-chakra.png",
+          "atlas": {
+            "x": 1280,
+            "y": 1280,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 24,
+      "group_order": 5,
+      "group": "Time 10",
+      "character": "Yuhi Kurenai",
+      "directory": "por-personagem/24-yuhi-kurenai",
+      "loots": [
+        {
+          "order": 47,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Essência de Genjutsu",
+          "source_file": "materiais/022-essencia-de-genjutsu.png",
+          "character_file": "por-personagem/24-yuhi-kurenai/01-material-essencia-de-genjutsu.png",
+          "flat_file": "ordem-plana/047-yuhi-kurenai-material-essencia-de-genjutsu.png",
+          "atlas": {
+            "x": 1536,
+            "y": 1280,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 48,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Espinho Ilusório",
+          "source_file": "assinatura/072-espinho-ilusorio.png",
+          "character_file": "por-personagem/24-yuhi-kurenai/02-assinatura-espinho-ilusorio.png",
+          "flat_file": "ordem-plana/048-yuhi-kurenai-assinatura-espinho-ilusorio.png",
+          "atlas": {
+            "x": 1792,
+            "y": 1280,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 25,
+      "group_order": 6,
+      "group": "Time 8",
+      "character": "Shino Aburame",
+      "directory": "por-personagem/25-shino-aburame",
+      "loots": [
+        {
+          "order": 49,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Casulo de Inseto",
+          "source_file": "materiais/010-casulo-de-inseto.png",
+          "character_file": "por-personagem/25-shino-aburame/01-material-casulo-de-inseto.png",
+          "flat_file": "ordem-plana/049-shino-aburame-material-casulo-de-inseto.png",
+          "atlas": {
+            "x": 0,
+            "y": 1536,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 50,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Enxame Kikaichu",
+          "source_file": "assinatura/070-enxame-kikaichu.png",
+          "character_file": "por-personagem/25-shino-aburame/02-assinatura-enxame-kikaichu.png",
+          "flat_file": "ordem-plana/050-shino-aburame-assinatura-enxame-kikaichu.png",
+          "atlas": {
+            "x": 256,
+            "y": 1536,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 26,
+      "group_order": 6,
+      "group": "Time 8",
+      "character": "Aburame Shino (G6)",
+      "directory": "por-personagem/26-aburame-shino-g6",
+      "loots": [
+        {
+          "order": 51,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Casulo de Inseto",
+          "source_file": "materiais/010-casulo-de-inseto.png",
+          "character_file": "por-personagem/26-aburame-shino-g6/01-material-casulo-de-inseto.png",
+          "flat_file": "ordem-plana/051-aburame-shino-g6-material-casulo-de-inseto.png",
+          "atlas": {
+            "x": 512,
+            "y": 1536,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 52,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Rainha Kikaichu",
+          "source_file": "assinatura/114-rainha-kikaichu.png",
+          "character_file": "por-personagem/26-aburame-shino-g6/02-assinatura-rainha-kikaichu.png",
+          "flat_file": "ordem-plana/052-aburame-shino-g6-assinatura-rainha-kikaichu.png",
+          "atlas": {
+            "x": 768,
+            "y": 1536,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 27,
+      "group_order": 6,
+      "group": "Time 8",
+      "character": "Kiba Inuzuka (Kid)",
+      "directory": "por-personagem/27-kiba-inuzuka-kid",
+      "loots": [
+        {
+          "order": 53,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Tufo de Pelo Canino",
+          "source_file": "materiais/049-tufo-de-pelo-canino.png",
+          "character_file": "por-personagem/27-kiba-inuzuka-kid/01-material-tufo-de-pelo-canino.png",
+          "flat_file": "ordem-plana/053-kiba-inuzuka-kid-material-tufo-de-pelo-canino.png",
+          "atlas": {
+            "x": 1024,
+            "y": 1536,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 54,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Coleira de Filhote",
+          "source_file": "assinatura/067-coleira-de-filhote.png",
+          "character_file": "por-personagem/27-kiba-inuzuka-kid/02-assinatura-coleira-de-filhote.png",
+          "flat_file": "ordem-plana/054-kiba-inuzuka-kid-assinatura-coleira-de-filhote.png",
+          "atlas": {
+            "x": 1280,
+            "y": 1536,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 28,
+      "group_order": 6,
+      "group": "Time 8",
+      "character": "Kiba Inuzuka",
+      "directory": "por-personagem/28-kiba-inuzuka",
+      "loots": [
+        {
+          "order": 55,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Tufo de Pelo Canino",
+          "source_file": "materiais/049-tufo-de-pelo-canino.png",
+          "character_file": "por-personagem/28-kiba-inuzuka/01-material-tufo-de-pelo-canino.png",
+          "flat_file": "ordem-plana/055-kiba-inuzuka-material-tufo-de-pelo-canino.png",
+          "atlas": {
+            "x": 1536,
+            "y": 1536,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 56,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Presa de Akamaru",
+          "source_file": "assinatura/112-presa-de-akamaru.png",
+          "character_file": "por-personagem/28-kiba-inuzuka/02-assinatura-presa-de-akamaru.png",
+          "flat_file": "ordem-plana/056-kiba-inuzuka-assinatura-presa-de-akamaru.png",
+          "atlas": {
+            "x": 1792,
+            "y": 1536,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 29,
+      "group_order": 7,
+      "group": "Tenten",
+      "character": "Tenten (Kid)",
+      "directory": "por-personagem/29-tenten-kid",
+      "loots": [
+        {
+          "order": 57,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Kunai Enferrujada",
+          "source_file": "materiais/031-kunai-enferrujada.png",
+          "character_file": "por-personagem/29-tenten-kid/01-material-kunai-enferrujada.png",
+          "flat_file": "ordem-plana/057-tenten-kid-material-kunai-enferrujada.png",
+          "atlas": {
+            "x": 0,
+            "y": 1792,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 58,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Fita de Coque",
+          "source_file": "assinatura/077-fita-de-coque.png",
+          "character_file": "por-personagem/29-tenten-kid/02-assinatura-fita-de-coque.png",
+          "flat_file": "ordem-plana/058-tenten-kid-assinatura-fita-de-coque.png",
+          "atlas": {
+            "x": 256,
+            "y": 1792,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 30,
+      "group_order": 7,
+      "group": "Tenten",
+      "character": "Tenten",
+      "directory": "por-personagem/30-tenten",
+      "loots": [
+        {
+          "order": 59,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Kunai Enferrujada",
+          "source_file": "materiais/031-kunai-enferrujada.png",
+          "character_file": "por-personagem/30-tenten/01-material-kunai-enferrujada.png",
+          "flat_file": "ordem-plana/059-tenten-material-kunai-enferrujada.png",
+          "atlas": {
+            "x": 512,
+            "y": 1792,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 60,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Selo de Armamento",
+          "source_file": "materiais/044-selo-de-armamento.png",
+          "character_file": "por-personagem/30-tenten/02-assinatura-selo-de-armamento.png",
+          "flat_file": "ordem-plana/060-tenten-assinatura-selo-de-armamento.png",
+          "atlas": {
+            "x": 768,
+            "y": 1792,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 31,
+      "group_order": 7,
+      "group": "Tenten",
+      "character": "Tenten (G6)",
+      "directory": "por-personagem/31-tenten-g6",
+      "loots": [
+        {
+          "order": 61,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Selo de Armamento",
+          "source_file": "materiais/044-selo-de-armamento.png",
+          "character_file": "por-personagem/31-tenten-g6/01-material-selo-de-armamento.png",
+          "flat_file": "ordem-plana/061-tenten-g6-material-selo-de-armamento.png",
+          "atlas": {
+            "x": 1024,
+            "y": 1792,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 62,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Leque Bashosen",
+          "source_file": "assinatura/087-leque-bashosen.png",
+          "character_file": "por-personagem/31-tenten-g6/02-assinatura-leque-bashosen.png",
+          "flat_file": "ordem-plana/062-tenten-g6-assinatura-leque-bashosen.png",
+          "atlas": {
+            "x": 1280,
+            "y": 1792,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 32,
+      "group_order": 8,
+      "group": "Konoha",
+      "character": "Konohamaru Sarutobi",
+      "directory": "por-personagem/32-konohamaru-sarutobi",
+      "loots": [
+        {
+          "order": 63,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Cachecol Azul",
+          "source_file": "materiais/008-cachecol-azul.png",
+          "character_file": "por-personagem/32-konohamaru-sarutobi/01-material-cachecol-azul.png",
+          "flat_file": "ordem-plana/063-konohamaru-sarutobi-material-cachecol-azul.png",
+          "atlas": {
+            "x": 1536,
+            "y": 1792,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 64,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Insígnia Sarutobi",
+          "source_file": "assinatura/081-insignia-sarutobi.png",
+          "character_file": "por-personagem/32-konohamaru-sarutobi/02-assinatura-insignia-sarutobi.png",
+          "flat_file": "ordem-plana/064-konohamaru-sarutobi-assinatura-insignia-sarutobi.png",
+          "atlas": {
+            "x": 1792,
+            "y": 1792,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 33,
+      "group_order": 8,
+      "group": "Konoha",
+      "character": "Sakura Shippuden",
+      "directory": "por-personagem/33-sakura-shippuden",
+      "loots": [
+        {
+          "order": 65,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Erva Medicinal",
+          "source_file": "materiais/017-erva-medicinal.png",
+          "character_file": "por-personagem/33-sakura-shippuden/01-material-erva-medicinal.png",
+          "flat_file": "ordem-plana/065-sakura-shippuden-material-erva-medicinal.png",
+          "atlas": {
+            "x": 0,
+            "y": 2048,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 66,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Luva de Força Sobre-humana",
+          "source_file": "assinatura/091-luva-de-forca-sobre-humana.png",
+          "character_file": "por-personagem/33-sakura-shippuden/02-assinatura-luva-de-forca-sobre-humana.png",
+          "flat_file": "ordem-plana/066-sakura-shippuden-assinatura-luva-de-forca-sobre-humana.png",
+          "atlas": {
+            "x": 256,
+            "y": 2048,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 34,
+      "group_order": 8,
+      "group": "Konoha",
+      "character": "Hatake Kakashi",
+      "directory": "por-personagem/34-hatake-kakashi",
+      "loots": [
+        {
+          "order": 67,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Faísca de Chidori",
+          "source_file": "materiais/024-faisca-de-chidori.png",
+          "character_file": "por-personagem/34-hatake-kakashi/01-material-faisca-de-chidori.png",
+          "flat_file": "ordem-plana/067-hatake-kakashi-material-faisca-de-chidori.png",
+          "atlas": {
+            "x": 512,
+            "y": 2048,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 68,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Livro Icha Icha",
+          "source_file": "assinatura/090-livro-icha-icha.png",
+          "character_file": "por-personagem/34-hatake-kakashi/02-assinatura-livro-icha-icha.png",
+          "flat_file": "ordem-plana/068-hatake-kakashi-assinatura-livro-icha-icha.png",
+          "atlas": {
+            "x": 768,
+            "y": 2048,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 35,
+      "group_order": 8,
+      "group": "Konoha",
+      "character": "Hatake Kakashi (G6)",
+      "directory": "por-personagem/35-hatake-kakashi-g6",
+      "loots": [
+        {
+          "order": 69,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Faísca de Chidori",
+          "source_file": "materiais/024-faisca-de-chidori.png",
+          "character_file": "por-personagem/35-hatake-kakashi-g6/01-material-faisca-de-chidori.png",
+          "flat_file": "ordem-plana/069-hatake-kakashi-g6-material-faisca-de-chidori.png",
+          "atlas": {
+            "x": 1024,
+            "y": 2048,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 70,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Lente de Kamui",
+          "source_file": "assinatura/086-lente-de-kamui.png",
+          "character_file": "por-personagem/35-hatake-kakashi-g6/02-assinatura-lente-de-kamui.png",
+          "flat_file": "ordem-plana/070-hatake-kakashi-g6-assinatura-lente-de-kamui.png",
+          "atlas": {
+            "x": 1280,
+            "y": 2048,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 36,
+      "group_order": 8,
+      "group": "Konoha",
+      "character": "Hiruzen Sarutobi",
+      "directory": "por-personagem/36-hiruzen-sarutobi",
+      "loots": [
+        {
+          "order": 71,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Cinzas de Cachimbo",
+          "source_file": "materiais/015-cinzas-de-cachimbo.png",
+          "character_file": "por-personagem/36-hiruzen-sarutobi/01-material-cinzas-de-cachimbo.png",
+          "flat_file": "ordem-plana/071-hiruzen-sarutobi-material-cinzas-de-cachimbo.png",
+          "atlas": {
+            "x": 1536,
+            "y": 2048,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 72,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Bastão de Enma",
+          "source_file": "assinatura/056-bastao-de-enma.png",
+          "character_file": "por-personagem/36-hiruzen-sarutobi/02-assinatura-bastao-de-enma.png",
+          "flat_file": "ordem-plana/072-hiruzen-sarutobi-assinatura-bastao-de-enma.png",
+          "atlas": {
+            "x": 1792,
+            "y": 2048,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 37,
+      "group_order": 8,
+      "group": "Konoha",
+      "character": "Tsunade",
+      "directory": "por-personagem/37-tsunade",
+      "loots": [
+        {
+          "order": 73,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Erva Medicinal",
+          "source_file": "materiais/017-erva-medicinal.png",
+          "character_file": "por-personagem/37-tsunade/01-material-erva-medicinal.png",
+          "flat_file": "ordem-plana/073-tsunade-material-erva-medicinal.png",
+          "atlas": {
+            "x": 0,
+            "y": 2304,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 74,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Selo Yin Byakugou",
+          "source_file": "assinatura/115-selo-yin-byakugou.png",
+          "character_file": "por-personagem/37-tsunade/02-assinatura-selo-yin-byakugou.png",
+          "flat_file": "ordem-plana/074-tsunade-assinatura-selo-yin-byakugou.png",
+          "atlas": {
+            "x": 256,
+            "y": 2304,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 38,
+      "group_order": 8,
+      "group": "Konoha",
+      "character": "Jiraya",
+      "directory": "por-personagem/38-jiraya",
+      "loots": [
+        {
+          "order": 75,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Óleo de Sapo",
+          "source_file": "materiais/052-oleo-de-sapo.png",
+          "character_file": "por-personagem/38-jiraya/01-material-oleo-de-sapo.png",
+          "flat_file": "ordem-plana/075-jiraya-material-oleo-de-sapo.png",
+          "atlas": {
+            "x": 512,
+            "y": 2304,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 76,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Pergaminho de Myoboku",
+          "source_file": "assinatura/107-pergaminho-de-myoboku.png",
+          "character_file": "por-personagem/38-jiraya/02-assinatura-pergaminho-de-myoboku.png",
+          "flat_file": "ordem-plana/076-jiraya-assinatura-pergaminho-de-myoboku.png",
+          "atlas": {
+            "x": 768,
+            "y": 2304,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 39,
+      "group_order": 8,
+      "group": "Konoha",
+      "character": "Shizune",
+      "directory": "por-personagem/39-shizune",
+      "loots": [
+        {
+          "order": 77,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Erva Medicinal",
+          "source_file": "materiais/017-erva-medicinal.png",
+          "character_file": "por-personagem/39-shizune/01-material-erva-medicinal.png",
+          "flat_file": "ordem-plana/077-shizune-material-erva-medicinal.png",
+          "atlas": {
+            "x": 1024,
+            "y": 2304,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 78,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Lançador de Senbon",
+          "source_file": "assinatura/085-lancador-de-senbon.png",
+          "character_file": "por-personagem/39-shizune/02-assinatura-lancador-de-senbon.png",
+          "flat_file": "ordem-plana/078-shizune-assinatura-lancador-de-senbon.png",
+          "atlas": {
+            "x": 1280,
+            "y": 2304,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 40,
+      "group_order": 8,
+      "group": "Konoha",
+      "character": "Anko Mitarashi",
+      "directory": "por-personagem/40-anko-mitarashi",
+      "loots": [
+        {
+          "order": 79,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Espeto de Dango",
+          "source_file": "materiais/020-espeto-de-dango.png",
+          "character_file": "por-personagem/40-anko-mitarashi/01-material-espeto-de-dango.png",
+          "flat_file": "ordem-plana/079-anko-mitarashi-material-espeto-de-dango.png",
+          "atlas": {
+            "x": 1536,
+            "y": 2304,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 80,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Casaco de Malha",
+          "source_file": "assinatura/062-casaco-de-malha.png",
+          "character_file": "por-personagem/40-anko-mitarashi/02-assinatura-casaco-de-malha.png",
+          "flat_file": "ordem-plana/080-anko-mitarashi-assinatura-casaco-de-malha.png",
+          "atlas": {
+            "x": 1792,
+            "y": 2304,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 41,
+      "group_order": 8,
+      "group": "Konoha",
+      "character": "Yamato",
+      "directory": "por-personagem/41-yamato",
+      "loots": [
+        {
+          "order": 81,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Seiva Mokuton",
+          "source_file": "materiais/043-seiva-mokuton.png",
+          "character_file": "por-personagem/41-yamato/01-material-seiva-mokuton.png",
+          "flat_file": "ordem-plana/081-yamato-material-seiva-mokuton.png",
+          "atlas": {
+            "x": 0,
+            "y": 2560,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 82,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Máscara ANBU",
+          "source_file": "assinatura/099-mascara-anbu.png",
+          "character_file": "por-personagem/41-yamato/02-assinatura-mascara-anbu.png",
+          "flat_file": "ordem-plana/082-yamato-assinatura-mascara-anbu.png",
+          "atlas": {
+            "x": 256,
+            "y": 2560,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 42,
+      "group_order": 8,
+      "group": "Konoha",
+      "character": "Sai",
+      "directory": "por-personagem/42-sai",
+      "loots": [
+        {
+          "order": 83,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Tinta Nanquim",
+          "source_file": "materiais/048-tinta-nanquim.png",
+          "character_file": "por-personagem/42-sai/01-material-tinta-nanquim.png",
+          "flat_file": "ordem-plana/083-sai-material-tinta-nanquim.png",
+          "atlas": {
+            "x": 512,
+            "y": 2560,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 84,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Pincel Choju Giga",
+          "source_file": "assinatura/111-pincel-choju-giga.png",
+          "character_file": "por-personagem/42-sai/02-assinatura-pincel-choju-giga.png",
+          "flat_file": "ordem-plana/084-sai-assinatura-pincel-choju-giga.png",
+          "atlas": {
+            "x": 768,
+            "y": 2560,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 43,
+      "group_order": 8,
+      "group": "Konoha",
+      "character": "Danzo Shimura",
+      "directory": "por-personagem/43-danzo-shimura",
+      "loots": [
+        {
+          "order": 85,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Bandagem da Raiz",
+          "source_file": "materiais/005-bandagem-da-raiz.png",
+          "character_file": "por-personagem/43-danzo-shimura/01-material-bandagem-da-raiz.png",
+          "flat_file": "ordem-plana/085-danzo-shimura-material-bandagem-da-raiz.png",
+          "atlas": {
+            "x": 1024,
+            "y": 2560,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 86,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Braço de Izanagi",
+          "source_file": "assinatura/058-braco-de-izanagi.png",
+          "character_file": "por-personagem/43-danzo-shimura/02-assinatura-braco-de-izanagi.png",
+          "flat_file": "ordem-plana/086-danzo-shimura-assinatura-braco-de-izanagi.png",
+          "atlas": {
+            "x": 1280,
+            "y": 2560,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 44,
+      "group_order": 8,
+      "group": "Konoha",
+      "character": "Namikaze Minato (Jonin)",
+      "directory": "por-personagem/44-namikaze-minato-jonin",
+      "loots": [
+        {
+          "order": 87,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Kunai de Três Pontas",
+          "source_file": "materiais/032-kunai-de-tres-pontas.png",
+          "character_file": "por-personagem/44-namikaze-minato-jonin/01-material-kunai-de-tres-pontas.png",
+          "flat_file": "ordem-plana/087-namikaze-minato-jonin-material-kunai-de-tres-pontas.png",
+          "atlas": {
+            "x": 1536,
+            "y": 2560,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 88,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Marca de Hiraishin",
+          "source_file": "assinatura/097-marca-de-hiraishin.png",
+          "character_file": "por-personagem/44-namikaze-minato-jonin/02-assinatura-marca-de-hiraishin.png",
+          "flat_file": "ordem-plana/088-namikaze-minato-jonin-assinatura-marca-de-hiraishin.png",
+          "atlas": {
+            "x": 1792,
+            "y": 2560,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 45,
+      "group_order": 8,
+      "group": "Konoha",
+      "character": "Senju Hashirama",
+      "directory": "por-personagem/45-senju-hashirama",
+      "loots": [
+        {
+          "order": 89,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Seiva Mokuton",
+          "source_file": "materiais/043-seiva-mokuton.png",
+          "character_file": "por-personagem/45-senju-hashirama/01-material-seiva-mokuton.png",
+          "flat_file": "ordem-plana/089-senju-hashirama-material-seiva-mokuton.png",
+          "atlas": {
+            "x": 0,
+            "y": 2816,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 90,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Cristal do Primeiro",
+          "source_file": "assinatura/068-cristal-do-primeiro.png",
+          "character_file": "por-personagem/45-senju-hashirama/02-assinatura-cristal-do-primeiro.png",
+          "flat_file": "ordem-plana/090-senju-hashirama-assinatura-cristal-do-primeiro.png",
+          "atlas": {
+            "x": 256,
+            "y": 2816,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 46,
+      "group_order": 8,
+      "group": "Konoha",
+      "character": "Senju Tobirama",
+      "directory": "por-personagem/46-senju-tobirama",
+      "loots": [
+        {
+          "order": 91,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Gota Suiton Pura",
+          "source_file": "materiais/030-gota-suiton-pura.png",
+          "character_file": "por-personagem/46-senju-tobirama/01-material-gota-suiton-pura.png",
+          "flat_file": "ordem-plana/091-senju-tobirama-material-gota-suiton-pura.png",
+          "atlas": {
+            "x": 512,
+            "y": 2816,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 92,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Selo de Edo Tensei",
+          "source_file": "assinatura/117-selo-de-edo-tensei.png",
+          "character_file": "por-personagem/46-senju-tobirama/02-assinatura-selo-de-edo-tensei.png",
+          "flat_file": "ordem-plana/092-senju-tobirama-assinatura-selo-de-edo-tensei.png",
+          "atlas": {
+            "x": 768,
+            "y": 2816,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 47,
+      "group_order": 9,
+      "group": "Suna",
+      "character": "Gaara",
+      "directory": "por-personagem/47-gaara",
+      "loots": [
+        {
+          "order": 93,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Areia Fina",
+          "source_file": "materiais/001-areia-fina.png",
+          "character_file": "por-personagem/47-gaara/01-material-areia-fina.png",
+          "flat_file": "ordem-plana/093-gaara-material-areia-fina.png",
+          "atlas": {
+            "x": 1024,
+            "y": 2816,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 94,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Cabaça de Areia",
+          "source_file": "assinatura/060-cabaca-de-areia.png",
+          "character_file": "por-personagem/47-gaara/02-assinatura-cabaca-de-areia.png",
+          "flat_file": "ordem-plana/094-gaara-assinatura-cabaca-de-areia.png",
+          "atlas": {
+            "x": 1280,
+            "y": 2816,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 48,
+      "group_order": 9,
+      "group": "Suna",
+      "character": "Gaara (Shukaku)",
+      "directory": "por-personagem/48-gaara-shukaku",
+      "loots": [
+        {
+          "order": 95,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Areia Dourada",
+          "source_file": "materiais/002-areia-dourada.png",
+          "character_file": "por-personagem/48-gaara-shukaku/01-material-areia-dourada.png",
+          "flat_file": "ordem-plana/095-gaara-shukaku-material-areia-dourada.png",
+          "atlas": {
+            "x": 1536,
+            "y": 2816,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 96,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Chakra de Shukaku",
+          "source_file": "assinatura/064-chakra-de-shukaku.png",
+          "character_file": "por-personagem/48-gaara-shukaku/02-assinatura-chakra-de-shukaku.png",
+          "flat_file": "ordem-plana/096-gaara-shukaku-assinatura-chakra-de-shukaku.png",
+          "atlas": {
+            "x": 1792,
+            "y": 2816,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 49,
+      "group_order": 9,
+      "group": "Suna",
+      "character": "Temari (Kid)",
+      "directory": "por-personagem/49-temari-kid",
+      "loots": [
+        {
+          "order": 97,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Papel de Leque",
+          "source_file": "materiais/036-papel-de-leque.png",
+          "character_file": "por-personagem/49-temari-kid/01-material-papel-de-leque.png",
+          "flat_file": "ordem-plana/097-temari-kid-material-papel-de-leque.png",
+          "atlas": {
+            "x": 0,
+            "y": 3072,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 98,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Leque de Treino",
+          "source_file": "assinatura/089-leque-de-treino.png",
+          "character_file": "por-personagem/49-temari-kid/02-assinatura-leque-de-treino.png",
+          "flat_file": "ordem-plana/098-temari-kid-assinatura-leque-de-treino.png",
+          "atlas": {
+            "x": 256,
+            "y": 3072,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 50,
+      "group_order": 9,
+      "group": "Suna",
+      "character": "Temari",
+      "directory": "por-personagem/50-temari",
+      "loots": [
+        {
+          "order": 99,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Papel de Leque",
+          "source_file": "materiais/036-papel-de-leque.png",
+          "character_file": "por-personagem/50-temari/01-material-papel-de-leque.png",
+          "flat_file": "ordem-plana/099-temari-material-papel-de-leque.png",
+          "atlas": {
+            "x": 512,
+            "y": 3072,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 100,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Leque Tessen",
+          "source_file": "assinatura/088-leque-tessen.png",
+          "character_file": "por-personagem/50-temari/02-assinatura-leque-tessen.png",
+          "flat_file": "ordem-plana/100-temari-assinatura-leque-tessen.png",
+          "atlas": {
+            "x": 768,
+            "y": 3072,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 51,
+      "group_order": 9,
+      "group": "Suna",
+      "character": "Temari (G6)",
+      "directory": "por-personagem/51-temari-g6",
+      "loots": [
+        {
+          "order": 101,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Chakra Futon",
+          "source_file": "materiais/012-chakra-futon.png",
+          "character_file": "por-personagem/51-temari-g6/01-material-chakra-futon.png",
+          "flat_file": "ordem-plana/101-temari-g6-material-chakra-futon.png",
+          "atlas": {
+            "x": 1024,
+            "y": 3072,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 102,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Pergaminho Kirikiri Mai",
+          "source_file": "assinatura/106-pergaminho-kirikiri-mai.png",
+          "character_file": "por-personagem/51-temari-g6/02-assinatura-pergaminho-kirikiri-mai.png",
+          "flat_file": "ordem-plana/102-temari-g6-assinatura-pergaminho-kirikiri-mai.png",
+          "atlas": {
+            "x": 1280,
+            "y": 3072,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 52,
+      "group_order": 9,
+      "group": "Suna",
+      "character": "Kankuro",
+      "directory": "por-personagem/52-kankuro",
+      "loots": [
+        {
+          "order": 103,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Madeira de Marionete",
+          "source_file": "materiais/033-madeira-de-marionete.png",
+          "character_file": "por-personagem/52-kankuro/01-material-madeira-de-marionete.png",
+          "flat_file": "ordem-plana/103-kankuro-material-madeira-de-marionete.png",
+          "atlas": {
+            "x": 1536,
+            "y": 3072,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 104,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Peça de Karasu",
+          "source_file": "assinatura/109-peca-de-karasu.png",
+          "character_file": "por-personagem/52-kankuro/02-assinatura-peca-de-karasu.png",
+          "flat_file": "ordem-plana/104-kankuro-assinatura-peca-de-karasu.png",
+          "atlas": {
+            "x": 1792,
+            "y": 3072,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 53,
+      "group_order": 9,
+      "group": "Suna",
+      "character": "Chiyo",
+      "directory": "por-personagem/53-chiyo",
+      "loots": [
+        {
+          "order": 105,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Fio de Chakra",
+          "source_file": "materiais/026-fio-de-chakra.png",
+          "character_file": "por-personagem/53-chiyo/01-material-fio-de-chakra.png",
+          "flat_file": "ordem-plana/105-chiyo-material-fio-de-chakra.png",
+          "atlas": {
+            "x": 0,
+            "y": 3328,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 106,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Selo das Dez Marionetes",
+          "source_file": "assinatura/116-selo-das-dez-marionetes.png",
+          "character_file": "por-personagem/53-chiyo/02-assinatura-selo-das-dez-marionetes.png",
+          "flat_file": "ordem-plana/106-chiyo-assinatura-selo-das-dez-marionetes.png",
+          "atlas": {
+            "x": 256,
+            "y": 3328,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 54,
+      "group_order": 10,
+      "group": "Kiri",
+      "character": "Zabuza Momochi",
+      "directory": "por-personagem/54-zabuza-momochi",
+      "loots": [
+        {
+          "order": 107,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Frasco de Névoa",
+          "source_file": "materiais/029-frasco-de-nevoa.png",
+          "character_file": "por-personagem/54-zabuza-momochi/01-material-frasco-de-nevoa.png",
+          "flat_file": "ordem-plana/107-zabuza-momochi-material-frasco-de-nevoa.png",
+          "atlas": {
+            "x": 512,
+            "y": 3328,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 108,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Kubikiribocho",
+          "source_file": "assinatura/083-kubikiribocho.png",
+          "character_file": "por-personagem/54-zabuza-momochi/02-assinatura-kubikiribocho.png",
+          "flat_file": "ordem-plana/108-zabuza-momochi-assinatura-kubikiribocho.png",
+          "atlas": {
+            "x": 768,
+            "y": 3328,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 55,
+      "group_order": 10,
+      "group": "Kiri",
+      "character": "Haku",
+      "directory": "por-personagem/55-haku",
+      "loots": [
+        {
+          "order": 109,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Cristal de Gelo",
+          "source_file": "materiais/016-cristal-de-gelo.png",
+          "character_file": "por-personagem/55-haku/01-material-cristal-de-gelo.png",
+          "flat_file": "ordem-plana/109-haku-material-cristal-de-gelo.png",
+          "atlas": {
+            "x": 1024,
+            "y": 3328,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 110,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Senbon Congelada",
+          "source_file": "assinatura/120-senbon-congelada.png",
+          "character_file": "por-personagem/55-haku/02-assinatura-senbon-congelada.png",
+          "flat_file": "ordem-plana/110-haku-assinatura-senbon-congelada.png",
+          "atlas": {
+            "x": 1280,
+            "y": 3328,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 56,
+      "group_order": 10,
+      "group": "Kiri",
+      "character": "Haku (Jump Force)",
+      "directory": "por-personagem/56-haku-jump-force",
+      "loots": [
+        {
+          "order": 111,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Cristal de Gelo",
+          "source_file": "materiais/016-cristal-de-gelo.png",
+          "character_file": "por-personagem/56-haku-jump-force/01-material-cristal-de-gelo.png",
+          "flat_file": "ordem-plana/111-haku-jump-force-material-cristal-de-gelo.png",
+          "atlas": {
+            "x": 1536,
+            "y": 3328,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 112,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Espelho Demoníaco",
+          "source_file": "assinatura/071-espelho-demoniaco.png",
+          "character_file": "por-personagem/56-haku-jump-force/02-assinatura-espelho-demoniaco.png",
+          "flat_file": "ordem-plana/112-haku-jump-force-assinatura-espelho-demoniaco.png",
+          "atlas": {
+            "x": 1792,
+            "y": 3328,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 57,
+      "group_order": 10,
+      "group": "Kiri",
+      "character": "Kisame Hoshigaki",
+      "directory": "por-personagem/57-kisame-hoshigaki",
+      "loots": [
+        {
+          "order": 113,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Escama de Tubarão",
+          "source_file": "materiais/019-escama-de-tubarao.png",
+          "character_file": "por-personagem/57-kisame-hoshigaki/01-material-escama-de-tubarao.png",
+          "flat_file": "ordem-plana/113-kisame-hoshigaki-material-escama-de-tubarao.png",
+          "atlas": {
+            "x": 0,
+            "y": 3584,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 114,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Fragmento de Samehada",
+          "source_file": "assinatura/079-fragmento-de-samehada.png",
+          "character_file": "por-personagem/57-kisame-hoshigaki/02-assinatura-fragmento-de-samehada.png",
+          "flat_file": "ordem-plana/114-kisame-hoshigaki-assinatura-fragmento-de-samehada.png",
+          "atlas": {
+            "x": 256,
+            "y": 3584,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 58,
+      "group_order": 11,
+      "group": "Oto",
+      "character": "Orochimaru",
+      "directory": "por-personagem/58-orochimaru",
+      "loots": [
+        {
+          "order": 115,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Escama de Serpente",
+          "source_file": "materiais/018-escama-de-serpente.png",
+          "character_file": "por-personagem/58-orochimaru/01-material-escama-de-serpente.png",
+          "flat_file": "ordem-plana/115-orochimaru-material-escama-de-serpente.png",
+          "atlas": {
+            "x": 512,
+            "y": 3584,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 116,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Kusanagi da Grama",
+          "source_file": "assinatura/084-kusanagi-da-grama.png",
+          "character_file": "por-personagem/58-orochimaru/02-assinatura-kusanagi-da-grama.png",
+          "flat_file": "ordem-plana/116-orochimaru-assinatura-kusanagi-da-grama.png",
+          "atlas": {
+            "x": 768,
+            "y": 3584,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 59,
+      "group_order": 11,
+      "group": "Oto",
+      "character": "Orochimaru (G6)",
+      "directory": "por-personagem/59-orochimaru-g6",
+      "loots": [
+        {
+          "order": 117,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Frasco de Experimento",
+          "source_file": "materiais/028-frasco-de-experimento.png",
+          "character_file": "por-personagem/59-orochimaru-g6/01-material-frasco-de-experimento.png",
+          "flat_file": "ordem-plana/117-orochimaru-g6-material-frasco-de-experimento.png",
+          "atlas": {
+            "x": 1024,
+            "y": 3584,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 118,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Essência de Yamata",
+          "source_file": "assinatura/076-essencia-de-yamata.png",
+          "character_file": "por-personagem/59-orochimaru-g6/02-assinatura-essencia-de-yamata.png",
+          "flat_file": "ordem-plana/118-orochimaru-g6-assinatura-essencia-de-yamata.png",
+          "atlas": {
+            "x": 1280,
+            "y": 3584,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 60,
+      "group_order": 11,
+      "group": "Oto",
+      "character": "Yakushi Kabuto",
+      "directory": "por-personagem/60-yakushi-kabuto",
+      "loots": [
+        {
+          "order": 119,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Óculos Redondos",
+          "source_file": "materiais/051-oculos-redondos.png",
+          "character_file": "por-personagem/60-yakushi-kabuto/01-material-oculos-redondos.png",
+          "flat_file": "ordem-plana/119-yakushi-kabuto-material-oculos-redondos.png",
+          "atlas": {
+            "x": 1536,
+            "y": 3584,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 120,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Bisturi de Chakra",
+          "source_file": "assinatura/057-bisturi-de-chakra.png",
+          "character_file": "por-personagem/60-yakushi-kabuto/02-assinatura-bisturi-de-chakra.png",
+          "flat_file": "ordem-plana/120-yakushi-kabuto-assinatura-bisturi-de-chakra.png",
+          "atlas": {
+            "x": 1792,
+            "y": 3584,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 61,
+      "group_order": 11,
+      "group": "Oto",
+      "character": "Kimimaro",
+      "directory": "por-personagem/61-kimimaro",
+      "loots": [
+        {
+          "order": 121,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Osso do Clã Kaguya",
+          "source_file": "materiais/035-osso-do-cla-kaguya.png",
+          "character_file": "por-personagem/61-kimimaro/01-material-osso-do-cla-kaguya.png",
+          "flat_file": "ordem-plana/121-kimimaro-material-osso-do-cla-kaguya.png",
+          "atlas": {
+            "x": 0,
+            "y": 3840,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 122,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Medula Shikotsumyaku",
+          "source_file": "assinatura/098-medula-shikotsumyaku.png",
+          "character_file": "por-personagem/61-kimimaro/02-assinatura-medula-shikotsumyaku.png",
+          "flat_file": "ordem-plana/122-kimimaro-assinatura-medula-shikotsumyaku.png",
+          "atlas": {
+            "x": 256,
+            "y": 3840,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 62,
+      "group_order": 11,
+      "group": "Oto",
+      "character": "Jiroubou",
+      "directory": "por-personagem/62-jiroubou",
+      "loots": [
+        {
+          "order": 123,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Cascalho Doton",
+          "source_file": "materiais/009-cascalho-doton.png",
+          "character_file": "por-personagem/62-jiroubou/01-material-cascalho-doton.png",
+          "flat_file": "ordem-plana/123-jiroubou-material-cascalho-doton.png",
+          "atlas": {
+            "x": 512,
+            "y": 3840,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 124,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Núcleo da Prisão de Terra",
+          "source_file": "assinatura/101-nucleo-da-prisao-de-terra.png",
+          "character_file": "por-personagem/62-jiroubou/02-assinatura-nucleo-da-prisao-de-terra.png",
+          "flat_file": "ordem-plana/124-jiroubou-assinatura-nucleo-da-prisao-de-terra.png",
+          "atlas": {
+            "x": 768,
+            "y": 3840,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 63,
+      "group_order": 11,
+      "group": "Oto",
+      "character": "Tayuya (+ nun5)",
+      "directory": "por-personagem/63-tayuya-nun5",
+      "loots": [
+        {
+          "order": 125,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Bocal de Flauta",
+          "source_file": "materiais/007-bocal-de-flauta.png",
+          "character_file": "por-personagem/63-tayuya-nun5/01-material-bocal-de-flauta.png",
+          "flat_file": "ordem-plana/125-tayuya-nun5-material-bocal-de-flauta.png",
+          "atlas": {
+            "x": 1024,
+            "y": 3840,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 126,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Flauta dos Doki",
+          "source_file": "assinatura/078-flauta-dos-doki.png",
+          "character_file": "por-personagem/63-tayuya-nun5/02-assinatura-flauta-dos-doki.png",
+          "flat_file": "ordem-plana/126-tayuya-nun5-assinatura-flauta-dos-doki.png",
+          "atlas": {
+            "x": 1280,
+            "y": 3840,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 64,
+      "group_order": 11,
+      "group": "Oto",
+      "character": "Sakon e Ukon (+ nun5)",
+      "directory": "por-personagem/64-sakon-e-ukon-nun5",
+      "loots": [
+        {
+          "order": 127,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Retalho Duplo",
+          "source_file": "materiais/042-retalho-duplo.png",
+          "character_file": "por-personagem/64-sakon-e-ukon-nun5/01-material-retalho-duplo.png",
+          "flat_file": "ordem-plana/127-sakon-e-ukon-nun5-material-retalho-duplo.png",
+          "atlas": {
+            "x": 1536,
+            "y": 3840,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 128,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Célula Parasita",
+          "source_file": "assinatura/069-celula-parasita.png",
+          "character_file": "por-personagem/64-sakon-e-ukon-nun5/02-assinatura-celula-parasita.png",
+          "flat_file": "ordem-plana/128-sakon-e-ukon-nun5-assinatura-celula-parasita.png",
+          "atlas": {
+            "x": 1792,
+            "y": 3840,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 65,
+      "group_order": 11,
+      "group": "Oto",
+      "character": "Kidomaru",
+      "directory": "por-personagem/65-kidomaru",
+      "loots": [
+        {
+          "order": 129,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Teia Dourada",
+          "source_file": "materiais/047-teia-dourada.png",
+          "character_file": "por-personagem/65-kidomaru/01-material-teia-dourada.png",
+          "flat_file": "ordem-plana/129-kidomaru-material-teia-dourada.png",
+          "atlas": {
+            "x": 0,
+            "y": 4096,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 130,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Arco de Teia",
+          "source_file": "assinatura/053-arco-de-teia.png",
+          "character_file": "por-personagem/65-kidomaru/02-assinatura-arco-de-teia.png",
+          "flat_file": "ordem-plana/130-kidomaru-assinatura-arco-de-teia.png",
+          "atlas": {
+            "x": 256,
+            "y": 4096,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 66,
+      "group_order": 12,
+      "group": "Akatsuki",
+      "character": "Sasori",
+      "directory": "por-personagem/66-sasori",
+      "loots": [
+        {
+          "order": 131,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Madeira de Marionete",
+          "source_file": "materiais/033-madeira-de-marionete.png",
+          "character_file": "por-personagem/66-sasori/01-material-madeira-de-marionete.png",
+          "flat_file": "ordem-plana/131-sasori-material-madeira-de-marionete.png",
+          "atlas": {
+            "x": 512,
+            "y": 4096,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 132,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Núcleo Vivo de Sasori",
+          "source_file": "assinatura/100-nucleo-vivo-de-sasori.png",
+          "character_file": "por-personagem/66-sasori/02-assinatura-nucleo-vivo-de-sasori.png",
+          "flat_file": "ordem-plana/132-sasori-assinatura-nucleo-vivo-de-sasori.png",
+          "atlas": {
+            "x": 768,
+            "y": 4096,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 67,
+      "group_order": 12,
+      "group": "Akatsuki",
+      "character": "Sasori (Hiruko)",
+      "directory": "por-personagem/67-sasori-hiruko",
+      "loots": [
+        {
+          "order": 133,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Placa de Hiruko",
+          "source_file": "materiais/039-placa-de-hiruko.png",
+          "character_file": "por-personagem/67-sasori-hiruko/01-material-placa-de-hiruko.png",
+          "flat_file": "ordem-plana/133-sasori-hiruko-material-placa-de-hiruko.png",
+          "atlas": {
+            "x": 1024,
+            "y": 4096,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 134,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Cauda-Ferrão",
+          "source_file": "assinatura/063-cauda-ferrao.png",
+          "character_file": "por-personagem/67-sasori-hiruko/02-assinatura-cauda-ferrao.png",
+          "flat_file": "ordem-plana/134-sasori-hiruko-assinatura-cauda-ferrao.png",
+          "atlas": {
+            "x": 1280,
+            "y": 4096,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 68,
+      "group_order": 12,
+      "group": "Akatsuki",
+      "character": "Deidara",
+      "directory": "por-personagem/68-deidara",
+      "loots": [
+        {
+          "order": 135,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Argila Bruta",
+          "source_file": "materiais/003-argila-bruta.png",
+          "character_file": "por-personagem/68-deidara/01-material-argila-bruta.png",
+          "flat_file": "ordem-plana/135-deidara-material-argila-bruta.png",
+          "atlas": {
+            "x": 1536,
+            "y": 4096,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 136,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Argila Explosiva",
+          "source_file": "assinatura/054-argila-explosiva.png",
+          "character_file": "por-personagem/68-deidara/02-assinatura-argila-explosiva.png",
+          "flat_file": "ordem-plana/136-deidara-assinatura-argila-explosiva.png",
+          "atlas": {
+            "x": 1792,
+            "y": 4096,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    },
+    {
+      "character_order": 69,
+      "group_order": 12,
+      "group": "Akatsuki",
+      "character": "Pain (Deva)",
+      "directory": "por-personagem/69-pain-deva",
+      "loots": [
+        {
+          "order": 137,
+          "pair_position": 1,
+          "role": "material",
+          "name": "Bastão Negro de Chakra",
+          "source_file": "materiais/006-bastao-negro-de-chakra.png",
+          "character_file": "por-personagem/69-pain-deva/01-material-bastao-negro-de-chakra.png",
+          "flat_file": "ordem-plana/137-pain-deva-material-bastao-negro-de-chakra.png",
+          "atlas": {
+            "x": 0,
+            "y": 4352,
+            "width": 256,
+            "height": 256
+          }
+        },
+        {
+          "order": 138,
+          "pair_position": 2,
+          "role": "assinatura",
+          "name": "Olho Rinnegan",
+          "source_file": "assinatura/105-olho-violeta-dos-seis-caminhos.png",
+          "character_file": "por-personagem/69-pain-deva/02-assinatura-olho-rinnegan.png",
+          "flat_file": "ordem-plana/138-pain-deva-assinatura-olho-rinnegan.png",
+          "atlas": {
+            "x": 256,
+            "y": 4352,
+            "width": 256,
+            "height": 256
+          }
+        }
+      ]
+    }
+  ]
+}

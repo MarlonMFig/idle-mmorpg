@@ -1,8 +1,8 @@
-import fs from 'node:fs';
 import path from 'node:path';
 import type { SkillDefinition } from '@/types/skill';
 import { formatStatusEffectsLiteral } from '@/data/status-effect-def';
 import { assertWritableSourcePath } from '@/lib/dev/find-character-source';
+import { readDevSource, writeDevSource } from '@/lib/dev/write-dev-source';
 
 const FILE_REL = 'src/data/lab-visual-skills.ts';
 
@@ -56,12 +56,12 @@ function formatDef(def: SkillDefinition): string {
 export function insertLabVisualSkill(
   def: SkillDefinition,
   options?: { persist?: boolean },
-): { relativePath: string; absPath: string; source: string } {
+): { relativePath: string; absPath: string; source: string; changed: boolean } {
   const absPath = path.join(process.cwd(), FILE_REL);
   assertWritableSourcePath(absPath);
-  const source = fs.readFileSync(absPath, 'utf8');
+  const source = readDevSource(absPath);
   if (new RegExp(`\\bid:\\s*['"]${def.id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}['"]`).test(source)) {
-    return { relativePath: FILE_REL, absPath, source };
+    return { relativePath: FILE_REL, absPath, source, changed: false };
   }
   const match = /export const LAB_VISUAL_SKILLS(?:\s*:\s*SkillDefinition\[\])?\s*=\s*\[/.exec(source);
   if (!match || match.index == null) throw new Error('LAB_VISUAL_SKILLS não encontrado');
@@ -73,32 +73,38 @@ export function insertLabVisualSkill(
   const entry = formatDef(def);
   const nextInner = inner.length === 0 ? `\n${entry}\n` : `\n${inner.replace(/,?\s*$/, ',')}\n${entry}\n`;
   const next = `${source.slice(0, open + 1)}${nextInner}${source.slice(end)}`;
-  if (options?.persist !== false) fs.writeFileSync(absPath, next, 'utf8');
-  return { relativePath: FILE_REL, absPath, source: next };
+  if (options?.persist !== false) writeDevSource(absPath, next);
+  return { relativePath: FILE_REL, absPath, source: next, changed: true };
 }
 
 export function patchLabVisualSkillElement(
   skillId: string,
   element: string,
   options?: { persist?: boolean },
-): { relativePath: string; absPath: string; source: string } {
+): { relativePath: string; absPath: string; source: string; changed: boolean } {
   const absPath = path.join(process.cwd(), FILE_REL);
   assertWritableSourcePath(absPath);
-  const source = fs.readFileSync(absPath, 'utf8');
+  const source = readDevSource(absPath);
   const escaped = skillId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const idRe = new RegExp(`id:\\s*['"]${escaped}['"]`);
   const idMatch = idRe.exec(source);
-  if (!idMatch || idMatch.index == null) return { relativePath: FILE_REL, absPath, source };
+  if (!idMatch || idMatch.index == null) {
+    return { relativePath: FILE_REL, absPath, source, changed: false };
+  }
   const open = source.lastIndexOf('{', idMatch.index);
   const end = matchingBracket(source, open);
-  if (open < 0 || end < 0) return { relativePath: FILE_REL, absPath, source };
+  if (open < 0 || end < 0) return { relativePath: FILE_REL, absPath, source, changed: false };
   let block = source.slice(open, end + 1);
+  const current = /\belement\s*:\s*['"]([^'"]*)['"]/.exec(block)?.[1];
+  if (current === element) {
+    return { relativePath: FILE_REL, absPath, source, changed: false };
+  }
   if (/\belement\s*:/.test(block)) {
     block = block.replace(/(\belement\s*:\s*)['"][^'"]*['"]/, `$1'${element}'`);
   } else {
     block = block.replace(/(\bid:\s*['"][^'"]+['"],)/, `$1\n    element: '${element}',`);
   }
   const next = `${source.slice(0, open)}${block}${source.slice(end + 1)}`;
-  if (options?.persist !== false) fs.writeFileSync(absPath, next, 'utf8');
-  return { relativePath: FILE_REL, absPath, source: next };
+  if (options?.persist !== false) writeDevSource(absPath, next);
+  return { relativePath: FILE_REL, absPath, source: next, changed: true };
 }

@@ -1,0 +1,1860 @@
+{
+  "generatedAt": "2026-09-02T20:37:00.194Z",
+  "cacheTag": "tdnov2026",
+  "maps": [
+    {
+      "mapKey": "huntTdValeDoFim",
+      "slug": "hunt-td-vale-do-fim",
+      "label": "hunt-td-vale-do-fim",
+      "source": "VALE DO FIM.png",
+      "image": "/maps/hunt-td-vale-do-fim.png",
+      "tmx": "/maps/hunt-td-vale-do-fim.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 3344,
+      "height": 1882,
+      "spawn": {
+        "x": 1672,
+        "y": 936
+      },
+      "enemySpawns": [
+        {
+          "x": 776,
+          "y": 568
+        },
+        {
+          "x": 1560,
+          "y": 600
+        },
+        {
+          "x": 1144,
+          "y": 616
+        },
+        {
+          "x": 2216,
+          "y": 648
+        },
+        {
+          "x": 1912,
+          "y": 664
+        },
+        {
+          "x": 1688,
+          "y": 856
+        },
+        {
+          "x": 1320,
+          "y": 872
+        },
+        {
+          "x": 2024,
+          "y": 1000
+        },
+        {
+          "x": 1432,
+          "y": 1208
+        },
+        {
+          "x": 1128,
+          "y": 1224
+        },
+        {
+          "x": 2200,
+          "y": 1256
+        },
+        {
+          "x": 1784,
+          "y": 1272
+        },
+        {
+          "x": 872,
+          "y": 1368
+        },
+        {
+          "x": 2440,
+          "y": 1416
+        },
+        {
+          "x": 1656,
+          "y": 1560
+        },
+        {
+          "x": 1384,
+          "y": 1656
+        }
+      ],
+      "walkMode": "forest"
+    },
+    {
+      "mapKey": "huntWonsrValeDasEstatuas",
+      "slug": "wonsr-vale-das-estatuas",
+      "label": "wonsr-vale-das-estatuas",
+      "source": "VALE DO FIM.png",
+      "image": "/maps/wonsr-vale-das-estatuas.png",
+      "tmx": "/maps/wonsr-vale-das-estatuas.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 3344,
+      "height": 1882,
+      "spawn": {
+        "x": 1672,
+        "y": 936
+      },
+      "enemySpawns": [
+        {
+          "x": 776,
+          "y": 568
+        },
+        {
+          "x": 1560,
+          "y": 600
+        },
+        {
+          "x": 1144,
+          "y": 616
+        },
+        {
+          "x": 2216,
+          "y": 648
+        },
+        {
+          "x": 1912,
+          "y": 664
+        },
+        {
+          "x": 1688,
+          "y": 856
+        },
+        {
+          "x": 1320,
+          "y": 872
+        },
+        {
+          "x": 2024,
+          "y": 1000
+        },
+        {
+          "x": 1432,
+          "y": 1208
+        },
+        {
+          "x": 1128,
+          "y": 1224
+        },
+        {
+          "x": 2200,
+          "y": 1256
+        },
+        {
+          "x": 1784,
+          "y": 1272
+        },
+        {
+          "x": 872,
+          "y": 1368
+        },
+        {
+          "x": 2440,
+          "y": 1416
+        },
+        {
+          "x": 1656,
+          "y": 1560
+        },
+        {
+          "x": 1384,
+          "y": 1656
+        }
+      ],
+      "walkMode": "forest"
+    },
+    {
+      "mapKey": "huntTdArenaExameChunin",
+      "slug": "hunt-td-arena-exame-chunin",
+      "label": "hunt-td-arena-exame-chunin",
+      "source": "ARENA EXAME CHUNNIN.png",
+      "image": "/maps/hunt-td-arena-exame-chunin.png",
+      "tmx": "/maps/hunt-td-arena-exame-chunin.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 3344,
+      "height": 1882,
+      "spawn": {
+        "x": 1672,
+        "y": 936
+      },
+      "enemySpawns": [
+        {
+          "x": 1688,
+          "y": 344
+        },
+        {
+          "x": 904,
+          "y": 456
+        },
+        {
+          "x": 1560,
+          "y": 600
+        },
+        {
+          "x": 1144,
+          "y": 616
+        },
+        {
+          "x": 2216,
+          "y": 648
+        },
+        {
+          "x": 1912,
+          "y": 664
+        },
+        {
+          "x": 1320,
+          "y": 872
+        },
+        {
+          "x": 2024,
+          "y": 1000
+        },
+        {
+          "x": 1432,
+          "y": 1208
+        },
+        {
+          "x": 1128,
+          "y": 1224
+        },
+        {
+          "x": 2200,
+          "y": 1256
+        },
+        {
+          "x": 1784,
+          "y": 1272
+        },
+        {
+          "x": 872,
+          "y": 1368
+        },
+        {
+          "x": 2440,
+          "y": 1416
+        },
+        {
+          "x": 1656,
+          "y": 1560
+        },
+        {
+          "x": 1384,
+          "y": 1656
+        }
+      ],
+      "walkMode": "forest"
+    },
+    {
+      "mapKey": "huntTdPonteDasOndas",
+      "slug": "hunt-td-ponte-das-ondas",
+      "label": "hunt-td-ponte-das-ondas",
+      "source": "PONTE DO PAIS DA ONDA.png",
+      "image": "/maps/hunt-td-ponte-das-ondas.png",
+      "tmx": "/maps/hunt-td-ponte-das-ondas.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 3344,
+      "height": 1882,
+      "spawn": {
+        "x": 1672,
+        "y": 936
+      },
+      "enemySpawns": [
+        {
+          "x": 2216,
+          "y": 264
+        },
+        {
+          "x": 856,
+          "y": 408
+        },
+        {
+          "x": 1080,
+          "y": 584
+        },
+        {
+          "x": 1656,
+          "y": 664
+        },
+        {
+          "x": 2232,
+          "y": 744
+        },
+        {
+          "x": 1320,
+          "y": 872
+        },
+        {
+          "x": 1736,
+          "y": 936
+        },
+        {
+          "x": 2024,
+          "y": 1000
+        },
+        {
+          "x": 1432,
+          "y": 1208
+        },
+        {
+          "x": 1128,
+          "y": 1224
+        },
+        {
+          "x": 2200,
+          "y": 1256
+        },
+        {
+          "x": 1784,
+          "y": 1272
+        },
+        {
+          "x": 872,
+          "y": 1368
+        },
+        {
+          "x": 2440,
+          "y": 1416
+        },
+        {
+          "x": 1656,
+          "y": 1560
+        },
+        {
+          "x": 1384,
+          "y": 1656
+        }
+      ],
+      "walkMode": "forest"
+    },
+    {
+      "mapKey": "huntWonsrPonteDaNevoa",
+      "slug": "wonsr-ponte-da-nevoa",
+      "label": "wonsr-ponte-da-nevoa",
+      "source": "PONTE DO PAIS DA ONDA.png",
+      "image": "/maps/wonsr-ponte-da-nevoa.png",
+      "tmx": "/maps/wonsr-ponte-da-nevoa.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 3344,
+      "height": 1882,
+      "spawn": {
+        "x": 1672,
+        "y": 936
+      },
+      "enemySpawns": [
+        {
+          "x": 2216,
+          "y": 264
+        },
+        {
+          "x": 856,
+          "y": 408
+        },
+        {
+          "x": 1080,
+          "y": 584
+        },
+        {
+          "x": 1656,
+          "y": 664
+        },
+        {
+          "x": 2232,
+          "y": 744
+        },
+        {
+          "x": 1320,
+          "y": 872
+        },
+        {
+          "x": 1736,
+          "y": 936
+        },
+        {
+          "x": 2024,
+          "y": 1000
+        },
+        {
+          "x": 1432,
+          "y": 1208
+        },
+        {
+          "x": 1128,
+          "y": 1224
+        },
+        {
+          "x": 2200,
+          "y": 1256
+        },
+        {
+          "x": 1784,
+          "y": 1272
+        },
+        {
+          "x": 872,
+          "y": 1368
+        },
+        {
+          "x": 2440,
+          "y": 1416
+        },
+        {
+          "x": 1656,
+          "y": 1560
+        },
+        {
+          "x": 1384,
+          "y": 1656
+        }
+      ],
+      "walkMode": "forest"
+    },
+    {
+      "mapKey": "huntTdClareiraEquipe7",
+      "slug": "hunt-td-clareira-equipe-7",
+      "label": "hunt-td-clareira-equipe-7",
+      "source": "CAMPO DE TREINAMENTO.png",
+      "image": "/maps/hunt-td-clareira-equipe-7.png",
+      "tmx": "/maps/hunt-td-clareira-equipe-7.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 3344,
+      "height": 1882,
+      "spawn": {
+        "x": 1672,
+        "y": 936
+      },
+      "enemySpawns": [
+        {
+          "x": 1736,
+          "y": 376
+        },
+        {
+          "x": 904,
+          "y": 456
+        },
+        {
+          "x": 1560,
+          "y": 600
+        },
+        {
+          "x": 1144,
+          "y": 616
+        },
+        {
+          "x": 2216,
+          "y": 648
+        },
+        {
+          "x": 1912,
+          "y": 664
+        },
+        {
+          "x": 1320,
+          "y": 872
+        },
+        {
+          "x": 2024,
+          "y": 1000
+        },
+        {
+          "x": 1432,
+          "y": 1208
+        },
+        {
+          "x": 1128,
+          "y": 1224
+        },
+        {
+          "x": 2200,
+          "y": 1256
+        },
+        {
+          "x": 1784,
+          "y": 1272
+        },
+        {
+          "x": 872,
+          "y": 1368
+        },
+        {
+          "x": 2440,
+          "y": 1416
+        },
+        {
+          "x": 1656,
+          "y": 1560
+        },
+        {
+          "x": 1384,
+          "y": 1656
+        }
+      ],
+      "walkMode": "forest"
+    },
+    {
+      "mapKey": "huntWonsrCampoTreinamento",
+      "slug": "wonsr-campo-treinamento",
+      "label": "wonsr-campo-treinamento",
+      "source": "CAMPO DE TREINAMENTO.png",
+      "image": "/maps/wonsr-campo-treinamento.png",
+      "tmx": "/maps/wonsr-campo-treinamento.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 3344,
+      "height": 1882,
+      "spawn": {
+        "x": 1672,
+        "y": 936
+      },
+      "enemySpawns": [
+        {
+          "x": 1736,
+          "y": 376
+        },
+        {
+          "x": 904,
+          "y": 456
+        },
+        {
+          "x": 1560,
+          "y": 600
+        },
+        {
+          "x": 1144,
+          "y": 616
+        },
+        {
+          "x": 2216,
+          "y": 648
+        },
+        {
+          "x": 1912,
+          "y": 664
+        },
+        {
+          "x": 1320,
+          "y": 872
+        },
+        {
+          "x": 2024,
+          "y": 1000
+        },
+        {
+          "x": 1432,
+          "y": 1208
+        },
+        {
+          "x": 1128,
+          "y": 1224
+        },
+        {
+          "x": 2200,
+          "y": 1256
+        },
+        {
+          "x": 1784,
+          "y": 1272
+        },
+        {
+          "x": 872,
+          "y": 1368
+        },
+        {
+          "x": 2440,
+          "y": 1416
+        },
+        {
+          "x": 1656,
+          "y": 1560
+        },
+        {
+          "x": 1384,
+          "y": 1656
+        }
+      ],
+      "walkMode": "forest"
+    },
+    {
+      "mapKey": "huntTdCavernaAkatsuki",
+      "slug": "hunt-td-caverna-akatsuki",
+      "label": "hunt-td-caverna-akatsuki",
+      "source": "ESCONDERIJO AKATSUKI (2).png",
+      "image": "/maps/hunt-td-caverna-akatsuki.png",
+      "tmx": "/maps/hunt-td-caverna-akatsuki.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 4096,
+      "height": 2304,
+      "spawn": {
+        "x": 2040,
+        "y": 1144
+      },
+      "enemySpawns": [
+        {
+          "x": 2056,
+          "y": 520
+        },
+        {
+          "x": 1272,
+          "y": 664
+        },
+        {
+          "x": 1928,
+          "y": 808
+        },
+        {
+          "x": 1512,
+          "y": 824
+        },
+        {
+          "x": 2584,
+          "y": 856
+        },
+        {
+          "x": 2280,
+          "y": 872
+        },
+        {
+          "x": 1688,
+          "y": 1080
+        },
+        {
+          "x": 2392,
+          "y": 1208
+        },
+        {
+          "x": 1800,
+          "y": 1416
+        },
+        {
+          "x": 1496,
+          "y": 1432
+        },
+        {
+          "x": 2568,
+          "y": 1464
+        },
+        {
+          "x": 2152,
+          "y": 1480
+        },
+        {
+          "x": 1240,
+          "y": 1576
+        },
+        {
+          "x": 2808,
+          "y": 1624
+        },
+        {
+          "x": 2024,
+          "y": 1768
+        },
+        {
+          "x": 2024,
+          "y": 2056
+        }
+      ],
+      "walkMode": "open"
+    },
+    {
+      "mapKey": "huntWonsrCavernaAkatsuki",
+      "slug": "wonsr-caverna-akatsuki",
+      "label": "wonsr-caverna-akatsuki",
+      "source": "ESCONDERIJO AKATSUKI (2).png",
+      "image": "/maps/wonsr-caverna-akatsuki.png",
+      "tmx": "/maps/wonsr-caverna-akatsuki.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 4096,
+      "height": 2304,
+      "spawn": {
+        "x": 2040,
+        "y": 1144
+      },
+      "enemySpawns": [
+        {
+          "x": 2056,
+          "y": 520
+        },
+        {
+          "x": 1272,
+          "y": 664
+        },
+        {
+          "x": 1928,
+          "y": 808
+        },
+        {
+          "x": 1512,
+          "y": 824
+        },
+        {
+          "x": 2584,
+          "y": 856
+        },
+        {
+          "x": 2280,
+          "y": 872
+        },
+        {
+          "x": 1688,
+          "y": 1080
+        },
+        {
+          "x": 2392,
+          "y": 1208
+        },
+        {
+          "x": 1800,
+          "y": 1416
+        },
+        {
+          "x": 1496,
+          "y": 1432
+        },
+        {
+          "x": 2568,
+          "y": 1464
+        },
+        {
+          "x": 2152,
+          "y": 1480
+        },
+        {
+          "x": 1240,
+          "y": 1576
+        },
+        {
+          "x": 2808,
+          "y": 1624
+        },
+        {
+          "x": 2024,
+          "y": 1768
+        },
+        {
+          "x": 2024,
+          "y": 2056
+        }
+      ],
+      "walkMode": "open"
+    },
+    {
+      "mapKey": "huntTdCrateraKonoha",
+      "slug": "hunt-td-cratera-konoha",
+      "label": "hunt-td-cratera-konoha",
+      "source": "KONOHA DESTRUIDA POR PAIN (2).png",
+      "image": "/maps/hunt-td-cratera-konoha.png",
+      "tmx": "/maps/hunt-td-cratera-konoha.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 4096,
+      "height": 2304,
+      "spawn": {
+        "x": 2040,
+        "y": 1144
+      },
+      "enemySpawns": [
+        {
+          "x": 2056,
+          "y": 520
+        },
+        {
+          "x": 1272,
+          "y": 664
+        },
+        {
+          "x": 1928,
+          "y": 808
+        },
+        {
+          "x": 1512,
+          "y": 824
+        },
+        {
+          "x": 2584,
+          "y": 856
+        },
+        {
+          "x": 2280,
+          "y": 872
+        },
+        {
+          "x": 1688,
+          "y": 1080
+        },
+        {
+          "x": 2392,
+          "y": 1208
+        },
+        {
+          "x": 1800,
+          "y": 1416
+        },
+        {
+          "x": 1496,
+          "y": 1432
+        },
+        {
+          "x": 2568,
+          "y": 1464
+        },
+        {
+          "x": 2152,
+          "y": 1480
+        },
+        {
+          "x": 1240,
+          "y": 1576
+        },
+        {
+          "x": 2808,
+          "y": 1624
+        },
+        {
+          "x": 2024,
+          "y": 1768
+        },
+        {
+          "x": 2024,
+          "y": 2056
+        }
+      ],
+      "walkMode": "forest"
+    },
+    {
+      "mapKey": "huntTdLaboratorioOrochimaru",
+      "slug": "hunt-td-laboratorio-orochimaru",
+      "label": "hunt-td-laboratorio-orochimaru",
+      "source": "LABORATORIO OROCHIMARU.png",
+      "image": "/maps/hunt-td-laboratorio-orochimaru.png",
+      "tmx": "/maps/hunt-td-laboratorio-orochimaru.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 4096,
+      "height": 2304,
+      "spawn": {
+        "x": 2040,
+        "y": 1144
+      },
+      "enemySpawns": [
+        {
+          "x": 2056,
+          "y": 520
+        },
+        {
+          "x": 1272,
+          "y": 664
+        },
+        {
+          "x": 1928,
+          "y": 808
+        },
+        {
+          "x": 1512,
+          "y": 824
+        },
+        {
+          "x": 2584,
+          "y": 856
+        },
+        {
+          "x": 2280,
+          "y": 872
+        },
+        {
+          "x": 1688,
+          "y": 1080
+        },
+        {
+          "x": 2392,
+          "y": 1208
+        },
+        {
+          "x": 1800,
+          "y": 1416
+        },
+        {
+          "x": 1496,
+          "y": 1432
+        },
+        {
+          "x": 2568,
+          "y": 1464
+        },
+        {
+          "x": 2152,
+          "y": 1480
+        },
+        {
+          "x": 1240,
+          "y": 1576
+        },
+        {
+          "x": 2808,
+          "y": 1624
+        },
+        {
+          "x": 2024,
+          "y": 1768
+        },
+        {
+          "x": 2024,
+          "y": 2056
+        }
+      ],
+      "walkMode": "open"
+    },
+    {
+      "mapKey": "huntWonsrLaboratorioOrochimaru",
+      "slug": "wonsr-laboratorio-orochimaru",
+      "label": "wonsr-laboratorio-orochimaru",
+      "source": "LABORATORIO OROCHIMARU.png",
+      "image": "/maps/wonsr-laboratorio-orochimaru.png",
+      "tmx": "/maps/wonsr-laboratorio-orochimaru.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 4096,
+      "height": 2304,
+      "spawn": {
+        "x": 2040,
+        "y": 1144
+      },
+      "enemySpawns": [
+        {
+          "x": 2056,
+          "y": 520
+        },
+        {
+          "x": 1272,
+          "y": 664
+        },
+        {
+          "x": 1928,
+          "y": 808
+        },
+        {
+          "x": 1512,
+          "y": 824
+        },
+        {
+          "x": 2584,
+          "y": 856
+        },
+        {
+          "x": 2280,
+          "y": 872
+        },
+        {
+          "x": 1688,
+          "y": 1080
+        },
+        {
+          "x": 2392,
+          "y": 1208
+        },
+        {
+          "x": 1800,
+          "y": 1416
+        },
+        {
+          "x": 1496,
+          "y": 1432
+        },
+        {
+          "x": 2568,
+          "y": 1464
+        },
+        {
+          "x": 2152,
+          "y": 1480
+        },
+        {
+          "x": 1240,
+          "y": 1576
+        },
+        {
+          "x": 2808,
+          "y": 1624
+        },
+        {
+          "x": 2024,
+          "y": 1768
+        },
+        {
+          "x": 2024,
+          "y": 2056
+        }
+      ],
+      "walkMode": "open"
+    },
+    {
+      "mapKey": "huntWonsrEsconderijoOrochimaru",
+      "slug": "wonsr-esconderijo-orochimaru",
+      "label": "wonsr-esconderijo-orochimaru",
+      "source": "LABORATORIO OROCHIMARU.png",
+      "image": "/maps/wonsr-esconderijo-orochimaru.png",
+      "tmx": "/maps/wonsr-esconderijo-orochimaru.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 4096,
+      "height": 2304,
+      "spawn": {
+        "x": 2040,
+        "y": 1144
+      },
+      "enemySpawns": [
+        {
+          "x": 2056,
+          "y": 520
+        },
+        {
+          "x": 1272,
+          "y": 664
+        },
+        {
+          "x": 1928,
+          "y": 808
+        },
+        {
+          "x": 1512,
+          "y": 824
+        },
+        {
+          "x": 2584,
+          "y": 856
+        },
+        {
+          "x": 2280,
+          "y": 872
+        },
+        {
+          "x": 1688,
+          "y": 1080
+        },
+        {
+          "x": 2392,
+          "y": 1208
+        },
+        {
+          "x": 1800,
+          "y": 1416
+        },
+        {
+          "x": 1496,
+          "y": 1432
+        },
+        {
+          "x": 2568,
+          "y": 1464
+        },
+        {
+          "x": 2152,
+          "y": 1480
+        },
+        {
+          "x": 1240,
+          "y": 1576
+        },
+        {
+          "x": 2808,
+          "y": 1624
+        },
+        {
+          "x": 2024,
+          "y": 1768
+        },
+        {
+          "x": 2024,
+          "y": 2056
+        }
+      ],
+      "walkMode": "open"
+    },
+    {
+      "mapKey": "huntTdArenaVilaAreia",
+      "slug": "hunt-td-arena-vila-areia",
+      "label": "hunt-td-arena-vila-areia",
+      "source": "04_Esconderijo_Sasori_3840x2160.png",
+      "image": "/maps/hunt-td-arena-vila-areia.png",
+      "tmx": "/maps/hunt-td-arena-vila-areia.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 4096,
+      "height": 2304,
+      "spawn": {
+        "x": 2040,
+        "y": 1144
+      },
+      "enemySpawns": [
+        {
+          "x": 2056,
+          "y": 520
+        },
+        {
+          "x": 1272,
+          "y": 664
+        },
+        {
+          "x": 1928,
+          "y": 808
+        },
+        {
+          "x": 1512,
+          "y": 824
+        },
+        {
+          "x": 2584,
+          "y": 856
+        },
+        {
+          "x": 2280,
+          "y": 872
+        },
+        {
+          "x": 1688,
+          "y": 1080
+        },
+        {
+          "x": 2392,
+          "y": 1208
+        },
+        {
+          "x": 1800,
+          "y": 1416
+        },
+        {
+          "x": 1496,
+          "y": 1432
+        },
+        {
+          "x": 2568,
+          "y": 1464
+        },
+        {
+          "x": 2152,
+          "y": 1480
+        },
+        {
+          "x": 1240,
+          "y": 1576
+        },
+        {
+          "x": 2808,
+          "y": 1624
+        },
+        {
+          "x": 2024,
+          "y": 1768
+        },
+        {
+          "x": 2024,
+          "y": 2056
+        }
+      ],
+      "walkMode": "loose"
+    },
+    {
+      "mapKey": "huntWonsrDesertoAreia",
+      "slug": "wonsr-deserto-areia",
+      "label": "wonsr-deserto-areia",
+      "source": "04_Esconderijo_Sasori_3840x2160.png",
+      "image": "/maps/wonsr-deserto-areia.png",
+      "tmx": "/maps/wonsr-deserto-areia.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 4096,
+      "height": 2304,
+      "spawn": {
+        "x": 2040,
+        "y": 1144
+      },
+      "enemySpawns": [
+        {
+          "x": 2056,
+          "y": 520
+        },
+        {
+          "x": 1272,
+          "y": 664
+        },
+        {
+          "x": 1928,
+          "y": 808
+        },
+        {
+          "x": 1512,
+          "y": 824
+        },
+        {
+          "x": 2584,
+          "y": 856
+        },
+        {
+          "x": 2280,
+          "y": 872
+        },
+        {
+          "x": 1688,
+          "y": 1080
+        },
+        {
+          "x": 2392,
+          "y": 1208
+        },
+        {
+          "x": 1800,
+          "y": 1416
+        },
+        {
+          "x": 1496,
+          "y": 1432
+        },
+        {
+          "x": 2568,
+          "y": 1464
+        },
+        {
+          "x": 2152,
+          "y": 1480
+        },
+        {
+          "x": 1240,
+          "y": 1576
+        },
+        {
+          "x": 2808,
+          "y": 1624
+        },
+        {
+          "x": 2024,
+          "y": 1768
+        },
+        {
+          "x": 2024,
+          "y": 2056
+        }
+      ],
+      "walkMode": "loose"
+    },
+    {
+      "mapKey": "huntTdIlhaTartaruga",
+      "slug": "hunt-td-ilha-tartaruga",
+      "label": "hunt-td-ilha-tartaruga",
+      "source": "02_Ilha_Tartaruga_Cachoeira_Verdade_3840x2160.png",
+      "image": "/maps/hunt-td-ilha-tartaruga.png",
+      "tmx": "/maps/hunt-td-ilha-tartaruga.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 4096,
+      "height": 2304,
+      "spawn": {
+        "x": 2040,
+        "y": 1144
+      },
+      "enemySpawns": [
+        {
+          "x": 1160,
+          "y": 872
+        },
+        {
+          "x": 2808,
+          "y": 904
+        },
+        {
+          "x": 1448,
+          "y": 920
+        },
+        {
+          "x": 2520,
+          "y": 936
+        },
+        {
+          "x": 1960,
+          "y": 968
+        },
+        {
+          "x": 1688,
+          "y": 1080
+        },
+        {
+          "x": 2680,
+          "y": 1176
+        },
+        {
+          "x": 2392,
+          "y": 1208
+        },
+        {
+          "x": 1800,
+          "y": 1416
+        },
+        {
+          "x": 1496,
+          "y": 1432
+        },
+        {
+          "x": 2568,
+          "y": 1464
+        },
+        {
+          "x": 2152,
+          "y": 1480
+        },
+        {
+          "x": 1240,
+          "y": 1576
+        },
+        {
+          "x": 2808,
+          "y": 1624
+        },
+        {
+          "x": 2024,
+          "y": 1768
+        },
+        {
+          "x": 2024,
+          "y": 2056
+        }
+      ],
+      "walkMode": "forest"
+    },
+    {
+      "mapKey": "huntWonsrFlorestaDaMorte",
+      "slug": "wonsr-floresta-da-morte",
+      "label": "wonsr-floresta-da-morte",
+      "source": "02_Ilha_Tartaruga_Cachoeira_Verdade_3840x2160.png",
+      "image": "/maps/wonsr-floresta-da-morte.png",
+      "tmx": "/maps/wonsr-floresta-da-morte.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 4096,
+      "height": 2304,
+      "spawn": {
+        "x": 2040,
+        "y": 1144
+      },
+      "enemySpawns": [
+        {
+          "x": 1160,
+          "y": 872
+        },
+        {
+          "x": 2808,
+          "y": 904
+        },
+        {
+          "x": 1448,
+          "y": 920
+        },
+        {
+          "x": 2520,
+          "y": 936
+        },
+        {
+          "x": 1960,
+          "y": 968
+        },
+        {
+          "x": 1688,
+          "y": 1080
+        },
+        {
+          "x": 2680,
+          "y": 1176
+        },
+        {
+          "x": 2392,
+          "y": 1208
+        },
+        {
+          "x": 1800,
+          "y": 1416
+        },
+        {
+          "x": 1496,
+          "y": 1432
+        },
+        {
+          "x": 2568,
+          "y": 1464
+        },
+        {
+          "x": 2152,
+          "y": 1480
+        },
+        {
+          "x": 1240,
+          "y": 1576
+        },
+        {
+          "x": 2808,
+          "y": 1624
+        },
+        {
+          "x": 2024,
+          "y": 1768
+        },
+        {
+          "x": 2024,
+          "y": 2056
+        }
+      ],
+      "walkMode": "forest"
+    },
+    {
+      "mapKey": "huntTdMonteMyoboku",
+      "slug": "hunt-td-monte-myoboku",
+      "label": "hunt-td-monte-myoboku",
+      "source": "01_Monte_Myoboku_3840x2160.png",
+      "image": "/maps/hunt-td-monte-myoboku.png",
+      "tmx": "/maps/hunt-td-monte-myoboku.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 4096,
+      "height": 2304,
+      "spawn": {
+        "x": 2040,
+        "y": 1144
+      },
+      "enemySpawns": [
+        {
+          "x": 1752,
+          "y": 520
+        },
+        {
+          "x": 1928,
+          "y": 808
+        },
+        {
+          "x": 1512,
+          "y": 824
+        },
+        {
+          "x": 2584,
+          "y": 856
+        },
+        {
+          "x": 2280,
+          "y": 872
+        },
+        {
+          "x": 1240,
+          "y": 904
+        },
+        {
+          "x": 1688,
+          "y": 1080
+        },
+        {
+          "x": 2392,
+          "y": 1208
+        },
+        {
+          "x": 1800,
+          "y": 1416
+        },
+        {
+          "x": 1496,
+          "y": 1432
+        },
+        {
+          "x": 2568,
+          "y": 1464
+        },
+        {
+          "x": 2152,
+          "y": 1480
+        },
+        {
+          "x": 1240,
+          "y": 1576
+        },
+        {
+          "x": 2808,
+          "y": 1624
+        },
+        {
+          "x": 2024,
+          "y": 1768
+        },
+        {
+          "x": 2024,
+          "y": 2056
+        }
+      ],
+      "walkMode": "forest"
+    },
+    {
+      "mapKey": "huntTdUzushiogakure",
+      "slug": "hunt-td-uzushiogakure",
+      "label": "hunt-td-uzushiogakure",
+      "source": "03_Uzushiogakure_Proporcional_3840x2160.png",
+      "image": "/maps/hunt-td-uzushiogakure.png",
+      "tmx": "/maps/hunt-td-uzushiogakure.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 4096,
+      "height": 2304,
+      "spawn": {
+        "x": 2040,
+        "y": 1144
+      },
+      "enemySpawns": [
+        {
+          "x": 2536,
+          "y": 744
+        },
+        {
+          "x": 1928,
+          "y": 808
+        },
+        {
+          "x": 1512,
+          "y": 824
+        },
+        {
+          "x": 1224,
+          "y": 872
+        },
+        {
+          "x": 2280,
+          "y": 872
+        },
+        {
+          "x": 2616,
+          "y": 1016
+        },
+        {
+          "x": 1688,
+          "y": 1080
+        },
+        {
+          "x": 2392,
+          "y": 1208
+        },
+        {
+          "x": 1800,
+          "y": 1416
+        },
+        {
+          "x": 1496,
+          "y": 1432
+        },
+        {
+          "x": 2568,
+          "y": 1464
+        },
+        {
+          "x": 2152,
+          "y": 1480
+        },
+        {
+          "x": 1240,
+          "y": 1576
+        },
+        {
+          "x": 2808,
+          "y": 1624
+        },
+        {
+          "x": 2024,
+          "y": 1768
+        },
+        {
+          "x": 2040,
+          "y": 2056
+        }
+      ],
+      "walkMode": "forest"
+    },
+    {
+      "mapKey": "huntTdCampoUchiha",
+      "slug": "hunt-td-campo-uchiha",
+      "label": "hunt-td-campo-uchiha",
+      "source": "02_Campo_Uchiha_Proporcional_3840x2160.png",
+      "image": "/maps/hunt-td-campo-uchiha.png",
+      "tmx": "/maps/hunt-td-campo-uchiha.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 4096,
+      "height": 2304,
+      "spawn": {
+        "x": 2040,
+        "y": 1144
+      },
+      "enemySpawns": [
+        {
+          "x": 1432,
+          "y": 904
+        },
+        {
+          "x": 2360,
+          "y": 904
+        },
+        {
+          "x": 1992,
+          "y": 936
+        },
+        {
+          "x": 2632,
+          "y": 984
+        },
+        {
+          "x": 2904,
+          "y": 1064
+        },
+        {
+          "x": 1688,
+          "y": 1080
+        },
+        {
+          "x": 1432,
+          "y": 1208
+        },
+        {
+          "x": 2392,
+          "y": 1208
+        },
+        {
+          "x": 2008,
+          "y": 1224
+        },
+        {
+          "x": 1784,
+          "y": 1416
+        },
+        {
+          "x": 2600,
+          "y": 1432
+        },
+        {
+          "x": 2136,
+          "y": 1480
+        }
+      ],
+      "walkMode": "forest"
+    },
+    {
+      "mapKey": "huntWonsrClareiraEquipe7",
+      "slug": "wonsr-clareira-equipe-7",
+      "label": "wonsr-clareira-equipe-7",
+      "source": "02_Campo_Uchiha_Proporcional_3840x2160.png",
+      "image": "/maps/wonsr-clareira-equipe-7.png",
+      "tmx": "/maps/wonsr-clareira-equipe-7.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 4096,
+      "height": 2304,
+      "spawn": {
+        "x": 2040,
+        "y": 1144
+      },
+      "enemySpawns": [
+        {
+          "x": 1432,
+          "y": 904
+        },
+        {
+          "x": 2360,
+          "y": 904
+        },
+        {
+          "x": 1992,
+          "y": 936
+        },
+        {
+          "x": 2632,
+          "y": 984
+        },
+        {
+          "x": 2904,
+          "y": 1064
+        },
+        {
+          "x": 1688,
+          "y": 1080
+        },
+        {
+          "x": 1432,
+          "y": 1208
+        },
+        {
+          "x": 2392,
+          "y": 1208
+        },
+        {
+          "x": 2008,
+          "y": 1224
+        },
+        {
+          "x": 1784,
+          "y": 1416
+        },
+        {
+          "x": 2600,
+          "y": 1432
+        },
+        {
+          "x": 2136,
+          "y": 1480
+        }
+      ],
+      "walkMode": "forest"
+    },
+    {
+      "mapKey": "huntTdHospitalKonoha",
+      "slug": "hunt-td-hospital-konoha",
+      "label": "hunt-td-hospital-konoha",
+      "source": "01_Hospital_Konoha_Proporcional_3840x2160.png",
+      "image": "/maps/hunt-td-hospital-konoha.png",
+      "tmx": "/maps/hunt-td-hospital-konoha.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 4096,
+      "height": 2304,
+      "spawn": {
+        "x": 2040,
+        "y": 1144
+      },
+      "enemySpawns": [
+        {
+          "x": 2056,
+          "y": 424
+        },
+        {
+          "x": 1304,
+          "y": 488
+        },
+        {
+          "x": 1928,
+          "y": 808
+        },
+        {
+          "x": 1512,
+          "y": 856
+        },
+        {
+          "x": 2584,
+          "y": 856
+        },
+        {
+          "x": 2280,
+          "y": 872
+        },
+        {
+          "x": 1688,
+          "y": 1080
+        },
+        {
+          "x": 2392,
+          "y": 1208
+        },
+        {
+          "x": 1800,
+          "y": 1416
+        },
+        {
+          "x": 1496,
+          "y": 1432
+        },
+        {
+          "x": 2568,
+          "y": 1464
+        },
+        {
+          "x": 2152,
+          "y": 1480
+        },
+        {
+          "x": 1240,
+          "y": 1576
+        },
+        {
+          "x": 2808,
+          "y": 1624
+        },
+        {
+          "x": 2024,
+          "y": 1768
+        },
+        {
+          "x": 2024,
+          "y": 2056
+        }
+      ],
+      "walkMode": "forest"
+    },
+    {
+      "mapKey": "huntWonsrPaisDoFerro",
+      "slug": "wonsr-pais-do-ferro",
+      "label": "wonsr-pais-do-ferro",
+      "source": "01_Hospital_Konoha_Proporcional_3840x2160.png",
+      "image": "/maps/wonsr-pais-do-ferro.png",
+      "tmx": "/maps/wonsr-pais-do-ferro.tmx",
+      "cacheTag": "tdnov2026",
+      "width": 4096,
+      "height": 2304,
+      "spawn": {
+        "x": 2040,
+        "y": 1144
+      },
+      "enemySpawns": [
+        {
+          "x": 2056,
+          "y": 424
+        },
+        {
+          "x": 1304,
+          "y": 488
+        },
+        {
+          "x": 1928,
+          "y": 808
+        },
+        {
+          "x": 1512,
+          "y": 856
+        },
+        {
+          "x": 2584,
+          "y": 856
+        },
+        {
+          "x": 2280,
+          "y": 872
+        },
+        {
+          "x": 1688,
+          "y": 1080
+        },
+        {
+          "x": 2392,
+          "y": 1208
+        },
+        {
+          "x": 1800,
+          "y": 1416
+        },
+        {
+          "x": 1496,
+          "y": 1432
+        },
+        {
+          "x": 2568,
+          "y": 1464
+        },
+        {
+          "x": 2152,
+          "y": 1480
+        },
+        {
+          "x": 1240,
+          "y": 1576
+        },
+        {
+          "x": 2808,
+          "y": 1624
+        },
+        {
+          "x": 2024,
+          "y": 1768
+        },
+        {
+          "x": 2024,
+          "y": 2056
+        }
+      ],
+      "walkMode": "forest"
+    }
+  ]
+}

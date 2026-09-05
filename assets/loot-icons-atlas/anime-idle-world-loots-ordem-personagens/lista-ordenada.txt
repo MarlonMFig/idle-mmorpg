@@ -1,0 +1,209 @@
+Anime Idle World — ordem de loots por personagem
+
+01. [Time 7 — Naruto] Uzumaki Naruto
+    Material: Papel de Pergaminho
+    Assinatura: Espiral Uzumaki
+02. [Time 7 — Naruto] Naruto Shippuden
+    Material: Papel de Pergaminho
+    Assinatura: Núcleo de Rasengan
+03. [Time 7 — Naruto] Naruto (1 Cauda)
+    Material: Chakra Residual
+    Assinatura: Manto de Chakra Vermelho
+04. [Time 7 — Naruto] Naruto (4 Caudas)
+    Material: Chakra Residual
+    Assinatura: Garra de Quatro Caudas
+05. [Time 7 — Naruto] Naruto Kyubi
+    Material: Chakra de Bijuu
+    Assinatura: Núcleo de Kurama
+06. [Uchiha] Uchiha Sasuke
+    Material: Shuriken Gasta
+    Assinatura: Brasão Uchiha
+07. [Uchiha] Sasuke Cursed
+    Material: Chakra Amaldiçoado
+    Assinatura: Marca Maldita do Céu
+08. [Uchiha] Uchiha Sasuke (G6)
+    Material: Fio Condutor Raiton
+    Assinatura: Lâmina Kusanagi
+09. [Uchiha] Uchiha Itachi
+    Material: Pena de Corvo
+    Assinatura: Olho Mangekyou
+10. [Uchiha] Uchiha Shisui
+    Material: Folha de Teletransporte
+    Assinatura: Essência Kotoamatsukami
+11. [Taijutsu] Rock Lee
+    Material: Bandagem Usada
+    Assinatura: Peso de Tornozelo
+12. [Taijutsu] Rock Lee (G6)
+    Material: Vapor dos Portões
+    Assinatura: Selo do Sexto Portão
+13. [Taijutsu] Might Guy
+    Material: Vapor dos Portões
+    Assinatura: Chakra do Oitavo Portão
+14. [Hyuga] Neji Hyuga
+    Material: Essência de Byakugan
+    Assinatura: Selo do Pássaro na Gaiola
+15. [Hyuga] Hyuga Hinata (Kid)
+    Material: Tecido Branco
+    Assinatura: Casaco Bege
+16. [Hyuga] Hinata Hyuga
+    Material: Essência de Byakugan
+    Assinatura: Luvas de Juuken
+17. [Hyuga] Hyuga Hinata
+    Material: Essência de Byakugan
+    Assinatura: Chakra dos Punhos-Leão
+18. [Hyuga] Hyuga Hanabi
+    Material: Tecido Branco
+    Assinatura: Insígnia da Casa Principal
+19. [Time 10] Shikamaru Nara
+    Material: Essência de Sombra
+    Assinatura: Peça de Shogi
+20. [Time 10] Chouji Akimichi
+    Material: Pílula de Calorias
+    Assinatura: Armadura Akimichi
+21. [Time 10] Akimichi Choji (Jump Force)
+    Material: Pílula de Calorias
+    Assinatura: Pílula Borboleta
+22. [Time 10] Ino Yamanaka
+    Material: Pétala de Flor
+    Assinatura: Essência Mental
+23. [Time 10] Asuma Sarutobi
+    Material: Maço de Cigarros
+    Assinatura: Lâminas de Chakra
+24. [Time 10] Yuhi Kurenai
+    Material: Essência de Genjutsu
+    Assinatura: Espinho Ilusório
+25. [Time 8] Shino Aburame
+    Material: Casulo de Inseto
+    Assinatura: Enxame Kikaichu
+26. [Time 8] Aburame Shino (G6)
+    Material: Casulo de Inseto
+    Assinatura: Rainha Kikaichu
+27. [Time 8] Kiba Inuzuka (Kid)
+    Material: Tufo de Pelo Canino
+    Assinatura: Coleira de Filhote
+28. [Time 8] Kiba Inuzuka
+    Material: Tufo de Pelo Canino
+    Assinatura: Presa de Akamaru
+29. [Tenten] Tenten (Kid)
+    Material: Kunai Enferrujada
+    Assinatura: Fita de Coque
+30. [Tenten] Tenten
+    Material: Kunai Enferrujada
+    Assinatura: Selo de Armamento
+31. [Tenten] Tenten (G6)
+    Material: Selo de Armamento
+    Assinatura: Leque Bashosen
+32. [Konoha] Konohamaru Sarutobi
+    Material: Cachecol Azul
+    Assinatura: Insígnia Sarutobi
+33. [Konoha] Sakura Shippuden
+    Material: Erva Medicinal
+    Assinatura: Luva de Força Sobre-humana
+34. [Konoha] Hatake Kakashi
+    Material: Faísca de Chidori
+    Assinatura: Livro Icha Icha
+35. [Konoha] Hatake Kakashi (G6)
+    Material: Faísca de Chidori
+    Assinatura: Lente de Kamui
+36. [Konoha] Hiruzen Sarutobi
+    Material: Cinzas de Cachimbo
+    Assinatura: Bastão de Enma
+37. [Konoha] Tsunade
+    Material: Erva Medicinal
+    Assinatura: Selo Yin Byakugou
+38. [Konoha] Jiraya
+    Material: Óleo de Sapo
+    Assinatura: Pergaminho de Myoboku
+39. [Konoha] Shizune
+    Material: Erva Medicinal
+    Assinatura: Lançador de Senbon
+40. [Konoha] Anko Mitarashi
+    Material: Espeto de Dango
+    Assinatura: Casaco de Malha
+41. [Konoha] Yamato
+    Material: Seiva Mokuton
+    Assinatura: Máscara ANBU
+42. [Konoha] Sai
+    Material: Tinta Nanquim
+    Assinatura: Pincel Choju Giga
+43. [Konoha] Danzo Shimura
+    Material: Bandagem da Raiz
+    Assinatura: Braço de Izanagi
+44. [Konoha] Namikaze Minato (Jonin)
+    Material: Kunai de Três Pontas
+    Assinatura: Marca de Hiraishin
+45. [Konoha] Senju Hashirama
+    Material: Seiva Mokuton
+    Assinatura: Cristal do Primeiro
+46. [Konoha] Senju Tobirama
+    Material: Gota Suiton Pura
+    Assinatura: Selo de Edo Tensei
+47. [Suna] Gaara
+    Material: Areia Fina
+    Assinatura: Cabaça de Areia
+48. [Suna] Gaara (Shukaku)
+    Material: Areia Dourada
+    Assinatura: Chakra de Shukaku
+49. [Suna] Temari (Kid)
+    Material: Papel de Leque
+    Assinatura: Leque de Treino
+50. [Suna] Temari
+    Material: Papel de Leque
+    Assinatura: Leque Tessen
+51. [Suna] Temari (G6)
+    Material: Chakra Futon
+    Assinatura: Pergaminho Kirikiri Mai
+52. [Suna] Kankuro
+    Material: Madeira de Marionete
+    Assinatura: Peça de Karasu
+53. [Suna] Chiyo
+    Material: Fio de Chakra
+    Assinatura: Selo das Dez Marionetes
+54. [Kiri] Zabuza Momochi
+    Material: Frasco de Névoa
+    Assinatura: Kubikiribocho
+55. [Kiri] Haku
+    Material: Cristal de Gelo
+    Assinatura: Senbon Congelada
+56. [Kiri] Haku (Jump Force)
+    Material: Cristal de Gelo
+    Assinatura: Espelho Demoníaco
+57. [Kiri] Kisame Hoshigaki
+    Material: Escama de Tubarão
+    Assinatura: Fragmento de Samehada
+58. [Oto] Orochimaru
+    Material: Escama de Serpente
+    Assinatura: Kusanagi da Grama
+59. [Oto] Orochimaru (G6)
+    Material: Frasco de Experimento
+    Assinatura: Essência de Yamata
+60. [Oto] Yakushi Kabuto
+    Material: Óculos Redondos
+    Assinatura: Bisturi de Chakra
+61. [Oto] Kimimaro
+    Material: Osso do Clã Kaguya
+    Assinatura: Medula Shikotsumyaku
+62. [Oto] Jiroubou
+    Material: Cascalho Doton
+    Assinatura: Núcleo da Prisão de Terra
+63. [Oto] Tayuya (+ nun5)
+    Material: Bocal de Flauta
+    Assinatura: Flauta dos Doki
+64. [Oto] Sakon e Ukon (+ nun5)
+    Material: Retalho Duplo
+    Assinatura: Célula Parasita
+65. [Oto] Kidomaru
+    Material: Teia Dourada
+    Assinatura: Arco de Teia
+66. [Akatsuki] Sasori
+    Material: Madeira de Marionete
+    Assinatura: Núcleo Vivo de Sasori
+67. [Akatsuki] Sasori (Hiruko)
+    Material: Placa de Hiruko
+    Assinatura: Cauda-Ferrão
+68. [Akatsuki] Deidara
+    Material: Argila Bruta
+    Assinatura: Argila Explosiva
+69. [Akatsuki] Pain (Deva)
+    Material: Bastão Negro de Chakra
+    Assinatura: Olho Rinnegan

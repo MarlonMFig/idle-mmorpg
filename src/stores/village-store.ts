@@ -80,10 +80,12 @@ export const villageStore = {
 
     if (!previous || previous !== villageId) {
       const target = standings[villageId];
-      standings[villageId] = {
-        ...target,
-        playerCount: target.playerCount + 1,
-      };
+      if (target) {
+        standings[villageId] = {
+          ...target,
+          playerCount: target.playerCount + 1,
+        };
+      }
     }
 
     store.setState({

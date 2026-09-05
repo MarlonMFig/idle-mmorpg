@@ -1,0 +1,82 @@
+{
+  "mapKey": "huntTdValeDoFim",
+  "slug": "hunt-td-vale-do-fim",
+  "label": "hunt-td-vale-do-fim",
+  "source": "VALE DO FIM.png",
+  "image": "/maps/hunt-td-vale-do-fim.png",
+  "tmx": "/maps/hunt-td-vale-do-fim.tmx",
+  "cacheTag": "tdnov2026",
+  "width": 3344,
+  "height": 1882,
+  "spawn": {
+    "x": 1672,
+    "y": 936
+  },
+  "enemySpawns": [
+    {
+      "x": 776,
+      "y": 568
+    },
+    {
+      "x": 1560,
+      "y": 600
+    },
+    {
+      "x": 1144,
+      "y": 616
+    },
+    {
+      "x": 2216,
+      "y": 648
+    },
+    {
+      "x": 1912,
+      "y": 664
+    },
+    {
+      "x": 1688,
+      "y": 856
+    },
+    {
+      "x": 1320,
+      "y": 872
+    },
+    {
+      "x": 2024,
+      "y": 1000
+    },
+    {
+      "x": 1432,
+      "y": 1208
+    },
+    {
+      "x": 1128,
+      "y": 1224
+    },
+    {
+      "x": 2200,
+      "y": 1256
+    },
+    {
+      "x": 1784,
+      "y": 1272
+    },
+    {
+      "x": 872,
+      "y": 1368
+    },
+    {
+      "x": 2440,
+      "y": 1416
+    },
+    {
+      "x": 1656,
+      "y": 1560
+    },
+    {
+      "x": 1384,
+      "y": 1656
+    }
+  ],
+  "walkMode": "forest"
+}

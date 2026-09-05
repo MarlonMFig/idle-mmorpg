@@ -68,8 +68,9 @@ export type CaptureQualityBundle = {
 export function rollCaptureQualityBundle(
   rng: SpawnRng = Math.random,
   _definition?: EnemyDefinition | null,
+  rarityLuck = 1,
 ): CaptureQualityBundle {
-  const bundle = rollCaptureBundle({ rng });
+  const bundle = rollCaptureBundle({ rng, sorte: rarityLuck });
   const forced = getForceSpawnQuality();
   if (forced && forced !== 'random') {
     const derived = derivePotentialFields(forced, bundle.potential);

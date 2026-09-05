@@ -1,0 +1,229 @@
+{
+  "colecao": "Banners de Guilda — Mundo Ninja",
+  "quantidade": 36,
+  "formato": "PNG RGBA 256x256",
+  "atlas": {
+    "arquivo": "atlas-banners-guild-1536x1536.png",
+    "colunas": 6,
+    "linhas": 6,
+    "celula": "256x256"
+  },
+  "ordem": [
+    {
+      "indice": 1,
+      "nome": "Folha Rubra",
+      "arquivo": "individuais-256x256/folha-rubra.png",
+      "simbolo": "folha em espiral e chama"
+    },
+    {
+      "indice": 2,
+      "nome": "Raposa Carmesim",
+      "arquivo": "individuais-256x256/raposa-carmesim.png",
+      "simbolo": "máscara de raposa"
+    },
+    {
+      "indice": 3,
+      "nome": "Corvo da Lua",
+      "arquivo": "individuais-256x256/corvo-da-lua.png",
+      "simbolo": "corvo e lua crescente"
+    },
+    {
+      "indice": 4,
+      "nome": "Lobo do Trovão",
+      "arquivo": "individuais-256x256/lobo-do-trovao.png",
+      "simbolo": "lobo e relâmpago"
+    },
+    {
+      "indice": 5,
+      "nome": "Serpente Esmeralda",
+      "arquivo": "individuais-256x256/serpente-esmeralda.png",
+      "simbolo": "serpente enrolada"
+    },
+    {
+      "indice": 6,
+      "nome": "Sapo Sábio",
+      "arquivo": "individuais-256x256/sapo-sabio.png",
+      "simbolo": "olho de sapo e pergaminho"
+    },
+    {
+      "indice": 7,
+      "nome": "Dragão Celeste",
+      "arquivo": "individuais-256x256/dragao-celeste.png",
+      "simbolo": "dragão oriental"
+    },
+    {
+      "indice": 8,
+      "nome": "Fênix Dourada",
+      "arquivo": "individuais-256x256/fenix-dourada.png",
+      "simbolo": "fênix em ascensão"
+    },
+    {
+      "indice": 9,
+      "nome": "Tigre Branco",
+      "arquivo": "individuais-256x256/tigre-branco.png",
+      "simbolo": "tigre branco"
+    },
+    {
+      "indice": 10,
+      "nome": "Tartaruga de Ferro",
+      "arquivo": "individuais-256x256/tartaruga-de-ferro.png",
+      "simbolo": "casco de tartaruga"
+    },
+    {
+      "indice": 11,
+      "nome": "Aranha Dourada",
+      "arquivo": "individuais-256x256/aranha-dourada.png",
+      "simbolo": "aranha e teia"
+    },
+    {
+      "indice": 12,
+      "nome": "Tubarão da Névoa",
+      "arquivo": "individuais-256x256/tubarao-da-nevoa.png",
+      "simbolo": "tubarão na névoa"
+    },
+    {
+      "indice": 13,
+      "nome": "Sol Carmesim",
+      "arquivo": "individuais-256x256/sol-carmesim.png",
+      "simbolo": "sol e lâmina curta"
+    },
+    {
+      "indice": 14,
+      "nome": "Lua Violeta",
+      "arquivo": "individuais-256x256/lua-violeta.png",
+      "simbolo": "lua e shuriken"
+    },
+    {
+      "indice": 15,
+      "nome": "Eclipse Negro",
+      "arquivo": "individuais-256x256/eclipse-negro.png",
+      "simbolo": "eclipse negro"
+    },
+    {
+      "indice": 16,
+      "nome": "Estrela do Norte",
+      "arquivo": "individuais-256x256/estrela-do-norte.png",
+      "simbolo": "estrela-guia"
+    },
+    {
+      "indice": 17,
+      "nome": "Tempestade Azul",
+      "arquivo": "individuais-256x256/tempestade-azul.png",
+      "simbolo": "nuvem e relâmpago"
+    },
+    {
+      "indice": 18,
+      "nome": "Chama Eterna",
+      "arquivo": "individuais-256x256/chama-eterna.png",
+      "simbolo": "chama espiralada"
+    },
+    {
+      "indice": 19,
+      "nome": "Lâminas Cruzadas",
+      "arquivo": "individuais-256x256/laminas-cruzadas.png",
+      "simbolo": "kunais cruzadas"
+    },
+    {
+      "indice": 20,
+      "nome": "Katana Fantasma",
+      "arquivo": "individuais-256x256/katana-fantasma.png",
+      "simbolo": "katana e fumaça"
+    },
+    {
+      "indice": 21,
+      "nome": "Shuriken Imperial",
+      "arquivo": "individuais-256x256/shuriken-imperial.png",
+      "simbolo": "shuriken de quatro pontas"
+    },
+    {
+      "indice": 22,
+      "nome": "Arco da Caçada",
+      "arquivo": "individuais-256x256/arco-da-cacada.png",
+      "simbolo": "arco e flecha"
+    },
+    {
+      "indice": 23,
+      "nome": "Punho de Ferro",
+      "arquivo": "individuais-256x256/punho-de-ferro.png",
+      "simbolo": "punho blindado"
+    },
+    {
+      "indice": 24,
+      "nome": "Escudo Shinobi",
+      "arquivo": "individuais-256x256/escudo-shinobi.png",
+      "simbolo": "escudo e kunai"
+    },
+    {
+      "indice": 25,
+      "nome": "Olho Carmesim",
+      "arquivo": "individuais-256x256/olho-carmesim.png",
+      "simbolo": "olho ninja original"
+    },
+    {
+      "indice": 26,
+      "nome": "Máscara Oni",
+      "arquivo": "individuais-256x256/mascara-oni.png",
+      "simbolo": "máscara oni"
+    },
+    {
+      "indice": 27,
+      "nome": "Selo Proibido",
+      "arquivo": "individuais-256x256/selo-proibido.png",
+      "simbolo": "selo circular original"
+    },
+    {
+      "indice": 28,
+      "nome": "Pergaminho Ancestral",
+      "arquivo": "individuais-256x256/pergaminho-ancestral.png",
+      "simbolo": "pergaminho selado"
+    },
+    {
+      "indice": 29,
+      "nome": "Ampulheta de Areia",
+      "arquivo": "individuais-256x256/ampulheta-de-areia.png",
+      "simbolo": "ampulheta"
+    },
+    {
+      "indice": 30,
+      "nome": "Cristal de Gelo",
+      "arquivo": "individuais-256x256/cristal-de-gelo.png",
+      "simbolo": "cristal de gelo"
+    },
+    {
+      "indice": 31,
+      "nome": "Montanha de Pedra",
+      "arquivo": "individuais-256x256/montanha-de-pedra.png",
+      "simbolo": "picos rochosos"
+    },
+    {
+      "indice": 32,
+      "nome": "Onda Profunda",
+      "arquivo": "individuais-256x256/onda-profunda.png",
+      "simbolo": "onda espiralada"
+    },
+    {
+      "indice": 33,
+      "nome": "Árvore Ancestral",
+      "arquivo": "individuais-256x256/arvore-ancestral.png",
+      "simbolo": "árvore enraizada"
+    },
+    {
+      "indice": 34,
+      "nome": "Flor de Lótus",
+      "arquivo": "individuais-256x256/flor-de-lotus.png",
+      "simbolo": "lótus"
+    },
+    {
+      "indice": 35,
+      "nome": "Borboleta de Chakra",
+      "arquivo": "individuais-256x256/borboleta-de-chakra.png",
+      "simbolo": "borboleta geométrica"
+    },
+    {
+      "indice": 36,
+      "nome": "Equilíbrio Ninja",
+      "arquivo": "individuais-256x256/equilibrio-ninja.png",
+      "simbolo": "espiral dupla original"
+    }
+  ]
+}

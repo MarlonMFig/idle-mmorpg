@@ -4,6 +4,8 @@ import {
   NARUTO_CHARACTER_LOOT,
   NARUTO_CHARACTER_TIER,
   NARUTO_CORE_THIRTY_IDS,
+  secondaryItemIdsOf,
+  signatureItemIdsOf,
   type NarutoLootTier,
 } from '@/data/naruto-loot-tiers';
 import { LOOT_TIER_ROLL_CHANCES } from '@/constants/loot-economy';
@@ -53,21 +55,23 @@ export function validateNarutoLootProfiles(): LootProfileValidation {
     if (!profile.signatureItemId) errors.push(`${id}: signatureItemId em falta`);
     if (!profile.secondaryItemId) errors.push(`${id}: secondaryItemId em falta`);
 
-    if (profile.signatureItemId && !getItem(profile.signatureItemId)) {
-      errors.push(`${id}: signature item inexistente (${profile.signatureItemId})`);
+    for (const itemId of signatureItemIdsOf(profile)) {
+      if (!getItem(itemId)) {
+        errors.push(`${id}: signature item inexistente (${itemId})`);
+      }
     }
-    if (profile.secondaryItemId && !getItem(profile.secondaryItemId)) {
-      errors.push(`${id}: secondary item inexistente (${profile.secondaryItemId})`);
+    for (const itemId of secondaryItemIdsOf(profile)) {
+      if (!getItem(itemId)) {
+        errors.push(`${id}: secondary item inexistente (${itemId})`);
+      }
     }
 
-    if (
-      profile.signatureItemId &&
-      profile.secondaryItemId &&
-      profile.signatureItemId === profile.secondaryItemId
-    ) {
-      warnings.push(
-        `${id}: signature e secondary são o mesmo item (${profile.signatureItemId})`,
-      );
+    const sigSet = new Set(signatureItemIdsOf(profile));
+    const secSet = new Set(secondaryItemIdsOf(profile));
+    for (const itemId of sigSet) {
+      if (secSet.has(itemId)) {
+        warnings.push(`${id}: item em signature e secondary (${itemId})`);
+      }
     }
   }
 
@@ -98,8 +102,8 @@ export function validateNarutoLootProfiles(): LootProfileValidation {
 function getAllPricedNarutoItems(): { id: string; sell: number }[] {
   const ids = new Set<string>();
   for (const profile of Object.values(NARUTO_CHARACTER_LOOT)) {
-    ids.add(profile.signatureItemId);
-    ids.add(profile.secondaryItemId);
+    for (const itemId of signatureItemIdsOf(profile)) ids.add(itemId);
+    for (const itemId of secondaryItemIdsOf(profile)) ids.add(itemId);
   }
   return [...ids].map((id) => ({ id, sell: getItemSellValue(id) }));
 }

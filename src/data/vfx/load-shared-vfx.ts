@@ -42,19 +42,34 @@ function loadHtmlImage(url: string): Promise<HTMLImageElement> {
   });
 }
 
-function canvasToImage(canvas: HTMLCanvasElement): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = () => reject(new Error('Falha ao rasterizar sequência de VFX'));
-    img.src = canvas.toDataURL('image/png');
+
+function destroyGameObjectsUsingTexture(scene: Phaser.Scene, key: string): void {
+  if (!scene?.sys || !scene.children) return;
+  const doomed: Phaser.GameObjects.GameObject[] = [];
+  scene.children.each((child) => {
+    const sprite = child as Phaser.GameObjects.Sprite & {
+      texture?: { key?: string } | null;
+      frame?: { source?: { glTexture?: unknown } | null } | null;
+    };
+    if (sprite?.texture?.key === key) doomed.push(child);
   });
+  for (const child of doomed) {
+    try {
+      child.destroy();
+    } catch {
+      // teardown / HMR
+    }
+  }
 }
 
 function removeTextureAndAnims(scene: Phaser.Scene, key: string): void {
   if (!scene?.sys || scene.sys.isActive?.() === false || !scene.textures || !scene.anims) return;
 
-  // Anims primeiro: Phaser.anims.remove lê frame.sourceSize; se a textura
+  // Sprites primeiro: se a textura some com Sprite ainda na display list,
+  // MultiPipeline.batchSprite lê frame.glTexture null e explode no Lab.
+  destroyGameObjectsUsingTexture(scene, key);
+
+  // Anims depois: Phaser.anims.remove lê frame.sourceSize; se a textura
   // já sumiu, sourceSize/glTexture ficam null e explode no Character Lab.
   const animsMap = (
     scene.anims as unknown as {
@@ -137,8 +152,26 @@ async function buildSharedVfxTexture(
   const images = await Promise.all(
     urls.map((url) => loadHtmlImage(`${url}${url.includes('?') ? '&' : '?'}v=${bust}`)),
   );
-  const fw = def.frameWidth;
-  const fh = def.frameHeight;
+  const first = images[0];
+  const actualW = first.naturalWidth || first.width;
+  const actualH = first.naturalHeight || first.height;
+  let fw = def.frameWidth;
+  let fh = def.frameHeight;
+  if (actualW !== fw || actualH !== fh) {
+    console.warn(
+      `[VFX] ${def.id}: catálogo ${fw}×${fh}, frames ${actualW}×${actualH} — usando dimensões reais`,
+    );
+    fw = actualW;
+    fh = actualH;
+  }
+  for (let i = 1; i < images.length; i += 1) {
+    const img = images[i];
+    const w = img.naturalWidth || img.width;
+    const h = img.naturalHeight || img.height;
+    if (w !== actualW || h !== actualH) {
+      throw new Error(`VFX ${def.id}: frame ${i + 1} com tamanho ${w}×${h} (esperado ${actualW}×${actualH})`);
+    }
+  }
   const layout = sequenceLayout(urls.length, fw, fh);
   const canvas = document.createElement('canvas');
   canvas.width = layout.width;
@@ -149,12 +182,11 @@ async function buildSharedVfxTexture(
   for (let i = 0; i < images.length; i += 1) {
     const col = i % layout.cols;
     const row = Math.floor(i / layout.cols);
-    ctx.drawImage(images[i], 0, 0, fw, fh, col * fw, row * fh, fw, fh);
+    ctx.drawImage(images[i], col * fw, row * fh);
   }
 
-  const sheetImage = await canvasToImage(canvas);
   removeTextureAndAnims(scene, key);
-  scene.textures.addSpriteSheet(key, sheetImage, { frameWidth: fw, frameHeight: fh });
+  scene.textures.addSpriteSheet(key, canvas, { frameWidth: fw, frameHeight: fh });
   scene.textures.get(key).setFilter(PHASER_TEXTURE_FILTER_NEAREST);
   loadedStamp.set(def, sequenceStamp(def));
 }

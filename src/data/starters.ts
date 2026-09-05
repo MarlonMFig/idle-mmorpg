@@ -1,3 +1,4 @@
+import { getCharacterNature } from '@/data/character-natures';
 import type { StarterCharacterId } from '@/types/player-creation';
 
 export interface StarterDefinition {
@@ -15,6 +16,11 @@ export interface StarterDefinition {
   previewUrl: string;
 }
 
+function starterNature(id: StarterCharacterId) {
+  const nature = getCharacterNature(id);
+  return { element: nature.label, elementIcon: nature.icon };
+}
+
 export const STARTERS: readonly StarterDefinition[] = [
   {
     id: 'naruto-classic',
@@ -23,8 +29,7 @@ export const STARTERS: readonly StarterDefinition[] = [
     accent: '#f97316',
     accentSoft: '#fbbf24',
     blurb: 'Rasengan e Oodama Rasengan. Ofensiva versátil.',
-    element: 'Vento',
-    elementIcon: '🌪️',
+    ...starterNature('naruto-classic'),
     previewUrl: '/sprites/player/previews/naruto.png',
   },
   {
@@ -34,8 +39,7 @@ export const STARTERS: readonly StarterDefinition[] = [
     accent: '#6366f1',
     accentSoft: '#a855f7',
     blurb: 'Katon: Goukakyuu. Alta pressão ofensiva.',
-    element: 'Relâmpago',
-    elementIcon: '⚡',
+    ...starterNature('sasuke-classic'),
     previewUrl: '/sprites/player/previews/sasuke.png',
   },
   {
@@ -45,8 +49,7 @@ export const STARTERS: readonly StarterDefinition[] = [
     accent: '#10b981',
     accentSoft: '#34d399',
     blurb: 'Omote Renge. Taijutsu puro.',
-    element: 'Taijutsu',
-    elementIcon: '👊',
+    ...starterNature('rock-lee'),
     previewUrl: '/sprites/player/previews/rock-lee.png',
   },
 ] as const;

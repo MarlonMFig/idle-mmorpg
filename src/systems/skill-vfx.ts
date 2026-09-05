@@ -13,14 +13,16 @@ export interface SkillVfxPoints {
   toY: number;
 }
 
-/** Hit-spark curto no alvo — todos os combos básicos. */
+/** Hit-spark curto no alvo — todos os combos básicos (contato). */
 export const COMBO_HIT_FX = {
-  key: 'fx-combo-hit',
-  url: '/sprites/fx/combo-hit.png',
-  frameWidth: 48,
-  frameHeight: 48,
-  frameCount: 5,
-  animKey: 'fx-combo-hit-anim',
+  key: 'fx-combo-hit-7f',
+  url: '/sprites/fx/combo-hit.png?v=hit7',
+  frameWidth: 69,
+  frameHeight: 85,
+  frameCount: 7,
+  /** Tempo visível de cada frame antes do fade-out. */
+  holdMs: 90,
+  fadeMs: 50,
 } as const;
 
 /**
@@ -41,6 +43,9 @@ export const HEAL_FX = {
  * Novos jutsus só escolhem kind + tint/scale/duration.
  */
 export class SkillVfx {
+  private comboHitFrame = 0;
+  private activeComboHit: Phaser.GameObjects.Sprite | null = null;
+
   constructor(private readonly scene: Phaser.Scene) {}
 
   static preload(scene: Phaser.Scene): void {
@@ -54,29 +59,33 @@ export class SkillVfx {
     });
   }
 
-  /** Spark pequeno no ponto de impacto do combo (mid-body do alvo). */
+  /** Um frame estático por contato — cicla 0→6 a cada hit. */
   playComboHit(x: number, y: number, scale = 1): void {
     if (!this.scene.textures.exists(COMBO_HIT_FX.key)) return;
 
-    if (!this.scene.anims.exists(COMBO_HIT_FX.animKey)) {
-      this.scene.anims.create({
-        key: COMBO_HIT_FX.animKey,
-        frames: this.scene.anims.generateFrameNumbers(COMBO_HIT_FX.key, {
-          start: 0,
-          end: COMBO_HIT_FX.frameCount - 1,
-        }),
-        frameRate: 18,
-        repeat: 0,
-      });
-    }
+    this.activeComboHit?.destroy();
+    this.activeComboHit = null;
+
+    const frame = this.comboHitFrame % COMBO_HIT_FX.frameCount;
+    this.comboHitFrame += 1;
 
     const spark = this.scene.add
-      .sprite(x, y - 18, COMBO_HIT_FX.key, 0)
+      .sprite(x, y, COMBO_HIT_FX.key, frame)
+      .setOrigin(0.5, 0.5)
       .setDepth(vfxDepthForLayer('front-of-characters', y))
-      .setScale(scale)
-      .setBlendMode(Phaser.BlendModes.ADD);
-    spark.play(COMBO_HIT_FX.animKey);
-    spark.once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => spark.destroy());
+      .setScale(scale);
+    this.activeComboHit = spark;
+
+    this.scene.tweens.add({
+      targets: spark,
+      alpha: 0,
+      duration: COMBO_HIT_FX.fadeMs,
+      delay: COMBO_HIT_FX.holdMs,
+      onComplete: () => {
+        if (this.activeComboHit === spark) this.activeComboHit = null;
+        spark.destroy();
+      },
+    });
   }
 
   play(skill: SkillDefinition, points: SkillVfxPoints): void {

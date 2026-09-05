@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { PhaserGame } from '@/components/phaser-game';
 import { NewGameScreen } from '@/ui/new-game';
+import { BootLoadingOverlay } from '@/ui/boot/boot-loading-overlay';
 import { GameHud } from '@/ui/hud';
 import { DialogueWindow } from '@/ui/dialogue';
 import { accountStore } from '@/stores/account-store';
@@ -12,6 +13,7 @@ import { dailyLoginStore } from '@/stores/daily-login-store';
 import { bossStore } from '@/stores/boss-store';
 import { guildStore } from '@/stores/guild-store';
 import { villageStore } from '@/stores/village-store';
+import { heritageStore } from '@/stores/heritage-store';
 import { locationStore } from '@/stores/location-store';
 import { huntStore } from '@/stores/hunt-store';
 import { inventoryStore } from '@/stores/inventory-store';
@@ -22,11 +24,13 @@ import { teamPresetStore } from '@/stores/team-preset-store';
 import { systemLogStore } from '@/lib/system-log';
 import {
   applyPersistedSession,
+  bootstrapPlayerFromBestSave,
   hydrateSessionFromCloud,
-  loadPersistedSession,
+  recoverPersistedSession,
   setSessionOwner,
   trackSession,
 } from '@/lib/session-persist';
+import { isSocialBackendActive } from '@/config/social-backend';
 import { setAuthPlayerIdentity } from '@/lib/auth/player-identity';
 import type { PlayerCreation } from '@/types/player-creation';
 import { HuntSelector } from '@/ui/hunts';
@@ -39,24 +43,34 @@ export function NewGameGate({ authUserId }: NewGameGateProps) {
   const [playerCreation, setPlayerCreation] = useState<PlayerCreation | null>(null);
   const [bootstrapped, setBootstrapped] = useState(false);
 
-  // Restore last session from localStorage (`idle-mmorpg:session-v1`) on first paint.
   useEffect(() => {
     setSessionOwner(authUserId);
     setAuthPlayerIdentity(authUserId);
-    const saved = loadPersistedSession();
-    if (saved) {
-      try {
-        setPlayerCreation(applyPersistedSession(saved));
-      } catch {
-        // Corrupt / incomplete hydrate — fall through to new-game screen.
-      }
+
+    const localPlayer = bootstrapPlayerFromBestSave();
+    if (localPlayer) {
+      setPlayerCreation(localPlayer);
     }
+
+    if (!isSocialBackendActive()) {
+      setBootstrapped(true);
+      return;
+    }
+
     void hydrateSessionFromCloud().then((cloudSession) => {
       if (cloudSession) {
-        try {
-          setPlayerCreation(applyPersistedSession(cloudSession));
-        } catch {
-          // Ignore an invalid remote snapshot and keep the local state.
+        const local = recoverPersistedSession();
+        const shouldUseCloud =
+          !local ||
+          cloudSession.vitals.level > local.vitals.level ||
+          (cloudSession.vitals.level === local.vitals.level &&
+            (cloudSession.savedAt ?? 0) > (local.savedAt ?? 0));
+        if (shouldUseCloud) {
+          try {
+            setPlayerCreation(applyPersistedSession(cloudSession));
+          } catch (error) {
+            console.warn('[Save] Cloud hydrate falhou:', error);
+          }
         }
       }
       setBootstrapped(true);
@@ -68,6 +82,7 @@ export function NewGameGate({ authUserId }: NewGameGateProps) {
     huntStore.reset();
     villageStore.reset();
     accountStore.reset();
+    heritageStore.reset();
     achievementsStore.reset();
     missionsStore.reset();
     dailyLoginStore.reset();
@@ -102,6 +117,7 @@ export function NewGameGate({ authUserId }: NewGameGateProps) {
         />
         <DialogueWindow />
         <HuntSelector />
+        <BootLoadingOverlay />
       </div>
     );
   }

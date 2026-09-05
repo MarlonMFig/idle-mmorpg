@@ -3,7 +3,7 @@ import { ATTRIBUTE_ORDER } from '@/constants/attributes';
 import type { AttributeValues } from '@/types/attributes';
 
 /**
- * Aplica o bônus de estrelas (+8% cada) aos atributos base.
+ * Aplica o bônus de estrelas (+10% cada) aos atributos base.
  */
 export function applyStarBonusToBase(base: AttributeValues, stars: number): AttributeValues {
   const mult = starMultFromSpec(stars);

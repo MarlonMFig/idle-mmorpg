@@ -66,20 +66,17 @@ function fmtTime(ts: number): string {
   }
 }
 
-const TABS: { id: GuildUiTabId; label: string }[] = [
-  { id: 'overview', label: 'Visão Geral' },
-  { id: 'members', label: 'Membros' },
-  { id: 'progress', label: 'Progresso' },
-  { id: 'applications', label: 'Solicitações' },
-  { id: 'boss', label: 'Boss' },
-  { id: 'shop', label: 'Loja' },
+const HALL_TABS: { id: GuildUiTabId; label: string; icon: string }[] = [
+  { id: 'overview', label: 'Salão', icon: '⌂' },
+  { id: 'members', label: 'Membros', icon: '👥' },
+  { id: 'progress', label: 'Progresso', icon: '◆' },
+  { id: 'applications', label: 'Solicitações', icon: '✉' },
+  { id: 'boss', label: 'Boss', icon: '⚔' },
+  { id: 'shop', label: 'Loja', icon: '◈' },
 ];
 
-type MemberSort = 'role' | 'contribution' | 'playerLevel' | 'lastActiveAt';
-
 /**
- * Guild UI (Item 28) — social/progressivo.
- * Sem Boss / War / Ranking / Shop / bônus de combate.
+ * Guild UI — lobby no MgrWindow; guild ativa no shell Salão (sidebar).
  */
 export function GuildPanel() {
   const isOpen = useStore(guildStore, (s) => s.isOpen);
@@ -116,40 +113,321 @@ export function GuildPanel() {
 
   if (!isOpen) return null;
 
+  if (myGuild) {
+    return (
+      <GuildHallShell
+        guild={myGuild}
+        me={myMember}
+        playerId={playerId}
+        tab={uiTab}
+        onTab={(t) => guildStore.setUiTab(t)}
+        onClose={() => guildStore.setOpen(false)}
+      />
+    );
+  }
+
   return (
     <MgrWindow
       title="Guild"
-      lede={
-        myGuild
-          ? `${myGuild.name} · Nv. ${myGuild.level}`
-          : 'Grupos sociais multi-linhagem do hub'
-      }
-      pill={
-        !canAccess
-          ? `Nv. ${GUILD_CREATE_MIN_LEVEL}+`
-          : myGuild
-            ? `[${myGuild.tag}]`
-            : undefined
-      }
+      lede="Grupos sociais multi-linhagem do hub"
+      pill={!canAccess ? `Nv. ${GUILD_CREATE_MIN_LEVEL}+` : undefined}
       icon="⚑"
       size="lg"
-      tabs={myGuild ? TABS : undefined}
-      activeTab={uiTab}
-      onTabChange={(id) => guildStore.setUiTab(id as GuildUiTabId)}
       onClose={() => guildStore.setOpen(false)}
     >
-      {!myGuild ? (
-        <LobbyView canAccess={canAccess} level={level} mode={lobbyMode} />
-      ) : (
-        <GuildHome
-          guild={myGuild}
-          me={myMember}
-          playerId={playerId}
-          tab={uiTab}
-          onTab={(t) => guildStore.setUiTab(t)}
-        />
-      )}
+      <LobbyView canAccess={canAccess} level={level} mode={lobbyMode} />
     </MgrWindow>
+  );
+}
+
+function GuildHallShell({
+  guild,
+  me,
+  playerId,
+  tab,
+  onTab,
+  onClose,
+}: {
+  guild: Guild;
+  me: GuildMember | null;
+  playerId: string | null;
+  tab: GuildUiTabId;
+  onTab: (t: GuildUiTabId) => void;
+  onClose: () => void;
+}) {
+  const emblemIcon = guild.legacy?.emblemIcon ?? GUILD_DEFAULT_EMBLEM;
+  const emblemBg = guild.legacy?.emblemBg ?? '#7f1d1d';
+
+  return (
+    <div
+      className="guild-hall-overlay"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+    >
+      <div
+        className="guild-hall"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Salão da Guild — ${guild.name}`}
+        onMouseDown={(event) => event.stopPropagation()}
+        onClick={(event) => event.stopPropagation()}
+        style={{ ['--guild-accent' as string]: emblemBg }}
+      >
+        <aside className="guild-hall__sidebar" aria-label="Navegação da guild">
+          <div className="guild-hall__brand">
+            <span className="guild-hall__brand-crest" style={{ background: crestGlow(emblemBg) }}>
+              <GuildEmblem value={emblemIcon} className="guild-hall__brand-emblem" />
+            </span>
+            <div className="guild-hall__brand-copy">
+              <p className="guild-hall__brand-kicker">Guild</p>
+              <p className="guild-hall__brand-tag">[{guild.tag}]</p>
+            </div>
+          </div>
+
+          <nav className="guild-hall__nav" role="tablist" aria-label="Abas da guild">
+            {HALL_TABS.map((entry) => (
+              <button
+                key={entry.id}
+                type="button"
+                role="tab"
+                aria-selected={tab === entry.id}
+                className={`guild-hall__nav-btn${tab === entry.id ? ' is-active' : ''}`}
+                onClick={() => onTab(entry.id)}
+              >
+                <span className="guild-hall__nav-icon" aria-hidden>
+                  {entry.icon}
+                </span>
+                <span>{entry.label}</span>
+              </button>
+            ))}
+          </nav>
+        </aside>
+
+        <div className="guild-hall__main">
+          <header className="guild-hall__topbar">
+            <div className="guild-hall__topbar-title">
+              <h2>{HALL_TABS.find((t) => t.id === tab)?.label ?? 'Guild'}</h2>
+              <p>
+                {guild.name} · Nv. {guild.level}
+              </p>
+            </div>
+            <button
+              type="button"
+              className="guild-hall__close"
+              onClick={onClose}
+              aria-label="Fechar guild"
+            >
+              ×
+            </button>
+          </header>
+
+          <div className="guild-hall__content">
+            {tab === 'overview' ? (
+              <HallOverview guild={guild} me={me} onTab={onTab} />
+            ) : null}
+            {tab === 'members' ? (
+              <MembersTab guild={guild} me={me} playerId={playerId} onTab={onTab} />
+            ) : null}
+            {tab === 'progress' ? <ProgressTab guild={guild} /> : null}
+            {tab === 'applications' ? <ApplicationsTab guild={guild} me={me} /> : null}
+            {tab === 'boss' ? <GuildBossTab guild={guild} /> : null}
+            {tab === 'shop' ? <GuildShopTab guild={guild} /> : null}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HallOverview({
+  guild,
+  me,
+  onTab,
+}: {
+  guild: Guild;
+  me: GuildMember | null;
+  onTab: (t: GuildUiTabId) => void;
+}) {
+  const leaveCheck = canLeaveGuild(me, guild.members.length);
+  const canEdit = canGuildMemberPerform(me, 'editGuild');
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [desc, setDesc] = useState(guild.description);
+  const [emblemIdx, setEmblemIdx] = useState(() => resolveEmblemIndex(guild.legacy?.emblemIcon));
+  const [emblemColor, setEmblemColor] = useState(guild.legacy?.emblemBg ?? GUILD_COLORS[0]);
+
+  const xpNeed = guildXpForLevel(guild.level);
+  const xpPct = Math.min(100, Math.round((guild.xp / Math.max(1, xpNeed)) * 100));
+  const leader = guild.members.find((m) => m.playerId === guild.leaderId);
+  const emblemIcon = guild.legacy?.emblemIcon ?? GUILD_DEFAULT_EMBLEM;
+  const emblemBg = guild.legacy?.emblemBg ?? '#7f1d1d';
+  const totalContribution = guild.members.reduce((sum, m) => sum + m.contribution, 0);
+
+  useEffect(() => {
+    setDesc(guild.description);
+    setEmblemIdx(resolveEmblemIndex(guild.legacy?.emblemIcon));
+    setEmblemColor(guild.legacy?.emblemBg ?? GUILD_COLORS[0]);
+  }, [guild.id, guild.description, guild.legacy?.emblemIcon, guild.legacy?.emblemBg]);
+
+  return (
+    <div className="guild-hall__salon">
+      <div className="guild-hall__salon-grid">
+        <div
+          className="guild-hall__banner"
+          style={{ background: crestGlow(emblemBg), ['--banner' as string]: emblemBg }}
+        >
+          <div className="guild-hall__banner-frame">
+            <GuildEmblem value={emblemIcon} className="guild-hall__banner-emblem" />
+          </div>
+        </div>
+
+        <div className="guild-hall__salon-info">
+          <div className="guild-hall__identity">
+            <div className="guild-hall__name-block">
+              <h3 className="guild-hall__name">{guild.name}</h3>
+              <span className="guild-hall__tag">[{guild.tag}]</span>
+            </div>
+            <div className="guild-hall__level-row">
+              <span className="guild-hall__level">Lv. {guild.level}</span>
+              <div className="guild-hall__xp">
+                <div className="guild-hall__xp-track" role="progressbar" aria-valuenow={xpPct} aria-valuemin={0} aria-valuemax={100}>
+                  <span style={{ width: `${xpPct}%` }} />
+                </div>
+                <p className="guild-hall__xp-nums">
+                  {fmt(guild.xp)} / {fmt(xpNeed)} EXP
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="guild-hall__stats">
+            <HallStat icon="👥" label="Membros" value={`${guild.members.length}/${guild.maxMembers}`} />
+            <HallStat icon="◆" label="Contribuição" value={fmt(totalContribution)} />
+            <HallStat
+              icon="⚑"
+              label="Entrada"
+              value={guild.joinMode === 'open' ? 'Open' : 'Approval'}
+            />
+          </div>
+
+          <section className="guild-hall__message" aria-label="Mensagem do líder">
+            <h4>Mensagem do Líder</h4>
+            <p>{guild.description?.trim() || 'Sem mensagem.'}</p>
+            <footer>— Líder: {leader?.nickname ?? '—'}</footer>
+          </section>
+        </div>
+      </div>
+
+      <footer className="guild-hall__actions">
+        {canEdit ? (
+          <button
+            type="button"
+            className="guild-hall__action-btn"
+            onClick={() => setSettingsOpen((v) => !v)}
+          >
+            <span aria-hidden>⚙</span> Configurações
+          </button>
+        ) : null}
+        <button
+          type="button"
+          className="guild-hall__action-btn"
+          onClick={() => onTab('progress')}
+        >
+          <span aria-hidden>📜</span> Registro
+        </button>
+        {leaveCheck.ok ? (
+          <button
+            type="button"
+            className="guild-hall__action-btn guild-hall__action-btn--danger"
+            onClick={() => {
+              if (window.confirm('Sair desta Guild?')) void guildStore.leaveGuild();
+            }}
+          >
+            <span aria-hidden>↩</span> Sair
+          </button>
+        ) : (
+          <span className="guild-hall__action-hint">{leaveCheck.reason}</span>
+        )}
+        {canDissolveGuild(me) ? (
+          <button
+            type="button"
+            className="guild-hall__action-btn guild-hall__action-btn--danger"
+            onClick={() => {
+              const a = window.prompt('Digite DISSOLVER para confirmar a dissolução da Guild:');
+              if (a === 'DISSOLVER') void guildStore.dissolveGuild();
+            }}
+          >
+            Dissolver
+          </button>
+        ) : null}
+      </footer>
+
+      {settingsOpen && canEdit ? (
+        <div className="guild-hall__settings">
+          <h4>Configurações da Guild</h4>
+          <label>
+            Mensagem / descrição
+            <textarea
+              rows={3}
+              maxLength={GUILD_DESCRIPTION_MAX}
+              value={desc}
+              onChange={(e) => setDesc(e.target.value)}
+            />
+          </label>
+          <GuildBannerPicker
+            emblemIdx={emblemIdx}
+            emblemColor={emblemColor}
+            onEmblemIdx={setEmblemIdx}
+            onEmblemColor={setEmblemColor}
+          />
+          <div className="guild-hall__settings-actions">
+            <button
+              type="button"
+              className="guild-win__btn-gold"
+              onClick={() => {
+                void guildStore.editGuild({
+                  description: desc,
+                  emblemIcon: GUILD_EMBLEMS[emblemIdx]?.icon ?? GUILD_DEFAULT_EMBLEM,
+                  emblemBg: emblemColor,
+                });
+                setSettingsOpen(false);
+              }}
+            >
+              Salvar
+            </button>
+            <button
+              type="button"
+              className="guild-win__btn-green"
+              onClick={() =>
+                void guildStore.editGuild({
+                  joinMode: guild.joinMode === 'open' ? 'approval' : 'open',
+                })
+              }
+            >
+              Alternar modo ({guild.joinMode === 'open' ? '→ Approval' : '→ Open'})
+            </button>
+            <button type="button" className="guild-hall__action-btn" onClick={() => setSettingsOpen(false)}>
+              Fechar
+            </button>
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function HallStat({ icon, label, value }: { icon: string; label: string; value: string }) {
+  return (
+    <div className="guild-hall__stat">
+      <span className="guild-hall__stat-icon" aria-hidden>
+        {icon}
+      </span>
+      <div>
+        <span className="guild-hall__stat-label">{label}</span>
+        <strong className="guild-hall__stat-value">{value}</strong>
+      </div>
+    </div>
   );
 }
 
@@ -171,11 +449,15 @@ function LobbyView({
   return (
     <div className="guild-win__lobby">
       <div className="guild-win__lobby-hero">
+        <div className="guild-win__lobby-crest" aria-hidden>
+          ⚑
+        </div>
         <div>
+          <p className="guild-win__feature-eyebrow">Social</p>
           <h2>Você não está em uma Guild</h2>
           <p>
-            Guilds são grupos sociais multi-linhagem. Liberadas no nível {GUILD_CREATE_MIN_LEVEL}.
-            Seu nível: <strong>{level}</strong>
+            Forme um grupo multi-linhagem, enfrentem o Boss semanal e usem a loja compartilhada.
+            Liberado no nível {GUILD_CREATE_MIN_LEVEL}. Seu nível: <strong>{level}</strong>
           </p>
         </div>
       </div>
@@ -379,153 +661,196 @@ function SearchGuildView({ canAccess, onBack }: { canAccess: boolean; onBack: ()
   );
 }
 
-function GuildHome({
+function formatLastAccess(ts: number, now = Date.now()): { label: string; online: boolean } {
+  const delta = Math.max(0, now - ts);
+  if (delta < 5 * 60_000) return { label: 'Online', online: true };
+  const mins = Math.floor(delta / 60_000);
+  if (mins < 60) return { label: `${mins}min atrás`, online: false };
+  const hours = Math.floor(mins / 60);
+  if (hours < 48) return { label: `${hours}h atrás`, online: false };
+  const days = Math.floor(hours / 24);
+  return { label: `${days}d atrás`, online: false };
+}
+
+/** Estimativa visual de poder (sem stat real no modelo). */
+function estimateMemberPower(m: GuildMember): number {
+  return Math.max(0, m.playerLevel * 12_500 + m.contribution * 40);
+}
+
+function MembersTab({
   guild,
   me,
   playerId,
-  tab,
+  onTab,
 }: {
   guild: Guild;
   me: GuildMember | null;
   playerId: string | null;
-  tab: GuildUiTabId;
-  onTab?: (t: GuildUiTabId) => void;
+  onTab: (t: GuildUiTabId) => void;
 }) {
-  const xpNeed = guildXpForLevel(guild.level);
-  const xpPct = Math.min(100, Math.round((guild.xp / xpNeed) * 100));
-  const leader = guild.members.find((m) => m.playerId === guild.leaderId);
-  const emblemIcon = guild.legacy?.emblemIcon ?? GUILD_DEFAULT_EMBLEM;
-  const emblemBg = guild.legacy?.emblemBg ?? '#7f1d1d';
-
-  return (
-    <>
-      <section className="guild-win__header">
-        <div className="guild-win__header-identity">
-          <span className="guild-win__header-crest" style={{ background: crestGlow(emblemBg) }}>
-            <GuildEmblem value={emblemIcon} className="guild-win__crest-icon" />
-          </span>
-          <div>
-            <div className="guild-win__name-row">
-              <h2 className="guild-win__name">{guild.name}</h2>
-              <span className="guild-win__tag">[{guild.tag}]</span>
-            </div>
-            <p className="guild-win__meta">
-              Level <strong>{guild.level}</strong>
-              <span className="guild-win__dot">•</span>
-              Membros{' '}
-              <strong>
-                {guild.members.length}/{guild.maxMembers}
-              </strong>
-              <span className="guild-win__dot">•</span>
-              Líder <strong>{leader?.nickname ?? '—'}</strong>
-              <span className="guild-win__dot">•</span>
-              {guild.joinMode === 'open' ? 'Open' : 'Approval'}
-            </p>
-          </div>
-        </div>
-        <div className="guild-win__exp-row">
-          <span className="guild-win__exp-label">Guild XP</span>
-          <span className="guild-win__exp-nums">
-            {fmt(guild.xp)} / {fmt(xpNeed)} ({xpPct}%)
-          </span>
-          <div className="guild-win__exp-bar">
-            <span style={{ width: `${xpPct}%` }} />
-          </div>
-        </div>
-      </section>
-
-      <div className="guild-win__body">
-        {tab === 'overview' ? <OverviewTab guild={guild} me={me} /> : null}
-        {tab === 'members' ? <MembersTab guild={guild} me={me} playerId={playerId} /> : null}
-        {tab === 'progress' ? <ProgressTab guild={guild} /> : null}
-        {tab === 'applications' ? <ApplicationsTab guild={guild} me={me} /> : null}
-        {tab === 'boss' ? <GuildBossTab guild={guild} /> : null}
-        {tab === 'shop' ? <GuildShopTab guild={guild} /> : null}
-      </div>
-    </>
-  );
-}
-
-function OverviewTab({ guild, me }: { guild: Guild; me: GuildMember | null }) {
+  const [manageOpen, setManageOpen] = useState(false);
   const leaveCheck = canLeaveGuild(me, guild.members.length);
-  const [desc, setDesc] = useState(guild.description);
-  const canEdit = canGuildMemberPerform(me, 'editGuild');
-  const [emblemIdx, setEmblemIdx] = useState(() => resolveEmblemIndex(guild.legacy?.emblemIcon));
-  const [emblemColor, setEmblemColor] = useState(guild.legacy?.emblemBg ?? GUILD_COLORS[0]);
+  const canInvite =
+    canGuildMemberPerform(me, 'inviteMember') || canGuildMemberPerform(me, 'approveMember');
+  const canManage =
+    canGuildMemberPerform(me, 'promoteMember') ||
+    canGuildMemberPerform(me, 'demoteMember') ||
+    canGuildMemberPerform(me, 'kickMember') ||
+    canGuildMemberPerform(me, 'transferLeadership');
 
-  useEffect(() => {
-    setDesc(guild.description);
-    setEmblemIdx(resolveEmblemIndex(guild.legacy?.emblemIcon));
-    setEmblemColor(guild.legacy?.emblemBg ?? GUILD_COLORS[0]);
-  }, [guild.id, guild.description, guild.legacy?.emblemIcon, guild.legacy?.emblemBg]);
+  const sorted = useMemo(() => {
+    const list = [...guild.members];
+    list.sort((a, b) => {
+      if (GUILD_ROLE_ORDER[a.role] !== GUILD_ROLE_ORDER[b.role]) {
+        return GUILD_ROLE_ORDER[a.role] - GUILD_ROLE_ORDER[b.role];
+      }
+      return b.contribution - a.contribution;
+    });
+    return list;
+  }, [guild.members]);
 
   return (
-    <div className="guild-win__overview">
-      <p className="guild-win__desc">{guild.description || 'Sem descrição.'}</p>
-      {canEdit ? (
-        <div className="guild-win__edit-block">
-          <label>
-            Descrição
-            <textarea
-              rows={2}
-              maxLength={GUILD_DESCRIPTION_MAX}
-              value={desc}
-              onChange={(e) => setDesc(e.target.value)}
-            />
-          </label>
-          <GuildBannerPicker
-            emblemIdx={emblemIdx}
-            emblemColor={emblemColor}
-            onEmblemIdx={setEmblemIdx}
-            onEmblemColor={setEmblemColor}
-          />
-          <div className="guild-win__row-actions">
-            <button
-              type="button"
-              className="guild-win__btn-gold"
-              onClick={() =>
-                void guildStore.editGuild({
-                  description: desc,
-                  emblemIcon: GUILD_EMBLEMS[emblemIdx]?.icon ?? GUILD_DEFAULT_EMBLEM,
-                  emblemBg: emblemColor,
-                })
-              }
-            >
-              Salvar descrição e banner
-            </button>
-            <button
-              type="button"
-              className="guild-win__btn-green"
-              onClick={() =>
-                void guildStore.editGuild({
-                  joinMode: guild.joinMode === 'open' ? 'approval' : 'open',
-                })
-              }
-            >
-              Alternar modo ({guild.joinMode === 'open' ? '→ Approval' : '→ Open'})
-            </button>
-          </div>
+    <div className="guild-members">
+      <div className="guild-members__panel">
+        <header className="guild-members__head">
+          <h3>Membros da Guild</h3>
+          <span>
+            {guild.members.length} / {guild.maxMembers}
+          </span>
+        </header>
+
+        <div className="guild-members__table-wrap">
+          <table className="guild-members__table">
+            <thead>
+              <tr>
+                <th>Membro</th>
+                <th>Nível</th>
+                <th>Poder</th>
+                <th>Cargo</th>
+                <th>Contribuição</th>
+                <th>Último Acesso</th>
+                {manageOpen ? <th>Ações</th> : null}
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.map((m) => {
+                const access = formatLastAccess(m.lastActiveAt);
+                const initial = (m.nickname.trim().charAt(0) || '?').toUpperCase();
+                return (
+                  <tr key={m.playerId} className={m.playerId === playerId ? 'is-me' : undefined}>
+                    <td>
+                      <div className="guild-members__who">
+                        <span
+                          className={`guild-members__avatar guild-members__avatar--${m.role}`}
+                          aria-hidden
+                        >
+                          {initial}
+                        </span>
+                        <div className="guild-members__who-text">
+                          <strong>
+                            {m.nickname}
+                            {m.playerId === playerId ? ' (você)' : ''}
+                          </strong>
+                          {m.role === 'leader' ? (
+                            <span className="guild-members__leader-tag">Líder</span>
+                          ) : null}
+                        </div>
+                      </div>
+                    </td>
+                    <td>Lv.{m.playerLevel}</td>
+                    <td className="guild-members__power">{fmt(estimateMemberPower(m))}</td>
+                    <td>
+                      <span className={`guild-members__badge guild-members__badge--${m.role}`}>
+                        {GUILD_ROLE_LABEL[m.role]}
+                      </span>
+                    </td>
+                    <td>{fmt(m.contribution)}</td>
+                    <td>
+                      <span className={access.online ? 'is-online' : 'is-offline'}>{access.label}</span>
+                    </td>
+                    {manageOpen ? (
+                      <td>
+                        <div className="guild-members__row-actions">
+                          {canPromoteMember(me, m, 'officer') ? (
+                            <button
+                              type="button"
+                              onClick={() => void guildStore.setMemberRole(m.playerId, 'officer')}
+                            >
+                              Promover
+                            </button>
+                          ) : null}
+                          {canDemoteMember(me, m) ? (
+                            <button
+                              type="button"
+                              onClick={() => void guildStore.setMemberRole(m.playerId, 'member')}
+                            >
+                              Rebaixar
+                            </button>
+                          ) : null}
+                          {canKickMember(me, m) ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (window.confirm(`Expulsar ${m.nickname}?`)) {
+                                  void guildStore.kickMember(m.playerId);
+                                }
+                              }}
+                            >
+                              Expulsar
+                            </button>
+                          ) : null}
+                          {canTransferLeadership(me, m) ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (window.confirm(`Transferir liderança para ${m.nickname}?`)) {
+                                  void guildStore.transferLeadership(m.playerId);
+                                }
+                              }}
+                            >
+                              Transferir
+                            </button>
+                          ) : null}
+                        </div>
+                      </td>
+                    ) : null}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-      ) : null}
+      </div>
 
-      <h4>Histórico recente</h4>
-      <ul className="guild-win__activity">
-        {guild.activity.length === 0 ? (
-          <li className="guild-win__empty">Nenhum evento ainda.</li>
-        ) : (
-          guild.activity.slice(0, 12).map((a) => (
-            <li key={a.id}>
-              <span>{fmtTime(a.timestamp)}</span> {a.message}
-            </li>
-          ))
-        )}
-      </ul>
-
-      <div className="guild-win__danger-zone">
+      <footer className="guild-members__footer">
+        <button
+          type="button"
+          className="guild-members__footer-btn"
+          disabled={!canInvite}
+          onClick={() => {
+            if (guild.joinMode === 'approval') {
+              onTab('applications');
+              return;
+            }
+            const text = `[${guild.tag}] ${guild.name}`;
+            void navigator.clipboard?.writeText(text).catch(() => undefined);
+            window.alert(`Convite: compartilhe a tag ${text} (modo Open — entrada direta).`);
+          }}
+        >
+          Convidar
+        </button>
+        <button
+          type="button"
+          className={`guild-members__footer-btn${manageOpen ? ' is-on' : ''}`}
+          disabled={!canManage}
+          onClick={() => setManageOpen((v) => !v)}
+        >
+          Gerenciar Cargos
+        </button>
         {leaveCheck.ok ? (
           <button
             type="button"
-            className="guild-win__btn-danger"
+            className="guild-members__footer-btn guild-members__footer-btn--danger"
             onClick={() => {
               if (window.confirm('Sair desta Guild?')) void guildStore.leaveGuild();
             }}
@@ -533,127 +858,16 @@ function OverviewTab({ guild, me }: { guild: Guild; me: GuildMember | null }) {
             Sair da Guild
           </button>
         ) : (
-          <p className="guild-win__hint">{leaveCheck.reason}</p>
+          <button
+            type="button"
+            className="guild-members__footer-btn guild-members__footer-btn--danger"
+            disabled
+            title={leaveCheck.reason}
+          >
+            Sair da Guild
+          </button>
         )}
-        {canDissolveGuild(me) ? (
-          <button
-            type="button"
-            className="guild-win__btn-danger"
-            onClick={() => {
-              const a = window.prompt('Digite DISSOLVER para confirmar a dissolução da Guild:');
-              if (a === 'DISSOLVER') void guildStore.dissolveGuild();
-            }}
-          >
-            Dissolver Guild
-          </button>
-        ) : null}
-      </div>
-    </div>
-  );
-}
-
-function MembersTab({
-  guild,
-  me,
-  playerId,
-}: {
-  guild: Guild;
-  me: GuildMember | null;
-  playerId: string | null;
-}) {
-  const [sort, setSort] = useState<MemberSort>('role');
-  const sorted = useMemo(() => {
-    const list = [...guild.members];
-    list.sort((a, b) => {
-      if (sort === 'role') {
-        if (GUILD_ROLE_ORDER[a.role] !== GUILD_ROLE_ORDER[b.role]) {
-          return GUILD_ROLE_ORDER[a.role] - GUILD_ROLE_ORDER[b.role];
-        }
-        return b.contribution - a.contribution;
-      }
-      if (sort === 'contribution') return b.contribution - a.contribution;
-      if (sort === 'playerLevel') return b.playerLevel - a.playerLevel;
-      return b.lastActiveAt - a.lastActiveAt;
-    });
-    return list;
-  }, [guild.members, sort]);
-
-  return (
-    <div className="guild-win__members">
-      <div className="guild-win__sort">
-        <span>Ordenar:</span>
-        {(
-          [
-            ['role', 'Cargo'],
-            ['contribution', 'Contribution'],
-            ['playerLevel', 'Level'],
-            ['lastActiveAt', 'Atividade'],
-          ] as const
-        ).map(([id, label]) => (
-          <button
-            key={id}
-            type="button"
-            className={sort === id ? 'is-active' : undefined}
-            onClick={() => setSort(id)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-      <ul className="guild-win__member-list">
-        {sorted.map((m) => (
-          <li key={m.playerId} className={m.playerId === playerId ? 'is-me' : ''}>
-            <div className="guild-win__member-main">
-              <span className="guild-win__member-name">
-                {m.nickname}
-                {m.playerId === playerId ? ' (você)' : ''}
-              </span>
-              <span className={`guild-win__role guild-win__role--${m.role}`}>
-                {GUILD_ROLE_LABEL[m.role]}
-              </span>
-            </div>
-            <span className="guild-win__member-stat">
-              Lv.{m.playerLevel} · Contrib. {fmt(m.contribution)} · {fmtTime(m.lastActiveAt)}
-            </span>
-            <div className="guild-win__member-actions">
-              {canPromoteMember(me, m, 'officer') ? (
-                <button type="button" onClick={() => void guildStore.setMemberRole(m.playerId, 'officer')}>
-                  Promover
-                </button>
-              ) : null}
-              {canDemoteMember(me, m) ? (
-                <button type="button" onClick={() => void guildStore.setMemberRole(m.playerId, 'member')}>
-                  Rebaixar
-                </button>
-              ) : null}
-              {canKickMember(me, m) ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (window.confirm(`Expulsar ${m.nickname}?`)) {
-                      void guildStore.kickMember(m.playerId);
-                    }
-                  }}
-                >
-                  Expulsar
-                </button>
-              ) : null}
-              {canTransferLeadership(me, m) ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (window.confirm(`Transferir liderança para ${m.nickname}?`)) {
-                      void guildStore.transferLeadership(m.playerId);
-                    }
-                  }}
-                >
-                  Transferir liderança
-                </button>
-              ) : null}
-            </div>
-          </li>
-        ))}
-      </ul>
+      </footer>
     </div>
   );
 }
@@ -682,6 +896,20 @@ function ProgressTab({ guild }: { guild: Guild }) {
           </li>
         ))}
       </ol>
+      <section className="guild-win__feature-panel">
+        <h4>Histórico recente</h4>
+        <ul className="guild-win__activity">
+          {guild.activity.length === 0 ? (
+            <li className="guild-win__empty">Nenhum evento ainda.</li>
+          ) : (
+            guild.activity.slice(0, 12).map((a) => (
+              <li key={a.id}>
+                <span>{fmtTime(a.timestamp)}</span> {a.message}
+              </li>
+            ))
+          )}
+        </ul>
+      </section>
       <p className="guild-win__hint">
         Kills Online geram Guild XP e Contribution. Offline / Dev Lab: 0.
       </p>

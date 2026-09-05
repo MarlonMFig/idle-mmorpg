@@ -7,13 +7,12 @@ import {
   CHARACTER_QUALITY_LABELS,
 } from '@/constants/character-progression';
 import { formatQualityStatMultiplier, qualityMeterFillPercent } from '@/constants/character-quality-stats';
-import { FRAGMENTS_PER_STAR } from '@/constants/aiw-quality';
 import { getMaxStarsForRarity } from '@/config/gameConfig';
 import { TEAM_SLOT_COUNT, SHOP_CURRENCY_ITEM_ID } from '@/constants/sealing';
-import { getCuratedPackByLookType } from '@/data/character-packs';
-import { narutoFragmentItemId } from '@/data/naruto-loot-tiers';
 import { useStore } from '@/hooks/use-store';
 import { switchActiveCharacter } from '@/lib/active-character';
+import { canUpgradeCharacterStar } from '@/lib/character-star-upgrade';
+import { getCharacterNature } from '@/data/character-natures';
 import { forgeStore } from '@/stores/forge-store';
 import { inventoryStore } from '@/stores/inventory-store';
 import { teamStore } from '@/stores/team-store';
@@ -32,7 +31,6 @@ import {
 } from '@/lib/character-mastery';
 import { grantMasteryXp } from '@/lib/grant-mastery-xp';
 import { MASTERY_MAX_LEVEL } from '@/constants/character-mastery';
-import { CharacterAwakeningSection } from '@/ui/team/character-awakening-section';
 import { TeamPresetsSection } from '@/ui/team/team-presets-section';
 import { isDevMode } from '@/config/devConfig';
 
@@ -53,6 +51,11 @@ function formatCompact(value: number): string {
 
 function formatInt(value: number): string {
   return Math.round(Math.max(0, value)).toLocaleString('pt-BR');
+}
+
+function progressPct(current: number, required: number): number {
+  if (required <= 0) return 100;
+  return Math.max(0, Math.min(100, Math.round((current / required) * 100)));
 }
 
 function memberLevel(member: SealedCharacter): number {
@@ -117,6 +120,7 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
   const activeId = useStore(teamStore, (s) => s.activeId);
   const vitals = useStore(vitalsStore, (s) => s);
   const inventorySlots = useStore(inventoryStore, (s) => s.slots);
+  void inventorySlots;
   const copper = useStore(inventoryStore, () => inventoryStore.countItem(SHOP_CURRENCY_ITEM_ID));
 
   const [query, setQuery] = useState('');
@@ -258,23 +262,6 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
     collection.find((entry) => entry.id === activeId) ??
     null;
 
-  const selectedFragmentId = selected
-    ? (() => {
-        const charId =
-          selected.sourceId ?? getCuratedPackByLookType(selected.lookType)?.id ?? null;
-        return charId
-          ? narutoFragmentItemId(charId)
-          : 'item-anime-naruto-fragmento-personagem';
-      })()
-    : null;
-  const selectedFragmentCount = selectedFragmentId
-    ? inventorySlots.reduce(
-        (total, slot) =>
-          slot?.itemId === selectedFragmentId ? total + slot.quantity : total,
-        0,
-      )
-    : 0;
-
   function select(id: string): void {
     setSelectedId(id);
   }
@@ -322,6 +309,17 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
   const masteryPct = isMaxMastery(masteryLevel)
     ? 100
     : Math.min(100, Math.round((masteryXp / Math.max(1, masteryXpNeed)) * 100));
+  const starCheck = selected ? canUpgradeCharacterStar(selected, collection) : null;
+  const starCost = starCheck?.cost ?? null;
+  const starHint = starCheck
+    ? [
+        starCheck.missing.includes('copies') ? 'faltam cópias' : null,
+        starCheck.missing.includes('fragments') ? 'faltam fragmentos' : null,
+        starCheck.missing.includes('signature') ? 'falta assinatura' : null,
+      ]
+        .filter(Boolean)
+        .join(' · ')
+    : '';
 
   const panel = (
     <div
@@ -616,6 +614,10 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
                         </span>
                       </p>
                       <h3 className="team-mgr__inspector-name">{selected.name}</h3>
+                      <p className="team-mgr__inspector-element">
+                        <span aria-hidden>{getCharacterNature(selected.characterId).icon}</span>
+                        Elemento: <strong>{getCharacterNature(selected.characterId).label}</strong>
+                      </p>
                       <StarRow
                         stars={selected.stars}
                         max={getMaxStarsForRarity(selected.quality)}
@@ -771,20 +773,94 @@ export function TeamPanel({ variant = 'modal' }: { variant?: 'docked' | 'modal' 
                       </div>
                     ) : null}
                   </div>
-
-                  <CharacterAwakeningSection selected={selected} />
+                  <div className="team-mgr__star-card">
+                    <div className="team-mgr__mastery-head">
+                      <strong>Estrelas do herói</strong>
+                      <span>
+                        {selected.stars} / {starCheck?.maxStars ?? getMaxStarsForRarity(selected.quality)}★
+                      </span>
+                    </div>
+                    {starCost ? (
+                      <>
+                        <div className="team-mgr__star-progress">
+                          <div className="team-mgr__meter-row">
+                            <span>Cópias da mesma raridade</span>
+                            <strong>
+                              {starCheck?.resources.copies ?? 0} / {starCost.copies}
+                            </strong>
+                          </div>
+                          <div className="team-mgr__meter-track">
+                            <span
+                              className="team-mgr__meter-fill is-atk"
+                              style={{
+                                width: `${progressPct(
+                                  starCheck?.resources.copies ?? 0,
+                                  starCost.copies,
+                                )}%`,
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="team-mgr__star-progress">
+                          <div className="team-mgr__meter-row">
+                            <span>Fragmentos do personagem</span>
+                            <strong>
+                              {starCheck?.resources.fragments ?? 0} / {starCost.fragments}
+                            </strong>
+                          </div>
+                          <div className="team-mgr__meter-track">
+                            <span
+                              className="team-mgr__meter-fill is-hp"
+                              style={{
+                                width: `${progressPct(
+                                  starCheck?.resources.fragments ?? 0,
+                                  starCost.fragments,
+                                )}%`,
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div className="team-mgr__star-progress">
+                          <div className="team-mgr__meter-row">
+                            <span>Itens de assinatura</span>
+                            <strong>
+                              {starCheck?.resources.signature ?? 0} / {starCost.signature}
+                            </strong>
+                          </div>
+                          <div className="team-mgr__meter-track">
+                            <span
+                              className="team-mgr__meter-fill is-spd"
+                              style={{
+                                width: `${progressPct(
+                                  starCheck?.resources.signature ?? 0,
+                                  starCost.signature,
+                                )}%`,
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <p className="team-mgr__star-note">
+                          A evolução consome cópias da mesma raridade, fragmentos e assinatura ao
+                          mesmo tempo.
+                        </p>
+                      </>
+                    ) : (
+                      <p className="team-mgr__star-note">
+                        Este exemplar já atingiu o teto da raridade {CHARACTER_QUALITY_LABELS[selected.quality]}.
+                      </p>
+                    )}
+                  </div>
 
                   <div className="team-mgr__actions team-mgr__actions--stack">
-                    {getMaxStarsForRarity(selected.quality) > 0 &&
-                    selected.stars < getMaxStarsForRarity(selected.quality) ? (
+                    {starCost ? (
                       <button
                         type="button"
                         className="team-mgr__btn team-mgr__btn--gold"
-                        disabled={selectedFragmentCount < FRAGMENTS_PER_STAR}
-                        title={`${selectedFragmentCount}/${FRAGMENTS_PER_STAR} fragmentos`}
-                        onClick={() => teamStore.upgradeStarWithFragments(selected.id)}
+                        disabled={!starCheck?.canUpgrade}
+                        title={starHint || undefined}
+                        onClick={() => teamStore.upgradeStar(selected.id)}
                       >
-                        +1★ ({selectedFragmentCount}/{FRAGMENTS_PER_STAR})
+                        {starCheck?.canUpgrade ? 'Evoluir estrela' : `Faltam: ${starHint}`}
                       </button>
                     ) : null}
 

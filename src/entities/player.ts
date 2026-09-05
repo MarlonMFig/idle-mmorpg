@@ -23,7 +23,6 @@ import { getVfxDefinition, sharedVfxTextureKey } from '@/data/vfx/registry';
 import { ensureSharedVfxTexture } from '@/data/vfx/load-shared-vfx';
 import { ensureWonsrVfxCatalog, isWonsrVfxId } from '@/data/vfx/wonsr-catalog';
 import { vfxDepthForLayer } from '@/constants/render-layers';
-import { resolveAwakeningRuntime } from '@/lib/awakening-runtime';
 import { resolveEffectiveSkillAnim } from '@/lib/resolve-effective-skill';
 import { getEffectiveCombatStats, PLAYER_STATUS_UNIT_ID } from '@/systems/combat-stats';
 import { cloneSkillStatusEffects } from '@/data/status-effect-def';
@@ -192,7 +191,6 @@ export class Player {
     this.nameLabel = name
       ? addNameplate(scene, options.x, options.y, name, PLAYER_NAMEPLATE_STYLE)
       : null;
-    this.nameLabel?.setScale(this.worldScale);
 
     this.sprite.on(
       Phaser.Animations.Events.ANIMATION_COMPLETE,
@@ -295,7 +293,10 @@ export class Player {
   private syncAuraPresentation(): void {
     const sprite = this.auraSprite;
     const aura = this.currentAura();
-    if (!sprite || !aura?.enabled || !aura.vfxId) return;
+    if (!sprite?.active || !aura?.enabled || !aura.vfxId) {
+      if (sprite && !sprite.active) this.auraSprite = null;
+      return;
+    }
     const def = getVfxDefinition(aura.vfxId);
     if (!def) return;
     sprite.setPosition(
@@ -319,7 +320,13 @@ export class Player {
   private syncBuffAuraPresentation(): void {
     const sprite = this.buffAuraSprite;
     const config = this.buffAuraConfig;
-    if (!sprite || !config) return;
+    if (!sprite?.active || !config) {
+      if (sprite && !sprite.active) {
+        this.buffAuraSprite = null;
+        this.buffAuraConfig = null;
+      }
+      return;
+    }
     sprite.setPosition(
       this.x + config.offsetX * this.worldScale,
       this.y + config.offsetY * this.worldScale,
@@ -610,16 +617,17 @@ export class Player {
     this.labPoseScaleY = def.cast?.scaleY ?? def.cast?.scale ?? 1;
     this.applyBaseScale();
     this.applySheetOrigin(def);
-    const usesFixedSkillScale = this.usesFixedSkillScale(skillId);
-    if (usesFixedSkillScale) {
+    const poseScaleX = this.labPoseScaleX;
+    const poseScaleY = this.labPoseScaleY;
+    if (poseScaleX !== 1 || poseScaleY !== 1) {
       this.skillScaleGuardActive = true;
     }
     this.sprite.anims.play(animKey, true);
     this.refreshBodyOffset();
-    if (usesFixedSkillScale) {
+    if (poseScaleX !== 1 || poseScaleY !== 1) {
       this.skillScaleResetTimer = this.scene.time.delayedCall(lockMs + 64, () => {
         this.skillScaleResetTimer = null;
-        if (!this.dead && this.busyUntil <= this.scene.time.now) this.finishSkillHold();
+        if (!this.dead) this.finishSkillHold();
       });
     }
     return def.hitDelayMs;
@@ -641,11 +649,7 @@ export class Player {
   getSkillAnim(skillId: string): CharacterSkillAnimDef | undefined {
     const def = this.pack.skillAnims[skillId];
     if (!def) return undefined;
-    const awakeningCtx = resolveAwakeningRuntime({
-      characterId: this.pack.id,
-      instanceId: this.instanceId,
-    });
-    const awakened = resolveEffectiveSkillAnim(def, skillId, awakeningCtx) ?? def;
+    const awakened = resolveEffectiveSkillAnim(def, skillId) ?? def;
     if (!isCharacterLabSession()) {
       const poseOptionId = awakened.cast?.animationId;
       const poseSheet =
@@ -957,6 +961,7 @@ export class Player {
     this.applyFacingFlip();
     this.sprite.setVelocity(0, 0);
     this.playIdle();
+    this.applyBaseScale();
   }
 
   private isPlayingSkill(): boolean {
@@ -971,6 +976,12 @@ export class Player {
 
   private playIdle(): void {
     if (this.dead) return;
+    if (!this.skillScaleGuardActive && !this.isPlayingSkill()) {
+      if (this.labPoseScaleX !== 1 || this.labPoseScaleY !== 1) {
+        this.labPoseScaleX = 1;
+        this.labPoseScaleY = 1;
+      }
+    }
     if (this.pack.outfit) {
       this.sprite.anims.stop();
       this.sprite.setTexture(this.pack.walk.key, this.idleFrame());
@@ -986,6 +997,12 @@ export class Player {
 
   private playWalk(): void {
     if (this.dead) return;
+    if (!this.skillScaleGuardActive && !this.isPlayingSkill()) {
+      if (this.labPoseScaleX !== 1 || this.labPoseScaleY !== 1) {
+        this.labPoseScaleX = 1;
+        this.labPoseScaleY = 1;
+      }
+    }
     const animKey = this.pack.outfit
       ? outfitAnimKey(this.pack, 'walk', this.outfitDirection())
       : legacyAnimKey(this.pack, 'walk');
@@ -1021,12 +1038,13 @@ export class Player {
     );
   }
 
-  private usesFixedSkillScale(skillId: string): boolean {
-    return (
-      (this.pack.id === 'hinata' && skillId === 'hinata-hakke-kusho') ||
-      (this.pack.id === 'shikamaru' &&
-        (skillId === 'shikamaru-jutsu-3' || skillId === 'shikamaru-jutsu-4'))
-    );
+  /**
+   * Escala do caster para VFX — sem `cast.scale` da pose temporária.
+   * Poses oversized (ex.: frame 120×240 com cast.scale 0.35) encolhem o
+   * sprite do corpo; o FX do catálogo não deve herdar essa redução.
+   */
+  packFxCasterScaleX(): number {
+    return this.scaleX * this.labScaleX * this.sheetScaleX;
   }
 
   /** Hot-apply de `layoutScale` / worldScale (Map Viewport Lab). Não muda colisão do TMX. */
@@ -1038,7 +1056,7 @@ export class Player {
     this.scaleX = display.x * scale;
     this.scaleY = display.y * scale;
     this.nameplateLift = characterNameplateLift(this.pack) * scale;
-    this.nameLabel?.setScale(scale);
+    this.nameLabel?.setScale(1);
     this.applyBaseScale();
     this.refreshBodyOffset();
     this.syncPresentation();

@@ -1,10 +1,32 @@
-import type { LineageRankIndex } from '@/types/lineage';
+import type { LineageRankIndex, LineageSpecializationModifiers } from '@/types/lineage';
 
 /**
  * Requisitos universais de promoção (Item 21).
  * Rank II, III e IV — mesmos valores para TODAS as Linhagens.
  * Rank I é automático ao escolher Linhagem.
  */
+
+/**
+ * Bônus cumulativos por graduação (total no rank atual).
+ * Universais para todas as Linhagens; personagens incompatíveis não recebem.
+ */
+export const LINEAGE_RANK_MODIFIERS: Record<LineageRankIndex, LineageSpecializationModifiers> = {
+  1: { attackPercent: 0.01, hpPercent: 0.01 },
+  2: { attackPercent: 0.02, hpPercent: 0.02, defensePercent: 0.01 },
+  3: {
+    attackPercent: 0.03,
+    hpPercent: 0.03,
+    defensePercent: 0.02,
+    skillDamagePercent: 0.015,
+  },
+  4: {
+    attackPercent: 0.04,
+    hpPercent: 0.04,
+    defensePercent: 0.03,
+    skillDamagePercent: 0.025,
+    criticalChance: 0.01,
+  },
+};
 
 export type LineageRankRequirement =
   | { type: 'playerLevel'; value: number }
