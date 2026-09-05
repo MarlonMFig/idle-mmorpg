@@ -160,6 +160,17 @@
   filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
 }
 
+.heritage-mgr__choice-art--sennin {
+  width: 5.5rem !important;
+  height: 5.5rem !important;
+  aspect-ratio: 1;
+  object-fit: contain;
+  image-rendering: auto;
+  border-radius: 0.35rem;
+  background: rgba(0, 0, 0, 0.22);
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.4));
+}
+
 .heritage-mgr__choice-grid.is-locked {
   opacity: 0.62;
 }

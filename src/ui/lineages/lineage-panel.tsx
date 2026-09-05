@@ -20,6 +20,7 @@ import {
 } from '@/data/heritage-clan-art';
 import { getHeritageGateIcon } from '@/data/heritage-gate-art';
 import { getHeritageSealIcon } from '@/data/heritage-seal-art';
+import { getHeritageSenninIcon } from '@/data/heritage-sennin-art';
 import { useStore } from '@/hooks/use-store';
 import { buildHeritageFinalStats } from '@/lib/heritage-stats';
 import { getLoadoutOptionLevel } from '@/lib/heritage-modifiers';
@@ -529,7 +530,9 @@ function OptionCard({
   const clanIcon = slot === 'cla' ? getHeritageClanIcon(option.id) : null;
   const sealIcon =
     slot === 'cursedSeal' ? getHeritageSealIcon(option.id, level) : null;
-  const artIcon = clanIcon ?? sealIcon;
+  const senninIcon =
+    slot === 'sennin' ? getHeritageSenninIcon(option.id, level) : null;
+  const artIcon = clanIcon ?? sealIcon ?? senninIcon;
   const preview = {
     ...loadout,
     [key]: option.id,
@@ -574,6 +577,15 @@ function OptionCard({
               width={64}
               height={64}
               draggable={false}
+            />
+          ) : senninIcon ? (
+            <Image
+              className="heritage-mgr__choice-art heritage-mgr__choice-art--sennin"
+              src={senninIcon}
+              alt=""
+              width={256}
+              height={256}
+              unoptimized
             />
           ) : null}
           <span className="heritage-mgr__choice-kicker">
